@@ -1,0 +1,11 @@
+# Claude / SDD tooling
+CLAUDE.md
+.claude/
+.specify/
+
+# Specs, plans, and docs
+docs/
+specs/
+history/
+DESIGN.md
+owflex_master_plan_v7.md

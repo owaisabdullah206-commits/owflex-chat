@@ -4,6 +4,111 @@ This file is generated during init for the selected agent.
 
 You are an expert AI assistant specializing in Spec-Driven Development (SDD). Your primary goal is to work with the architext to build products.
 
+---
+
+## Project Context — OwFlex v7
+
+> READ THIS BEFORE EVERY SESSION. DO NOT SKIP.
+
+### What We're Building
+
+A white-label client dashboard layer for custom AI chatbots. Developers add our embed script to their existing chatbot. Their SMB clients get a login to view conversations and leads. **We are NOT a chatbot builder. We are the management layer.**
+
+### Subdomain Architecture (Critical)
+
+Three subdomains. Three surfaces. Three layout components.
+
+```
+owflex.com        → /app/(marketing)/layout.tsx  — marketing site
+admin.owflex.com  → /app/(dashboard)/layout.tsx  — developer dashboard
+app.owflex.com    → /app/(portal)/layout.tsx     — client portal
+```
+
+Before building ANY UI, confirm which subdomain you are building for. Apply the correct layout and token set. Never mix surfaces.
+
+### Current Phase
+
+Phase 1: MVP Dashboard
+
+### Stack (Non-Negotiable — Do Not Suggest Alternatives)
+
+- Frontend: Next.js 15 App Router, TypeScript strict mode
+- Styling: Tailwind CSS + shadcn/ui components
+- Auth: BetterAuth (email/password + Google, two roles: developer / client)
+- ORM: Drizzle ORM (never write raw SQL in application code)
+- DB: Neon PostgreSQL (pgvector extension enabled)
+- LLM Gateway: LiteLLM — default model: `deepseek/deepseek-v4-flash`
+- Cache / Credits: Upstash Redis
+- Email: Resend (transactional) + Brevo (marketing digests)
+- Validation: Zod on ALL API routes, no exceptions
+- Payments: PayFast (PKR) + Lemon Squeezy (USD)
+
+### Design System (Non-Negotiable)
+
+Primary accent: **Sky-Teal #0EA5E9** — used on all three surfaces. NOT indigo. NOT purple. Sky-Teal only.
+
+Surface token prefixes:
+- `mkt-*` → owflex.com (marketing, cream canvas `#F5F1EC`)
+- `adm-*` → admin.owflex.com (dashboard, near-black canvas `#0C0A09`)
+- `prt-*` → app.owflex.com (portal, off-white canvas `#FAFAFA`)
+
+**JetBrains Mono rule: admin.owflex.com ONLY.**
+- ALL metric numbers → JetBrains Mono
+- ALL embed keys, API keys → JetBrains Mono
+- ALL model name displays → JetBrains Mono
+- NEVER use JetBrains Mono on app.owflex.com (portal)
+
+Read `DESIGN.md` before building any UI component. Read it fresh — do not rely on memory from previous sessions.
+
+### File Structure
+
+```
+/app/(marketing)        owflex.com pages and layout
+/app/(dashboard)        admin.owflex.com pages and layout
+/app/(portal)           app.owflex.com pages and layout
+/app/api/v1             All API routes (versioned)
+/components/marketing   Marketing-specific components (mkt-*)
+/components/dashboard   Dashboard-specific components (adm-*)
+/components/portal      Portal-specific components (prt-*)
+/components/ui          shadcn/ui base components (unstyled base)
+/components/shared      Components used across surfaces
+/lib/db                 Drizzle schema, migrations, queries
+/lib/ai                 LiteLLM wrapper, embeddings, routing
+/lib/credits            Credits system logic (debit-first pattern)
+/lib/auth               BetterAuth config
+/specs                  Written specs per feature (READ BEFORE CODING)
+/DESIGN.md              Visual identity — read before any UI work
+```
+
+### Patterns (Always Follow)
+
+- Every API route: validate Zod → check auth → check org limits → execute
+- Every DB query: MUST include `org_id` or `bot_id` filter (tenant isolation)
+- Credits: debit BEFORE API call — refund on failure, never after
+- Error format: `{ error: string, code: string, status: number }`
+- Never expose internal UUIDs to frontend — use `embed_key` for public bot ID
+- Rate limit ALL public embed endpoints via Upstash Redis
+- Skeleton loaders (not spinners) for all loading states
+- Empty states always have a clear next-action CTA
+
+### What NOT to Build (Read Twice)
+
+- No visual drag-and-drop flow builder
+- No social media channel integrations
+- No voice or audio features
+- No ONNX local embeddings until Phase 3 (use Gemini API free tier first)
+- No RabbitMQ — use BullMQ on Redis when a queue is needed
+- No React Query or SWR — Next.js server components + server actions only
+- No custom CSS beyond Tailwind utility classes
+- No shadcn/ui GUI configurator — write `globals.css` CSS vars directly
+- No indigo (`#6366F1`) anywhere — Sky-Teal (`#0EA5E9`) is the only accent
+
+### Default LLM Model
+
+`deepseek/deepseek-v4-flash` via LiteLLM. Change `LITELLM_DEFAULT_MODEL` env var to switch globally. All model calls go through `/lib/ai/litellm.ts` — never call provider APIs directly.
+
+---
+
 ## Task context
 
 **Your Surface:** You operate on a project level, providing guidance to users and executing development tasks via a defined set of tools.
