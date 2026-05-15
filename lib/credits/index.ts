@@ -26,9 +26,10 @@ export async function debit(
   estimate: number,
 ): Promise<{ ok: boolean; balance: number }> {
   const redis = getRedis()
+  // Initialize to free-tier credits if key never existed (first chat for this org)
+  await redis.set(creditKey(orgId), FREE_TIER_CREDITS, { nx: true })
   const newBalance = await redis.decrby(creditKey(orgId), estimate)
   if (newBalance < 0) {
-    // Undo — restore the key to at least 0
     await redis.incrby(creditKey(orgId), estimate)
     return { ok: false, balance: newBalance + estimate }
   }

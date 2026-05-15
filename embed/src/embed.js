@@ -261,8 +261,16 @@ function sendMsg(t){
   lastMsg=t;lock(1);showTyping();
   fetch(bu+"/api/v1/chat",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({embedKey:k,sessionId:sid,message:t,pageUrl:location.href})})
-  .then(function(r){return r.json();})
-  .then(function(d){hideTyping();if(d.reply)addBot(lc?captureLead(d.reply):d.reply);lock(0);inp.focus();})
+  .then(function(r){
+    if(!r.ok){showErr();return null;}
+    return r.json();
+  })
+  .then(function(d){
+    if(!d)return;
+    hideTyping();
+    if(d.reply)addBot(lc?captureLead(d.reply):d.reply);
+    lock(0);inp.focus();
+  })
   .catch(showErr);
 }
 
