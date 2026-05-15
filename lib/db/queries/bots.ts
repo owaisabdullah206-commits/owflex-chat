@@ -1,7 +1,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 import { z } from 'zod'
 import { and, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
@@ -63,7 +63,7 @@ export async function updateBot(
 
   await db.update(schema.bots).set(update).where(eq(schema.bots.id, botId))
 
-  revalidateTag(`widget-config-${botRow.embedKey}`)
+  updateTag(`widget-config-${botRow.embedKey}`)
   revalidatePath(`/dashboard/bots/${botId}`)
   return {}
 }

@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { unstable_cache } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
@@ -26,5 +26,5 @@ export async function setPlatformPrompt(text: string): Promise<void> {
       target: schema.platformConfig.id,
       set: { systemPrompt: text, updatedAt: new Date() },
     })
-  revalidateTag('platform-prompt')
+  updateTag('platform-prompt')
 }

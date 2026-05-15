@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { unstable_cache } from 'next/cache'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
@@ -49,7 +49,7 @@ export async function createFaq(
     .values({ botId, question: parsed.data.question, answer: parsed.data.answer })
     .returning({ id: schema.botFaqs.id })
 
-  revalidateTag(`faq-${botId}`)
+  updateTag(`faq-${botId}`)
   return { id: row.id }
 }
 
@@ -74,7 +74,7 @@ export async function updateFaq(
 
   await db.update(schema.botFaqs).set(patch).where(eq(schema.botFaqs.id, faqId))
 
-  revalidateTag(`faq-${faq.botId}`)
+  updateTag(`faq-${faq.botId}`)
   return {}
 }
 
@@ -96,7 +96,7 @@ export async function deleteFaq(faqId: string): Promise<{ error?: string }> {
 
   await db.delete(schema.botFaqs).where(eq(schema.botFaqs.id, faqId))
 
-  revalidateTag(`faq-${faq.botId}`)
+  updateTag(`faq-${faq.botId}`)
   return {}
 }
 
