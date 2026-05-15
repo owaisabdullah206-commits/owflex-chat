@@ -44,12 +44,10 @@ export async function OPTIONS(req: NextRequest) {
   })
 }
 
-type Ctx = { params: Promise<{ all: string[] }> }
-
-export async function GET(req: NextRequest, ctx: Ctx) {
-  return withCors(await betterAuthHandler.GET(req, ctx), getCorsOrigin(req))
+export async function GET(req: NextRequest) {
+  return withCors(await betterAuthHandler.GET(req), getCorsOrigin(req))
 }
 
-export async function POST(req: NextRequest, ctx: Ctx) {
-  return withCors(await betterAuthHandler.POST(req, ctx), getCorsOrigin(req))
+export async function POST(req: NextRequest) {
+  return withCors(await betterAuthHandler.POST(req), getCorsOrigin(req))
 }
