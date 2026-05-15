@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
         id: schema.bots.id,
         systemPrompt: schema.bots.systemPrompt,
         model: schema.bots.model,
+        widgetConfig: schema.bots.widgetConfig,
       })
       .from(schema.bots)
       .where(and(eq(schema.bots.embedKey, embedKey), eq(schema.bots.isActive, true)))
@@ -117,8 +118,10 @@ export async function POST(req: NextRequest) {
       .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
 
     // Call LLM
+    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean }
+    const leadEnabled = wc.leadCaptureEnabled !== false
     const { content, tokensUsed, modelUsed } = await chatCompletion({
-      systemPrompt: bot.systemPrompt + LEAD_INSTRUCTIONS,
+      systemPrompt: bot.systemPrompt + (leadEnabled ? LEAD_INSTRUCTIONS : ''),
       messages: contextMessages,
       model: bot.model,
     })

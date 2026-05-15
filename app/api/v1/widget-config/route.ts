@@ -34,14 +34,20 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const config = (bot.widgetConfig ?? {}) as { primaryColor?: string; position?: string }
+  const config = (bot.widgetConfig ?? {}) as {
+    primaryColor?: string
+    position?: string
+    welcomeMessage?: string
+    leadCaptureEnabled?: boolean
+  }
 
   return NextResponse.json(
     {
       botName: bot.name,
       primaryColor: config.primaryColor ?? '#0EA5E9',
-      welcomeMessage: 'Hi! How can I help you?',
+      welcomeMessage: config.welcomeMessage ?? 'Hi! How can I help you today?',
       position: config.position ?? 'bottom-right',
+      leadCaptureEnabled: config.leadCaptureEnabled !== false,
     },
     {
       headers: { 'Cache-Control': 'public, max-age=300' },

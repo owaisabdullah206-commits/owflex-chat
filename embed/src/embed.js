@@ -3,11 +3,15 @@ var sc=document.currentScript,k=sc&&sc.dataset&&sc.dataset.key;if(!k)return;
 var bu=(sc.src||"").replace("/embed.js","");
 var sid=sessionStorage.getItem("_of")||("owflex_"+Date.now()+"_"+Math.random().toString(36).slice(2,8));
 sessionStorage.setItem("_of",sid);
-var bn="Chat",pc="#0EA5E9",op=0,busy=0,started=0,lastMsg="";
+var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,op=0,busy=0,started=0,lastMsg="";
 
 fetch(bu+"/api/v1/widget-config?key="+k)
   .then(function(r){return r.json();})
-  .then(function(c){bn=c.botName||bn;pc=c.primaryColor||pc;go();})
+  .then(function(c){
+    bn=c.botName||bn;pc=c.primaryColor||pc;
+    wm=c.welcomeMessage||wm;lc=c.leadCaptureEnabled!==false;
+    go();
+  })
   .catch(go);
 
 function go(){
@@ -127,7 +131,7 @@ function openPanel(){
   /* Pause float + hide glow */
   btn.style.animation="none";
   glow.style.animationPlayState="paused";glow.style.opacity="0";
-  if(!started){started=1;addBot("Hi! How can I help you today?");}
+  if(!started){started=1;addBot(wm);}
   setTimeout(function(){inp.focus();},60);
 }
 
@@ -145,9 +149,41 @@ function closePanel(){
 btn.onclick=function(){op?closePanel():openPanel();};
 document.getElementById("oC").onclick=closePanel;
 
+function renderMd(raw){
+  var s=esc(raw);
+  s=s.replace(/`([^`\n]+)`/g,'<code style="background:#e2e8f0;border-radius:3px;padding:1px 5px;font-size:11px;font-family:monospace">$1</code>');
+  s=s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  s=s.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener" style="color:var(--ofp);text-decoration:underline">$1</a>');
+  s=s.replace(/(^|[\s])(https?:\/\/[^\s<"]+)/g,'$1<a href="$2" target="_blank" rel="noopener" style="color:var(--ofp);text-decoration:underline">$2</a>');
+  var lines=s.split('\n'),out=[],ul=false,ol=false;
+  for(var i=0;i<lines.length;i++){
+    var l=lines[i];
+    var um=/^[ \t]*[-*]\s+(.+)/.exec(l);
+    var om=/^[ \t]*\d+[.)]\s+(.+)/.exec(l);
+    if(um){
+      if(ol){out.push('</ol>');ol=false;}
+      if(!ul){out.push('<ul style="margin:4px 0;padding-left:18px">');ul=true;}
+      out.push('<li style="margin:2px 0">'+um[1]+'</li>');
+    }else if(om){
+      if(ul){out.push('</ul>');ul=false;}
+      if(!ol){out.push('<ol style="margin:4px 0;padding-left:18px">');ol=true;}
+      out.push('<li style="margin:2px 0">'+om[1]+'</li>');
+    }else{
+      if(ul){out.push('</ul>');ul=false;}
+      if(ol){out.push('</ol>');ol=false;}
+      out.push(l===''?'<br>':l+'<br>');
+    }
+  }
+  if(ul)out.push('</ul>');
+  if(ol)out.push('</ol>');
+  return out.join('').replace(/<br>$/,'');
+}
+
 function addMsg(t,u){
   var d=document.createElement("div");d.className=u?"u":"b";
-  d.textContent=t;ms.appendChild(d);
+  if(u){d.textContent=t;}else{d.innerHTML=renderMd(t);}
+  ms.appendChild(d);
   ms.scrollTop=ms.scrollHeight;
   return d;
 }
@@ -220,7 +256,7 @@ function sendMsg(t){
   fetch(bu+"/api/v1/chat",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({embedKey:k,sessionId:sid,message:t,pageUrl:location.href})})
   .then(function(r){return r.json();})
-  .then(function(d){hideTyping();if(d.reply)addBot(captureLead(d.reply));lock(0);inp.focus();})
+  .then(function(d){hideTyping();if(d.reply)addBot(lc?captureLead(d.reply):d.reply);lock(0);inp.focus();})
   .catch(showErr);
 }
 
