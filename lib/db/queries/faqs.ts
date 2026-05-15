@@ -122,7 +122,7 @@ export async function listFaqs(botId: string) {
 }
 
 // Used by chat route — cached per botId, invalidated on any FAQ mutation
-export function getActiveFaqs(botId: string) {
+export async function getActiveFaqs(botId: string) {
   return unstable_cache(
     async () => {
       return db
