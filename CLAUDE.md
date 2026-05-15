@@ -386,3 +386,9 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- TypeScript 5.x, Node.js 20 (Vercel runtime) (001-phase-2-platform)
+
+## Recent Changes
+- 001-phase-2-platform: Added TypeScript 5.x, Node.js 20 (Vercel runtime)

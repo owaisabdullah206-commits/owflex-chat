@@ -8,6 +8,13 @@
       "when": 1778805764560,
       "tag": "0000_workable_nemesis",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778837700396,
+      "tag": "0001_volatile_praxagora",
+      "breakpoints": true
     }
   ]
 }

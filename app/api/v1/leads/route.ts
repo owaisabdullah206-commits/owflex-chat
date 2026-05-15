@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { getLeadsRatelimit } from '@/lib/ratelimit'
+import { checkLeadLimit } from '@/lib/limits'
 
 const bodySchema = z
   .object({
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const [bot] = await db
-      .select({ id: schema.bots.id })
+      .select({ id: schema.bots.id, orgId: schema.bots.orgId })
       .from(schema.bots)
       .where(and(eq(schema.bots.embedKey, embedKey), eq(schema.bots.isActive, true)))
       .limit(1)
@@ -61,6 +62,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Bot not found', code: 'NOT_FOUND', status: 404 },
         { status: 404 },
+      )
+    }
+
+    // Check lead limit before inserting
+    const { allowed } = await checkLeadLimit(bot.orgId)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: 'Monthly lead limit reached', code: 'PLAN_LIMIT', status: 402 },
+        { status: 402 },
       )
     }
 
@@ -84,6 +94,12 @@ export async function POST(req: NextRequest) {
       phone: phone ?? null,
       notes: notes ?? null,
     })
+
+    // Increment lead counter for org
+    await db
+      .update(schema.organizations)
+      .set({ leadsThisMonth: sql`${schema.organizations.leadsThisMonth} + 1` })
+      .where(eq(schema.organizations.id, bot.orgId))
 
     return NextResponse.json({ success: true })
   } catch (err) {

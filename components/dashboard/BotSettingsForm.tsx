@@ -1,0 +1,191 @@
+'use client'
+
+import { useTransition, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
+import { updateBot } from '@/lib/db/queries/bots'
+import { SUPPORTED_MODELS, type SupportedModel } from '@/lib/ai/litellm'
+
+interface BotSettingsFormProps {
+  botId: string
+  orgPlan: string
+  initial: {
+    name: string
+    systemPrompt: string
+    model: string
+    primaryColor: string
+    position: 'bottom-right' | 'bottom-left'
+    welcomeMessage: string
+    leadCaptureEnabled: boolean
+  }
+}
+
+export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProps) {
+  const [isPending, startTransition] = useTransition()
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const [name, setName] = useState(initial.name)
+  const [systemPrompt, setSystemPrompt] = useState(initial.systemPrompt)
+  const [model, setModel] = useState(initial.model)
+  const [primaryColor, setPrimaryColor] = useState(initial.primaryColor)
+  const [position, setPosition] = useState(initial.position)
+  const [welcomeMessage, setWelcomeMessage] = useState(initial.welcomeMessage)
+  const [leadCaptureEnabled, setLeadCaptureEnabled] = useState(initial.leadCaptureEnabled)
+
+  const isFreePlan = orgPlan === 'free'
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSaved(false)
+    setError(null)
+    startTransition(async () => {
+      const result = await updateBot(botId, {
+        name,
+        systemPrompt,
+        model: model as SupportedModel,
+        widgetConfig: { primaryColor, position, welcomeMessage, leadCaptureEnabled },
+      })
+      if (result.error) {
+        setError(result.error)
+      } else {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 3000)
+      }
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
+      {/* Bot Name */}
+      <div className="space-y-1.5">
+        <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Bot Name</Label>
+        <Input
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+          disabled={isPending}
+        />
+      </div>
+
+      {/* System Prompt */}
+      <div className="space-y-1.5">
+        <Label htmlFor="systemPrompt" className="text-xs text-[var(--ink-muted)]">System Prompt</Label>
+        <Textarea
+          id="systemPrompt"
+          value={systemPrompt}
+          onChange={(e) => setSystemPrompt(e.target.value)}
+          rows={5}
+          className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
+          disabled={isPending}
+        />
+      </div>
+
+      {/* Model */}
+      <div className="space-y-1.5">
+        <Label htmlFor="model" className="text-xs text-[var(--ink-muted)]">
+          Model
+          {isFreePlan && (
+            <span className="ml-2 text-[10px] text-[var(--ink-muted)] bg-[var(--surface-2)] px-1.5 py-0.5 rounded">
+              Upgrade to change
+            </span>
+          )}
+        </Label>
+        <select
+          id="model"
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          disabled={isPending || isFreePlan}
+          className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ fontFamily: 'var(--font-mono)' }}
+        >
+          {SUPPORTED_MODELS.map((m) => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Welcome Message */}
+      <div className="space-y-1.5">
+        <Label htmlFor="welcomeMessage" className="text-xs text-[var(--ink-muted)]">Welcome Message</Label>
+        <Input
+          id="welcomeMessage"
+          value={welcomeMessage}
+          onChange={(e) => setWelcomeMessage(e.target.value)}
+          maxLength={200}
+          className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+          disabled={isPending}
+        />
+      </div>
+
+      {/* Primary Colour */}
+      <div className="space-y-1.5">
+        <Label htmlFor="primaryColor" className="text-xs text-[var(--ink-muted)]">Widget Colour</Label>
+        <div className="flex items-center gap-3">
+          <input
+            id="primaryColor"
+            type="color"
+            value={primaryColor}
+            onChange={(e) => setPrimaryColor(e.target.value)}
+            disabled={isPending}
+            className="h-9 w-14 rounded border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50"
+          />
+          <Input
+            value={primaryColor}
+            onChange={(e) => setPrimaryColor(e.target.value)}
+            pattern="^#[0-9a-fA-F]{6}$"
+            maxLength={7}
+            className="w-32 bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+            disabled={isPending}
+          />
+        </div>
+      </div>
+
+      {/* Position */}
+      <div className="space-y-1.5">
+        <Label htmlFor="position" className="text-xs text-[var(--ink-muted)]">Widget Position</Label>
+        <select
+          id="position"
+          value={position}
+          onChange={(e) => setPosition(e.target.value as 'bottom-right' | 'bottom-left')}
+          disabled={isPending}
+          className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50"
+        >
+          <option value="bottom-right">Bottom Right</option>
+          <option value="bottom-left">Bottom Left</option>
+        </select>
+      </div>
+
+      {/* Lead Capture Toggle */}
+      <div className="flex items-center justify-between py-2 border-t border-[var(--hairline)]">
+        <div>
+          <p className="text-sm text-[var(--ink)]">Lead Capture</p>
+          <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically</p>
+        </div>
+        <Switch
+          checked={leadCaptureEnabled}
+          onCheckedChange={setLeadCaptureEnabled}
+          disabled={isPending}
+        />
+      </div>
+
+      {/* Submit */}
+      <div className="flex items-center gap-3 pt-2">
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white"
+        >
+          {isPending ? 'Saving…' : 'Save Changes'}
+        </Button>
+        {saved && <span className="text-xs text-emerald-400">Saved — widget updates within 5 minutes</span>}
+        {error && <span className="text-xs text-red-400">{error}</span>}
+      </div>
+    </form>
+  )
+}

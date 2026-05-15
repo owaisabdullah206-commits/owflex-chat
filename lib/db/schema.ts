@@ -7,6 +7,7 @@ import {
   timestamp,
   jsonb,
   index,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core'
 
 // Shorthand: all timestamps are stored with timezone
@@ -66,11 +67,13 @@ export const verifications = pgTable('verifications', {
 
 // ── ORGANIZATIONS ────────────────────────────────────────────────────────────
 export const organizations = pgTable('organizations', {
-  id:        text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  ownerId:   text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  name:      varchar('name', { length: 255 }).notNull(),
-  plan:      varchar('plan', { length: 20 }).notNull().default('free'),
-  createdAt: tsz('created_at').defaultNow().notNull(),
+  id:                     text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  ownerId:                text('owner_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name:                   varchar('name', { length: 255 }).notNull(),
+  plan:                   varchar('plan', { length: 20 }).notNull().default('free'),
+  conversationsThisMonth: integer('conversations_this_month').notNull().default(0),
+  leadsThisMonth:         integer('leads_this_month').notNull().default(0),
+  createdAt:              tsz('created_at').defaultNow().notNull(),
 })
 
 // ── BOTS ─────────────────────────────────────────────────────────────────────
@@ -107,13 +110,14 @@ export const conversations = pgTable('conversations', {
 
 // ── MESSAGES ─────────────────────────────────────────────────────────────────
 export const messages = pgTable('messages', {
-  id:             text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  conversationId: text('conversation_id').notNull().references(() => conversations.id, { onDelete: 'cascade' }),
-  role:           varchar('role', { length: 10 }).notNull(), // 'user' | 'assistant'
-  content:        text('content').notNull(),
-  tokensUsed:     integer('tokens_used').notNull().default(0),
-  modelUsed:      varchar('model_used', { length: 100 }),
-  createdAt:      tsz('created_at').defaultNow().notNull(),
+  id:               text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  conversationId:   text('conversation_id').notNull().references(() => conversations.id, { onDelete: 'cascade' }),
+  role:             varchar('role', { length: 10 }).notNull(), // 'user' | 'assistant'
+  content:          text('content').notNull(),
+  tokensUsed:       integer('tokens_used').notNull().default(0),
+  modelUsed:        varchar('model_used', { length: 100 }),
+  flaggedUnanswered: boolean('flagged_unanswered').notNull().default(false),
+  createdAt:        tsz('created_at').defaultNow().notNull(),
 }, (t) => [
   index('messages_conversation_id_idx').on(t.conversationId),
 ])
@@ -130,6 +134,40 @@ export const leads = pgTable('leads', {
   capturedAt:     tsz('captured_at').defaultNow().notNull(),
 }, (t) => [
   index('leads_bot_id_idx').on(t.botId),
+])
+
+// ── PLATFORM CONFIG ───────────────────────────────────────────────────────────
+// Single-row table. Always accessed via id = 'default'.
+export const platformConfig = pgTable('platform_config', {
+  id:           varchar('id', { length: 20 }).primaryKey(), // always 'default'
+  systemPrompt: text('system_prompt').notNull().default(''),
+  updatedAt:    tsz('updated_at').defaultNow().notNull(),
+})
+
+// ── BOT FAQS ──────────────────────────────────────────────────────────────────
+export const botFaqs = pgTable('bot_faqs', {
+  id:        text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  botId:     text('bot_id').notNull().references(() => bots.id, { onDelete: 'cascade' }),
+  question:  text('question').notNull(),
+  answer:    text('answer').notNull(),
+  isActive:  boolean('is_active').notNull().default(true),
+  createdAt: tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('bot_faqs_bot_id_idx').on(t.botId),
+])
+
+// ── CREDIT TRANSACTIONS ───────────────────────────────────────────────────────
+// Append-only audit ledger. Never delete rows.
+export const creditTransactions = pgTable('credit_transactions', {
+  id:        text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  orgId:     text('org_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
+  delta:     integer('delta').notNull(), // positive = credit, negative = debit
+  reason:    varchar('reason', { length: 50 }).notNull(), // 'chat_debit' | 'chat_refund' | 'purchase' | 'monthly_reset'
+  refId:     varchar('ref_id', { length: 255 }),           // idempotency key (message_id or payment_id)
+  createdAt: tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('credit_transactions_org_id_idx').on(t.orgId),
+  uniqueIndex('credit_transactions_ref_id_idx').on(t.refId),
 ])
 
 // ── INVITATIONS ───────────────────────────────────────────────────────────────

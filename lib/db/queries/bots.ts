@@ -1,11 +1,72 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { z } from 'zod'
-import { eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
+import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
+
+const updateBotSchema = z.object({
+  name:         z.string().min(1).max(255).optional(),
+  systemPrompt: z.string().min(1).optional(),
+  model:        z.enum(SUPPORTED_MODELS).optional(),
+  widgetConfig: z.object({
+    primaryColor:       z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+    position:           z.enum(['bottom-right', 'bottom-left']).optional(),
+    welcomeMessage:     z.string().max(200).optional(),
+    leadCaptureEnabled: z.boolean().optional(),
+  }).optional(),
+})
+
+export async function updateBot(
+  botId: string,
+  data: z.infer<typeof updateBotSchema>,
+): Promise<{ error?: string }> {
+  const user = await requireDeveloper()
+
+  const parsed = updateBotSchema.safeParse(data)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message }
+  }
+
+  // Load org to check plan and verify ownership
+  const [botRow] = await db
+    .select({
+      embedKey: schema.bots.embedKey,
+      orgPlan: schema.organizations.plan,
+    })
+    .from(schema.bots)
+    .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+    .where(and(eq(schema.bots.id, botId), eq(schema.organizations.ownerId, user.id)))
+    .limit(1)
+
+  if (!botRow) return { error: 'Bot not found or access denied' }
+
+  const update: Record<string, unknown> = {}
+
+  if (parsed.data.name !== undefined) update.name = parsed.data.name
+  if (parsed.data.systemPrompt !== undefined) update.systemPrompt = parsed.data.systemPrompt
+
+  // Free-plan orgs cannot change model
+  if (parsed.data.model !== undefined && botRow.orgPlan !== 'free') {
+    update.model = parsed.data.model
+  }
+
+  if (parsed.data.widgetConfig !== undefined) {
+    // Atomic JSONB merge — preserves existing keys not in the patch
+    update.widgetConfig = sql`${schema.bots.widgetConfig} || ${JSON.stringify(parsed.data.widgetConfig)}::jsonb`
+  }
+
+  if (Object.keys(update).length === 0) return {}
+
+  await db.update(schema.bots).set(update).where(eq(schema.bots.id, botId))
+
+  revalidateTag(`widget-config-${botRow.embedKey}`)
+  revalidatePath(`/dashboard/bots/${botId}`)
+  return {}
+}
 
 const createBotSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),

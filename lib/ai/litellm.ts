@@ -1,3 +1,12 @@
+export const SUPPORTED_MODELS = [
+  'deepseek/deepseek-v4-flash',
+  'gemini/gemini-2.0-flash',
+  'openai/gpt-4o-mini',
+  'anthropic/claude-haiku-4-5-20251001',
+] as const
+
+export type SupportedModel = (typeof SUPPORTED_MODELS)[number]
+
 export type ChatMessage = {
   role: 'user' | 'assistant'
   content: string
