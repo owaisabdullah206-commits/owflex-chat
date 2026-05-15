@@ -26,11 +26,27 @@ export async function debit(
   estimate: number,
 ): Promise<{ ok: boolean; balance: number }> {
   const redis = getRedis()
-  // Initialize to free-tier credits if key never existed (first chat for this org)
-  await redis.set(creditKey(orgId), FREE_TIER_CREDITS, { nx: true })
-  const newBalance = await redis.decrby(creditKey(orgId), estimate)
+  const key = creditKey(orgId)
+
+  // Check current value before debiting
+  const raw = await redis.get<number>(key)
+  const current = raw !== null ? Number(raw) : null
+
+  // Key is missing OR stuck at 0 from prior undo cycles with no real usage → reinitialize
+  if (current === null || current === 0) {
+    const hasTx = await db
+      .select({ id: schema.creditTransactions.id })
+      .from(schema.creditTransactions)
+      .where(eq(schema.creditTransactions.orgId, orgId))
+      .limit(1)
+    if (hasTx.length === 0) {
+      await redis.set(key, FREE_TIER_CREDITS)
+    }
+  }
+
+  const newBalance = await redis.decrby(key, estimate)
   if (newBalance < 0) {
-    await redis.incrby(creditKey(orgId), estimate)
+    await redis.incrby(key, estimate)
     return { ok: false, balance: newBalance + estimate }
   }
   return { ok: true, balance: newBalance }
