@@ -10,9 +10,11 @@ import { StatCard } from '@/components/dashboard/StatCard'
 import { ConversationTable } from '@/components/dashboard/ConversationTable'
 import { LeadsTable } from '@/components/dashboard/LeadsTable'
 import { BotSettingsForm } from '@/components/dashboard/BotSettingsForm'
+import { BotToggle } from '@/components/dashboard/BotToggle'
 import { FaqEditor } from '@/components/dashboard/FaqEditor'
 import { UnansweredList } from '@/components/dashboard/UnansweredList'
-import { Badge } from '@/components/ui/badge'
+import { AutoRefresh } from '@/components/shared/AutoRefresh'
+import { RefreshButton } from '@/components/shared/RefreshButton'
 
 const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base', 'Unanswered'] as const
 
@@ -109,6 +111,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
+      <AutoRefresh intervalMs={30_000} />
       <Sidebar />
       <main className="flex-1 ml-56">
         {/* Header */}
@@ -122,11 +125,12 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
             </a>
             <span className="text-[var(--hairline-md)]">/</span>
             <h1 className="text-lg font-semibold text-[var(--ink)]">{bot.name}</h1>
-            <Badge variant={bot.isActive ? 'default' : 'secondary'}>
-              {bot.isActive ? 'Active' : 'Inactive'}
-            </Badge>
+            <BotToggle botId={bot.id} initialActive={bot.isActive} />
           </div>
-          <InviteClientDialog botId={bot.id} />
+          <div className="flex items-center gap-2">
+            <RefreshButton />
+            <InviteClientDialog botId={bot.id} />
+          </div>
         </div>
 
         {/* Tab nav */}

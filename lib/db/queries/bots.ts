@@ -69,6 +69,26 @@ export async function updateBot(
   return {}
 }
 
+export async function toggleBotActive(botId: string): Promise<{ error?: string; isActive?: boolean }> {
+  const user = await requireDeveloper()
+
+  const [botRow] = await db
+    .select({ isActive: schema.bots.isActive })
+    .from(schema.bots)
+    .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+    .where(and(eq(schema.bots.id, botId), eq(schema.organizations.ownerId, user.id)))
+    .limit(1)
+
+  if (!botRow) return { error: 'Bot not found or access denied' }
+
+  const newActive = !botRow.isActive
+  await db.update(schema.bots).set({ isActive: newActive }).where(eq(schema.bots.id, botId))
+
+  revalidatePath(`/dashboard/bots/${botId}`)
+  revalidatePath('/dashboard/bots')
+  return { isActive: newActive }
+}
+
 const createBotSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),
   systemPrompt: z.string().min(1, 'System prompt is required'),

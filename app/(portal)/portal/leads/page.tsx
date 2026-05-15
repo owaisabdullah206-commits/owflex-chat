@@ -5,6 +5,8 @@ import { TopNav } from '@/components/portal/TopNav'
 import { LeadCard } from '@/components/portal/LeadCard'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
+import { AutoRefresh } from '@/components/shared/AutoRefresh'
+import { RefreshButton } from '@/components/shared/RefreshButton'
 
 export default async function LeadsPage() {
   const user = await requireClient()
@@ -39,18 +41,22 @@ export default async function LeadsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
+      <AutoRefresh intervalMs={30_000} />
       <TopNav userEmail={user.email} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-[var(--ink)]">Leads</h1>
-          {leads.length > 0 && (
-            <Button variant="secondary" size="sm" asChild>
-              <a href="/api/portal/leads/export" download>
-                <Download className="h-4 w-4 mr-1.5" />
-                Export CSV
-              </a>
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            <RefreshButton />
+            {leads.length > 0 && (
+              <Button variant="secondary" size="sm" asChild>
+                <a href="/api/portal/leads/export" download>
+                  <Download className="h-4 w-4 mr-1.5" />
+                  Export CSV
+                </a>
+              </Button>
+            )}
+          </div>
         </div>
 
         {leads.length === 0 ? (

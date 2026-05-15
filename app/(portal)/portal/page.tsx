@@ -4,6 +4,8 @@ import { db, schema } from '@/lib/db'
 import { getPortalStats } from '@/lib/db/queries/portal-stats'
 import { TopNav } from '@/components/portal/TopNav'
 import { StatCard } from '@/components/portal/StatCard'
+import { AutoRefresh } from '@/components/shared/AutoRefresh'
+import { RefreshButton } from '@/components/shared/RefreshButton'
 
 export default async function PortalPage() {
   const user = await requireClient()
@@ -48,12 +50,16 @@ export default async function PortalPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
+      <AutoRefresh intervalMs={30_000} />
       <TopNav userEmail={user.email} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-xl font-bold text-[var(--ink)]">{bot.name}</h1>
-          <p className="text-sm text-[var(--ink-muted)] mt-0.5">Your chatbot overview</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-xl font-bold text-[var(--ink)]">{bot.name}</h1>
+            <p className="text-sm text-[var(--ink-muted)] mt-0.5">Your chatbot overview</p>
+          </div>
+          <RefreshButton />
         </div>
 
         {/* Stats */}
