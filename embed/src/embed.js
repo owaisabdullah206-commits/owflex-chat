@@ -173,16 +173,26 @@ function lock(v){
 function captureLead(text){
   var m=text.match(/\[LEAD:(\{[\s\S]*?\})\]/);
   if(!m)return text;
+  var cleaned=text.replace(/\n?\[LEAD:[\s\S]*?\]/,"").trim();
   try{
     var d=JSON.parse(m[1]);
     if(d.name||d.email||d.phone){
       fetch(bu+"/api/v1/leads",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({embedKey:k,sessionId:sid,name:d.name||null,email:d.email||null,phone:d.phone||null,notes:d.notes||null})});
-      var ok=document.createElement("div");ok.className="ok";ok.textContent="✓ Details saved";
-      ms.appendChild(ok);ms.scrollTop=ms.scrollHeight;
+        body:JSON.stringify({embedKey:k,sessionId:sid,name:d.name||null,email:d.email||null,phone:d.phone||null,notes:d.notes||null})})
+      .then(function(r){
+        var el=document.createElement("div");el.className="ok";
+        if(r.ok){el.textContent="✓ Details saved";}
+        else{el.textContent="⚠ Could not save your details";el.style.color="#ef4444";}
+        ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
+      })
+      .catch(function(){
+        var el=document.createElement("div");el.className="ok";el.style.color="#ef4444";
+        el.textContent="⚠ Could not save your details";
+        ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
+      });
     }
   }catch(e){}
-  return text.replace(/\n?\[LEAD:[\s\S]*?\]/,"").trim();
+  return cleaned;
 }
 
 function showErr(){

@@ -25,14 +25,17 @@ const bodySchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
-  // Rate limit by IP
+  // Rate limit by IP (skipped if Upstash not configured)
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '127.0.0.1'
-  const { success } = await getChatRatelimit().limit(ip)
-  if (!success) {
-    return NextResponse.json(
-      { error: 'Rate limit exceeded', code: 'RATE_LIMITED', status: 429 },
-      { status: 429 },
-    )
+  const rl = getChatRatelimit()
+  if (rl) {
+    const { success } = await rl.limit(ip)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded', code: 'RATE_LIMITED', status: 429 },
+        { status: 429 },
+      )
+    }
   }
 
   let body: unknown
