@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "terser src/embed.js --compress passes=3,drop_console=true,pure_getters=true,unsafe=true --mangle --output dist/embed.min.js"
+    "build": "terser src/embed.js --compress passes=3,pure_getters=true,unsafe=true --mangle --output dist/embed.min.js"
   },
   "devDependencies": {
     "terser": "^5.47.1"

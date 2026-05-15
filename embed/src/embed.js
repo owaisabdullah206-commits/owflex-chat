@@ -182,12 +182,16 @@ function captureLead(text){
       .then(function(r){
         var el=document.createElement("div");el.className="ok";
         if(r.ok){el.textContent="✓ Details saved";}
-        else{el.textContent="⚠ Could not save your details";el.style.color="#ef4444";}
+        else{
+          r.json().then(function(j){console.error("[owflex:leads]",r.status,j);}).catch(function(){});
+          el.textContent="⚠ Could not save your details ("+r.status+")";el.style.color="#ef4444";
+        }
         ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
       })
-      .catch(function(){
+      .catch(function(e){
+        console.error("[owflex:leads] fetch failed:",e);
         var el=document.createElement("div");el.className="ok";el.style.color="#ef4444";
-        el.textContent="⚠ Could not save your details";
+        el.textContent="⚠ Could not save your details (network error)";
         ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
       });
     }
