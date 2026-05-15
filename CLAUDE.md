@@ -180,6 +180,19 @@ Skills live in `.claude/skills/`. Read the relevant skill's `SKILL.md` BEFORE im
 - **Error format**: `{ error: string, code: string, status: number }` — no other shape allowed.
 - **Loading states**: Skeleton loaders only. No spinners. Empty states always have a CTA.
 
+### Build Gate (Non-Negotiable)
+
+**ALWAYS run `npm run build` locally and confirm it succeeds before pushing to any remote.**
+
+```bash
+npm run build   # must exit 0 — fix all errors before git push
+```
+
+- Never push a commit that has not passed a local production build.
+- TypeScript check alone (`tsc --noEmit`) is not sufficient — always run the full `next build`.
+- If the build fails, fix it before committing. Do not push broken builds hoping Vercel will reveal the error.
+- This rule applies to every change, including single-line fixes.
+
 ---
 
 ## Task context
