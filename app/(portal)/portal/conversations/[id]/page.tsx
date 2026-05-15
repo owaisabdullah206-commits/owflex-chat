@@ -1,0 +1,76 @@
+import { notFound } from 'next/navigation'
+import { and, asc, eq } from 'drizzle-orm'
+import { requireClient } from '@/lib/auth/session'
+import { db, schema } from '@/lib/db'
+import { TopNav } from '@/components/portal/TopNav'
+import { ChatTranscript } from '@/components/portal/ChatTranscript'
+
+interface ConversationDetailPageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function ConversationDetailPage({ params }: ConversationDetailPageProps) {
+  const user = await requireClient()
+  const { id } = await params
+
+  // Tenant-isolated query: conversation must belong to a bot assigned to this client
+  const [conversation] = await db
+    .select({
+      id: schema.conversations.id,
+      pageUrl: schema.conversations.pageUrl,
+      startedAt: schema.conversations.startedAt,
+      botName: schema.bots.name,
+    })
+    .from(schema.conversations)
+    .innerJoin(schema.bots, eq(schema.conversations.botId, schema.bots.id))
+    .where(
+      and(
+        eq(schema.conversations.id, id),
+        eq(schema.bots.clientUserId, user.id),
+      ),
+    )
+    .limit(1)
+
+  if (!conversation) notFound()
+
+  const messages = await db
+    .select({
+      id: schema.messages.id,
+      role: schema.messages.role,
+      content: schema.messages.content,
+      createdAt: schema.messages.createdAt,
+    })
+    .from(schema.messages)
+    .where(eq(schema.messages.conversationId, id))
+    .orderBy(asc(schema.messages.createdAt))
+
+  return (
+    <div className="min-h-screen bg-[var(--bg)]">
+      <TopNav userEmail={user.email} />
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-6">
+          <a
+            href="/portal/conversations"
+            className="text-sm text-[var(--of-primary-text-light)] hover:underline"
+          >
+            ← All conversations
+          </a>
+          <div className="mt-3">
+            <h1 className="text-lg font-bold text-[var(--ink)]">
+              {new Date(conversation.startedAt).toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+              })}
+            </h1>
+            {conversation.pageUrl && (
+              <p className="text-xs text-[var(--ink-muted)] mt-0.5 truncate">
+                {conversation.pageUrl}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <ChatTranscript messages={messages} botName={conversation.botName} />
+      </div>
+    </div>
+  )
+}

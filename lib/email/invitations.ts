@@ -1,0 +1,47 @@
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+interface SendClientInvitationParams {
+  clientEmail: string
+  botName: string
+  inviteUrl: string
+}
+
+export async function sendClientInvitation({
+  clientEmail,
+  botName,
+  inviteUrl,
+}: SendClientInvitationParams): Promise<void> {
+  const { error } = await resend.emails.send({
+    from: 'OwFlex <noreply@owflex.com>',
+    to: clientEmail,
+    subject: `You've been invited to view ${botName}`,
+    html: `
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#1e293b">
+        <div style="margin-bottom:24px">
+          <span style="font-size:20px;font-weight:700;color:#0EA5E9">OwFlex</span>
+        </div>
+        <h2 style="font-size:22px;font-weight:700;margin:0 0 12px">You're invited!</h2>
+        <p style="font-size:15px;color:#475569;margin:0 0 24px;line-height:1.6">
+          You've been given access to view <strong>${botName}</strong>'s chatbot dashboard —
+          conversations, leads, and activity all in one place.
+        </p>
+        <a
+          href="${inviteUrl}"
+          style="display:inline-block;background:#0EA5E9;color:#ffffff;font-weight:600;
+                 font-size:14px;padding:12px 28px;border-radius:8px;text-decoration:none"
+        >
+          Accept Invitation
+        </a>
+        <p style="font-size:13px;color:#94a3b8;margin:24px 0 0;line-height:1.5">
+          This link expires in 7 days. If you didn't expect this email, you can safely ignore it.
+        </p>
+      </div>
+    `,
+  })
+
+  if (error) {
+    throw new Error(`Failed to send invitation email: ${error.message}`)
+  }
+}

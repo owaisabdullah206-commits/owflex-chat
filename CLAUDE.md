@@ -8,7 +8,7 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 
 ## Project Context — OwFlex v7
 
-> READ THIS BEFORE EVERY SESSION. DO NOT SKIP.
+> READ THIS FILE AND `DESIGN.md` BEFORE EVERY SESSION. DO NOT SKIP EITHER.
 
 ### What We're Building
 
@@ -106,6 +106,79 @@ Read `DESIGN.md` before building any UI component. Read it fresh — do not rely
 ### Default LLM Model
 
 `deepseek/deepseek-v4-flash` via LiteLLM. Change `LITELLM_DEFAULT_MODEL` env var to switch globally. All model calls go through `/lib/ai/litellm.ts` — never call provider APIs directly.
+
+### MCP Tools Available — Use These, Don't Guess
+
+Two MCP servers are available in every session. Use them proactively.
+
+**Context7** (`mcp__context7__*`) — Authoritative, up-to-date library documentation.
+- **ALWAYS use before implementing any library feature** — BetterAuth, Drizzle, Next.js, Tailwind v4, Resend, Upstash, etc.
+- Call `mcp__context7__resolve-library-id` then `mcp__context7__query-docs` to get current API signatures.
+- Your training data is not authoritative for rapidly-changing packages. Context7 is.
+- Example triggers: new package install, unfamiliar method, version migration, API error you can't explain.
+
+**Tavily** (`mcp__tavily-mcp__*`) — Real-time web research.
+- Use when you need: package release notes, error message lookup, security advisories, WSL/OS-specific workarounds, or any question that requires current information.
+- `tavily_search` for general queries, `tavily_extract` to read a specific URL, `tavily_research` for deep multi-source research.
+- Do NOT use for library API docs when Context7 has the package — Context7 is faster and more precise.
+
+**When to use which:**
+
+| Situation | Use |
+|-----------|-----|
+| What's the correct API for `drizzle-orm` v0.x? | Context7 |
+| How do I configure BetterAuth's `databaseHooks`? | Context7 |
+| What's the latest Next.js 16 middleware/proxy API? | Context7 |
+| npm install failing with a specific error code | Tavily |
+| Is there a known WSL issue with package X? | Tavily |
+| What changed in BetterAuth v2.0 changelog? | Tavily |
+
+### Session Startup Checklist
+
+Every session MUST complete this before writing any code:
+
+1. Read `CLAUDE.md` — confirm phase, stack, patterns, and what NOT to build.
+2. Read `DESIGN.md` — mandatory if the session involves ANY UI work.
+3. Read `.specify/memory/constitution.md` — governing principles (SOLID, SDD, security, etc.).
+4. Read the relevant `/specs/<feature>/spec.md` and `tasks.md`.
+5. Confirm which surface (`marketing` / `dashboard` / `portal`) before writing any component.
+6. Check the Skills Reference below — load the matching skill before writing any component or route.
+7. If implementing a new library feature, query **Context7** first for current docs.
+
+### Skills Reference (Check Before Building)
+
+Skills live in `.claude/skills/`. Read the relevant skill's `SKILL.md` BEFORE implementing — not after.
+
+| When you are about to… | Read this skill first |
+|---|---|
+| Write any React component or Next.js page | `.claude/skills/vercel-react-best-practices/SKILL.md` |
+| Create pages, layouts, API routes | `.claude/skills/building-nextjs-apps/SKILL.md` |
+| Build the embed.js chat widget (US-09, any widget) | `.claude/skills/chatbot-widget-creator/SKILL.md` + `.claude/skills/llm-chatbot/SKILL.md` |
+| Integrate LLM responses / streaming chat | `.claude/skills/llm-chatbot/SKILL.md` |
+| Build AI agent pipelines or tool-calling flows | `.claude/skills/openai-agents-sdk-gemini/skills.md` |
+| Add ChatKit-style UI to the portal or widget | `.claude/skills/openai-chatkit-integration/skill.md` |
+| Build any dashboard or portal UI component | `.claude/skills/frontend-designer/SKILL.md` |
+| Review or audit finished UI for accessibility | `.claude/skills/web-design-guidelines/SKILL.md` |
+| Set up Brevo marketing email digests (Phase 2+) | `.claude/skills/brevo-email/SKILL.md` |
+| Build the knowledge base / RAG pipeline (Phase 2+) | `.claude/skills/rag-pipeline-builder/SKILL.md` |
+
+**Key rules from `vercel-react-best-practices` that apply to every component:**
+- Use `Promise.all()` for independent data fetches — never sequential awaits (`async-parallel`)
+- Use `React.cache()` for per-request deduplication in server components (`server-cache-react`)
+- Import directly — never via barrel files (`bundle-barrel-imports`)
+- Use `next/dynamic` for heavy client components (`bundle-dynamic-imports`)
+- Use `Suspense` boundaries to stream content (`async-suspense-boundaries`)
+- Derive state during render, not in `useEffect` (`rerender-derived-state-no-effect`)
+
+### Engineering Rules (from Constitution)
+
+- **SOLID**: Single responsibility per module, open/closed via env config, LiteLLM as the LLM abstraction (Liskov), one concern per API route (interface segregation), depend on `/lib` abstractions not provider SDKs (dependency inversion).
+- **DRY**: Business logic lives in `/lib`. Shared UI lives in `/components/shared`. One Zod schema per entity.
+- **YAGNI**: Build only what the current phase spec requires. No Phase 3 scaffolding during Phase 1.
+- **KISS**: Simplest solution that satisfies the spec. Context stuffing before RAG. Sync before async.
+- **Credits — debit-first**: Debit Redis BEFORE LLM call. Refund on failure. NEVER debit after.
+- **Error format**: `{ error: string, code: string, status: number }` — no other shape allowed.
+- **Loading states**: Skeleton loaders only. No spinners. Empty states always have a CTA.
 
 ---
 
