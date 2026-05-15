@@ -62,6 +62,7 @@ export const auth = betterAuth({
 
   trustedOrigins: [
     'https://owflex-chat.vercel.app',
+    'https://owflex-chat-m70j5jsag-owaisabdullah206-1391s-projects.vercel.app',
     'https://admin.owflex.com',
     'https://app.owflex.com',
     'http://localhost:3000',
