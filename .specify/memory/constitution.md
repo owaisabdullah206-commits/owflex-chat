@@ -211,6 +211,13 @@ No other error shape is acceptable. Clients depend on this contract.
 - Integration tests for tenant isolation (cross-org data leakage MUST be impossible).
 - No mock databases for tests that exercise data integrity paths.
 
+**Build gate — NON-NEGOTIABLE:**
+- MUST run `npm run build` locally and confirm exit code 0 before every `git push`.
+- `tsc --noEmit` alone is insufficient — always run the full `next build`.
+- Never push a commit that has not passed a local production build.
+- This applies to every change, including single-line fixes and config edits.
+- Broken builds waste Vercel build minutes and break staging for the team.
+
 ---
 
 ### IX. Portability & Zero Lock-in

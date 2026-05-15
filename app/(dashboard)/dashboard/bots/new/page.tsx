@@ -1,16 +1,20 @@
-'use client'
-
-import { useActionState } from 'react'
+import { eq } from 'drizzle-orm'
+import { requireDeveloper } from '@/lib/auth/session'
+import { db, schema } from '@/lib/db'
+import { checkBotLimit } from '@/lib/limits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { createBot } from '@/lib/db/queries/bots'
+import { NewBotForm } from '@/components/dashboard/NewBotForm'
 
-const DEFAULT_SYSTEM_PROMPT = 'You are a helpful assistant.'
+export default async function NewBotPage() {
+  const user = await requireDeveloper()
 
-export default function NewBotPage() {
-  const [state, action, pending] = useActionState(createBot, null)
+  const [org] = await db
+    .select({ id: schema.organizations.id, plan: schema.organizations.plan })
+    .from(schema.organizations)
+    .where(eq(schema.organizations.ownerId, user.id))
+    .limit(1)
+
+  const atLimit = org ? !(await checkBotLimit(org.id)).allowed : false
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -24,54 +28,23 @@ export default function NewBotPage() {
         </div>
 
         <div className="px-8 py-8 max-w-xl">
-          <form action={action} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-[var(--ink)]">
-                Bot name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="e.g. Support Bot, Sales Assistant"
-                required
-                className="bg-[var(--surface)] border-[var(--hairline-md)] text-[var(--ink)]
-                  placeholder:text-[var(--ink-subtle)] focus-visible:ring-[var(--of-primary)]"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="systemPrompt" className="text-sm font-medium text-[var(--ink)]">
-                System prompt
-              </Label>
-              <p className="text-xs text-[var(--ink-muted)]">
-                Instructions that define how your bot behaves.
+          {atLimit ? (
+            <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] px-6 py-8 text-center">
+              <p className="text-sm font-medium text-[var(--ink)] mb-2">Bot limit reached</p>
+              <p className="text-xs text-[var(--ink-muted)] mb-4">
+                Your {org?.plan ?? 'free'} plan allows a limited number of bots.
+                Upgrade your plan to create more.
               </p>
-              <textarea
-                id="systemPrompt"
-                name="systemPrompt"
-                rows={6}
-                defaultValue={DEFAULT_SYSTEM_PROMPT}
-                required
-                className="w-full rounded-md border border-[var(--hairline-md)] bg-[var(--surface)]
-                  px-3 py-2 text-sm text-[var(--ink)] placeholder:text-[var(--ink-subtle)]
-                  focus:outline-none focus:ring-2 focus:ring-[var(--of-primary)] focus:ring-offset-0
-                  resize-y min-h-[120px]"
-              />
+              <a
+                href="/dashboard/settings"
+                className="inline-flex items-center px-4 py-2 rounded bg-[var(--of-primary)] text-white text-sm hover:opacity-90 transition-opacity"
+              >
+                Upgrade Plan
+              </a>
             </div>
-
-            {state?.error && (
-              <p className="text-sm text-[var(--of-error-dark)]">{state.error}</p>
-            )}
-
-            <div className="flex items-center gap-3 pt-2">
-              <Button type="submit" disabled={pending}>
-                {pending ? 'Creating…' : 'Create bot'}
-              </Button>
-              <Button variant="ghost" asChild>
-                <a href="/dashboard/bots">Cancel</a>
-              </Button>
-            </div>
-          </form>
+          ) : (
+            <NewBotForm />
+          )}
         </div>
       </main>
     </div>

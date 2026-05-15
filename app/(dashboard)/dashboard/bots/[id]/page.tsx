@@ -2,18 +2,19 @@ import { notFound } from 'next/navigation'
 import { and, count, desc, eq, gte } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
+import { listFaqs } from '@/lib/db/queries/faqs'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { EmbedCodeBlock } from '@/components/dashboard/EmbedCodeBlock'
 import { InviteClientDialog } from '@/components/dashboard/InviteClientDialog'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { ConversationTable } from '@/components/dashboard/ConversationTable'
 import { LeadsTable } from '@/components/dashboard/LeadsTable'
+import { BotSettingsForm } from '@/components/dashboard/BotSettingsForm'
+import { FaqEditor } from '@/components/dashboard/FaqEditor'
+import { UnansweredList } from '@/components/dashboard/UnansweredList'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
-const TABS = ['Overview', 'Conversations', 'Leads', 'Settings'] as const
+const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base', 'Unanswered'] as const
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
@@ -35,6 +36,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       isActive: schema.bots.isActive,
       createdAt: schema.bots.createdAt,
       clientUserId: schema.bots.clientUserId,
+      widgetConfig: schema.bots.widgetConfig,
+      orgPlan: schema.organizations.plan,
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -50,7 +53,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
   const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount] = await Promise.all([
+  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, faqs, unansweredMessages] = await Promise.all([
     db
       .select({
         id: schema.conversations.id,
@@ -86,6 +89,22 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       .select({ count: count() })
       .from(schema.conversations)
       .where(and(eq(schema.conversations.botId, bot.id), gte(schema.conversations.startedAt, weekStart))),
+    listFaqs(bot.id),
+    db
+      .select({
+        id:             schema.messages.id,
+        content:        schema.messages.content,
+        createdAt:      schema.messages.createdAt,
+        conversationId: schema.messages.conversationId,
+      })
+      .from(schema.messages)
+      .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
+      .where(and(
+        eq(schema.conversations.botId, bot.id),
+        eq(schema.messages.flaggedUnanswered, true),
+      ))
+      .orderBy(desc(schema.messages.createdAt))
+      .limit(50),
   ])
 
   return (
@@ -202,24 +221,41 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'settings' && (
-            <div className="max-w-xl">
-              <p className="text-sm text-[var(--ink-muted)] mb-6">Bot configuration coming in Phase 2.</p>
-              <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1">Bot Name</p>
-                  <p className="text-sm text-[var(--ink)]">{bot.name}</p>
-                </div>
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1">System Prompt</p>
-                  <p className="text-sm text-[var(--ink)] whitespace-pre-wrap">{bot.systemPrompt}</p>
-                </div>
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1">Status</p>
-                  <Badge variant={bot.isActive ? 'default' : 'secondary'}>
-                    {bot.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
-              </div>
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--ink)] mb-5">Bot Settings</h2>
+              <BotSettingsForm
+                botId={bot.id}
+                orgPlan={bot.orgPlan}
+                initial={{
+                  name: bot.name,
+                  systemPrompt: bot.systemPrompt,
+                  model: bot.model,
+                  primaryColor: ((bot.widgetConfig as { primaryColor?: string }) ?? {}).primaryColor ?? '#0EA5E9',
+                  position: (((bot.widgetConfig as { position?: string }) ?? {}).position as 'bottom-right' | 'bottom-left') ?? 'bottom-right',
+                  welcomeMessage: ((bot.widgetConfig as { welcomeMessage?: string }) ?? {}).welcomeMessage ?? 'Hi! How can I help you today?',
+                  leadCaptureEnabled: ((bot.widgetConfig as { leadCaptureEnabled?: boolean }) ?? {}).leadCaptureEnabled !== false,
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === 'knowledge base' && (
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Knowledge Base</h2>
+              <p className="text-xs text-[var(--ink-muted)] mb-5">
+                Active entries are injected into the bot&apos;s system prompt on every chat. Changes apply within 5 minutes.
+              </p>
+              <FaqEditor botId={bot.id} initialFaqs={faqs} />
+            </div>
+          )}
+
+          {activeTab === 'unanswered' && (
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Unanswered Questions</h2>
+              <p className="text-xs text-[var(--ink-muted)] mb-5">
+                Responses where the bot expressed uncertainty. Add FAQ entries to fill these gaps.
+              </p>
+              <UnansweredList messages={unansweredMessages} />
             </div>
           )}
         </div>

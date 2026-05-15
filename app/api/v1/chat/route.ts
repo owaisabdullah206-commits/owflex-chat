@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { and, asc, desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { chatCompletion, type ChatMessage } from '@/lib/ai/litellm'
 import { getChatRatelimit } from '@/lib/ratelimit'
+import { getPlatformPrompt } from '@/lib/db/queries/platform'
+import { getActiveFaqs } from '@/lib/db/queries/faqs'
+import { flagIfUnanswered } from '@/lib/ai/uncertainty'
+import * as creditLib from '@/lib/credits'
+import { checkConversationLimit } from '@/lib/limits'
 
 const LEAD_INSTRUCTIONS = `
 
@@ -59,15 +64,19 @@ export async function POST(req: NextRequest) {
   const { embedKey, sessionId, message, pageUrl } = parsed.data
 
   try {
-    // Look up bot
+    // Look up bot + org (needed for credits, limits, tenant isolation)
     const [bot] = await db
       .select({
-        id: schema.bots.id,
+        id:           schema.bots.id,
         systemPrompt: schema.bots.systemPrompt,
-        model: schema.bots.model,
+        model:        schema.bots.model,
         widgetConfig: schema.bots.widgetConfig,
+        orgId:        schema.bots.orgId,
+        orgPlan:      schema.organizations.plan,
+        convCount:    schema.organizations.conversationsThisMonth,
       })
       .from(schema.bots)
+      .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
       .where(and(eq(schema.bots.embedKey, embedKey), eq(schema.bots.isActive, true)))
       .limit(1)
 
@@ -117,29 +126,95 @@ export async function POST(req: NextRequest) {
       .reverse()
       .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
 
-    // Call LLM
+    // Compose system prompt: [platform] + [bot] + [FAQ context] + [lead instructions]
+    const [platformPrompt, activeFaqs] = await Promise.all([
+      getPlatformPrompt(),
+      getActiveFaqs(bot.id),
+    ])
+
+    const faqBlock = activeFaqs.length > 0
+      ? '--- Knowledge Base ---\n' + activeFaqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')
+      : ''
+
     const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean }
     const leadEnabled = wc.leadCaptureEnabled !== false
-    const { content, tokensUsed, modelUsed } = await chatCompletion({
-      systemPrompt: bot.systemPrompt + (leadEnabled ? LEAD_INSTRUCTIONS : ''),
-      messages: contextMessages,
-      model: bot.model,
-    })
+    const finalSystemPrompt = [
+      platformPrompt,
+      bot.systemPrompt,
+      faqBlock,
+      leadEnabled ? LEAD_INSTRUCTIONS : '',
+    ].filter(Boolean).join('\n\n')
 
-    // Insert assistant message
-    await db.insert(schema.messages).values({
+    // Check conversation limit before processing
+    const { allowed: convAllowed } = await checkConversationLimit({
+      plan: bot.orgPlan,
+      conversationsThisMonth: bot.convCount,
+      leadsThisMonth: 0,
+    })
+    if (!convAllowed) {
+      return NextResponse.json(
+        { error: 'Monthly conversation limit reached. Upgrade your plan to continue.', code: 'PLAN_LIMIT', status: 402 },
+        { status: 402 },
+      )
+    }
+
+    // Debit-first: estimate tokens, debit before LLM call
+    const estimatedTokens = Math.ceil(message.length / 4) * 3
+    const { ok: creditOk } = await creditLib.debit(bot.orgId, estimatedTokens)
+    if (!creditOk) {
+      return NextResponse.json(
+        { error: 'Insufficient credits', code: 'NO_CREDITS', status: 402 },
+        { status: 402 },
+      )
+    }
+
+    let content: string
+    let tokensUsed: number
+    let modelUsed: string
+
+    try {
+      const result = await chatCompletion({
+        systemPrompt: finalSystemPrompt,
+        messages: contextMessages,
+        model: bot.model,
+      })
+      content = result.content
+      tokensUsed = result.tokensUsed
+      modelUsed = result.modelUsed
+    } catch (llmErr) {
+      // Full refund on LLM failure
+      await creditLib.refund(bot.orgId, estimatedTokens)
+      throw llmErr
+    }
+
+    // Reconcile: refund the overestimate, log actual debit
+    const overpay = estimatedTokens - tokensUsed
+    if (overpay > 0) await creditLib.refund(bot.orgId, overpay)
+
+    // Insert assistant message (flag if response signals uncertainty)
+    const [insertedMsg] = await db.insert(schema.messages).values({
       conversationId: conversation.id,
       role: 'assistant',
       content,
       tokensUsed,
       modelUsed,
-    })
+      flaggedUnanswered: flagIfUnanswered(content),
+    }).returning({ id: schema.messages.id })
 
-    // Increment message count
-    await db
-      .update(schema.conversations)
-      .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
-      .where(eq(schema.conversations.id, conversation.id))
+    // Log credit transaction (refId = messageId for idempotency)
+    await creditLib.logTransaction(bot.orgId, -tokensUsed, 'chat_debit', insertedMsg.id)
+
+    // Increment message count + conversation counter for org
+    await Promise.all([
+      db
+        .update(schema.conversations)
+        .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
+        .where(eq(schema.conversations.id, conversation.id)),
+      db
+        .update(schema.organizations)
+        .set({ conversationsThisMonth: sql`${schema.organizations.conversationsThisMonth} + 1` })
+        .where(eq(schema.organizations.id, bot.orgId)),
+    ])
 
     return NextResponse.json({ reply: content, conversationId: conversation.id })
   } catch (err) {
