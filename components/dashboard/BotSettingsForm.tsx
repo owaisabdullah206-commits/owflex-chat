@@ -20,6 +20,7 @@ interface BotSettingsFormProps {
     position: 'bottom-right' | 'bottom-left'
     welcomeMessage: string
     leadCaptureEnabled: boolean
+    strictMode: boolean
   }
 }
 
@@ -35,6 +36,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [position, setPosition] = useState(initial.position)
   const [welcomeMessage, setWelcomeMessage] = useState(initial.welcomeMessage)
   const [leadCaptureEnabled, setLeadCaptureEnabled] = useState(initial.leadCaptureEnabled)
+  const [strictMode, setStrictMode] = useState(initial.strictMode)
 
   const isFreePlan = orgPlan === 'free'
 
@@ -47,7 +49,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         name,
         systemPrompt,
         model: model as SupportedModel,
-        widgetConfig: { primaryColor, position, welcomeMessage, leadCaptureEnabled },
+        widgetConfig: { primaryColor, position, welcomeMessage, leadCaptureEnabled, strictMode },
       })
       if (result.error) {
         setError(result.error)
@@ -161,17 +163,35 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         </select>
       </div>
 
-      {/* Lead Capture Toggle */}
-      <div className="flex items-center justify-between py-2 border-t border-[var(--hairline)]">
-        <div>
-          <p className="text-sm text-[var(--ink)]">Lead Capture</p>
-          <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically</p>
+      {/* Toggles */}
+      <div className="border-t border-[var(--hairline)] divide-y divide-[var(--hairline)]">
+        {/* Lead Capture */}
+        <div className="flex items-center justify-between py-3">
+          <div>
+            <p className="text-sm text-[var(--ink)]">Lead Capture</p>
+            <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically</p>
+          </div>
+          <Switch
+            checked={leadCaptureEnabled}
+            onCheckedChange={setLeadCaptureEnabled}
+            disabled={isPending}
+          />
         </div>
-        <Switch
-          checked={leadCaptureEnabled}
-          onCheckedChange={setLeadCaptureEnabled}
-          disabled={isPending}
-        />
+
+        {/* Strict Mode */}
+        <div className="flex items-center justify-between py-3">
+          <div>
+            <p className="text-sm text-[var(--ink)]">Strict Mode</p>
+            <p className="text-xs text-[var(--ink-muted)]">
+              Bot refuses questions outside its knowledge base and says &ldquo;I don&apos;t know&rdquo;
+            </p>
+          </div>
+          <Switch
+            checked={strictMode}
+            onCheckedChange={setStrictMode}
+            disabled={isPending}
+          />
+        </div>
       </div>
 
       {/* Submit */}

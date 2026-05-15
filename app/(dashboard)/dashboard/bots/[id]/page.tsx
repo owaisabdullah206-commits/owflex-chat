@@ -234,6 +234,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                   position: (((bot.widgetConfig as { position?: string }) ?? {}).position as 'bottom-right' | 'bottom-left') ?? 'bottom-right',
                   welcomeMessage: ((bot.widgetConfig as { welcomeMessage?: string }) ?? {}).welcomeMessage ?? 'Hi! How can I help you today?',
                   leadCaptureEnabled: ((bot.widgetConfig as { leadCaptureEnabled?: boolean }) ?? {}).leadCaptureEnabled !== false,
+                  strictMode: ((bot.widgetConfig as { strictMode?: boolean }) ?? {}).strictMode === true,
                 }}
               />
             </div>

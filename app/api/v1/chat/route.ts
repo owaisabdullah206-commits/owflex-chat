@@ -136,12 +136,17 @@ export async function POST(req: NextRequest) {
       ? '--- Knowledge Base ---\n' + activeFaqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')
       : ''
 
-    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean }
+    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; strictMode?: boolean }
     const leadEnabled = wc.leadCaptureEnabled !== false
+    const strictMode = wc.strictMode === true
+    const strictInstructions = strictMode
+      ? 'STRICT MODE: Only answer questions directly related to your purpose, system prompt, and knowledge base above. For anything outside your knowledge, respond: "I\'m sorry, I don\'t have information about that. Please contact us directly for assistance."'
+      : ''
     const finalSystemPrompt = [
       platformPrompt,
       bot.systemPrompt,
       faqBlock,
+      strictInstructions,
       leadEnabled ? LEAD_INSTRUCTIONS : '',
     ].filter(Boolean).join('\n\n')
 

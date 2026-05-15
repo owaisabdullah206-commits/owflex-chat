@@ -17,6 +17,7 @@ const updateBotSchema = z.object({
     position:           z.enum(['bottom-right', 'bottom-left']).optional(),
     welcomeMessage:     z.string().max(200).optional(),
     leadCaptureEnabled: z.boolean().optional(),
+    strictMode:         z.boolean().optional(),
   }).optional(),
 })
 

@@ -1,7 +1,6 @@
 'use server'
 
 import { updateTag } from 'next/cache'
-import { unstable_cache } from 'next/cache'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { db, schema } from '@/lib/db'
@@ -121,17 +120,11 @@ export async function listFaqs(botId: string) {
     .orderBy(schema.botFaqs.createdAt)
 }
 
-// Used by chat route — cached per botId, invalidated on any FAQ mutation
-export async function getActiveFaqs(botId: string) {
-  return unstable_cache(
-    async () => {
-      return db
-        .select({ question: schema.botFaqs.question, answer: schema.botFaqs.answer })
-        .from(schema.botFaqs)
-        .where(and(eq(schema.botFaqs.botId, botId), eq(schema.botFaqs.isActive, true)))
-        .orderBy(schema.botFaqs.createdAt)
-    },
-    [`faq-${botId}`],
-    { tags: [`faq-${botId}`], revalidate: 300 },
-  )()
+// Used by chat route — direct DB query (no cache: FAQs must be fresh after save)
+export async function getActiveFaqs(botId: string): Promise<{ question: string; answer: string }[]> {
+  return db
+    .select({ question: schema.botFaqs.question, answer: schema.botFaqs.answer })
+    .from(schema.botFaqs)
+    .where(and(eq(schema.botFaqs.botId, botId), eq(schema.botFaqs.isActive, true)))
+    .orderBy(schema.botFaqs.createdAt)
 }

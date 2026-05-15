@@ -3,26 +3,32 @@ var sc=document.currentScript,k=sc&&sc.dataset&&sc.dataset.key;if(!k)return;
 var bu=(sc.src||"").replace("/embed.js","");
 var sid=sessionStorage.getItem("_of")||("owflex_"+Date.now()+"_"+Math.random().toString(36).slice(2,8));
 sessionStorage.setItem("_of",sid);
-var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,op=0,busy=0,started=0,lastMsg="";
+var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right",op=0,busy=0,started=0,lastMsg="";
 
 fetch(bu+"/api/v1/widget-config?key="+k)
   .then(function(r){return r.json();})
   .then(function(c){
     bn=c.botName||bn;pc=c.primaryColor||pc;
     wm=c.welcomeMessage||wm;lc=c.leadCaptureEnabled!==false;
+    pos=c.position||pos;
     go();
   })
   .catch(go);
 
 function go(){
+// Defer if body not yet available (e.g. script in <head> before DOMContentLoaded)
+if(!document.body){document.addEventListener("DOMContentLoaded",go);return;}
+var isLeft=pos==="bottom-left";
+var side=isLeft?"left":"right";
+var opp=isLeft?"right":"left";
 var css=
 ":root{--ofp:"+pc+"}"+
 
 /* ── Glow ring (separate z-layer, behind button) ── */
-"#obg{position:fixed;bottom:14px;right:14px;width:74px;height:74px;border-radius:50%;background:var(--ofp);z-index:2147483644;opacity:.3;filter:blur(16px);pointer-events:none;animation:ofPulse 2.5s ease-in-out infinite}"+
+"#obg{position:fixed;bottom:14px;"+side+":14px;"+opp+":auto;width:74px;height:74px;border-radius:50%;background:var(--ofp);z-index:2147483644;opacity:.3;filter:blur(16px);pointer-events:none;animation:ofPulse 2.5s ease-in-out infinite}"+
 
 /* ── Launch button ── */
-"#ob{position:fixed;bottom:24px;right:24px;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:var(--ofp);z-index:2147483646;box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ofFloat 3s ease-in-out infinite;transition:transform .15s,box-shadow .15s}"+
+"#ob{position:fixed;bottom:24px;"+side+":24px;"+opp+":auto;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:var(--ofp);z-index:2147483646;box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ofFloat 3s ease-in-out infinite;transition:transform .15s,box-shadow .15s}"+
 "#ob:hover{animation:none;transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,.3)}"+
 
 /* ── Button icons (swap with CSS) ── */
@@ -30,7 +36,7 @@ var css=
 ".obX{opacity:0;transform:rotate(-90deg) scale(.5)}"+
 
 /* ── Chat panel ── */
-"#oP{position:fixed;bottom:90px;right:20px;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:18px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom right;transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1)}"+
+"#oP{position:fixed;bottom:90px;"+side+":20px;"+opp+":auto;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:18px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom "+side+";transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1)}"+
 "#oP.h{opacity:0;transform:scale(0.88) translateY(16px);pointer-events:none}"+
 
 /* ── Header ── */
