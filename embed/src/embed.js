@@ -177,8 +177,11 @@ function captureLead(text){
   try{
     var d=JSON.parse(m[1]);
     if(d.name||d.email||d.phone){
+      var lp={embedKey:k,sessionId:sid};
+      if(d.name)lp.name=d.name;if(d.email)lp.email=d.email;
+      if(d.phone)lp.phone=d.phone;if(d.notes)lp.notes=d.notes;
       fetch(bu+"/api/v1/leads",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({embedKey:k,sessionId:sid,name:d.name||null,email:d.email||null,phone:d.phone||null,notes:d.notes||null})})
+        body:JSON.stringify(lp)})
       .then(function(r){
         var el=document.createElement("div");el.className="ok";
         if(r.ok){el.textContent="✓ Details saved";}

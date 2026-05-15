@@ -8,10 +8,10 @@ const bodySchema = z
   .object({
     embedKey: z.string().min(1),
     sessionId: z.string().min(1),
-    name: z.string().optional(),
-    email: z.string().email().optional(),
-    phone: z.string().optional(),
-    notes: z.string().optional(),
+    name: z.string().nullish(),
+    email: z.string().email().nullish(),
+    phone: z.string().nullish(),
+    notes: z.string().nullish(),
   })
   .refine((d) => d.name || d.email || d.phone, {
     message: 'At least one of name, email, or phone is required',
