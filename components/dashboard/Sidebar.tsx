@@ -1,13 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Bot, Users, Settings, LogOut } from 'lucide-react'
+import { Bot, Users, CreditCard, Settings, LogOut } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/dashboard/bots',     label: 'Bots',     icon: Bot },
   { href: '/dashboard/leads',    label: 'Leads',    icon: Users },
+  { href: '/dashboard/billing',  label: 'Billing',  icon: CreditCard },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 
@@ -21,7 +22,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 w-56 flex flex-col bg-[var(--surface)] border-r border-[var(--hairline)] z-20">
+    <aside className="hidden md:flex fixed inset-y-0 left-0 w-56 flex-col bg-[var(--surface)] border-r border-[var(--hairline)] z-20">
       {/* Logo */}
       <div className="flex items-center gap-2 h-14 px-4 border-b border-[var(--hairline)]">
         <div className="w-6 h-6 rounded bg-[var(--of-primary)] flex items-center justify-center shrink-0">

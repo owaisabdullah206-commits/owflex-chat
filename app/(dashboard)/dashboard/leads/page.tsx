@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { MobileNav } from '@/components/dashboard/MobileNav'
 import { LeadsTable } from '@/components/dashboard/LeadsTable'
 
 export default async function LeadsPage() {
@@ -34,13 +35,13 @@ export default async function LeadsPage() {
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
-      <main className="flex-1 ml-56">
-        <div className="px-8 py-5 border-b border-[var(--hairline)]">
+      <main className="flex-1 md:ml-56 pb-16 md:pb-0">
+        <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <h1 className="text-lg font-semibold text-[var(--ink)]">Leads</h1>
           <p className="text-sm text-[var(--ink-muted)] mt-0.5">All leads captured across your bots</p>
         </div>
 
-        <div className="px-8 py-6">
+        <div className="px-4 sm:px-8 py-6 overflow-x-auto">
           {leads.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
               <h2 className="text-base font-semibold text-[var(--ink)] mb-1">No leads yet</h2>
@@ -53,6 +54,7 @@ export default async function LeadsPage() {
           )}
         </div>
       </main>
+      <MobileNav />
     </div>
   )
 }

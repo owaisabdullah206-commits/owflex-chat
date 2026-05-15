@@ -3,7 +3,9 @@ import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { checkBotLimit } from '@/lib/limits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { MobileNav } from '@/components/dashboard/MobileNav'
 import { NewBotForm } from '@/components/dashboard/NewBotForm'
+import { BotPreview } from '@/components/dashboard/BotPreview'
 
 export default async function NewBotPage() {
   const user = await requireDeveloper()
@@ -19,34 +21,42 @@ export default async function NewBotPage() {
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
-      <main className="flex-1 ml-56">
-        <div className="px-8 py-5 border-b border-[var(--hairline)]">
+      <main className="flex-1 md:ml-56 pb-16 md:pb-0">
+        <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <h1 className="text-lg font-semibold text-[var(--ink)]">Create a new bot</h1>
           <p className="text-sm text-[var(--ink-muted)] mt-0.5">
             Set up your bot and get an embed script
           </p>
         </div>
 
-        <div className="px-8 py-8 max-w-xl">
+        <div className="px-4 sm:px-8 py-8">
           {atLimit ? (
-            <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] px-6 py-8 text-center">
+            <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] px-6 py-8 text-center max-w-xl">
               <p className="text-sm font-medium text-[var(--ink)] mb-2">Bot limit reached</p>
               <p className="text-xs text-[var(--ink-muted)] mb-4">
                 Your {org?.plan ?? 'free'} plan allows a limited number of bots.
                 Upgrade your plan to create more.
               </p>
               <a
-                href="/dashboard/settings"
+                href="/dashboard/billing"
                 className="inline-flex items-center px-4 py-2 rounded bg-[var(--of-primary)] text-white text-sm hover:opacity-90 transition-opacity"
               >
                 Upgrade Plan
               </a>
             </div>
           ) : (
-            <NewBotForm />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl">
+              <div>
+                <NewBotForm />
+              </div>
+              <div className="hidden lg:block">
+                <BotPreview />
+              </div>
+            </div>
           )}
         </div>
       </main>
+      <MobileNav />
     </div>
   )
 }

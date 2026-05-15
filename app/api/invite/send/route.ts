@@ -79,7 +79,19 @@ export async function POST(req: NextRequest) {
   const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? 'http://localhost:3000'
   const inviteUrl = `${portalUrl}/portal/invite?token=${token}`
 
-  await sendClientInvitation({ clientEmail, botName: bot.name, inviteUrl })
+  let emailSent = false
+  try {
+    const result = await sendClientInvitation({ clientEmail, botName: bot.name, inviteUrl })
+    emailSent = result.sent
+  } catch (err) {
+    console.error('Invitation email failed (non-blocking):', err)
+  }
 
-  return NextResponse.json({ success: true, message: `Invitation sent to ${clientEmail}` })
+  return NextResponse.json({
+    success: true,
+    emailSent,
+    message: emailSent
+      ? `Invitation sent to ${clientEmail}`
+      : `Invite link created. Email delivery failed — share the invite link manually.`,
+  })
 }

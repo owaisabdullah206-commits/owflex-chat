@@ -2,7 +2,7 @@ import Link from 'next/link'
 import {
   Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
 } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
+import { BotToggle } from '@/components/dashboard/BotToggle'
 
 interface Bot {
   id: string
@@ -55,9 +55,7 @@ export function BotTable({ bots }: BotTableProps) {
                 {formatDate(bot.createdAt)}
               </TableCell>
               <TableCell>
-                <Badge variant={bot.isActive ? 'default' : 'secondary'}>
-                  {bot.isActive ? 'Active' : 'Inactive'}
-                </Badge>
+                <BotToggle botId={bot.id} initialActive={bot.isActive} />
               </TableCell>
               <TableCell>
                 <span

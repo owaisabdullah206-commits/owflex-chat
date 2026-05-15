@@ -1,9 +1,8 @@
-import { desc, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
-import { getBalance } from '@/lib/credits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
-import { CreditBalance } from '@/components/dashboard/CreditBalance'
+import { MobileNav } from '@/components/dashboard/MobileNav'
 
 export default async function SettingsPage() {
   const user = await requireDeveloper()
@@ -14,34 +13,15 @@ export default async function SettingsPage() {
     .where(eq(schema.organizations.ownerId, user.id))
     .limit(1)
 
-  const [balance, transactions] = await Promise.all([
-    org ? getBalance(org.id) : Promise.resolve(0),
-    org
-      ? db
-          .select({
-            id:        schema.creditTransactions.id,
-            delta:     schema.creditTransactions.delta,
-            reason:    schema.creditTransactions.reason,
-            createdAt: schema.creditTransactions.createdAt,
-          })
-          .from(schema.creditTransactions)
-          .where(eq(schema.creditTransactions.orgId, org.id))
-          .orderBy(desc(schema.creditTransactions.createdAt))
-          .limit(10)
-      : Promise.resolve([]),
-  ])
-
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
-      <main className="flex-1 ml-56">
-        <div className="px-8 py-5 border-b border-[var(--hairline)]">
+      <main className="flex-1 md:ml-56 pb-16 md:pb-0">
+        <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <h1 className="text-lg font-semibold text-[var(--ink)]">Settings</h1>
           <p className="text-sm text-[var(--ink-muted)] mt-0.5">Account and workspace preferences</p>
         </div>
-        <div className="px-8 py-6 space-y-8">
+        <div className="px-4 sm:px-8 py-6 space-y-8">
           {/* Account info */}
           <div>
             <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Account</h2>
@@ -63,15 +43,19 @@ export default async function SettingsPage() {
             </div>
           </div>
 
-          {/* Credits */}
-          {org && (
-            <div>
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Credits</h2>
-              <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
-            </div>
-          )}
+          {/* Credits link */}
+          <div>
+            <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Billing</h2>
+            <a
+              href="/dashboard/billing"
+              className="inline-flex items-center gap-2 text-sm text-[var(--of-primary-text-dark)] hover:underline"
+            >
+              View credit balance and purchase credits →
+            </a>
+          </div>
         </div>
       </main>
+      <MobileNav />
     </div>
   )
 }

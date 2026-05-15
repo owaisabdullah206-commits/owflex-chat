@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { MobileNav } from '@/components/dashboard/MobileNav'
 import { BotTable } from '@/components/dashboard/BotTable'
 import { Button } from '@/components/ui/button'
 import { Bot } from 'lucide-react'
@@ -25,8 +26,8 @@ export default async function BotsPage() {
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
-      <main className="flex-1 ml-56">
-        <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--hairline)]">
+      <main className="flex-1 md:ml-56 pb-16 md:pb-0">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <div>
             <h1 className="text-lg font-semibold text-[var(--ink)]">Bots</h1>
             <p className="text-sm text-[var(--ink-muted)] mt-0.5">Manage your AI chatbots</p>
@@ -37,7 +38,7 @@ export default async function BotsPage() {
         </div>
 
         {userBots.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] px-8">
+          <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 sm:px-8">
             <div className="w-12 h-12 rounded-xl bg-[var(--surface-2)] border border-[var(--hairline)] flex items-center justify-center mb-4">
               <Bot className="h-6 w-6 text-[var(--ink-muted)]" />
             </div>
@@ -50,11 +51,12 @@ export default async function BotsPage() {
             </Button>
           </div>
         ) : (
-          <div className="px-8 py-6">
+          <div className="px-4 sm:px-8 py-6 overflow-x-auto">
             <BotTable bots={userBots} />
           </div>
         )}
       </main>
+      <MobileNav />
     </div>
   )
 }

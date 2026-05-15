@@ -1,9 +1,14 @@
 import { notFound } from 'next/navigation'
 import { and, count, desc, eq, gte } from 'drizzle-orm'
+import { ChevronLeft } from 'lucide-react'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { listFaqs } from '@/lib/db/queries/faqs'
+import { Suspense } from 'react'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { MobileNav } from '@/components/dashboard/MobileNav'
+import { OnboardingBanner } from '@/components/dashboard/OnboardingBanner'
+import { QuickActionsPanel } from '@/components/dashboard/QuickActionsPanel'
 import { EmbedCodeBlock } from '@/components/dashboard/EmbedCodeBlock'
 import { InviteClientDialog } from '@/components/dashboard/InviteClientDialog'
 import { StatCard } from '@/components/dashboard/StatCard'
@@ -113,15 +118,16 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     <div className="flex min-h-screen bg-[var(--bg)]">
       <AutoRefresh intervalMs={30_000} />
       <Sidebar />
-      <main className="flex-1 ml-56">
+      <main className="flex-1 md:ml-56 pb-16 md:pb-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-8 py-5 border-b border-[var(--hairline)]">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <div className="flex items-center gap-3 flex-1">
             <a
               href="/dashboard/bots"
-              className="text-sm text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
+              className="inline-flex items-center gap-1 text-sm text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
             >
-              ← Bots
+              <ChevronLeft className="h-4 w-4" />
+              Bots
             </a>
             <span className="text-[var(--hairline-md)]">/</span>
             <h1 className="text-lg font-semibold text-[var(--ink)]">{bot.name}</h1>
@@ -133,8 +139,13 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           </div>
         </div>
 
+        {/* Onboarding banner */}
+        <Suspense fallback={null}>
+          <OnboardingBanner botId={bot.id} />
+        </Suspense>
+
         {/* Tab nav */}
-        <div className="flex gap-1 px-8 border-b border-[var(--hairline)]">
+        <div className="flex gap-1 px-4 sm:px-8 border-b border-[var(--hairline)] overflow-x-auto">
           {TABS.map((t) => {
             const slug = t.toLowerCase()
             const isActive = activeTab === slug
@@ -155,47 +166,55 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         </div>
 
         {/* Tab content */}
-        <div className="px-8 py-6">
+        <div className="px-4 sm:px-8 py-6">
           {activeTab === 'overview' && (
-            <div className="space-y-6 max-w-2xl">
-              {/* Live stats */}
-              <div className="grid grid-cols-3 gap-4">
-                <StatCard label="Conversations this month" value={convMonthCount[0]?.count ?? 0} />
-                <StatCard label="Leads this month" value={leadsMonthCount[0]?.count ?? 0} />
-                <StatCard label="Conversations this week" value={convWeekCount[0]?.count ?? 0} />
-              </div>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              {/* Left column */}
+              <div className="xl:col-span-2 space-y-6">
+                {/* Live stats */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <StatCard label="Conversations this month" value={convMonthCount[0]?.count ?? 0} />
+                  <StatCard label="Leads this month" value={leadsMonthCount[0]?.count ?? 0} />
+                  <StatCard label="Conversations this week" value={convWeekCount[0]?.count ?? 0} />
+                </div>
 
-              {/* Embed code */}
-              <div>
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Embed Script</h2>
-                <EmbedCodeBlock embedKey={bot.embedKey} />
-                <p className="text-xs text-[var(--ink-muted)] mt-2">
-                  Paste this script before the closing{' '}
-                  <code style={{ fontFamily: 'var(--font-mono)' }} className="px-1 py-0.5 rounded bg-[var(--surface-2)]">
-                    {'</body>'}
-                  </code>{' '}
-                  tag of any website.
-                </p>
-              </div>
-
-              {/* Bot details */}
-              <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1">Embed Key</p>
-                  <p className="text-sm text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                    {bot.embedKey}
+                {/* Embed code */}
+                <div>
+                  <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Embed Script</h2>
+                  <EmbedCodeBlock embedKey={bot.embedKey} />
+                  <p className="text-xs text-[var(--ink-muted)] mt-2">
+                    Paste this script before the closing{' '}
+                    <code style={{ fontFamily: 'var(--font-mono)' }} className="px-1 py-0.5 rounded bg-[var(--surface-2)]">
+                      {'</body>'}
+                    </code>{' '}
+                    tag of any website.
                   </p>
                 </div>
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1">Model</p>
-                  <p className="text-sm text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                    {bot.model}
-                  </p>
+
+                {/* Bot details */}
+                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
+                  <div className="px-5 py-4">
+                    <p className="text-xs text-[var(--ink-muted)] mb-1">Embed Key</p>
+                    <p className="text-sm text-[var(--ink)] break-all" style={{ fontFamily: 'var(--font-mono)' }}>
+                      {bot.embedKey}
+                    </p>
+                  </div>
+                  <div className="px-5 py-4">
+                    <p className="text-xs text-[var(--ink-muted)] mb-1">Model</p>
+                    <p className="text-sm text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                      {bot.model}
+                    </p>
+                  </div>
+                  <div className="px-5 py-4">
+                    <p className="text-xs text-[var(--ink-muted)] mb-1">System Prompt</p>
+                    <p className="text-sm text-[var(--ink)] whitespace-pre-wrap">{bot.systemPrompt}</p>
+                  </div>
                 </div>
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1">System Prompt</p>
-                  <p className="text-sm text-[var(--ink)] whitespace-pre-wrap">{bot.systemPrompt}</p>
-                </div>
+              </div>
+
+              {/* Right column — quick actions */}
+              <div className="hidden xl:block">
+                <QuickActionsPanel botId={bot.id} />
               </div>
             </div>
           )}
@@ -265,6 +284,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
         </div>
       </main>
+      <MobileNav />
     </div>
   )
 }

@@ -21,7 +21,7 @@ function PackRow({ packId, appUrl }: { packId: PackId; appUrl: string }) {
     : `${(pack.tokens / 1000).toFixed(0)}k tokens`
 
   const pfNotifyUrl = `${appUrl}/api/webhooks/payfast`
-  const pfReturnUrl = `${appUrl}/dashboard/settings`
+  const pfReturnUrl = `${appUrl}/dashboard/billing`
 
   return (
     <div className="flex items-center justify-between py-3 px-5">

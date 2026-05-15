@@ -133,5 +133,5 @@ export async function createBot(
     .returning({ id: schema.bots.id })
 
   revalidatePath('/dashboard/bots')
-  redirect(`/dashboard/bots/${newBot.id}`)
+  redirect(`/dashboard/bots/${newBot.id}?onboarding=1`)
 }
