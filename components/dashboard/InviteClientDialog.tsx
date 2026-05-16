@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { Copy, Check, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,7 +14,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { UserPlus } from 'lucide-react'
 
 interface InviteClientDialogProps {
   botId: string
@@ -25,6 +25,25 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    if (!inviteUrl) return
+    navigator.clipboard.writeText(inviteUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  function handleClose(next: boolean) {
+    setOpen(next)
+    if (!next) {
+      setEmail('')
+      setError('')
+      setInviteUrl(null)
+      setCopied(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -44,21 +63,26 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
         setError('An active invitation has already been sent to this email.')
         return
       }
-
       if (res.status === 403) {
         setError('Access denied.')
         return
       }
-
       if (!res.ok) {
         setError(data.error ?? 'Something went wrong. Please try again.')
         return
       }
 
-      toast.success('Invitation sent!')
-      setEmail('')
-      setOpen(false)
-      router.refresh()
+      if (data.emailSent) {
+        toast.success('Invitation sent!')
+        setEmail('')
+        setOpen(false)
+        router.refresh()
+      } else {
+        // Email delivery failed (Resend sandbox limitation — only delivers to account owner).
+        // Show the invite link so the developer can share it manually.
+        setInviteUrl(data.inviteUrl ?? null)
+        router.refresh()
+      }
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -67,7 +91,7 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogTrigger asChild>
         <Button variant="secondary" size="sm" className="gap-2">
           <UserPlus className="h-4 w-4" />
@@ -80,46 +104,82 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
           <DialogTitle className="text-[var(--ink)]">Invite a client</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-          <div className="space-y-2">
-            <Label htmlFor="clientEmail" className="text-sm font-medium text-[var(--ink)]">
-              Client email
-            </Label>
+        {inviteUrl ? (
+          <div className="space-y-4 pt-2">
+            <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-4 py-3">
+              <p className="text-sm font-medium text-amber-400 mb-1">Email delivery failed</p>
+              <p className="text-xs text-[var(--ink-muted)]">
+                Your Resend account is in sandbox mode and can only deliver to your own email.
+                Share this invite link directly with the client:
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <input
+                readOnly
+                value={inviteUrl}
+                className="flex-1 text-xs bg-[var(--surface-2)] border border-[var(--hairline)] rounded-md px-3 py-2 text-[var(--ink-muted)] truncate"
+              />
+              <button
+                onClick={handleCopy}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium bg-[var(--surface-2)] border border-[var(--hairline)] text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors cursor-pointer"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
             <p className="text-xs text-[var(--ink-muted)]">
-              They&apos;ll receive an email with a link to set up their account and view this bot&apos;s dashboard.
+              To send real emails, verify your domain in the{' '}
+              <span className="text-[var(--ink)]">Resend dashboard</span> and update{' '}
+              <code className="text-xs bg-[var(--surface-2)] px-1 rounded">RESEND_FROM_EMAIL</code>.
             </p>
-            <Input
-              id="clientEmail"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="client@example.com"
-              required
-              className="bg-[var(--surface-2)] border-[var(--hairline-md)] text-[var(--ink)]
-                placeholder:text-[var(--ink-subtle)] focus-visible:ring-[var(--of-primary)]"
-            />
+            <div className="flex justify-end">
+              <Button variant="ghost" onClick={() => handleClose(false)}>
+                Done
+              </Button>
+            </div>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Label htmlFor="clientEmail" className="text-sm font-medium text-[var(--ink)]">
+                Client email
+              </Label>
+              <p className="text-xs text-[var(--ink-muted)]">
+                They&apos;ll receive an email with a link to set up their account and view this bot&apos;s dashboard.
+              </p>
+              <Input
+                id="clientEmail"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="client@example.com"
+                required
+                className="bg-[var(--surface-2)] border-[var(--hairline-md)] text-[var(--ink)]
+                  placeholder:text-[var(--ink-subtle)] focus-visible:ring-[var(--of-primary)]"
+              />
+            </div>
 
-          {error && (
-            <p className="text-sm text-[var(--of-error-dark)] bg-[var(--of-error-soft)] px-3 py-2 rounded-lg">
-              {error}
-            </p>
-          )}
+            {error && (
+              <p className="text-sm text-[var(--of-error-dark)] bg-[var(--of-error-soft)] px-3 py-2 rounded-lg">
+                {error}
+              </p>
+            )}
 
-          <div className="flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => { setOpen(false); setError(''); setEmail('') }}
-              disabled={pending}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={pending || !email}>
-              {pending ? 'Sending…' : 'Send Invitation'}
-            </Button>
-          </div>
-        </form>
+            <div className="flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => handleClose(false)}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={pending || !email}>
+                {pending ? 'Sending…' : 'Send Invitation'}
+              </Button>
+            </div>
+          </form>
+        )}
       </DialogContent>
     </Dialog>
   )

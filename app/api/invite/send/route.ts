@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     success: true,
     emailSent,
+    inviteUrl,
     message: emailSent
       ? `Invitation sent to ${clientEmail}`
       : `Invite link created. Email delivery failed — share the invite link manually.`,

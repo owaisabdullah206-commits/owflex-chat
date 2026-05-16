@@ -52,28 +52,44 @@ function InviteContent() {
     setPending(true)
 
     try {
+      // Step 1: Create account client-side — this ensures the accounts table
+      // entry is created correctly so BetterAuth can verify credentials at login.
+      const signUpResult = await authClient.signUp.email({
+        email,
+        password,
+        name: email.split('@')[0],
+      })
+
+      if (signUpResult.error) {
+        const msg = signUpResult.error.message ?? ''
+        const isExists = signUpResult.error.status === 422 ||
+          msg.toLowerCase().includes('already') ||
+          msg.toLowerCase().includes('exists')
+
+        if (isExists) {
+          setError('An account already exists with this email. Please sign in at the portal login page.')
+        } else {
+          setError(msg || 'Account creation failed. Please try again.')
+        }
+        return
+      }
+
+      // Step 2: Mark invite as accepted, set role=client, assign bot
       const res = await fetch('/api/invite/accept', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ token }),
       })
 
       const data = await res.json()
-
       if (!res.ok) {
         setError(data.error ?? 'Something went wrong. Please try again.')
         return
       }
 
-      // Sign in the newly created account
-      const signInResult = await authClient.signIn.email({ email, password })
-
-      if (signInResult?.error) {
-        // Account created but auto sign-in failed — redirect to login
-        setState('success')
-        setTimeout(() => router.push('/portal/login'), 1500)
-        return
-      }
+      // Step 3: Fresh sign-in to get a session with role=client (signUp
+      // session has role=developer until the accept route updates it).
+      await authClient.signIn.email({ email, password })
 
       setState('success')
       router.push('/portal')

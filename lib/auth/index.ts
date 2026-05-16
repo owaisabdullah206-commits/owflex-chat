@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
 
@@ -44,7 +45,16 @@ export const auth = betterAuth({
       create: {
         after: async (user) => {
           const u = user as { id: string; name?: string | null; email: string; role?: string }
-          if (!u.role || u.role === 'developer') {
+          if (u.role && u.role !== 'developer') return
+
+          // Don't create an org if this email has a pending invite (they're a client).
+          const [pendingInvite] = await db
+            .select({ id: schema.invitations.id })
+            .from(schema.invitations)
+            .where(eq(schema.invitations.email, u.email))
+            .limit(1)
+
+          if (!pendingInvite) {
             await db.insert(schema.organizations).values({
               ownerId: u.id,
               name: `${u.name ?? u.email.split('@')[0]}'s Workspace`,
