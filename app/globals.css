@@ -100,6 +100,9 @@
   --bg-soft:         #F4F4F5;
   --surface:         #FFFFFF;
   --surface-raised:  #F4F4F5;
+  --surface-2:       #F4F4F5;
+  --surface-3:       #EEEEEE;
+  --surface-4:       #E4E4E7;
   --ink:             #171717;
   --ink-secondary:   #212121;
   --ink-muted:       #52525B;
@@ -122,6 +125,9 @@
   --bg-soft:         #1A1A1A;
   --surface:         #1A1A1A;
   --surface-raised:  #242424;
+  --surface-2:       #242424;
+  --surface-3:       #2A2A2A;
+  --surface-4:       #333333;
   --ink:             #F5F5F5;
   --ink-secondary:   #EEEEEE;
   --ink-muted:       #A1A1AA;
