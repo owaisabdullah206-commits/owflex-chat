@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
 
   // Find the user who just signed up with this email
   const [user] = await db
-    .select({ id: schema.users.id })
+    .select({ id: schema.users.id, role: schema.users.role })
     .from(schema.users)
     .where(eq(schema.users.email, invitation.email))
     .limit(1)
@@ -86,10 +86,16 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  // Update role + email verified, mark invite used, assign bot — all in parallel
+  // Developers testing with their own email keep their developer role so the
+  // dashboard stays accessible — requireClient() lets them through because they
+  // have a bot assigned. Real clients always get role=client.
+  const userUpdates = user.role === 'developer'
+    ? { emailVerified: true }
+    : { role: 'client' as const, emailVerified: true }
+
   await Promise.all([
     db.update(schema.users)
-      .set({ role: 'client', emailVerified: true })
+      .set(userUpdates)
       .where(eq(schema.users.id, user.id)),
     db.update(schema.invitations)
       .set({ usedAt: new Date() })

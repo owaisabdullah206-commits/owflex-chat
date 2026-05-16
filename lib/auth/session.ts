@@ -24,8 +24,20 @@ export async function requireClient() {
     .limit(1)
 
   if (!dbUser) redirect('/portal/login')
-  if (dbUser.role !== 'client') redirect('/portal/login?error=not-client')
-  return session.user
+  if (dbUser.role === 'client') return session.user
+
+  // Developers who invited themselves for testing keep role=developer but still
+  // have a bot assigned to them — grant portal access so the dashboard stays intact.
+  if (dbUser.role === 'developer') {
+    const [assignedBot] = await db
+      .select({ id: schema.bots.id })
+      .from(schema.bots)
+      .where(eq(schema.bots.clientUserId, session.user.id))
+      .limit(1)
+    if (assignedBot) return session.user
+  }
+
+  redirect('/portal/login?error=not-client')
 }
 
 export async function getSession() {

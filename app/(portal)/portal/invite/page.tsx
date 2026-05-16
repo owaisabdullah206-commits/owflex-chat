@@ -136,8 +136,8 @@ function InviteContent() {
         return
       }
 
-      // Step 3: Sign out the signUp session (cached as role=developer), then
-      // sign in fresh so the cookie cache is rebuilt with role=client from DB.
+      // Step 3: Sign out then sign in fresh — clears the cookie cache so
+      // requireClient() sees the updated role/assignment on the next page load.
       await authClient.signOut()
       await authClient.signIn.email({ email, password })
 
