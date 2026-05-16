@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { STRONG_MODEL } from '@/lib/ai/litellm'
 
-const FREE_TIER_CREDITS = 50_000
+export const FREE_TIER_CREDITS = 50_000
 
 function getRedis(): Redis {
   return new Redis({

@@ -1,6 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
+import { PLAN_LIMITS } from '@/lib/limits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { BotTable } from '@/components/dashboard/BotTable'
@@ -10,20 +11,32 @@ import { Bot } from 'lucide-react'
 export default async function BotsPage() {
   const user = await requireDeveloper()
 
-  const userBots = await db
-    .select({
-      id: schema.bots.id,
-      name: schema.bots.name,
-      embedKey: schema.bots.embedKey,
-      isActive: schema.bots.isActive,
-      createdAt: schema.bots.createdAt,
-      clientEmail: schema.users.email,
-    })
-    .from(schema.bots)
-    .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
-    .leftJoin(schema.users, eq(schema.bots.clientUserId, schema.users.id))
-    .where(eq(schema.organizations.ownerId, user.id))
-    .orderBy(desc(schema.bots.createdAt))
+  const [org, userBots] = await Promise.all([
+    db
+      .select({ plan: schema.organizations.plan })
+      .from(schema.organizations)
+      .where(eq(schema.organizations.ownerId, user.id))
+      .limit(1)
+      .then((r) => r[0] ?? null),
+    db
+      .select({
+        id: schema.bots.id,
+        name: schema.bots.name,
+        embedKey: schema.bots.embedKey,
+        isActive: schema.bots.isActive,
+        createdAt: schema.bots.createdAt,
+        clientEmail: schema.users.email,
+      })
+      .from(schema.bots)
+      .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+      .leftJoin(schema.users, eq(schema.bots.clientUserId, schema.users.id))
+      .where(eq(schema.organizations.ownerId, user.id))
+      .orderBy(desc(schema.bots.createdAt)),
+  ])
+
+  const planKey = ((org?.plan ?? 'free') in PLAN_LIMITS ? org?.plan ?? 'free' : 'free') as keyof typeof PLAN_LIMITS
+  const botLimit = PLAN_LIMITS[planKey].bots
+  const atLimit = botLimit !== Infinity && userBots.length >= botLimit
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -34,9 +47,20 @@ export default async function BotsPage() {
             <h1 className="text-lg font-semibold text-[var(--ink)]">Bots</h1>
             <p className="text-sm text-[var(--ink-muted)] mt-0.5">Manage your AI chatbots</p>
           </div>
-          <Button asChild>
-            <a href="/dashboard/bots/new">Create bot</a>
-          </Button>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+              {userBots.length}/{botLimit === Infinity ? '∞' : botLimit} bots
+            </span>
+            {atLimit ? (
+              <Button disabled title="Upgrade your plan to add more bots">
+                Create bot
+              </Button>
+            ) : (
+              <Button asChild>
+                <a href="/dashboard/bots/new">Create bot</a>
+              </Button>
+            )}
+          </div>
         </div>
 
         {userBots.length === 0 ? (

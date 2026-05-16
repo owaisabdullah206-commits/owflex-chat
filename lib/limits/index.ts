@@ -2,10 +2,10 @@ import { and, count, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
 export const PLAN_LIMITS = {
-  free:    { bots: 1,        conversations: 100,     leads: 10,        docs: 5,         crawlPages: 10,       storageMb: 50      },
-  starter: { bots: 3,        conversations: 2_000,   leads: 500,       docs: 50,        crawlPages: 100,      storageMb: 500     },
-  pro:     { bots: 10,       conversations: 10_000,  leads: 2_000,     docs: 200,       crawlPages: 500,      storageMb: 5_120   },
-  agency:  { bots: Infinity, conversations: Infinity, leads: Infinity,  docs: Infinity,  crawlPages: Infinity, storageMb: 10_240  },
+  free:    { bots: 1,  conversations: 200,    leads: 50,        docs: 5,   crawlPages: 10,   storageMb: 5    },
+  starter: { bots: 2,  conversations: 2_000,  leads: Infinity,  docs: 20,  crawlPages: 50,   storageMb: 25   },
+  pro:     { bots: 5,  conversations: 10_000, leads: Infinity,  docs: 75,  crawlPages: 200,  storageMb: 100  },
+  agency:  { bots: 20, conversations: 50_000, leads: Infinity,  docs: 500, crawlPages: 1000, storageMb: 500  },
 } as const
 
 type Plan = keyof typeof PLAN_LIMITS

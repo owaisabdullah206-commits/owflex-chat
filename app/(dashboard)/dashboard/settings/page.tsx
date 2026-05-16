@@ -4,6 +4,7 @@ import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { SignOutButton } from '@/components/dashboard/SignOutButton'
+import { EditableName } from '@/components/dashboard/EditableName'
 
 export default async function SettingsPage() {
   const user = await requireDeveloper()
@@ -28,8 +29,8 @@ export default async function SettingsPage() {
             <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Account</h2>
             <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)] max-w-xl">
               <div className="px-5 py-4">
-                <p className="text-xs text-[var(--ink-muted)] mb-1">Name</p>
-                <p className="text-sm text-[var(--ink)]">{user.name}</p>
+                <p className="text-xs text-[var(--ink-muted)] mb-1.5">Name</p>
+                <EditableName name={user.name} />
               </div>
               <div className="px-5 py-4">
                 <p className="text-xs text-[var(--ink-muted)] mb-1">Email</p>
