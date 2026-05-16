@@ -67,11 +67,19 @@ function InviteContent() {
           msg.toLowerCase().includes('exists')
 
         if (isExists) {
-          setError('An account already exists with this email. Please sign in at the portal login page.')
+          // Account already exists — try signing in with the provided credentials.
+          // This handles sandbox testing (developer using their own email) and
+          // partial-completion recovery (account created but invite not yet accepted).
+          const signInResult = await authClient.signIn.email({ email, password })
+          if (signInResult.error) {
+            setError('An account already exists with this email. Check your password or sign in at /portal/login.')
+            return
+          }
+          // Signed in — fall through to invite acceptance below.
         } else {
           setError(msg || 'Account creation failed. Please try again.')
+          return
         }
-        return
       }
 
       // Step 2: Mark invite as accepted, set role=client, assign bot
