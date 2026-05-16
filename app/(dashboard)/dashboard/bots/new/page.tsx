@@ -45,11 +45,11 @@ export default async function NewBotPage() {
               </a>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
               <div>
                 <NewBotForm />
               </div>
-              <div className="hidden lg:block">
+              <div>
                 <BotPreview />
               </div>
             </div>

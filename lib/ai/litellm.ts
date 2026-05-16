@@ -1,3 +1,6 @@
+export const CLASSIFIER_MODEL = 'deepseek/deepseek-v4-flash'
+export const STRONG_MODEL = 'anthropic/claude-haiku-4-5-20251001'
+
 export const SUPPORTED_MODELS = [
   'deepseek/deepseek-v4-flash',
   'gemini/gemini-2.0-flash',

@@ -16,12 +16,15 @@ import { ConversationTable } from '@/components/dashboard/ConversationTable'
 import { LeadsTable } from '@/components/dashboard/LeadsTable'
 import { BotSettingsForm } from '@/components/dashboard/BotSettingsForm'
 import { BotToggle } from '@/components/dashboard/BotToggle'
+import { DeleteBotButton } from '@/components/dashboard/DeleteBotButton'
 import { FaqEditor } from '@/components/dashboard/FaqEditor'
 import { UnansweredList } from '@/components/dashboard/UnansweredList'
+import { DocumentsTab } from '@/components/dashboard/DocumentsTab'
+import { SmartRoutingToggle } from '@/components/dashboard/SmartRoutingToggle'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 
-const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base', 'Unanswered'] as const
+const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
@@ -44,7 +47,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       createdAt: schema.bots.createdAt,
       clientUserId: schema.bots.clientUserId,
       widgetConfig: schema.bots.widgetConfig,
+      orgId: schema.bots.orgId,
       orgPlan: schema.organizations.plan,
+      smartRoutingEnabled: schema.bots.smartRoutingEnabled,
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -136,6 +141,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           <div className="flex items-center gap-2">
             <RefreshButton />
             <InviteClientDialog botId={bot.id} />
+            <DeleteBotButton botId={bot.id} botName={bot.name} />
           </div>
         </div>
 
@@ -244,22 +250,31 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'settings' && (
-            <div>
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-5">Bot Settings</h2>
-              <BotSettingsForm
-                botId={bot.id}
-                orgPlan={bot.orgPlan}
-                initial={{
-                  name: bot.name,
-                  systemPrompt: bot.systemPrompt,
-                  model: bot.model,
-                  primaryColor: ((bot.widgetConfig as { primaryColor?: string }) ?? {}).primaryColor ?? '#0EA5E9',
-                  position: (((bot.widgetConfig as { position?: string }) ?? {}).position as 'bottom-right' | 'bottom-left') ?? 'bottom-right',
-                  welcomeMessage: ((bot.widgetConfig as { welcomeMessage?: string }) ?? {}).welcomeMessage ?? 'Hi! How can I help you today?',
-                  leadCaptureEnabled: ((bot.widgetConfig as { leadCaptureEnabled?: boolean }) ?? {}).leadCaptureEnabled !== false,
-                  strictMode: ((bot.widgetConfig as { strictMode?: boolean }) ?? {}).strictMode === true,
-                }}
-              />
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-sm font-semibold text-[var(--ink)] mb-5">Bot Settings</h2>
+                <BotSettingsForm
+                  botId={bot.id}
+                  orgPlan={bot.orgPlan}
+                  initial={{
+                    name: bot.name,
+                    systemPrompt: bot.systemPrompt,
+                    model: bot.model,
+                    primaryColor: ((bot.widgetConfig as { primaryColor?: string }) ?? {}).primaryColor ?? '#0EA5E9',
+                    position: (((bot.widgetConfig as { position?: string }) ?? {}).position as 'bottom-right' | 'bottom-left') ?? 'bottom-right',
+                    welcomeMessage: ((bot.widgetConfig as { welcomeMessage?: string }) ?? {}).welcomeMessage ?? 'Hi! How can I help you today?',
+                    leadCaptureEnabled: ((bot.widgetConfig as { leadCaptureEnabled?: boolean }) ?? {}).leadCaptureEnabled !== false,
+                    strictMode: ((bot.widgetConfig as { strictMode?: boolean }) ?? {}).strictMode === true,
+                  }}
+                />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Smart Routing</h2>
+                <p className="text-xs text-[var(--ink-muted)] mb-4">
+                  Classifies each message and routes complex questions to a stronger model, reducing average credit cost on mixed traffic.
+                </p>
+                <SmartRoutingToggle botId={bot.id} initialEnabled={bot.smartRoutingEnabled} />
+              </div>
             </div>
           )}
 
@@ -270,6 +285,16 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 Active entries are injected into the bot&apos;s system prompt on every chat. Changes apply within 5 minutes.
               </p>
               <FaqEditor botId={bot.id} initialFaqs={faqs} />
+            </div>
+          )}
+
+          {activeTab === 'documents' && (
+            <div>
+              <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Documents</h2>
+              <p className="text-xs text-[var(--ink-muted)] mb-5">
+                Upload files or add a URL. The bot will retrieve relevant context from these documents at chat time.
+              </p>
+              <DocumentsTab botId={bot.id} orgId={bot.orgId} plan={bot.orgPlan} />
             </div>
           )}
 

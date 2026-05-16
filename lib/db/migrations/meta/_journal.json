@@ -15,6 +15,13 @@
       "when": 1778837700396,
       "tag": "0001_volatile_praxagora",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778874018049,
+      "tag": "0002_fearless_speedball",
+      "breakpoints": true
     }
   ]
 }

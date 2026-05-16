@@ -2,9 +2,11 @@ import { desc, eq } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { getBalance } from '@/lib/credits'
+import { getStorageUsedMb, PLAN_LIMITS } from '@/lib/limits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { CreditBalance } from '@/components/dashboard/CreditBalance'
+import { StorageUsage } from '@/components/dashboard/StorageUsage'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 
@@ -17,7 +19,7 @@ export default async function BillingPage() {
     .where(eq(schema.organizations.ownerId, user.id))
     .limit(1)
 
-  const [balance, transactions] = await Promise.all([
+  const [balance, transactions, storageMb] = await Promise.all([
     org ? getBalance(org.id) : Promise.resolve(0),
     org
       ? db
@@ -32,9 +34,12 @@ export default async function BillingPage() {
           .orderBy(desc(schema.creditTransactions.createdAt))
           .limit(20)
       : Promise.resolve([]),
+    org ? getStorageUsedMb(org.id) : Promise.resolve(0),
   ])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const plan = (org?.plan ?? 'free') as keyof typeof PLAN_LIMITS
+  const maxStorageMb = PLAN_LIMITS[plan in PLAN_LIMITS ? plan : 'free'].storageMb
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -48,9 +53,12 @@ export default async function BillingPage() {
           </div>
           <RefreshButton />
         </div>
-        <div className="px-4 sm:px-8 py-6">
+        <div className="px-4 sm:px-8 py-6 space-y-6">
           {org ? (
-            <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
+            <>
+              <StorageUsage usedMb={storageMb} maxMb={maxStorageMb} plan={org.plan} />
+              <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
+            </>
           ) : (
             <p className="text-sm text-[var(--ink-muted)]">No organization found.</p>
           )}
