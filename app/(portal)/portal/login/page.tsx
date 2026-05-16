@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { Eye, EyeOff } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +14,7 @@ function LoginContent() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
   const router = useRouter()
@@ -86,17 +88,27 @@ function LoginContent() {
               <Label htmlFor="password" className="text-sm font-medium text-[var(--ink)]">
                 Password
               </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                autoComplete="current-password"
-                className="border-[var(--hairline-strong)] bg-[var(--bg)] text-[var(--ink)]
-                  placeholder:text-[var(--ink-faint)] focus-visible:ring-[var(--of-primary)]"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPw ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                  className="border-[var(--hairline-strong)] bg-[var(--bg)] text-[var(--ink)] pr-10
+                    placeholder:text-[var(--ink-faint)] focus-visible:ring-[var(--of-primary)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                >
+                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             {error && (
