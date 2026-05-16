@@ -10,7 +10,6 @@ import { MobileNav } from '@/components/dashboard/MobileNav'
 import { OnboardingBanner } from '@/components/dashboard/OnboardingBanner'
 import { QuickActionsPanel } from '@/components/dashboard/QuickActionsPanel'
 import { EmbedCodeBlock } from '@/components/dashboard/EmbedCodeBlock'
-import { InviteClientDialog } from '@/components/dashboard/InviteClientDialog'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { ConversationTable } from '@/components/dashboard/ConversationTable'
 import { LeadsTable } from '@/components/dashboard/LeadsTable'
@@ -172,7 +171,6 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           </div>
           <div className="flex items-center gap-2">
             <RefreshButton />
-            <InviteClientDialog botId={bot.id} />
             <DeleteBotButton botId={bot.id} botName={bot.name} />
           </div>
         </div>
@@ -257,7 +255,12 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 </div>
               </div>
 
-              {/* Right column — quick actions + client status */}
+              {/* Client status — always visible below left column on non-xl */}
+              <div className="xl:hidden">
+                <ClientStatusCard botId={bot.id} client={clientProp} invite={inviteProp} />
+              </div>
+
+              {/* Right column — quick actions + client status (xl+) */}
               <div className="hidden xl:block space-y-4">
                 <ClientStatusCard botId={bot.id} client={clientProp} invite={inviteProp} />
                 <QuickActionsPanel botId={bot.id} />

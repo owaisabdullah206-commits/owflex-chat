@@ -104,10 +104,10 @@ export async function POST(req: NextRequest) {
 
     userId = signUpResult.user.id
 
-    // Set role to client
+    // Set role to client and mark email verified (invite link = verification)
     await db
       .update(schema.users)
-      .set({ role: 'client' })
+      .set({ role: 'client', emailVerified: true })
       .where(eq(schema.users.id, userId))
   }
 

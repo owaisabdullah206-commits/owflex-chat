@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +20,7 @@ interface InviteClientDialogProps {
 }
 
 export function InviteClientDialog({ botId }: InviteClientDialogProps) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [error, setError] = useState('')
@@ -56,6 +58,7 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
       toast.success('Invitation sent!')
       setEmail('')
       setOpen(false)
+      router.refresh()
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {

@@ -1,17 +1,18 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
 type State = 'loading' | 'valid' | 'invalid' | 'expired' | 'used' | 'success'
 
 function InviteContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const token = searchParams.get('token') ?? ''
 
   const [state, setState] = useState<State>('loading')
@@ -64,13 +65,18 @@ function InviteContent() {
         return
       }
 
-      await authClient.signIn.email({
-        email,
-        password,
-        callbackURL: '/portal',
-      })
+      // Sign in the newly created account
+      const signInResult = await authClient.signIn.email({ email, password })
+
+      if (signInResult?.error) {
+        // Account created but auto sign-in failed — redirect to login
+        setState('success')
+        setTimeout(() => router.push('/portal/login'), 1500)
+        return
+      }
 
       setState('success')
+      router.push('/portal')
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
@@ -197,8 +203,11 @@ function InviteContent() {
 
         {state === 'success' && (
           <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm p-6">
-            <h1 className="text-lg font-semibold text-[var(--ink)] mb-2">You&apos;re all set!</h1>
-            <p className="text-sm text-[var(--ink-muted)]">Redirecting to your dashboard…</p>
+            <h1 className="text-lg font-semibold text-[var(--ink)] mb-3">You&apos;re all set!</h1>
+            <div className="flex items-center justify-center gap-2 text-sm text-[var(--ink-muted)]">
+              <Loader2 className="h-4 w-4 animate-spin text-[var(--of-primary)]" />
+              Redirecting to your dashboard…
+            </div>
           </div>
         )}
       </div>
