@@ -24,7 +24,7 @@ export function BotToggle({ botId, initialActive }: BotToggleProps) {
       onClick={handleToggle}
       disabled={isPending}
       title={isActive ? 'Deactivate bot' : 'Activate bot'}
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors border ${
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors border cursor-pointer ${
         isActive
           ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20'
           : 'bg-[var(--surface-2)] text-[var(--ink-muted)] border-[var(--hairline)] hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/20'

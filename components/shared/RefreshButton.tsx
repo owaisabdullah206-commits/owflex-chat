@@ -23,7 +23,7 @@ export function RefreshButton({ className }: RefreshButtonProps) {
       onClick={handleRefresh}
       aria-label="Refresh data"
       title="Refresh"
-      className={`p-1.5 rounded-md text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-40 ${className ?? ''}`}
+      className={`p-1.5 rounded-md text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--surface-2)] transition-colors cursor-pointer disabled:opacity-40 ${className ?? ''}`}
     >
       <svg
         width="15"
