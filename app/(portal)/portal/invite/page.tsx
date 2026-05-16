@@ -111,8 +111,8 @@ function InviteContent() {
           // This handles partial-completion recovery (account created but invite not accepted).
           const signInResult = await authClient.signIn.email({ email, password })
           if (signInResult.error) {
-            // Email+password sign-in also failed — the account likely uses Google OAuth.
-            // Show the Google sign-in button so they can authenticate and accept the invite.
+            // Email+password failed — account may use Google sign-in.
+            setError('An account with this email already exists. If you signed up with Google, use the button below.')
             setShowGoogleFallback(true)
             return
           }
@@ -277,14 +277,9 @@ function InviteContent() {
               )}
 
               {showGoogleFallback ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-[var(--ink-muted)]">
-                    This email is registered with Google. Sign in with Google to accept your invitation.
-                  </p>
-                  <Button type="button" variant="secondary" className="w-full" onClick={handleGoogleSignIn}>
-                    Continue with Google
-                  </Button>
-                </div>
+                <Button type="button" variant="secondary" className="w-full" onClick={handleGoogleSignIn}>
+                  Continue with Google
+                </Button>
               ) : (
                 <Button type="submit" className="w-full" disabled={pending}>
                   {pending ? 'Setting up your account…' : 'Create account & sign in'}
