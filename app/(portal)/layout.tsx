@@ -1,6 +1,4 @@
-'use client'
-import { useTheme } from '@/hooks/useTheme'
-import { ThemeToggleButton } from '@/components/shared/ThemeToggleButton'
+import { MobileBottomNav } from '@/components/portal/MobileBottomNav'
 
 const themeScript = `(function(){
   var stored = localStorage.getItem('owflex-theme-portal');
@@ -14,19 +12,15 @@ export default function PortalLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { theme, toggle } = useTheme('portal')
-
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       <div className="flex min-h-screen bg-[var(--bg)]">
         <div className="flex-1 flex flex-col">
-          <header className="flex items-center justify-end px-4 py-2 border-b border-[var(--hairline)]">
-            <ThemeToggleButton theme={theme} onToggle={toggle} />
-          </header>
-          <main className="flex-1">{children}</main>
+          <main className="flex-1 pb-16 sm:pb-0">{children}</main>
         </div>
       </div>
+      <MobileBottomNav />
     </>
   )
 }

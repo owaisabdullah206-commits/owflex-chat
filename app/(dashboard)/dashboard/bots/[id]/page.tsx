@@ -23,6 +23,7 @@ import { DocumentsTab } from '@/components/dashboard/DocumentsTab'
 import { SmartRoutingToggle } from '@/components/dashboard/SmartRoutingToggle'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
+import { BotTabSelect } from '@/components/dashboard/BotTabSelect'
 
 const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
 
@@ -151,24 +152,31 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         </Suspense>
 
         {/* Tab nav */}
-        <div className="flex gap-1 px-4 sm:px-8 border-b border-[var(--hairline)] overflow-x-auto">
-          {TABS.map((t) => {
-            const slug = t.toLowerCase()
-            const isActive = activeTab === slug
-            return (
-              <a
-                key={t}
-                href={`/dashboard/bots/${bot.id}?tab=${slug}`}
-                className={`px-3 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
-                  isActive
-                    ? 'text-[var(--ink)] border-[var(--of-primary)]'
-                    : 'text-[var(--ink-muted)] border-transparent hover:text-[var(--ink)]'
-                }`}
-              >
-                {t}
-              </a>
-            )
-          })}
+        <div className="sticky top-0 z-10 bg-[var(--bg)] border-b border-[var(--hairline)]">
+          {/* Mobile dropdown */}
+          <div className="px-4 py-2 sm:hidden">
+            <BotTabSelect botId={bot.id} tabs={TABS} activeTab={activeTab} />
+          </div>
+          {/* Desktop tabs */}
+          <div className="hidden sm:flex gap-1 px-8 overflow-x-auto">
+            {TABS.map((t) => {
+              const slug = t.toLowerCase()
+              const isActive = activeTab === slug
+              return (
+                <a
+                  key={t}
+                  href={`/dashboard/bots/${bot.id}?tab=${slug}`}
+                  className={`px-3 py-3 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                    isActive
+                      ? 'text-[var(--ink)] border-[var(--of-primary)]'
+                      : 'text-[var(--ink-muted)] border-transparent hover:text-[var(--ink)]'
+                  }`}
+                >
+                  {t}
+                </a>
+              )
+            })}
+          </div>
         </div>
 
         {/* Tab content */}

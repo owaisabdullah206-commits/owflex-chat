@@ -2,6 +2,7 @@ import { ExternalLink } from 'lucide-react'
 import {
   Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
 } from '@/components/ui/table'
+import { RelativeTime } from '@/components/shared/RelativeTime'
 
 interface Conversation {
   id: string
@@ -40,20 +41,7 @@ export function ConversationTable({ conversations }: ConversationTableProps) {
         {conversations.map((conv) => (
           <TableRow key={conv.id}>
             <TableCell>
-              <span className="text-sm text-[var(--ink)]">
-                {new Date(conv.startedAt).toLocaleDateString('en-US', {
-                  month: 'short', day: 'numeric', year: 'numeric',
-                })}
-              </span>
-              {' '}
-              <span
-                className="text-xs text-[var(--ink-muted)]"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                {new Date(conv.startedAt).toLocaleTimeString('en-US', {
-                  hour: '2-digit', minute: '2-digit',
-                })}
-              </span>
+              <RelativeTime date={conv.startedAt} className="text-sm text-[var(--ink)]" />
             </TableCell>
             <TableCell>
               {conv.pageUrl ? (

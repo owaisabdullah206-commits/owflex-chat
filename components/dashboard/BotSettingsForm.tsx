@@ -1,6 +1,6 @@
 'use client'
 
-import { useTransition, useState } from 'react'
+import { useTransition, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -28,6 +28,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [isPending, startTransition] = useTransition()
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isDirty, setIsDirty] = useState(false)
 
   const [name, setName] = useState(initial.name)
   const [systemPrompt, setSystemPrompt] = useState(initial.systemPrompt)
@@ -39,6 +40,15 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [strictMode, setStrictMode] = useState(initial.strictMode)
 
   const isFreePlan = orgPlan === 'free'
+
+  useEffect(() => {
+    if (!isDirty) return
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault() }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [isDirty])
+
+  function markDirty() { setIsDirty(true) }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -55,6 +65,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         setError(result.error)
       } else {
         setSaved(true)
+        setIsDirty(false)
         setTimeout(() => setSaved(false), 3000)
       }
     })
@@ -62,13 +73,19 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
+      {isDirty && (
+        <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
+          You have unsaved changes
+        </div>
+      )}
+
       {/* Bot Name */}
       <div className="space-y-1.5">
         <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Bot Name</Label>
         <Input
           id="name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => { setName(e.target.value); markDirty() }}
           className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
           disabled={isPending}
         />
@@ -80,7 +97,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         <Textarea
           id="systemPrompt"
           value={systemPrompt}
-          onChange={(e) => setSystemPrompt(e.target.value)}
+          onChange={(e) => { setSystemPrompt(e.target.value); markDirty() }}
           rows={5}
           className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
           disabled={isPending}
@@ -100,7 +117,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         <select
           id="model"
           value={model}
-          onChange={(e) => setModel(e.target.value)}
+          onChange={(e) => { setModel(e.target.value); markDirty() }}
           disabled={isPending || isFreePlan}
           className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ fontFamily: 'var(--font-mono)' }}
@@ -117,7 +134,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         <Input
           id="welcomeMessage"
           value={welcomeMessage}
-          onChange={(e) => setWelcomeMessage(e.target.value)}
+          onChange={(e) => { setWelcomeMessage(e.target.value); markDirty() }}
           maxLength={200}
           className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
           disabled={isPending}
@@ -132,13 +149,13 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             id="primaryColor"
             type="color"
             value={primaryColor}
-            onChange={(e) => setPrimaryColor(e.target.value)}
+            onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
             disabled={isPending}
             className="h-9 w-14 rounded border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50"
           />
           <Input
             value={primaryColor}
-            onChange={(e) => setPrimaryColor(e.target.value)}
+            onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
             pattern="^#[0-9a-fA-F]{6}$"
             maxLength={7}
             className="w-32 bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
@@ -154,7 +171,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         <select
           id="position"
           value={position}
-          onChange={(e) => setPosition(e.target.value as 'bottom-right' | 'bottom-left')}
+          onChange={(e) => { setPosition(e.target.value as 'bottom-right' | 'bottom-left'); markDirty() }}
           disabled={isPending}
           className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50"
         >
@@ -173,7 +190,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           </div>
           <Switch
             checked={leadCaptureEnabled}
-            onCheckedChange={setLeadCaptureEnabled}
+            onCheckedChange={(v) => { setLeadCaptureEnabled(v); markDirty() }}
             disabled={isPending}
           />
         </div>
@@ -188,7 +205,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           </div>
           <Switch
             checked={strictMode}
-            onCheckedChange={setStrictMode}
+            onCheckedChange={(v) => { setStrictMode(v); markDirty() }}
             disabled={isPending}
           />
         </div>

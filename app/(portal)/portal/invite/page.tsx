@@ -6,6 +6,7 @@ import { authClient } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Eye, EyeOff } from 'lucide-react'
 
 type State = 'loading' | 'valid' | 'invalid' | 'expired' | 'used' | 'success'
 
@@ -16,8 +17,14 @@ function InviteContent() {
   const [state, setState] = useState<State>('loading')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
+
+  const pwStrength = password.length === 0 ? 0 : password.length < 6 ? 1 : password.length < 10 ? 2 : 3
+  const strengthLabel = ['', 'Weak', 'Fair', 'Strong'][pwStrength]
+  const strengthColor = ['', 'bg-red-500', 'bg-amber-500', 'bg-emerald-500'][pwStrength]
+  const strengthText = ['', 'text-red-500', 'text-amber-500', 'text-emerald-500'][pwStrength]
 
   useEffect(() => {
     if (!token) { setState('invalid'); return }
@@ -137,17 +144,42 @@ function InviteContent() {
                 <Label htmlFor="password" className="text-sm font-medium text-[var(--ink)]">
                   Password
                 </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 8 characters"
-                  required
-                  minLength={8}
-                  className="border-[var(--hairline-strong)] bg-[var(--bg)] text-[var(--ink)]
-                    placeholder:text-[var(--ink-faint)] focus-visible:ring-[var(--of-primary)]"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPw ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="At least 8 characters"
+                    required
+                    minLength={8}
+                    className="border-[var(--hairline-strong)] bg-[var(--bg)] text-[var(--ink)] pr-10
+                      placeholder:text-[var(--ink-faint)] focus-visible:ring-[var(--of-primary)]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
+                    aria-label={showPw ? 'Hide password' : 'Show password'}
+                  >
+                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {password.length > 0 && (
+                  <div className="space-y-1">
+                    <div className="flex gap-1">
+                      {[1, 2, 3].map((level) => (
+                        <div
+                          key={level}
+                          className={`h-1 flex-1 rounded-full transition-colors ${
+                            level <= pwStrength ? strengthColor : 'bg-[var(--hairline)]'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className={`text-xs font-medium ${strengthText}`}>{strengthLabel}</p>
+                  </div>
+                )}
               </div>
 
               {error && (

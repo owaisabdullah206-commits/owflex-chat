@@ -3,7 +3,8 @@ import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
-import { LeadsTable } from '@/components/dashboard/LeadsTable'
+import { LeadsSearch } from '@/components/dashboard/LeadsSearch'
+import { Download } from 'lucide-react'
 
 export default async function LeadsPage() {
   const user = await requireDeveloper()
@@ -36,9 +37,21 @@ export default async function LeadsPage() {
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
-        <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
-          <h1 className="text-lg font-semibold text-[var(--ink)]">Leads</h1>
-          <p className="text-sm text-[var(--ink-muted)] mt-0.5">All leads captured across your bots</p>
+        <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)] flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-lg font-semibold text-[var(--ink)]">Leads</h1>
+            <p className="text-sm text-[var(--ink-muted)] mt-0.5">All leads captured across your bots</p>
+          </div>
+          {leads.length > 0 && (
+            <a
+              href="/api/v1/leads/export"
+              download
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-[var(--surface)] border border-[var(--hairline)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors cursor-pointer"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Export CSV
+            </a>
+          )}
         </div>
 
         <div className="px-4 sm:px-8 py-6 overflow-x-auto">
@@ -50,7 +63,7 @@ export default async function LeadsPage() {
               </p>
             </div>
           ) : (
-            <LeadsTable leads={leads} showBot />
+            <LeadsSearch leads={leads} showBot />
           )}
         </div>
       </main>

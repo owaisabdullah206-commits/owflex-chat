@@ -5,6 +5,8 @@ import { ExternalLink } from 'lucide-react'
 import {
   Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
 } from '@/components/ui/table'
+import { RelativeTime } from '@/components/shared/RelativeTime'
+import { formatPhone } from '@/lib/utils/phone'
 
 interface Lead {
   id: string
@@ -62,19 +64,12 @@ export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
           <TableRow key={lead.id}>
             <TableCell className="font-medium">{lead.name ?? '—'}</TableCell>
             <TableCell className="text-[var(--ink-muted)]">{lead.email ?? '—'}</TableCell>
-            <TableCell className="text-[var(--ink-muted)]">{lead.phone ?? '—'}</TableCell>
+            <TableCell className="text-[var(--ink-muted)]">{formatPhone(lead.phone)}</TableCell>
             {showBot && (
               <TableCell className="text-[var(--ink-muted)]">{lead.botName ?? '—'}</TableCell>
             )}
             <TableCell>
-              <span
-                className="text-xs text-[var(--ink-muted)]"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                {new Date(lead.capturedAt).toLocaleDateString('en-US', {
-                  month: 'short', day: 'numeric', year: 'numeric',
-                })}
-              </span>
+              <RelativeTime date={lead.capturedAt} className="text-xs text-[var(--ink-muted)]" />
             </TableCell>
             <TableCell>
               {lead.conversationId && (

@@ -2,20 +2,26 @@ import { and, desc, eq } from 'drizzle-orm'
 import { requireClient } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { TopNav } from '@/components/portal/TopNav'
-import { LeadCard } from '@/components/portal/LeadCard'
+import { LeadsSearch } from '@/components/portal/LeadsSearch'
 import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 
-export default async function LeadsPage() {
+export default async function LeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ bot?: string }>
+}) {
   const user = await requireClient()
+  const { bot: botParam } = await searchParams
 
-  const [bot] = await db
+  const bots = await db
     .select({ id: schema.bots.id, name: schema.bots.name })
     .from(schema.bots)
     .where(eq(schema.bots.clientUserId, user.id))
-    .limit(1)
+
+  const bot = (botParam ? bots.find((b) => b.id === botParam) : null) ?? bots[0] ?? null
 
   const leads = bot
     ? await db
@@ -42,7 +48,7 @@ export default async function LeadsPage() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <AutoRefresh intervalMs={30_000} />
-      <TopNav userEmail={user.email} />
+      <TopNav userEmail={user.email} bots={bots} activeBotId={bot?.id} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-[var(--ink)]">Leads</h1>
@@ -59,65 +65,7 @@ export default async function LeadsPage() {
           </div>
         </div>
 
-        {leads.length === 0 ? (
-          <div className="text-center py-16">
-            <h3 className="text-sm font-semibold text-[var(--ink)] mb-1">No leads yet</h3>
-            <p className="text-sm text-[var(--ink-muted)]">
-              Leads will appear here once your chatbot captures visitor contact info.
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Desktop table */}
-            <div className="hidden sm:block bg-[var(--surface)] rounded-xl border border-[var(--hairline)] overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="border-b border-[var(--hairline)]">
-                  <tr>
-                    {['Name', 'Email', 'Phone', 'Date', 'Chat'].map((h) => (
-                      <th
-                        key={h}
-                        className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wide text-[var(--ink-subtle)]"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[var(--hairline)]">
-                  {leads.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-[var(--bg)] transition-colors">
-                      <td className="px-4 py-3 text-[var(--ink)] font-medium">{lead.name ?? '—'}</td>
-                      <td className="px-4 py-3 text-[var(--ink-muted)]">{lead.email ?? '—'}</td>
-                      <td className="px-4 py-3 text-[var(--ink-muted)]">{lead.phone ?? '—'}</td>
-                      <td className="px-4 py-3 text-[var(--ink-subtle)] text-xs whitespace-nowrap">
-                        {new Date(lead.capturedAt).toLocaleDateString('en-US', {
-                          month: 'short', day: 'numeric', year: 'numeric',
-                        })}
-                      </td>
-                      <td className="px-4 py-3">
-                        {lead.conversationId && (
-                          <a
-                            href={`/portal/conversations/${lead.conversationId}`}
-                            className="text-xs text-[var(--of-primary-text-light)] hover:underline"
-                          >
-                            View →
-                          </a>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile card list */}
-            <div className="sm:hidden grid gap-3">
-              {leads.map((lead) => (
-                <LeadCard key={lead.id} lead={lead} />
-              ))}
-            </div>
-          </>
-        )}
+        <LeadsSearch leads={leads} />
       </div>
     </div>
   )

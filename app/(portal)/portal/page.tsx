@@ -6,23 +6,27 @@ import { TopNav } from '@/components/portal/TopNav'
 import { StatCard } from '@/components/portal/StatCard'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
+import { RelativeTime } from '@/components/shared/RelativeTime'
 
-export default async function PortalPage() {
+export default async function PortalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ bot?: string }>
+}) {
   const user = await requireClient()
+  const { bot: botParam } = await searchParams
 
-  const [bot] = await db
-    .select({
-      id: schema.bots.id,
-      name: schema.bots.name,
-    })
+  const bots = await db
+    .select({ id: schema.bots.id, name: schema.bots.name })
     .from(schema.bots)
     .where(eq(schema.bots.clientUserId, user.id))
-    .limit(1)
+
+  const bot = (botParam ? bots.find((b) => b.id === botParam) : null) ?? bots[0] ?? null
 
   if (!bot) {
     return (
       <div className="min-h-screen bg-[var(--bg)]">
-        <TopNav userEmail={user.email} />
+        <TopNav userEmail={user.email} bots={bots} />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 text-center">
           <h2 className="text-base font-semibold text-[var(--ink)] mb-2">No bot assigned yet</h2>
           <p className="text-sm text-[var(--ink-muted)]">
@@ -51,7 +55,7 @@ export default async function PortalPage() {
   return (
     <div className="min-h-screen bg-[var(--bg)]">
       <AutoRefresh intervalMs={30_000} />
-      <TopNav userEmail={user.email} />
+      <TopNav userEmail={user.email} bots={bots} activeBotId={bot.id} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-8">
@@ -64,8 +68,8 @@ export default async function PortalPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard label="Conversations this month" value={stats.conversationsThisMonth} />
-          <StatCard label="Leads captured this month" value={stats.leadsThisMonth} />
+          <StatCard label="Conversations this month" value={stats.conversationsThisMonth} delta={stats.convMonthDelta} />
+          <StatCard label="Leads captured this month" value={stats.leadsThisMonth} delta={stats.leadsMonthDelta} />
           <StatCard label="New conversations this week" value={stats.conversationsThisWeek} />
         </div>
 
@@ -92,11 +96,7 @@ export default async function PortalPage() {
                       <p className="text-xs text-[var(--ink-muted)] truncate">{lead.email}</p>
                     )}
                   </div>
-                  <time className="text-xs text-[var(--ink-subtle)] shrink-0">
-                    {new Date(lead.capturedAt).toLocaleDateString('en-US', {
-                      month: 'short', day: 'numeric',
-                    })}
-                  </time>
+                  <RelativeTime date={lead.capturedAt} className="text-xs text-[var(--ink-subtle)] shrink-0" />
                 </div>
               ))}
             </div>

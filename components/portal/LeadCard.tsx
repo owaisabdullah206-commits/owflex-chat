@@ -1,4 +1,6 @@
 import { MessageSquare } from 'lucide-react'
+import { RelativeTime } from '@/components/shared/RelativeTime'
+import { formatPhone } from '@/lib/utils/phone'
 
 interface Lead {
   id: string
@@ -26,17 +28,13 @@ export function LeadCard({ lead }: LeadCardProps) {
             <p className="text-sm text-[var(--ink-muted)] truncate mt-0.5">{lead.email}</p>
           )}
           {lead.phone && (
-            <p className="text-sm text-[var(--ink-muted)] mt-0.5">{lead.phone}</p>
+            <p className="text-sm text-[var(--ink-muted)] mt-0.5">{formatPhone(lead.phone)}</p>
           )}
           {lead.notes && (
             <p className="text-xs text-[var(--ink-subtle)] mt-1 line-clamp-2">{lead.notes}</p>
           )}
         </div>
-        <time className="text-[10px] text-[var(--ink-subtle)] shrink-0 mt-0.5">
-          {new Date(lead.capturedAt).toLocaleDateString('en-US', {
-            month: 'short', day: 'numeric', year: 'numeric',
-          })}
-        </time>
+        <RelativeTime date={lead.capturedAt} className="text-[10px] text-[var(--ink-subtle)] shrink-0 mt-0.5" />
       </div>
 
       {lead.conversationId && (
