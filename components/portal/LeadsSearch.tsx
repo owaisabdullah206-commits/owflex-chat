@@ -52,7 +52,8 @@ export function LeadsSearch({ leads }: LeadsSearchProps) {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden sm:block bg-[var(--surface)] rounded-xl border border-[var(--hairline)] overflow-hidden">
+          <div className="hidden sm:block bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm overflow-hidden">
+            <div className="h-0.5 bg-[var(--of-primary)]" />
             <table className="w-full text-sm">
               <thead className="border-b border-[var(--hairline)]">
                 <tr>

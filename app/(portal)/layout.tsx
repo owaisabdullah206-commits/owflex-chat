@@ -15,7 +15,7 @@ export default function PortalLayout({
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      <div className="flex min-h-screen bg-[var(--bg)]">
+      <div className="flex min-h-screen bg-gradient-to-br from-[var(--bg)] to-[var(--surface)]">
         <div className="flex-1 flex flex-col">
           <main className="flex-1 pb-16 sm:pb-0">{children}</main>
         </div>

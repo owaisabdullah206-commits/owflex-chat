@@ -32,7 +32,9 @@ export function ConversationList({ conversations }: ConversationListProps) {
   }
 
   return (
-    <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] divide-y divide-[var(--hairline)]">
+    <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm overflow-hidden">
+      <div className="h-0.5 bg-[var(--of-primary)]" />
+      <div className="divide-y divide-[var(--hairline)]">
       {conversations.map((conv) => (
         <a
           key={conv.id}
@@ -81,6 +83,7 @@ export function ConversationList({ conversations }: ConversationListProps) {
           </div>
         </a>
       ))}
+      </div>
     </div>
   )
 }

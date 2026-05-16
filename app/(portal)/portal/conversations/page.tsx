@@ -75,7 +75,7 @@ export default async function ConversationsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       <AutoRefresh intervalMs={30_000} />
       <TopNav userEmail={user.email} bots={bots} activeBotId={bot?.id} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">

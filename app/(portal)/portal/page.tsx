@@ -26,7 +26,7 @@ export default async function PortalPage({
 
   if (!bot) {
     return (
-      <div className="min-h-screen bg-[var(--bg)]">
+      <div className="min-h-screen">
         <TopNav userEmail={user.email} bots={bots} />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 text-center">
           <div className="w-12 h-12 rounded-full bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center mx-auto mb-4">
@@ -57,7 +57,7 @@ export default async function PortalPage({
   ])
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       <AutoRefresh intervalMs={30_000} />
       <TopNav userEmail={user.email} bots={bots} activeBotId={bot.id} />
 
@@ -91,31 +91,37 @@ export default async function PortalPage({
             )}
           </div>
           {recentLeads.length === 0 ? (
-            <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] px-5 py-8 text-center">
-              <p className="text-sm text-[var(--ink-muted)]">No leads captured yet.</p>
-              <p className="text-xs text-[var(--ink-subtle)] mt-1">Leads appear here when visitors share their contact info.</p>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm overflow-hidden">
+              <div className="h-0.5 bg-[var(--of-primary)]" />
+              <div className="px-5 py-8 text-center">
+                <p className="text-sm text-[var(--ink-muted)]">No leads captured yet.</p>
+                <p className="text-xs text-[var(--ink-subtle)] mt-1">Leads appear here when visitors share their contact info.</p>
+              </div>
             </div>
           ) : (
-            <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] divide-y divide-[var(--hairline)]">
-              {recentLeads.map((lead) => {
-                const initials = (lead.name ?? lead.email ?? '?').slice(0, 2).toUpperCase()
-                return (
-                  <div key={lead.id} className="px-4 py-3 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[var(--of-primary-soft)] flex items-center justify-center shrink-0">
-                      <span className="text-xs font-semibold text-[var(--of-primary-text-light)]">{initials}</span>
+            <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm overflow-hidden">
+              <div className="h-0.5 bg-[var(--of-primary)]" />
+              <div className="divide-y divide-[var(--hairline)]">
+                {recentLeads.map((lead) => {
+                  const initials = (lead.name ?? lead.email ?? '?').slice(0, 2).toUpperCase()
+                  return (
+                    <div key={lead.id} className="px-4 py-3 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[var(--of-primary-soft)] flex items-center justify-center shrink-0">
+                        <span className="text-xs font-semibold text-[var(--of-primary-text-light)]">{initials}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-[var(--ink)] truncate">
+                          {lead.name ?? lead.email ?? 'Unknown lead'}
+                        </p>
+                        {lead.email && lead.name && (
+                          <p className="text-xs text-[var(--ink-muted)] truncate">{lead.email}</p>
+                        )}
+                      </div>
+                      <RelativeTime date={lead.capturedAt} className="text-xs text-[var(--ink-subtle)] shrink-0" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[var(--ink)] truncate">
-                        {lead.name ?? lead.email ?? 'Unknown lead'}
-                      </p>
-                      {lead.email && lead.name && (
-                        <p className="text-xs text-[var(--ink-muted)] truncate">{lead.email}</p>
-                      )}
-                    </div>
-                    <RelativeTime date={lead.capturedAt} className="text-xs text-[var(--ink-subtle)] shrink-0" />
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>

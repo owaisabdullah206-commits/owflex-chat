@@ -45,7 +45,7 @@ export default async function ConversationDetailPage({ params }: ConversationDet
     .orderBy(asc(schema.messages.createdAt))
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen">
       <TopNav userEmail={user.email} />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-6">
@@ -69,7 +69,12 @@ export default async function ConversationDetailPage({ params }: ConversationDet
           </div>
         </div>
 
-        <ChatTranscript messages={messages} botName={conversation.botName} />
+        <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm overflow-hidden">
+          <div className="h-0.5 bg-[var(--of-primary)]" />
+          <div className="p-4 sm:p-6">
+            <ChatTranscript messages={messages} botName={conversation.botName} />
+          </div>
+        </div>
       </div>
     </div>
   )
