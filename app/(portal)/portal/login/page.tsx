@@ -1,13 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { authClient } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-export default function PortalLoginPage() {
+function LoginContent() {
+  const searchParams = useSearchParams()
+  const notClient = searchParams.get('error') === 'not-client'
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -20,12 +23,7 @@ export default function PortalLoginPage() {
     setPending(true)
 
     try {
-      const result = await authClient.signIn.email({
-        email,
-        password,
-        callbackURL: '/portal',
-      })
-
+      const result = await authClient.signIn.email({ email, password })
       if (result.error) {
         setError(result.error.message ?? 'Sign in failed. Check your credentials.')
       } else {
@@ -38,10 +36,13 @@ export default function PortalLoginPage() {
     }
   }
 
+  async function handleGoogle() {
+    await authClient.signIn.social({ provider: 'google', callbackURL: '/portal' })
+  }
+
   return (
     <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-2">
             <div className="w-7 h-7 rounded-md bg-[var(--of-primary)] flex items-center justify-center">
@@ -53,7 +54,15 @@ export default function PortalLoginPage() {
           <p className="text-sm text-[var(--ink-muted)] mt-1">Sign in to your chatbot dashboard</p>
         </div>
 
-        {/* Card */}
+        {notClient && (
+          <div className="mb-4 rounded-lg bg-amber-500/10 border border-amber-500/20 px-4 py-3 text-sm text-amber-400">
+            This portal is for clients only.{' '}
+            <a href="/dashboard/login" className="underline font-medium">
+              Developer dashboard →
+            </a>
+          </div>
+        )}
+
         <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
@@ -101,11 +110,36 @@ export default function PortalLoginPage() {
             </Button>
           </form>
 
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[var(--hairline)]" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-[var(--surface)] px-2 text-[var(--ink-subtle)]">or</span>
+            </div>
+          </div>
+
+          <Button type="button" variant="secondary" className="w-full" onClick={handleGoogle}>
+            Continue with Google
+          </Button>
+
           <p className="text-xs text-center text-[var(--ink-muted)] mt-4">
             Access is by invitation only.
           </p>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PortalLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+        <p className="text-[var(--ink-muted)] text-sm">Loading…</p>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }

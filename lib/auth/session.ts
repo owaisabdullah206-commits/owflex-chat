@@ -23,7 +23,8 @@ export async function requireClient() {
     .where(eq(schema.users.id, session.user.id))
     .limit(1)
 
-  if (!dbUser || dbUser.role !== 'client') redirect('/portal/login')
+  if (!dbUser) redirect('/portal/login')
+  if (dbUser.role !== 'client') redirect('/portal/login?error=not-client')
   return session.user
 }
 
