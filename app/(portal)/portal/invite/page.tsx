@@ -87,8 +87,9 @@ function InviteContent() {
         return
       }
 
-      // Step 3: Fresh sign-in to get a session with role=client (signUp
-      // session has role=developer until the accept route updates it).
+      // Step 3: Sign out the signUp session (cached as role=developer), then
+      // sign in fresh so the cookie cache is rebuilt with role=client from DB.
+      await authClient.signOut()
       await authClient.signIn.email({ email, password })
 
       setState('success')
