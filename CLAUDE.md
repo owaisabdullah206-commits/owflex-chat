@@ -402,6 +402,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 
 ## Active Technologies
 - TypeScript 5.x, Node.js 20 (Vercel runtime) (001-phase-2-platform)
+- pgvector + HNSW (vector search), Cloudflare R2 (object storage), Upstash QStash (queue), Google Gemini text-embedding-004 (embeddings), Firecrawl (URL scraping), unpdf + mammoth (parsers) (002-phase-3-knowledge)
 
 ## Recent Changes
+- 002-phase-3-knowledge: Added document/URL ingestion pipeline + RAG retrieval at chat time + smart model routing (per-bot toggle). New tables: documents, document_chunks (vector(768) + HNSW), routing_decisions. New env vars: R2_*, QSTASH_*, GEMINI_API_KEY, FIRECRAWL_API_KEY.
 - 001-phase-2-platform: Added TypeScript 5.x, Node.js 20 (Vercel runtime)

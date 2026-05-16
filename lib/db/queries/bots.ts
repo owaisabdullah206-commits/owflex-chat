@@ -69,6 +69,25 @@ export async function updateBot(
   return {}
 }
 
+export async function deleteBot(botId: string): Promise<{ error?: string; ok?: boolean }> {
+  const user = await requireDeveloper()
+
+  const [botRow] = await db
+    .select({ id: schema.bots.id })
+    .from(schema.bots)
+    .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+    .where(and(eq(schema.bots.id, botId), eq(schema.organizations.ownerId, user.id)))
+    .limit(1)
+
+  if (!botRow) return { error: 'Bot not found or access denied' }
+
+  // Cascade deletes: conversations, messages, leads, bot_faqs, invitations
+  await db.delete(schema.bots).where(eq(schema.bots.id, botId))
+
+  revalidatePath('/dashboard/bots')
+  return { ok: true }
+}
+
 export async function toggleBotActive(botId: string): Promise<{ error?: string; isActive?: boolean }> {
   const user = await requireDeveloper()
 
@@ -87,6 +106,26 @@ export async function toggleBotActive(botId: string): Promise<{ error?: string; 
   revalidatePath(`/dashboard/bots/${botId}`)
   revalidatePath('/dashboard/bots')
   return { isActive: newActive }
+}
+
+export async function updateSmartRouting(
+  botId: string,
+  enabled: boolean,
+): Promise<{ error?: string }> {
+  const user = await requireDeveloper()
+
+  const [botRow] = await db
+    .select({ id: schema.bots.id })
+    .from(schema.bots)
+    .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+    .where(and(eq(schema.bots.id, botId), eq(schema.organizations.ownerId, user.id)))
+    .limit(1)
+
+  if (!botRow) return { error: 'Bot not found or access denied' }
+
+  await db.update(schema.bots).set({ smartRoutingEnabled: enabled }).where(eq(schema.bots.id, botId))
+  revalidatePath(`/dashboard/bots/${botId}`)
+  return {}
 }
 
 const createBotSchema = z.object({

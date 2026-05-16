@@ -9,6 +9,9 @@ import { getActiveFaqs } from '@/lib/db/queries/faqs'
 import { flagIfUnanswered } from '@/lib/ai/uncertainty'
 import * as creditLib from '@/lib/credits'
 import { checkConversationLimit } from '@/lib/limits'
+import { retrieveContext } from '@/lib/knowledge/retriever'
+import { renderDocContext, composeSystemPrompt } from '@/lib/knowledge/prompt-builder'
+import { routeMessage } from '@/lib/ai/router'
 
 const LEAD_INSTRUCTIONS = `
 
@@ -67,13 +70,18 @@ export async function POST(req: NextRequest) {
     // Look up bot + org (needed for credits, limits, tenant isolation)
     const [bot] = await db
       .select({
-        id:           schema.bots.id,
-        systemPrompt: schema.bots.systemPrompt,
-        model:        schema.bots.model,
-        widgetConfig: schema.bots.widgetConfig,
-        orgId:        schema.bots.orgId,
-        orgPlan:      schema.organizations.plan,
-        convCount:    schema.organizations.conversationsThisMonth,
+        id:                  schema.bots.id,
+        systemPrompt:        schema.bots.systemPrompt,
+        model:               schema.bots.model,
+        widgetConfig:        schema.bots.widgetConfig,
+        orgId:               schema.bots.orgId,
+        orgPlan:             schema.organizations.plan,
+        convCount:           schema.organizations.conversationsThisMonth,
+        smartRoutingEnabled: schema.bots.smartRoutingEnabled,
+        documentCount: sql<number>`(
+          SELECT COUNT(*)::int FROM documents
+          WHERE bot_id = ${schema.bots.id} AND status = 'ready'
+        )`,
       })
       .from(schema.bots)
       .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -126,15 +134,20 @@ export async function POST(req: NextRequest) {
       .reverse()
       .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
 
-    // Compose system prompt: [platform] + [bot] + [FAQ context] + [lead instructions]
-    const [platformPrompt, activeFaqs] = await Promise.all([
+    // Compose system prompt: [platform] + [bot] + [doc context] + [FAQ context] + [lead instructions]
+    const [platformPrompt, activeFaqs, retrievedChunks] = await Promise.all([
       getPlatformPrompt(),
       getActiveFaqs(bot.id),
+      bot.documentCount > 0
+        ? retrieveContext(bot.id, message).catch(() => [])
+        : Promise.resolve([]),
     ])
 
     const faqBlock = activeFaqs.length > 0
       ? '--- Knowledge Base ---\n' + activeFaqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')
       : ''
+
+    const docContextBlock = renderDocContext(retrievedChunks)
 
     const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; strictMode?: boolean }
     const leadEnabled = wc.leadCaptureEnabled !== false
@@ -142,13 +155,14 @@ export async function POST(req: NextRequest) {
     const strictInstructions = strictMode
       ? 'STRICT MODE: Only answer questions directly related to your purpose, system prompt, and knowledge base above. For anything outside your knowledge, respond: "I\'m sorry, I don\'t have information about that. Please contact us directly for assistance."'
       : ''
-    const finalSystemPrompt = [
-      platformPrompt,
-      bot.systemPrompt,
-      faqBlock,
-      strictInstructions,
-      leadEnabled ? LEAD_INSTRUCTIONS : '',
-    ].filter(Boolean).join('\n\n')
+
+    const finalSystemPrompt = composeSystemPrompt({
+      platform: platformPrompt,
+      bot: bot.systemPrompt,
+      docs: docContextBlock || undefined,
+      faqs: [faqBlock, strictInstructions].filter(Boolean).join('\n\n') || undefined,
+      lead: leadEnabled ? LEAD_INSTRUCTIONS : undefined,
+    })
 
     // Check conversation limit before processing
     const { allowed: convAllowed } = await checkConversationLimit({
@@ -173,6 +187,35 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Smart routing (if enabled — router handles its own debit/refund for strong model)
+    let resolvedModel = bot.model
+    let routingDecisionData: {
+      classification: string
+      classifierModel: string
+      classifierLatencyMs: number
+      chosenModel: string
+      fallbackUsed: boolean
+      creditCost: number
+    } | null = null
+
+    if (bot.smartRoutingEnabled) {
+      const routeResult = await routeMessage({
+        text: message,
+        botDefaultModel: bot.model,
+        orgId: bot.orgId,
+        baseEstimate: estimatedTokens,
+      })
+      resolvedModel = routeResult.modelToUse
+      routingDecisionData = {
+        classification: routeResult.classification,
+        classifierModel: routeResult.classifierModel,
+        classifierLatencyMs: routeResult.classifierLatencyMs,
+        chosenModel: routeResult.modelToUse,
+        fallbackUsed: routeResult.fallbackUsed,
+        creditCost: routeResult.creditCost,
+      }
+    }
+
     let content: string
     let tokensUsed: number
     let modelUsed: string
@@ -181,7 +224,7 @@ export async function POST(req: NextRequest) {
       const result = await chatCompletion({
         systemPrompt: finalSystemPrompt,
         messages: contextMessages,
-        model: bot.model,
+        model: resolvedModel,
       })
       content = result.content
       tokensUsed = result.tokensUsed
@@ -193,7 +236,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Reconcile: refund the overestimate, log actual debit
-    const overpay = estimatedTokens - tokensUsed
+    const actualDebit = routingDecisionData?.creditCost ?? estimatedTokens
+    const overpay = actualDebit - tokensUsed
     if (overpay > 0) await creditLib.refund(bot.orgId, overpay)
 
     // Insert assistant message (flag if response signals uncertainty)
@@ -208,6 +252,20 @@ export async function POST(req: NextRequest) {
 
     // Log credit transaction (refId = messageId for idempotency)
     await creditLib.logTransaction(bot.orgId, -tokensUsed, 'chat_debit', insertedMsg.id)
+
+    // Record routing decision if smart routing was active
+    if (bot.smartRoutingEnabled && routingDecisionData) {
+      await db.insert(schema.routingDecisions).values({
+        messageId: insertedMsg.id,
+        botId: bot.id,
+        classification: routingDecisionData.classification,
+        classifierModel: routingDecisionData.classifierModel,
+        classifierLatencyMs: routingDecisionData.classifierLatencyMs,
+        chosenModel: routingDecisionData.chosenModel,
+        fallbackUsed: routingDecisionData.fallbackUsed,
+        creditCost: routingDecisionData.creditCost,
+      }).catch(() => {}) // non-blocking — audit log must not break chat
+    }
 
     // Increment message count + conversation counter for org
     await Promise.all([

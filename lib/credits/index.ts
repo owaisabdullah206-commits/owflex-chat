@@ -1,6 +1,7 @@
 import { Redis } from '@upstash/redis'
 import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
+import { STRONG_MODEL } from '@/lib/ai/litellm'
 
 const FREE_TIER_CREDITS = 50_000
 
@@ -75,6 +76,13 @@ export async function initBalanceIfMissing(orgId: string): Promise<void> {
   const redis = getRedis()
   // SET NX — only sets if key does not exist, preserving accumulated balance
   await redis.set(creditKey(orgId), FREE_TIER_CREDITS, { nx: true })
+}
+
+const STRONG_MODEL_MULTIPLIER = 5
+
+export function getDebitAmountForModel(modelId: string, baseEstimate: number): number {
+  if (modelId === STRONG_MODEL) return baseEstimate * STRONG_MODEL_MULTIPLIER
+  return baseEstimate
 }
 
 export async function getAllFreeOrgIds(): Promise<string[]> {
