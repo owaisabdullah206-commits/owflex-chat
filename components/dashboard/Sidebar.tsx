@@ -1,13 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Bot, Users, CreditCard, Settings, LogOut } from 'lucide-react'
+import { Bot, Users, UserCheck, CreditCard, Settings, LogOut } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/dashboard/bots',     label: 'Bots',     icon: Bot },
   { href: '/dashboard/leads',    label: 'Leads',    icon: Users },
+  { href: '/dashboard/clients',  label: 'Clients',  icon: UserCheck },
   { href: '/dashboard/billing',  label: 'Billing',  icon: CreditCard },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]

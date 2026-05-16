@@ -17,9 +17,11 @@ export default async function BotsPage() {
       embedKey: schema.bots.embedKey,
       isActive: schema.bots.isActive,
       createdAt: schema.bots.createdAt,
+      clientEmail: schema.users.email,
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+    .leftJoin(schema.users, eq(schema.bots.clientUserId, schema.users.id))
     .where(eq(schema.organizations.ownerId, user.id))
     .orderBy(desc(schema.bots.createdAt))
 

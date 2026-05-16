@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Bot, Users, CreditCard, Settings } from 'lucide-react'
+import { Bot, Users, UserCheck, CreditCard, Settings } from 'lucide-react'
 
 const items = [
   { href: '/dashboard/bots',     label: 'Bots',     icon: Bot },
   { href: '/dashboard/leads',    label: 'Leads',    icon: Users },
+  { href: '/dashboard/clients',  label: 'Clients',  icon: UserCheck },
   { href: '/dashboard/billing',  label: 'Billing',  icon: CreditCard },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]

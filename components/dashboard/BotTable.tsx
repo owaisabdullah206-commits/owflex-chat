@@ -10,6 +10,7 @@ interface Bot {
   embedKey: string
   isActive: boolean
   createdAt: Date
+  clientEmail: string | null
 }
 
 interface BotTableProps {
@@ -28,6 +29,7 @@ export function BotTable({ bots }: BotTableProps) {
       <TableHeader>
         <TableRow>
           <TableHead>Bot Name</TableHead>
+          <TableHead>Client</TableHead>
           <TableHead>Created</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Embed Key</TableHead>
@@ -36,7 +38,7 @@ export function BotTable({ bots }: BotTableProps) {
       <TableBody>
         {bots.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={4} className="text-center text-[var(--ink-muted)] py-8">
+            <TableCell colSpan={5} className="text-center text-[var(--ink-muted)] py-8">
               No bots yet
             </TableCell>
           </TableRow>
@@ -50,6 +52,17 @@ export function BotTable({ bots }: BotTableProps) {
                 >
                   {bot.name}
                 </Link>
+              </TableCell>
+              <TableCell>
+                {bot.clientEmail ? (
+                  <span className="text-sm text-[var(--ink-muted)] truncate max-w-[180px] block">
+                    {bot.clientEmail}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--surface-2)] text-[var(--ink-muted)] border border-[var(--hairline)]">
+                    No client
+                  </span>
+                )}
               </TableCell>
               <TableCell className="text-[var(--ink-muted)]">
                 {formatDate(bot.createdAt)}

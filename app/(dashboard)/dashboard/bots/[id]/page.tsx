@@ -24,6 +24,7 @@ import { SmartRoutingToggle } from '@/components/dashboard/SmartRoutingToggle'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 import { BotTabSelect } from '@/components/dashboard/BotTabSelect'
+import { ClientStatusCard } from '@/components/dashboard/ClientStatusCard'
 
 const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
 
@@ -66,7 +67,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
   const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 
-  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, faqs, unansweredMessages] = await Promise.all([
+  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, faqs, unansweredMessages, clientRows, inviteRows] = await Promise.all([
     db
       .select({
         id: schema.conversations.id,
@@ -118,7 +119,37 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       ))
       .orderBy(desc(schema.messages.createdAt))
       .limit(50),
+    // Client user assigned to this bot
+    bot.clientUserId
+      ? db
+          .select({ id: schema.users.id, email: schema.users.email, name: schema.users.name })
+          .from(schema.users)
+          .where(eq(schema.users.id, bot.clientUserId))
+          .limit(1)
+      : Promise.resolve([]),
+    // Most recent invitation for this bot
+    db
+      .select({
+        email: schema.invitations.email,
+        expiresAt: schema.invitations.expiresAt,
+        usedAt: schema.invitations.usedAt,
+      })
+      .from(schema.invitations)
+      .where(eq(schema.invitations.botId, bot.id))
+      .orderBy(desc(schema.invitations.createdAt))
+      .limit(1),
   ])
+
+  const clientUser = clientRows[0] ?? null
+  const latestInvite = inviteRows[0] ?? null
+
+  const clientProp = clientUser
+    ? { email: clientUser.email, name: clientUser.name, joinedAt: latestInvite?.usedAt ?? null }
+    : null
+
+  const inviteProp = !clientUser && latestInvite
+    ? { email: latestInvite.email, expiresAt: latestInvite.expiresAt, expired: latestInvite.expiresAt < now }
+    : null
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -226,8 +257,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 </div>
               </div>
 
-              {/* Right column — quick actions */}
-              <div className="hidden xl:block">
+              {/* Right column — quick actions + client status */}
+              <div className="hidden xl:block space-y-4">
+                <ClientStatusCard botId={bot.id} client={clientProp} invite={inviteProp} />
                 <QuickActionsPanel botId={bot.id} />
               </div>
             </div>
