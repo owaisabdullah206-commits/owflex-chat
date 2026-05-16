@@ -24,7 +24,7 @@ interface TopNavProps {
   activeBotId?: string
 }
 
-const NAV_LINKS = [
+const NAV_BASES = [
   { label: 'Overview', href: '/portal' },
   { label: 'Conversations', href: '/portal/conversations' },
   { label: 'Leads', href: '/portal/leads' },
@@ -33,6 +33,9 @@ const NAV_LINKS = [
 export function TopNav({ userEmail, bots, activeBotId }: TopNavProps) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const buildHref = (base: string) =>
+    activeBotId ? `${base}?bot=${activeBotId}` : base
 
   async function handleSignOut() {
     await authClient.signOut()
@@ -59,12 +62,12 @@ export function TopNav({ userEmail, bots, activeBotId }: TopNavProps) {
 
         {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-1 flex-1">
-          {NAV_LINKS.map((link) => {
+          {NAV_BASES.map((link) => {
             const active = pathname === link.href
             return (
               <a
                 key={link.href}
-                href={link.href}
+                href={buildHref(link.href)}
                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   active
                     ? 'bg-[var(--of-primary-soft)] text-[var(--of-primary-text-light)]'
@@ -110,12 +113,13 @@ export function TopNav({ userEmail, bots, activeBotId }: TopNavProps) {
       {/* Mobile nav */}
       {mobileOpen && (
         <div className="sm:hidden border-t border-[var(--hairline)] bg-[var(--surface)] px-4 py-3 space-y-1">
-          {NAV_LINKS.map((link) => {
+          <p className="text-xs text-[var(--ink-subtle)] px-3 pt-1 pb-2 truncate">{userEmail}</p>
+          {NAV_BASES.map((link) => {
             const active = pathname === link.href
             return (
               <a
                 key={link.href}
-                href={link.href}
+                href={buildHref(link.href)}
                 className={`block px-3 py-2.5 rounded-md text-sm font-medium min-h-[44px] flex items-center ${
                   active
                     ? 'bg-[var(--of-primary-soft)] text-[var(--of-primary-text-light)]'

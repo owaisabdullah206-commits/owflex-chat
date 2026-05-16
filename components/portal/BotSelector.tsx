@@ -1,5 +1,6 @@
 'use client'
 
+import { ChevronDown } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 interface Bot {
@@ -25,16 +26,21 @@ export function BotSelector({ bots, activeBotId }: BotSelectorProps) {
   }
 
   return (
-    <select
-      value={activeBotId}
-      onChange={handleChange}
-      className="text-sm bg-[var(--bg)] border border-[var(--hairline)] rounded-md px-2 py-1.5 text-[var(--ink)] focus:outline-none focus:border-[var(--of-primary)] cursor-pointer"
-    >
-      {bots.map((b) => (
-        <option key={b.id} value={b.id}>
-          {b.name}
-        </option>
-      ))}
-    </select>
+    <div className="relative flex items-center">
+      <select
+        value={activeBotId}
+        onChange={handleChange}
+        className="appearance-none h-8 pl-3 pr-8 text-sm bg-[var(--surface)] border border-[var(--hairline)]
+          rounded-lg text-[var(--ink)] focus:outline-none focus:border-[var(--of-primary)] cursor-pointer
+          hover:border-[var(--hairline-strong)] transition-colors"
+      >
+        {bots.map((b) => (
+          <option key={b.id} value={b.id}>
+            {b.name}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="absolute right-2 h-3.5 w-3.5 text-[var(--ink-muted)] pointer-events-none" />
+    </div>
   )
 }

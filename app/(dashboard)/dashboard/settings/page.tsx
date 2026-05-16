@@ -3,6 +3,7 @@ import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
+import { SignOutButton } from '@/components/dashboard/SignOutButton'
 
 export default async function SettingsPage() {
   const user = await requireDeveloper()
@@ -52,6 +53,12 @@ export default async function SettingsPage() {
             >
               View credit balance and purchase credits →
             </a>
+          </div>
+
+          {/* Session */}
+          <div>
+            <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Session</h2>
+            <SignOutButton />
           </div>
         </div>
       </main>

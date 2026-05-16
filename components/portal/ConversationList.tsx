@@ -1,4 +1,4 @@
-import { ExternalLink, MessageSquare } from 'lucide-react'
+import { ChevronRight, ExternalLink, MessageSquare } from 'lucide-react'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 
 interface Conversation {
@@ -37,37 +37,47 @@ export function ConversationList({ conversations }: ConversationListProps) {
         <a
           key={conv.id}
           href={`/portal/conversations/${conv.id}`}
-          className="flex items-center gap-4 px-4 py-3.5 min-h-[44px] hover:bg-[var(--bg)] transition-colors"
+          className="flex items-center gap-4 px-4 py-4 min-h-[44px] hover:bg-[var(--bg)] transition-colors group"
         >
+          {/* Icon */}
+          <div className="w-8 h-8 rounded-lg bg-[var(--of-primary-soft)] flex items-center justify-center shrink-0">
+            <MessageSquare className="h-4 w-4 text-[var(--of-primary-text-light)]" />
+          </div>
+
+          {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <RelativeTime
-                date={conv.startedAt}
-                className="text-sm font-medium text-[var(--ink)]"
-              />
-              {conv.hasLead && (
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
-                  Lead
-                </span>
+            {conv.preview ? (
+              <p className="text-sm font-medium text-[var(--ink)] line-clamp-1">{conv.preview}</p>
+            ) : (
+              <p className="text-sm font-medium text-[var(--ink-muted)] italic">No messages</p>
+            )}
+            <div className="flex items-center gap-2 mt-0.5">
+              <RelativeTime date={conv.startedAt} className="text-xs text-[var(--ink-subtle)]" />
+              {conv.pageUrl && (
+                <>
+                  <span className="text-[var(--hairline-strong)]">·</span>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <ExternalLink className="h-3 w-3 text-[var(--ink-subtle)] shrink-0" />
+                    <span className="text-xs text-[var(--ink-muted)] truncate">
+                      {truncate(conv.pageUrl, 40)}
+                    </span>
+                  </div>
+                </>
               )}
             </div>
-            {conv.pageUrl && (
-              <div className="flex items-center gap-1 mt-0.5">
-                <ExternalLink className="h-3 w-3 text-[var(--ink-subtle)] shrink-0" />
-                <span className="text-xs text-[var(--ink-muted)] truncate">
-                  {truncate(conv.pageUrl, 40)}
-                </span>
-              </div>
-            )}
-            {conv.preview && (
-              <p className="text-xs text-[var(--ink-subtle)] mt-0.5 line-clamp-1">{conv.preview}</p>
-            )}
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
+
+          {/* Right badges + arrow */}
+          <div className="flex items-center gap-2 shrink-0">
+            {conv.hasLead && (
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                Lead
+              </span>
+            )}
             <span className="text-xs font-medium text-[var(--ink-muted)] bg-[var(--bg)] border border-[var(--hairline)] px-2 py-0.5 rounded-full">
               {conv.messageCount} msgs
             </span>
-            <span className="text-[var(--ink-subtle)] text-sm">→</span>
+            <ChevronRight className="h-4 w-4 text-[var(--ink-subtle)] group-hover:text-[var(--ink)] transition-colors" />
           </div>
         </a>
       ))}
