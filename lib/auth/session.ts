@@ -40,6 +40,12 @@ export async function requireClient() {
   redirect('/portal/login?error=not-client')
 }
 
+export async function requirePlatformOwner() {
+  const user = await requireDeveloper()
+  if (user.email !== process.env.PLATFORM_OWNER_EMAIL) redirect('/dashboard')
+  return user
+}
+
 export async function getSession() {
   return auth.api.getSession({ headers: await headers() })
 }

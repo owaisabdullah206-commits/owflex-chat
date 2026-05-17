@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ChevronDown, LogOut, Menu, X } from 'lucide-react'
+import { ChevronDown, LogOut, Menu, Settings, X } from 'lucide-react'
 
 interface Bot {
   id: string
@@ -28,6 +28,7 @@ const NAV_BASES = [
   { label: 'Overview', href: '/portal' },
   { label: 'Conversations', href: '/portal/conversations' },
   { label: 'Leads', href: '/portal/leads' },
+  { label: 'Settings', href: '/portal/settings' },
 ]
 
 export function TopNav({ userEmail, bots, activeBotId }: TopNavProps) {
@@ -92,6 +93,12 @@ export function TopNav({ userEmail, bots, activeBotId }: TopNavProps) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <a href="/portal/settings" className="flex items-center cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Account Settings
+                </a>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleSignOut}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign out

@@ -24,6 +24,8 @@ interface ChatCompletionParams {
 interface ChatCompletionResult {
   content: string
   tokensUsed: number
+  inputTokens: number
+  outputTokens: number
   modelUsed: string
 }
 
@@ -58,13 +60,15 @@ export async function chatCompletion({
 
   const data = await response.json() as {
     choices: Array<{ message: { content: string } }>
-    usage?: { total_tokens?: number }
+    usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number }
     model?: string
   }
 
   const content = data.choices[0]?.message?.content ?? ''
-  const tokensUsed = data.usage?.total_tokens ?? 0
+  const inputTokens = data.usage?.prompt_tokens ?? 0
+  const outputTokens = data.usage?.completion_tokens ?? 0
+  const tokensUsed = data.usage?.total_tokens ?? (inputTokens + outputTokens)
   const modelUsed = data.model ?? resolvedModel
 
-  return { content, tokensUsed, modelUsed }
+  return { content, tokensUsed, inputTokens, outputTokens, modelUsed }
 }

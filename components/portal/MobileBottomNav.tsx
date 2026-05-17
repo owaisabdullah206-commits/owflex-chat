@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, LogOut, MessageSquare, Users } from 'lucide-react'
+import { LayoutDashboard, LogOut, MessageSquare, Users, Settings } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 
 const items = [
   { href: '/portal',               label: 'Overview',      icon: LayoutDashboard },
   { href: '/portal/conversations', label: 'Conversations', icon: MessageSquare },
   { href: '/portal/leads',         label: 'Leads',         icon: Users },
+  { href: '/portal/settings',      label: 'Settings',      icon: Settings },
 ]
 
 export function MobileBottomNav() {

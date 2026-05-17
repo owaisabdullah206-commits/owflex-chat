@@ -12,18 +12,24 @@ import { checkConversationLimit } from '@/lib/limits'
 import { retrieveContext } from '@/lib/knowledge/retriever'
 import { renderDocContext, composeSystemPrompt } from '@/lib/knowledge/prompt-builder'
 import { routeMessage } from '@/lib/ai/router'
+import { getCurrentModelPrice } from '@/lib/db/queries/admin'
 
 const LEAD_INSTRUCTIONS = `
 
 ---
 LEAD CAPTURE (system — invisible to users):
-When a user naturally shares their name, email address, or phone number, append this marker on a new line at the very end of your response:
-[LEAD:{"name":"their name","email":"their email","phone":"their phone"}]
-Rules:
-- Only include fields the user actually provided; omit the rest entirely.
-- Never tell the user you are saving their information.
-- This marker is automatically stripped before the user sees your message.
-- If the user hasn't shared any contact info, do not include the marker.`
+Your goal is to naturally collect the user's contact information (name, email, or phone) during the conversation. Follow these rules:
+
+1. After you have answered the user's first or second question and the conversation feels natural, ask for their name and preferred contact method (email or phone). Frame it as a way to follow up or send them more information — never as a requirement.
+   Example: "By the way, if you'd like me to send you more details or follow up, feel free to share your name and email."
+
+2. Never demand contact info. If they decline or ignore the request, do not ask again.
+
+3. When the user shares their name, email, or phone — at any point — append this marker on a new line at the very end of your response:
+   [LEAD:{"name":"their name","email":"their email","phone":"their phone"}]
+   - Only include fields the user actually provided; omit the rest entirely.
+   - Never tell the user you are saving their information.
+   - This marker is automatically stripped before the user sees your message.`
 
 const bodySchema = z.object({
   embedKey: z.string().min(1),
@@ -77,6 +83,7 @@ export async function POST(req: NextRequest) {
         orgId:               schema.bots.orgId,
         orgPlan:             schema.organizations.plan,
         convCount:           schema.organizations.conversationsThisMonth,
+        bannedAt:            schema.organizations.bannedAt,
         smartRoutingEnabled: schema.bots.smartRoutingEnabled,
         documentCount: sql<number>`(
           SELECT COUNT(*)::int FROM documents
@@ -92,6 +99,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: 'Bot not found', code: 'NOT_FOUND', status: 404 },
         { status: 404 },
+      )
+    }
+
+    if (bot.bannedAt) {
+      return NextResponse.json(
+        { error: 'Account suspended', code: 'SUSPENDED', status: 403 },
+        { status: 403 },
       )
     }
 
@@ -218,6 +232,8 @@ export async function POST(req: NextRequest) {
 
     let content: string
     let tokensUsed: number
+    let inputTokens: number
+    let outputTokens: number
     let modelUsed: string
 
     try {
@@ -228,6 +244,8 @@ export async function POST(req: NextRequest) {
       })
       content = result.content
       tokensUsed = result.tokensUsed
+      inputTokens = result.inputTokens
+      outputTokens = result.outputTokens
       modelUsed = result.modelUsed
     } catch (llmErr) {
       // Full refund on LLM failure
@@ -240,12 +258,28 @@ export async function POST(req: NextRequest) {
     const overpay = actualDebit - tokensUsed
     if (overpay > 0) await creditLib.refund(bot.orgId, overpay)
 
+    // Compute USD cost using active model price (manual takes priority over API price)
+    let costUsd = '0'
+    try {
+      const price = await getCurrentModelPrice(modelUsed)
+      if (price) {
+        const inputCost  = (inputTokens  / 1_000_000) * parseFloat(price.promptPricePer1M)
+        const outputCost = (outputTokens / 1_000_000) * parseFloat(price.completionPricePer1M)
+        costUsd = (inputCost + outputCost).toFixed(8)
+      }
+    } catch {
+      // Non-blocking — missing price row shouldn't break chat
+    }
+
     // Insert assistant message (flag if response signals uncertainty)
     const [insertedMsg] = await db.insert(schema.messages).values({
       conversationId: conversation.id,
       role: 'assistant',
       content,
       tokensUsed,
+      inputTokens,
+      outputTokens,
+      costUsd,
       modelUsed,
       flaggedUnanswered: flagIfUnanswered(content),
     }).returning({ id: schema.messages.id })

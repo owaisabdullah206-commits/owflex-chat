@@ -4,6 +4,7 @@ import {
   varchar,
   boolean,
   integer,
+  numeric,
   timestamp,
   jsonb,
   index,
@@ -74,6 +75,8 @@ export const organizations = pgTable('organizations', {
   plan:                   varchar('plan', { length: 20 }).notNull().default('free'),
   conversationsThisMonth: integer('conversations_this_month').notNull().default(0),
   leadsThisMonth:         integer('leads_this_month').notNull().default(0),
+  bannedAt:               tsz('banned_at'),
+  banReason:              text('ban_reason'),
   createdAt:              tsz('created_at').defaultNow().notNull(),
 })
 
@@ -117,6 +120,9 @@ export const messages = pgTable('messages', {
   role:             varchar('role', { length: 10 }).notNull(), // 'user' | 'assistant'
   content:          text('content').notNull(),
   tokensUsed:       integer('tokens_used').notNull().default(0),
+  inputTokens:      integer('input_tokens').notNull().default(0),
+  outputTokens:     integer('output_tokens').notNull().default(0),
+  costUsd:          numeric('cost_usd', { precision: 14, scale: 8 }).notNull().default('0'),
   modelUsed:        varchar('model_used', { length: 100 }),
   flaggedUnanswered: boolean('flagged_unanswered').notNull().default(false),
   createdAt:        tsz('created_at').defaultNow().notNull(),
@@ -141,9 +147,12 @@ export const leads = pgTable('leads', {
 // ── PLATFORM CONFIG ───────────────────────────────────────────────────────────
 // Single-row table. Always accessed via id = 'default'.
 export const platformConfig = pgTable('platform_config', {
-  id:           varchar('id', { length: 20 }).primaryKey(), // always 'default'
-  systemPrompt: text('system_prompt').notNull().default(''),
-  updatedAt:    tsz('updated_at').defaultNow().notNull(),
+  id:                  varchar('id', { length: 20 }).primaryKey(), // always 'default'
+  systemPrompt:        text('system_prompt').notNull().default(''),
+  // JSON map: { [modelId]: 'manual' | 'openrouter-api' }
+  // Default per model: 'manual' (manual takes priority when both exist)
+  modelPricePriority:  jsonb('model_price_priority').notNull().default({}),
+  updatedAt:           tsz('updated_at').defaultNow().notNull(),
 })
 
 // ── BOT FAQS ──────────────────────────────────────────────────────────────────
@@ -229,6 +238,23 @@ export const documentChunks = pgTable('document_chunks', {
 }, (t) => [
   index('document_chunks_document_id_idx').on(t.documentId),
   index('document_chunks_bot_id_idx').on(t.botId),
+])
+
+// ── MODEL PRICES ──────────────────────────────────────────────────────────────
+// Append-only price history. Priority: manual > openrouter-api (most recent of each).
+export const modelPrices = pgTable('model_prices', {
+  id:                   text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  modelId:              varchar('model_id', { length: 150 }).notNull(),
+  // USD per 1M tokens (stored as string due to Drizzle numeric type)
+  promptPricePer1M:     numeric('prompt_price_per_1m', { precision: 14, scale: 8 }).notNull(),
+  completionPricePer1M: numeric('completion_price_per_1m', { precision: 14, scale: 8 }).notNull(),
+  effectiveFrom:        tsz('effective_from').defaultNow().notNull(),
+  // 'openrouter-api' | 'manual'
+  source:               varchar('source', { length: 20 }).notNull().default('openrouter-api'),
+  createdAt:            tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('model_prices_model_id_idx').on(t.modelId),
+  index('model_prices_model_source_idx').on(t.modelId, t.source),
 ])
 
 // ── ROUTING DECISIONS (Phase 3) ───────────────────────────────────────────────
