@@ -24,7 +24,7 @@ function ToggleButton({ theme, onToggle }: { theme: Theme; onToggle: () => void 
     <button
       onClick={onToggle}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md
+      className="flex items-center gap-1.5 px-2.5 py-1.5
                  text-[var(--ink-muted)] text-xs font-medium
                  bg-[var(--surface-2)] border border-[var(--hairline)]
                  hover:text-[var(--ink)] transition-colors"

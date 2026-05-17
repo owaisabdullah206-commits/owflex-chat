@@ -5,7 +5,7 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 
-const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
+const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-3)] border-b border-[var(--hairline)]'
 const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[13px]'
 
 export default async function ClientsPage() {
@@ -102,7 +102,7 @@ export default async function ClientsPage() {
                 </thead>
                 <tbody className="bg-[var(--surface)]">
                   {rows.map((row) => (
-                    <tr key={row.botId} className="hover:bg-[var(--surface-2)] transition-colors">
+                    <tr key={row.botId} className="odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors">
                       <td className={`${tdClass} font-medium text-[var(--ink)]`}>
                         {row.clientEmail}
                       </td>

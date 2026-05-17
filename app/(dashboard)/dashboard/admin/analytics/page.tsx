@@ -141,7 +141,7 @@ export default async function AdminAnalyticsPage() {
             <div className="h-[2px] bg-[var(--of-primary)] w-full" />
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[var(--hairline)]">
+                <tr className="border-b border-[var(--hairline)] bg-[var(--surface-3)]">
                   {['Plan', 'Developers', 'Price / mo (PKR)', 'MRR Contribution'].map((h) => (
                     <th key={h} className="px-5 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]">
                       {h}
@@ -155,7 +155,7 @@ export default async function AdminAnalyticsPage() {
                   const cnt  = row?.cnt ?? 0
                   const price = PKR_PRICES[plan]
                   return (
-                    <tr key={plan} className="border-b border-[var(--hairline)] hover:bg-[var(--surface-2)] transition-colors">
+                    <tr key={plan} className="border-b border-[var(--hairline)] odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors">
                       <td className="px-5 py-3">
                         <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--ink)]">{plan}</span>
                       </td>

@@ -16,7 +16,7 @@ function truncate(str: string, len: number) {
   return str.length > len ? str.slice(0, len) + '…' : str
 }
 
-const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
+const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-3)] border-b border-[var(--hairline)]'
 const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[13px] last:border-b-0'
 
 export function ConversationTable({ conversations }: ConversationTableProps) {
@@ -43,7 +43,7 @@ export function ConversationTable({ conversations }: ConversationTableProps) {
         </thead>
         <tbody className="bg-[var(--surface)]">
           {conversations.map((conv) => (
-            <tr key={conv.id} className="hover:bg-[var(--surface-2)] transition-colors">
+            <tr key={conv.id} className="odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors">
               <td className={`${tdClass} text-[var(--ink-muted)]`}>
                 <RelativeTime date={conv.startedAt} />
               </td>

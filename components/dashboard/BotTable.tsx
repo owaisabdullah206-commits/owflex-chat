@@ -20,7 +20,7 @@ function formatDate(date: Date) {
   }).format(new Date(date))
 }
 
-const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
+const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-3)] border-b border-[var(--hairline)]'
 const tdClass = 'px-4 py-3 text-[13px] border-b border-[var(--hairline)] last:border-b-0'
 
 export function BotTable({ bots }: BotTableProps) {
@@ -45,7 +45,7 @@ export function BotTable({ bots }: BotTableProps) {
             </tr>
           ) : (
             bots.map((bot) => (
-              <tr key={bot.id} className="hover:bg-[var(--surface-2)] transition-colors">
+              <tr key={bot.id} className="odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors">
                 <td className={tdClass}>
                   <Link
                     href={`/dashboard/bots/${bot.id}`}

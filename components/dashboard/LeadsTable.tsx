@@ -20,7 +20,7 @@ interface LeadsTableProps {
   showBot?: boolean
 }
 
-const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
+const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-3)] border-b border-[var(--hairline)]'
 const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[13px]'
 
 export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
@@ -62,7 +62,7 @@ export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
         </thead>
         <tbody className="bg-[var(--surface)]">
           {sorted.map((lead) => (
-            <tr key={lead.id} className="hover:bg-[var(--surface-2)] transition-colors">
+            <tr key={lead.id} className="odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors">
               <td className={`${tdClass} font-medium text-[var(--ink)]`}>{lead.name ?? '—'}</td>
               <td className={`${tdClass} text-[var(--ink-muted)]`}>{lead.email ?? '—'}</td>
               <td className={`${tdClass} text-[var(--ink-muted)]`}>{formatPhone(lead.phone)}</td>

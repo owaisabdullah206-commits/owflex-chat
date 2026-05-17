@@ -204,7 +204,7 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
         <div className="h-[2px] bg-[var(--of-primary)]" />
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[var(--hairline)] bg-[var(--surface)]">
+            <tr className="border-b border-[var(--hairline)] bg-[var(--surface-3)]">
               {['Developer', 'Plan', 'Bots', 'Msgs / Mo', 'Credits', 'Joined', 'Status', 'Actions'].map((h) => (
                 <th
                   key={h}
@@ -220,7 +220,7 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
               <tr
                 key={dev.userId}
                 className={cn(
-                  'border-b border-[var(--hairline)] hover:bg-[var(--surface-2)] transition-colors',
+                  'border-b border-[var(--hairline)] odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors',
                   dev.bannedAt && 'opacity-50',
                 )}
               >

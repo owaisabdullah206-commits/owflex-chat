@@ -160,7 +160,7 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
         <div className="h-[2px] bg-[var(--of-primary)]" />
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[var(--hairline)] bg-[var(--surface)]">
+            <tr className="border-b border-[var(--hairline)] bg-[var(--surface-3)]">
               {['Model', 'Active Price', 'Manual', 'API Price', 'Priority', 'Actions'].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]">
                   {h}
@@ -174,7 +174,7 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
               const isEditingThis = editing === modelId
 
               return (
-                <tr key={modelId} className="border-b border-[var(--hairline)] hover:bg-[var(--surface-2)] transition-colors">
+                <tr key={modelId} className="border-b border-[var(--hairline)] odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors">
                   {/* Model ID */}
                   <td className="px-4 py-3">
                     <span className="font-mono text-xs text-[var(--ink)]">{modelId}</span>
