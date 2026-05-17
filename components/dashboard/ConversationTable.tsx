@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { ExternalLink } from 'lucide-react'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 
@@ -36,9 +37,10 @@ export function ConversationTable({ conversations }: ConversationTableProps) {
       <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
         <thead>
           <tr>
-            <th className={thClass}>started_at</th>
-            <th className={thClass}>page_url</th>
-            <th className={thClass}>msg_count</th>
+            <th className={thClass}>Started</th>
+            <th className={thClass}>Page URL</th>
+            <th className={thClass}>Messages</th>
+            <th className={thClass}></th>
           </tr>
         </thead>
         <tbody className="bg-[var(--surface)]">
@@ -61,6 +63,14 @@ export function ConversationTable({ conversations }: ConversationTableProps) {
               </td>
               <td className={`${tdClass} text-[var(--ink)]`}>
                 {conv.messageCount}
+              </td>
+              <td className={tdClass}>
+                <Link
+                  href={`/dashboard/conversations/${conv.id}`}
+                  className="text-xs text-[var(--of-primary)] hover:opacity-75 transition-opacity"
+                >
+                  View →
+                </Link>
               </td>
             </tr>
           ))}

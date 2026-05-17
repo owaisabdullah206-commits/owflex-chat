@@ -167,7 +167,9 @@ export async function POST(req: NextRequest) {
     const leadEnabled = wc.leadCaptureEnabled !== false
     const strictMode = wc.strictMode === true
     const strictInstructions = strictMode
-      ? 'STRICT MODE: Only answer questions directly related to your purpose, system prompt, and knowledge base above. For anything outside your knowledge, respond: "I\'m sorry, I don\'t have information about that. Please contact us directly for assistance."'
+      ? leadEnabled
+        ? 'STRICT MODE: Only answer questions directly related to your purpose, system prompt, and knowledge base above. For anything outside your knowledge base, do NOT make up an answer. Instead, acknowledge you don\'t have that specific information and offer to collect the visitor\'s contact details so the team can follow up with them personally.'
+        : 'STRICT MODE: Only answer questions directly related to your purpose, system prompt, and knowledge base above. For anything outside your knowledge base, respond: "I\'m sorry, I don\'t have information about that. Please contact us directly for assistance."'
       : ''
 
     const finalSystemPrompt = composeSystemPrompt({
