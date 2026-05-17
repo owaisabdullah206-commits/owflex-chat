@@ -13,7 +13,7 @@ interface CreditBalanceProps {
   appUrl: string
 }
 
-function PackRow({ packId, appUrl }: { packId: PackId; appUrl: string }) {
+function PackCard({ packId, appUrl }: { packId: PackId; appUrl: string }) {
   const pack = CREDIT_PACKS[packId]
   const label = packId.charAt(0).toUpperCase() + packId.slice(1)
   const tokensLabel = pack.tokens >= 1_000_000
@@ -24,29 +24,32 @@ function PackRow({ packId, appUrl }: { packId: PackId; appUrl: string }) {
   const pfReturnUrl = `${appUrl}/dashboard/billing`
 
   return (
-    <div className="flex items-center justify-between py-3 px-5">
+    <div className="rounded-xl border border-[var(--hairline)] bg-[var(--surface)] p-5 flex flex-col gap-4">
       <div>
-        <p className="text-sm font-medium text-[var(--ink)]">{label}</p>
-        <p className="text-xs text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+        <p className="text-sm font-semibold text-[var(--ink)]">{label}</p>
+        <p
+          className="text-2xl font-bold text-[var(--ink)] mt-1.5"
+          style={{ fontFamily: 'var(--font-mono)' }}
+        >
           {tokensLabel}
         </p>
+        <p className="text-xs text-[var(--ink-muted)] mt-1" style={{ fontFamily: 'var(--font-mono)' }}>
+          Rs {pack.pkr.toLocaleString()} &nbsp;·&nbsp; ${pack.usd} USD
+        </p>
       </div>
-      <div className="flex items-center gap-4 text-xs text-[var(--ink-muted)]">
-        <span style={{ fontFamily: 'var(--font-mono)' }}>Rs {pack.pkr.toLocaleString()} / ${pack.usd}</span>
-        <div className="flex gap-2">
-          <a
-            href={`/api/billing/payfast-url?pack=${packId}&returnUrl=${encodeURIComponent(pfReturnUrl)}&notifyUrl=${encodeURIComponent(pfNotifyUrl)}`}
-            className="px-3 py-1 rounded bg-[var(--of-primary)] text-white text-xs hover:opacity-90 transition-opacity"
-          >
-            PayFast
-          </a>
-          <a
-            href={`/api/billing/ls-url?pack=${packId}`}
-            className="px-3 py-1 rounded border border-[var(--hairline)] text-[var(--ink)] text-xs hover:bg-[var(--surface-2)] transition-colors"
-          >
-            Lemon Squeezy
-          </a>
-        </div>
+      <div className="flex gap-2 mt-auto">
+        <a
+          href={`/api/billing/payfast-url?pack=${packId}&returnUrl=${encodeURIComponent(pfReturnUrl)}&notifyUrl=${encodeURIComponent(pfNotifyUrl)}`}
+          className="flex-1 text-center py-2 rounded-lg bg-[var(--of-primary)] text-white text-xs font-medium hover:opacity-90 transition-opacity"
+        >
+          PayFast
+        </a>
+        <a
+          href={`/api/billing/ls-url?pack=${packId}`}
+          className="flex-1 text-center py-2 rounded-lg border border-[var(--hairline)] text-[var(--ink)] text-xs font-medium hover:bg-[var(--surface-2)] transition-colors"
+        >
+          Lemon Squeezy
+        </a>
       </div>
     </div>
   )
@@ -55,25 +58,21 @@ function PackRow({ packId, appUrl }: { packId: PackId; appUrl: string }) {
 export function CreditBalance({ balance, transactions, appUrl }: CreditBalanceProps) {
   return (
     <div className="space-y-6">
-      {/* Balance card */}
-      <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] px-6 py-5">
-        <p className="text-xs text-[var(--ink-muted)] uppercase tracking-wide mb-1">Credit Balance</p>
-        <p className="text-3xl font-bold text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>
-          {balance.toLocaleString()}
-        </p>
-        <p className="text-xs text-[var(--ink-muted)] mt-1">tokens remaining</p>
-      </div>
-
-      {/* Credit packs */}
+      {/* Buy Credits */}
       <div>
-        <h3 className="text-sm font-semibold text-[var(--ink)] mb-2">Buy Credits</h3>
-        <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
+        <div className="flex items-baseline justify-between mb-3">
+          <h3 className="text-sm font-semibold text-[var(--ink)]">Buy Credits</h3>
+          <span className="text-xs text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+            {balance.toLocaleString()} tokens remaining
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {(Object.keys(CREDIT_PACKS) as PackId[]).map((packId) => (
-            <PackRow key={packId} packId={packId} appUrl={appUrl} />
+            <PackCard key={packId} packId={packId} appUrl={appUrl} />
           ))}
         </div>
-        <p className="text-xs text-[var(--ink-muted)] mt-2">
-          PayFast — PKR · Lemon Squeezy — USD. Credits never expire.
+        <p className="text-xs text-[var(--ink-muted)] mt-3">
+          PayFast accepts PKR &nbsp;·&nbsp; Lemon Squeezy accepts USD &nbsp;·&nbsp; Credits never expire
         </p>
       </div>
 

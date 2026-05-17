@@ -211,30 +211,29 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         {/* Tab content */}
         <div className="px-4 sm:px-8 py-6">
           {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              {/* Left column */}
-              <div className="xl:col-span-2 space-y-6">
-                {/* Live stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <StatCard label="Conversations this month" value={convMonthCount[0]?.count ?? 0} />
-                  <StatCard label="Leads this month" value={leadsMonthCount[0]?.count ?? 0} />
-                  <StatCard label="Conversations this week" value={convWeekCount[0]?.count ?? 0} />
-                </div>
+            <div className="space-y-6">
+              {/* Stats row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <StatCard label="Conversations this month" value={convMonthCount[0]?.count ?? 0} />
+                <StatCard label="Leads this month" value={leadsMonthCount[0]?.count ?? 0} />
+                <StatCard label="Conversations this week" value={convWeekCount[0]?.count ?? 0} />
+              </div>
 
-                {/* Embed code */}
-                <div>
-                  <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Embed Script</h2>
-                  <EmbedCodeBlock embedKey={bot.embedKey} />
-                  <p className="text-xs text-[var(--ink-muted)] mt-2">
-                    Paste this script before the closing{' '}
-                    <code style={{ fontFamily: 'var(--font-mono)' }} className="px-1 py-0.5 rounded bg-[var(--surface-2)]">
-                      {'</body>'}
-                    </code>{' '}
-                    tag of any website.
-                  </p>
-                </div>
+              {/* Embed code */}
+              <div>
+                <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Embed Script</h2>
+                <EmbedCodeBlock embedKey={bot.embedKey} />
+                <p className="text-xs text-[var(--ink-muted)] mt-2">
+                  Paste this script before the closing{' '}
+                  <code style={{ fontFamily: 'var(--font-mono)' }} className="px-1 py-0.5 rounded bg-[var(--surface-2)]">
+                    {'</body>'}
+                  </code>{' '}
+                  tag of any website.
+                </p>
+              </div>
 
-                {/* Bot details */}
+              {/* Bot Details + Client Access — same row on desktop */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
                   <div className="px-5 py-4">
                     <p className="text-xs text-[var(--ink-muted)] mb-1">Embed Key</p>
@@ -253,17 +252,10 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                     <p className="text-sm text-[var(--ink)] whitespace-pre-wrap">{bot.systemPrompt}</p>
                   </div>
                 </div>
-              </div>
-
-              {/* Client status — always visible below left column on non-xl */}
-              <div className="xl:hidden">
-                <ClientStatusCard botId={bot.id} client={clientProp} invite={inviteProp} />
-              </div>
-
-              {/* Right column — quick actions + client status (xl+) */}
-              <div className="hidden xl:block space-y-4">
-                <ClientStatusCard botId={bot.id} client={clientProp} invite={inviteProp} />
-                <QuickActionsPanel botId={bot.id} />
+                <div className="space-y-4">
+                  <ClientStatusCard botId={bot.id} client={clientProp} invite={inviteProp} />
+                  <QuickActionsPanel botId={bot.id} />
+                </div>
               </div>
             </div>
           )}
