@@ -42,7 +42,7 @@ export async function requireClient() {
 
 export async function requirePlatformOwner() {
   const user = await requireDeveloper()
-  if (user.email !== process.env.PLATFORM_OWNER_EMAIL) redirect('/dashboard')
+  if (user.email !== process.env.NEXT_PUBLIC_PLATFORM_OWNER_EMAIL) redirect('/dashboard')
   return user
 }
 
