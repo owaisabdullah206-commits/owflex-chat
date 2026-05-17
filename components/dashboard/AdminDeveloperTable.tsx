@@ -185,10 +185,12 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
           <select
             value={planFilter}
             onChange={(e) => setPlanFilter(e.target.value)}
-            className="appearance-none pl-3 pr-8 py-2 text-sm bg-[var(--bg)] border border-[var(--hairline-md)] text-[var(--ink)] focus:outline-none focus:border-[var(--of-primary)]"
+            className="appearance-none pl-3 pr-8 py-2 text-sm bg-[var(--bg)] border border-[var(--hairline-md)] text-[var(--ink)] focus:outline-none focus:border-[var(--of-primary)] cursor-pointer"
           >
-            <option value="all">All plans</option>
-            {PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
+            <option value="all">All Plans</option>
+            {PLANS.map((p) => (
+              <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
+            ))}
           </select>
           <ChevronDown className="pointer-events-none absolute right-2 top-2.5 h-3.5 w-3.5 text-[var(--ink-muted)]" />
         </div>
@@ -245,7 +247,9 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
                         }}
                         className="appearance-none text-[10px] opacity-0 absolute inset-0 w-full cursor-pointer"
                       >
-                        {PLANS.map((p) => <option key={p} value={p}>{p}</option>)}
+                        {PLANS.map((p) => (
+                          <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
+                        ))}
                       </select>
                       <ChevronDown className="h-3 w-3 text-[var(--ink-subtle)] cursor-pointer" />
                     </div>

@@ -46,7 +46,7 @@ export default async function ConversationDetailPage({ params }: ConversationDet
 
   return (
     <div className="min-h-screen">
-      <TopNav userEmail={user.email} />
+      <TopNav userEmail={user.email} userName={user.name} />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-6">
           <a

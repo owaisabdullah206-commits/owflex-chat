@@ -20,6 +20,7 @@ interface Bot {
 
 interface TopNavProps {
   userEmail: string
+  userName?: string | null
   bots?: Bot[]
   activeBotId?: string
 }
@@ -31,7 +32,7 @@ const NAV_BASES = [
   { label: 'Settings', href: '/portal/settings' },
 ]
 
-export function TopNav({ userEmail, bots, activeBotId }: TopNavProps) {
+export function TopNav({ userEmail, userName, bots, activeBotId }: TopNavProps) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -88,7 +89,7 @@ export function TopNav({ userEmail, bots, activeBotId }: TopNavProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="hidden sm:flex items-center gap-1.5 text-sm text-[var(--ink-muted)] hover:text-[var(--ink)] px-2 py-1.5 rounded-md hover:bg-[var(--bg)] transition-colors cursor-pointer">
-                <span className="max-w-[140px] truncate">{userEmail}</span>
+                <span className="max-w-[140px] truncate">{userName || userEmail}</span>
                 <ChevronDown className="h-3.5 w-3.5 shrink-0" />
               </button>
             </DropdownMenuTrigger>

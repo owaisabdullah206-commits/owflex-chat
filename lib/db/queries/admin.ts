@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { and, count, desc, eq, sql, sum } from 'drizzle-orm'
+import { and, count, desc, eq, inArray, sql, sum } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
@@ -155,7 +155,7 @@ export async function getModelPrices() {
     db
       .select()
       .from(schema.modelPrices)
-      .where(sql`${schema.modelPrices.modelId} = ANY(${SUPPORTED_MODELS})`)
+      .where(inArray(schema.modelPrices.modelId, [...SUPPORTED_MODELS]))
       .orderBy(
         schema.modelPrices.modelId,
         desc(schema.modelPrices.effectiveFrom),

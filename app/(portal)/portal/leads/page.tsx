@@ -48,7 +48,7 @@ export default async function LeadsPage({
   return (
     <div className="min-h-screen">
       <AutoRefresh intervalMs={30_000} />
-      <TopNav userEmail={user.email} bots={bots} activeBotId={bot?.id} />
+      <TopNav userEmail={user.email} userName={user.name} bots={bots} activeBotId={bot?.id} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-[var(--ink)]">Leads</h1>
