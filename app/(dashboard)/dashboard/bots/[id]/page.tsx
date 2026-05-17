@@ -295,11 +295,20 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                     name: bot.name,
                     systemPrompt: bot.systemPrompt,
                     model: bot.model,
-                    primaryColor: ((bot.widgetConfig as { primaryColor?: string }) ?? {}).primaryColor ?? '#0EA5E9',
-                    position: (((bot.widgetConfig as { position?: string }) ?? {}).position as 'bottom-right' | 'bottom-left') ?? 'bottom-right',
-                    welcomeMessage: ((bot.widgetConfig as { welcomeMessage?: string }) ?? {}).welcomeMessage ?? 'Hi! How can I help you today?',
-                    leadCaptureEnabled: ((bot.widgetConfig as { leadCaptureEnabled?: boolean }) ?? {}).leadCaptureEnabled !== false,
-                    strictMode: ((bot.widgetConfig as { strictMode?: boolean }) ?? {}).strictMode === true,
+                    ...(() => {
+                      const wc = (bot.widgetConfig ?? {}) as Record<string, unknown>
+                      return {
+                        primaryColor:       (wc.primaryColor as string)  ?? '#0EA5E9',
+                        position:           ((wc.position as string) === 'bottom-left' ? 'bottom-left' : 'bottom-right') as 'bottom-right' | 'bottom-left',
+                        welcomeMessage:     (wc.welcomeMessage as string) ?? 'Hi! How can I help you today?',
+                        leadCaptureEnabled: (wc.leadCaptureEnabled as boolean) !== false,
+                        strictMode:         (wc.strictMode as boolean)    === true,
+                        triggerIcon:        (wc.triggerIcon as string)    ?? 'message-circle',
+                        borderRadius:       typeof wc.borderRadius === 'number' ? wc.borderRadius : 16,
+                        tooltipEnabled:     (wc.tooltipEnabled as boolean) === true,
+                        tooltipMessages:    Array.isArray(wc.tooltipMessages) ? (wc.tooltipMessages as string[]) : [],
+                      }
+                    })(),
                   }}
                 />
               </div>

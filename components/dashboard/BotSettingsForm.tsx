@@ -1,6 +1,10 @@
 'use client'
 
 import { useTransition, useState, useEffect } from 'react'
+import {
+  MessageCircle, Bot, HelpCircle, Headphones, Sparkles,
+  Zap, MessageSquare, Smile, Sun, Moon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +13,25 @@ import { Switch } from '@/components/ui/switch'
 import { updateBot } from '@/lib/db/queries/bots'
 import { SUPPORTED_MODELS, type SupportedModel } from '@/lib/ai/litellm'
 
+// ─── Trigger icon catalogue ───────────────────────────────────────────────────
+const TRIGGER_ICONS = [
+  { id: 'message-circle', label: 'Chat',     Icon: MessageCircle },
+  { id: 'bot',            label: 'Bot',      Icon: Bot           },
+  { id: 'help-circle',    label: 'Help',     Icon: HelpCircle    },
+  { id: 'headphones',     label: 'Support',  Icon: Headphones    },
+  { id: 'sparkles',       label: 'AI',       Icon: Sparkles      },
+  { id: 'zap',            label: 'Quick',    Icon: Zap           },
+  { id: 'message-square', label: 'Box',      Icon: MessageSquare },
+  { id: 'smile',          label: 'Friendly', Icon: Smile         },
+] as const
+
+type TriggerIconId = typeof TRIGGER_ICONS[number]['id']
+
+function getIconComponent(id: string) {
+  return TRIGGER_ICONS.find((t) => t.id === id)?.Icon ?? MessageCircle
+}
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface BotSettingsFormProps {
   botId: string
   orgPlan: string
@@ -21,23 +44,33 @@ interface BotSettingsFormProps {
     welcomeMessage: string
     leadCaptureEnabled: boolean
     strictMode: boolean
+    triggerIcon: string
+    borderRadius: number
+    tooltipEnabled: boolean
+    tooltipMessages: string[]
   }
 }
 
+// ─── Main form ────────────────────────────────────────────────────────────────
 export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProps) {
   const [isPending, startTransition] = useTransition()
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isDirty, setIsDirty] = useState(false)
 
-  const [name, setName] = useState(initial.name)
-  const [systemPrompt, setSystemPrompt] = useState(initial.systemPrompt)
-  const [model, setModel] = useState(initial.model)
-  const [primaryColor, setPrimaryColor] = useState(initial.primaryColor)
-  const [position, setPosition] = useState(initial.position)
-  const [welcomeMessage, setWelcomeMessage] = useState(initial.welcomeMessage)
-  const [leadCaptureEnabled, setLeadCaptureEnabled] = useState(initial.leadCaptureEnabled)
-  const [strictMode, setStrictMode] = useState(initial.strictMode)
+  const [name, setName]                         = useState(initial.name)
+  const [systemPrompt, setSystemPrompt]         = useState(initial.systemPrompt)
+  const [model, setModel]                       = useState(initial.model)
+  const [primaryColor, setPrimaryColor]         = useState(initial.primaryColor)
+  const [position, setPosition]                 = useState(initial.position)
+  const [welcomeMessage, setWelcomeMessage]     = useState(initial.welcomeMessage)
+  const [leadCaptureEnabled, setLeadCapture]    = useState(initial.leadCaptureEnabled)
+  const [strictMode, setStrictMode]             = useState(initial.strictMode)
+  const [triggerIcon, setTriggerIcon]           = useState<TriggerIconId>(initial.triggerIcon as TriggerIconId)
+  const [borderRadius, setBorderRadius]         = useState(initial.borderRadius)
+  const [tooltipEnabled, setTooltipEnabled]     = useState(initial.tooltipEnabled)
+  const [tooltipMessages, setTooltipMessages]   = useState(initial.tooltipMessages.join('\n'))
+  const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>('dark')
 
   const isFreePlan = orgPlan === 'free'
 
@@ -59,7 +92,17 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         name,
         systemPrompt,
         model: model as SupportedModel,
-        widgetConfig: { primaryColor, position, welcomeMessage, leadCaptureEnabled, strictMode },
+        widgetConfig: {
+          primaryColor,
+          position,
+          welcomeMessage,
+          leadCaptureEnabled,
+          strictMode,
+          triggerIcon,
+          borderRadius,
+          tooltipEnabled,
+          tooltipMessages: tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean),
+        },
       })
       if (result.error) {
         setError(result.error)
@@ -73,211 +116,359 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {isDirty && (
-        <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
-          You have unsaved changes
+      {/* ── Left: form ── */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {isDirty && (
+          <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
+            You have unsaved changes
+          </div>
+        )}
+
+        {/* Bot Name */}
+        <div className="space-y-1.5">
+          <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Bot Name</Label>
+          <Input id="name" value={name}
+            onChange={(e) => { setName(e.target.value); markDirty() }}
+            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+            disabled={isPending} />
         </div>
-      )}
 
-      {/* Bot Name */}
-      <div className="space-y-1.5">
-        <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Bot Name</Label>
-        <Input
-          id="name"
-          value={name}
-          onChange={(e) => { setName(e.target.value); markDirty() }}
-          className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
-          disabled={isPending}
-        />
-      </div>
+        {/* System Prompt */}
+        <div className="space-y-1.5">
+          <Label htmlFor="systemPrompt" className="text-xs text-[var(--ink-muted)]">System Prompt</Label>
+          <Textarea id="systemPrompt" value={systemPrompt}
+            onChange={(e) => { setSystemPrompt(e.target.value); markDirty() }}
+            rows={5}
+            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
+            disabled={isPending} />
+        </div>
 
-      {/* System Prompt */}
-      <div className="space-y-1.5">
-        <Label htmlFor="systemPrompt" className="text-xs text-[var(--ink-muted)]">System Prompt</Label>
-        <Textarea
-          id="systemPrompt"
-          value={systemPrompt}
-          onChange={(e) => { setSystemPrompt(e.target.value); markDirty() }}
-          rows={5}
-          className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
-          disabled={isPending}
-        />
-      </div>
+        {/* Model */}
+        <div className="space-y-1.5">
+          <Label htmlFor="model" className="text-xs text-[var(--ink-muted)]">
+            Model
+            {isFreePlan && (
+              <span className="ml-2 text-[10px] text-[var(--ink-muted)] bg-[var(--surface-2)] px-1.5 py-0.5 rounded">
+                Upgrade to change
+              </span>
+            )}
+          </Label>
+          <select id="model" value={model}
+            onChange={(e) => { setModel(e.target.value); markDirty() }}
+            disabled={isPending || isFreePlan}
+            className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ fontFamily: 'var(--font-mono)' }}>
+            {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </div>
 
-      {/* Model */}
-      <div className="space-y-1.5">
-        <Label htmlFor="model" className="text-xs text-[var(--ink-muted)]">
-          Model
-          {isFreePlan && (
-            <span className="ml-2 text-[10px] text-[var(--ink-muted)] bg-[var(--surface-2)] px-1.5 py-0.5 rounded">
-              Upgrade to change
+        {/* Welcome Message */}
+        <div className="space-y-1.5">
+          <Label htmlFor="welcomeMessage" className="text-xs text-[var(--ink-muted)]">Welcome Message</Label>
+          <Input id="welcomeMessage" value={welcomeMessage}
+            onChange={(e) => { setWelcomeMessage(e.target.value); markDirty() }}
+            maxLength={200}
+            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+            disabled={isPending} />
+        </div>
+
+        {/* Widget Colour */}
+        <div className="space-y-1.5">
+          <Label htmlFor="primaryColor" className="text-xs text-[var(--ink-muted)]">Widget Colour</Label>
+          <div className="flex items-center gap-3">
+            <input id="primaryColor" type="color" value={primaryColor}
+              onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
+              disabled={isPending}
+              className="h-9 w-14 rounded border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50" />
+            <Input value={primaryColor}
+              onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
+              pattern="^#[0-9a-fA-F]{6}$" maxLength={7}
+              className="w-32 bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+              style={{ fontFamily: 'var(--font-mono)' }}
+              disabled={isPending} />
+          </div>
+        </div>
+
+        {/* Trigger Icon */}
+        <div className="space-y-2">
+          <Label className="text-xs text-[var(--ink-muted)]">Trigger Icon</Label>
+          <div className="grid grid-cols-4 gap-2">
+            {TRIGGER_ICONS.map(({ id, label, Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => { setTriggerIcon(id); markDirty() }}
+                disabled={isPending}
+                className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border transition-all cursor-pointer ${
+                  triggerIcon === id
+                    ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)]'
+                    : 'border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink-muted)] hover:border-[var(--hairline-strong)] hover:text-[var(--ink)]'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="text-[10px]">{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Corner Radius */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-[var(--ink-muted)]">Corner Radius</Label>
+            <span className="text-xs text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+              {borderRadius}px
             </span>
-          )}
-        </Label>
-        <select
-          id="model"
-          value={model}
-          onChange={(e) => { setModel(e.target.value); markDirty() }}
-          disabled={isPending || isFreePlan}
-          className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ fontFamily: 'var(--font-mono)' }}
-        >
-          {SUPPORTED_MODELS.map((m) => (
-            <option key={m} value={m}>{m}</option>
-          ))}
-        </select>
-      </div>
+          </div>
+          <input
+            type="range" min={0} max={24} step={2}
+            value={borderRadius}
+            onChange={(e) => { setBorderRadius(Number(e.target.value)); markDirty() }}
+            disabled={isPending}
+            className="w-full accent-[var(--of-primary)]"
+          />
+          <div className="flex justify-between text-[10px] text-[var(--ink-subtle)]">
+            <span>Square</span>
+            <span>Rounded</span>
+          </div>
+        </div>
 
-      {/* Welcome Message */}
-      <div className="space-y-1.5">
-        <Label htmlFor="welcomeMessage" className="text-xs text-[var(--ink-muted)]">Welcome Message</Label>
-        <Input
-          id="welcomeMessage"
-          value={welcomeMessage}
-          onChange={(e) => { setWelcomeMessage(e.target.value); markDirty() }}
-          maxLength={200}
-          className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
-          disabled={isPending}
+        {/* Widget Position */}
+        <div className="space-y-1.5">
+          <Label htmlFor="position" className="text-xs text-[var(--ink-muted)]">Widget Position</Label>
+          <select id="position" value={position}
+            onChange={(e) => { setPosition(e.target.value as 'bottom-right' | 'bottom-left'); markDirty() }}
+            disabled={isPending}
+            className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50">
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+          </select>
+        </div>
+
+        {/* Toggles */}
+        <div className="border-t border-[var(--hairline)] divide-y divide-[var(--hairline)]">
+          {/* Lead Capture */}
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Lead Capture</p>
+              <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically</p>
+            </div>
+            <Switch checked={leadCaptureEnabled}
+              onCheckedChange={(v) => { setLeadCapture(v); markDirty() }}
+              disabled={isPending} />
+          </div>
+
+          {/* Strict Mode */}
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Strict Mode</p>
+              <p className="text-xs text-[var(--ink-muted)]">
+                Bot refuses questions outside its knowledge base and says &ldquo;I don&apos;t know&rdquo;
+              </p>
+            </div>
+            <Switch checked={strictMode}
+              onCheckedChange={(v) => { setStrictMode(v); markDirty() }}
+              disabled={isPending} />
+          </div>
+
+          {/* Tooltip Messages */}
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Trigger Tooltip</p>
+              <p className="text-xs text-[var(--ink-muted)]">Rotating messages shown above the trigger on first load</p>
+            </div>
+            <Switch checked={tooltipEnabled}
+              onCheckedChange={(v) => { setTooltipEnabled(v); markDirty() }}
+              disabled={isPending} />
+          </div>
+        </div>
+
+        {tooltipEnabled && (
+          <div className="space-y-1.5">
+            <Label className="text-xs text-[var(--ink-muted)]">
+              Tooltip Messages
+              <span className="ml-2 text-[var(--ink-subtle)]">(one per line, max 5)</span>
+            </Label>
+            <Textarea
+              value={tooltipMessages}
+              onChange={(e) => { setTooltipMessages(e.target.value); markDirty() }}
+              rows={4}
+              placeholder={`Need help? Ask me!\nHi there! How can I assist?\nGot questions? I'm here!`}
+              className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none text-xs"
+              disabled={isPending}
+            />
+          </div>
+        )}
+
+        {/* Submit */}
+        <div className="flex items-center gap-3 pt-2">
+          <Button type="submit" disabled={isPending}
+            className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white">
+            {isPending ? 'Saving…' : 'Save Changes'}
+          </Button>
+          {saved  && <span className="text-xs text-emerald-400">Saved — widget updates within 5 minutes</span>}
+          {error  && <span className="text-xs text-red-400">{error}</span>}
+        </div>
+      </form>
+
+      {/* ── Right: live preview ── */}
+      <div className="hidden lg:block">
+        <LiveBotPreview
+          botName={name}
+          primaryColor={primaryColor}
+          welcomeMessage={welcomeMessage}
+          triggerIcon={triggerIcon}
+          borderRadius={borderRadius}
+          tooltipEnabled={tooltipEnabled}
+          tooltipMessages={tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean)}
+          theme={previewTheme}
+          onToggleTheme={() => setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark')}
         />
       </div>
-
-      {/* Primary Colour */}
-      <div className="space-y-1.5">
-        <Label htmlFor="primaryColor" className="text-xs text-[var(--ink-muted)]">Widget Colour</Label>
-        <div className="flex items-center gap-3">
-          <input
-            id="primaryColor"
-            type="color"
-            value={primaryColor}
-            onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
-            disabled={isPending}
-            className="h-9 w-14 rounded border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50"
-          />
-          <Input
-            value={primaryColor}
-            onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
-            pattern="^#[0-9a-fA-F]{6}$"
-            maxLength={7}
-            className="w-32 bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
-            style={{ fontFamily: 'var(--font-mono)' }}
-            disabled={isPending}
-          />
-        </div>
-      </div>
-
-      {/* Position */}
-      <div className="space-y-1.5">
-        <Label htmlFor="position" className="text-xs text-[var(--ink-muted)]">Widget Position</Label>
-        <select
-          id="position"
-          value={position}
-          onChange={(e) => { setPosition(e.target.value as 'bottom-right' | 'bottom-left'); markDirty() }}
-          disabled={isPending}
-          className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50"
-        >
-          <option value="bottom-right">Bottom Right</option>
-          <option value="bottom-left">Bottom Left</option>
-        </select>
-      </div>
-
-      {/* Toggles */}
-      <div className="border-t border-[var(--hairline)] divide-y divide-[var(--hairline)]">
-        {/* Lead Capture */}
-        <div className="flex items-center justify-between py-3">
-          <div>
-            <p className="text-sm text-[var(--ink)]">Lead Capture</p>
-            <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically</p>
-          </div>
-          <Switch
-            checked={leadCaptureEnabled}
-            onCheckedChange={(v) => { setLeadCaptureEnabled(v); markDirty() }}
-            disabled={isPending}
-          />
-        </div>
-
-        {/* Strict Mode */}
-        <div className="flex items-center justify-between py-3">
-          <div>
-            <p className="text-sm text-[var(--ink)]">Strict Mode</p>
-            <p className="text-xs text-[var(--ink-muted)]">
-              Bot refuses questions outside its knowledge base and says &ldquo;I don&apos;t know&rdquo;
-            </p>
-          </div>
-          <Switch
-            checked={strictMode}
-            onCheckedChange={(v) => { setStrictMode(v); markDirty() }}
-            disabled={isPending}
-          />
-        </div>
-      </div>
-
-      {/* Submit */}
-      <div className="flex items-center gap-3 pt-2">
-        <Button
-          type="submit"
-          disabled={isPending}
-          className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white"
-        >
-          {isPending ? 'Saving…' : 'Save Changes'}
-        </Button>
-        {saved && <span className="text-xs text-emerald-400">Saved — widget updates within 5 minutes</span>}
-        {error && <span className="text-xs text-red-400">{error}</span>}
-      </div>
-    </form>
-    <div className="hidden lg:block">
-      <LiveBotPreview botName={name} primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
-    </div>
     </div>
   )
 }
 
+// ─── Live preview ─────────────────────────────────────────────────────────────
 function LiveBotPreview({
   botName,
   primaryColor,
   welcomeMessage,
+  triggerIcon,
+  borderRadius,
+  tooltipEnabled,
+  tooltipMessages,
+  theme,
+  onToggleTheme,
 }: {
   botName: string
   primaryColor: string
   welcomeMessage: string
+  triggerIcon: string
+  borderRadius: number
+  tooltipEnabled: boolean
+  tooltipMessages: string[]
+  theme: 'dark' | 'light'
+  onToggleTheme: () => void
 }) {
-  const initial = botName.trim().charAt(0).toUpperCase() || 'B'
-  const displayMessage = welcomeMessage.trim() || 'Hi! How can I help you today?'
+  const isDark = theme === 'dark'
+  const c = isDark
+    ? { bg: '#0C0A09', surface: '#171512', hairline: '#2A2622', ink: '#F5F0EB', inkMuted: '#A09890' }
+    : { bg: '#FFFFFF', surface: '#F4F4F5', hairline: '#E4E4E7', ink: '#111111', inkMuted: '#6B7280' }
+
+  const TriggerIcon = getIconComponent(triggerIcon)
+  const initial     = botName.trim().charAt(0).toUpperCase() || 'B'
+  const displayMsg  = welcomeMessage.trim() || 'Hi! How can I help you today?'
+  const firstTip    = tooltipMessages[0] || 'Need help? Ask me!'
+  const br          = `${borderRadius}px`
+  const innerBr     = `${Math.max(4, borderRadius - 4)}px`
 
   return (
     <div className="sticky top-24">
-      <p className="text-xs font-medium text-[var(--ink-muted)] mb-3 uppercase tracking-wide">Live Preview</p>
-      <div className="rounded-2xl border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden shadow-lg max-w-xs">
+      {/* Header bar */}
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">Live Preview</p>
+        <button
+          type="button"
+          onClick={onToggleTheme}
+          className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] px-2 py-1 rounded border border-[var(--hairline)] transition-colors cursor-pointer"
+        >
+          {isDark ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
+          {isDark ? 'Light mode' : 'Dark mode'}
+        </button>
+      </div>
+
+      {/* Chat window */}
+      <div
+        style={{ borderRadius: br, backgroundColor: c.bg, border: `1px solid ${c.hairline}`, width: '300px' }}
+        className="overflow-hidden shadow-2xl"
+      >
         {/* Header */}
-        <div className="px-4 py-3 flex items-center gap-2" style={{ backgroundColor: primaryColor }}>
-          <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-            <span className="text-white text-xs font-bold">{initial}</span>
+        <div className="px-4 py-3 flex items-center gap-2.5" style={{ backgroundColor: primaryColor }}>
+          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <TriggerIcon className="h-4 w-4 text-white" />
           </div>
-          <span className="text-white text-sm font-medium truncate">{botName || 'My Bot'}</span>
-          <div className="ml-auto w-2 h-2 rounded-full bg-emerald-300 shrink-0" />
+          <span className="text-white text-sm font-semibold truncate flex-1">{botName || 'My Bot'}</span>
+          <div className="w-2 h-2 rounded-full bg-emerald-300 shrink-0" title="Online" />
         </div>
+
         {/* Messages */}
-        <div className="p-3 space-y-2.5 bg-[var(--bg)] min-h-[180px]">
+        <div className="p-3 space-y-3" style={{ minHeight: '340px', backgroundColor: c.bg }}>
+          {/* Bot bubble */}
           <div className="flex gap-2 items-end">
-            <div className="w-5 h-5 rounded-full shrink-0 mb-0.5" style={{ backgroundColor: primaryColor }} />
-            <div className="bg-[var(--surface)] border border-[var(--hairline)] text-[var(--ink)] text-xs rounded-2xl rounded-tl-sm px-3 py-2 max-w-[80%]">
-              {displayMessage}
+            <div
+              className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
+              style={{ backgroundColor: primaryColor }}
+            >
+              <TriggerIcon className="h-3 w-3 text-white" />
+            </div>
+            <div
+              className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+              style={{
+                backgroundColor: c.surface,
+                color: c.ink,
+                border: `1px solid ${c.hairline}`,
+                borderRadius: innerBr,
+                borderBottomLeftRadius: '4px',
+              }}
+            >
+              {displayMsg}
             </div>
           </div>
+
+          {/* User bubble */}
           <div className="flex justify-end">
             <div
-              className="text-white text-xs rounded-2xl rounded-tr-sm px-3 py-2 max-w-[80%]"
-              style={{ backgroundColor: primaryColor }}
+              className="text-white text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+              style={{
+                backgroundColor: primaryColor,
+                borderRadius: innerBr,
+                borderBottomRightRadius: '4px',
+              }}
             >
               Tell me about your services.
             </div>
           </div>
+
+          {/* Second bot bubble */}
+          <div className="flex gap-2 items-end">
+            <div
+              className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
+              style={{ backgroundColor: primaryColor }}
+            >
+              <TriggerIcon className="h-3 w-3 text-white" />
+            </div>
+            <div
+              className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+              style={{
+                backgroundColor: c.surface,
+                color: c.ink,
+                border: `1px solid ${c.hairline}`,
+                borderRadius: innerBr,
+                borderBottomLeftRadius: '4px',
+              }}
+            >
+              Sure! We offer…
+              <span style={{ color: c.inkMuted }}>
+                {' '}(answer will appear here based on your knowledge base)
+              </span>
+            </div>
+          </div>
         </div>
+
         {/* Input bar */}
-        <div className="px-3 py-2.5 border-t border-[var(--hairline)] flex items-center gap-2 bg-[var(--surface)]">
-          <div className="flex-1 h-7 rounded-full bg-[var(--bg)] border border-[var(--hairline)]" />
+        <div
+          className="px-3 py-2.5 flex items-center gap-2"
+          style={{ borderTop: `1px solid ${c.hairline}`, backgroundColor: c.surface }}
+        >
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+            className="flex-1 h-8 rounded-full px-3 flex items-center"
+            style={{ backgroundColor: c.bg, border: `1px solid ${c.hairline}` }}
+          >
+            <span className="text-xs" style={{ color: c.inkMuted }}>Type a message…</span>
+          </div>
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
             style={{ backgroundColor: primaryColor }}
           >
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
@@ -286,7 +477,32 @@ function LiveBotPreview({
           </div>
         </div>
       </div>
-      <p className="text-xs text-[var(--ink-subtle)] mt-2">Updates as you change settings above.</p>
+
+      {/* Trigger area */}
+      <div className="mt-3 flex flex-col items-end gap-2" style={{ width: '300px' }}>
+        {tooltipEnabled && (
+          <div
+            className="text-xs px-3 py-1.5 shadow-sm"
+            style={{
+              borderRadius: '999px',
+              backgroundColor: isDark ? '#171512' : '#FFFFFF',
+              color: isDark ? '#F5F0EB' : '#111111',
+              border: `1px solid ${isDark ? '#2A2622' : '#E4E4E7'}`,
+              maxWidth: '200px',
+            }}
+          >
+            {firstTip}
+          </div>
+        )}
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+          style={{ backgroundColor: primaryColor }}
+        >
+          <TriggerIcon className="h-6 w-6 text-white" />
+        </div>
+      </div>
+
+      <p className="text-xs text-[var(--ink-subtle)] mt-2.5">Updates live as you change settings above.</p>
     </div>
   )
 }

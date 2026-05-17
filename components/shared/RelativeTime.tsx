@@ -5,15 +5,29 @@ import { useState, useEffect } from 'react'
 function formatRelative(date: Date): string {
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
-  const diffMin = Math.floor(diffMs / 60_000)
-  const diffHr = Math.floor(diffMs / 3_600_000)
-  const diffDay = Math.floor(diffMs / 86_400_000)
 
-  if (diffMin < 1) return 'Just now'
+  if (diffMs < 0) {
+    // Future date
+    const abs = -diffMs
+    const diffMin = Math.floor(abs / 60_000)
+    const diffHr  = Math.floor(abs / 3_600_000)
+    const diffDay = Math.floor(abs / 86_400_000)
+    if (diffMin < 1)  return 'just now'
+    if (diffMin < 60) return `in ${diffMin}m`
+    if (diffHr  < 24) return `in ${diffHr}h`
+    if (diffDay === 1) return 'tomorrow'
+    if (diffDay < 30) return `in ${diffDay}d`
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+
+  const diffMin = Math.floor(diffMs / 60_000)
+  const diffHr  = Math.floor(diffMs / 3_600_000)
+  const diffDay = Math.floor(diffMs / 86_400_000)
+  if (diffMin < 1)  return 'Just now'
   if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHr < 24) return `${diffHr}h ago`
+  if (diffHr  < 24) return `${diffHr}h ago`
   if (diffDay === 1) return 'Yesterday'
-  if (diffDay < 7) return `${diffDay}d ago`
+  if (diffDay < 7)  return `${diffDay}d ago`
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 

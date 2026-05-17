@@ -18,6 +18,10 @@ const updateBotSchema = z.object({
     welcomeMessage:     z.string().max(200).optional(),
     leadCaptureEnabled: z.boolean().optional(),
     strictMode:         z.boolean().optional(),
+    triggerIcon:        z.string().max(50).optional(),
+    borderRadius:       z.number().min(0).max(24).optional(),
+    tooltipEnabled:     z.boolean().optional(),
+    tooltipMessages:    z.array(z.string().max(120)).max(5).optional(),
   }).optional(),
 })
 
