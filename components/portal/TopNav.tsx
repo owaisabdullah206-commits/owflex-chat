@@ -18,21 +18,35 @@ interface Bot {
   name: string
 }
 
+export interface PortalConfig {
+  showConversations?: boolean
+  showLeads?: boolean
+  showSettings?: boolean
+}
+
 interface TopNavProps {
   userEmail: string
   userName?: string | null
   bots?: Bot[]
   activeBotId?: string
+  portalConfig?: PortalConfig | null
 }
 
-const NAV_BASES = [
-  { label: 'Overview', href: '/portal' },
-  { label: 'Conversations', href: '/portal/conversations' },
-  { label: 'Leads', href: '/portal/leads' },
-  { label: 'Settings', href: '/portal/settings' },
+const ALL_NAV = [
+  { label: 'Overview',      href: '/portal',               configKey: null                    },
+  { label: 'Conversations', href: '/portal/conversations',  configKey: 'showConversations' as const },
+  { label: 'Leads',         href: '/portal/leads',          configKey: 'showLeads'         as const },
+  { label: 'Settings',      href: '/portal/settings',       configKey: 'showSettings'      as const },
 ]
 
-export function TopNav({ userEmail, userName, bots, activeBotId }: TopNavProps) {
+function isVisible(configKey: keyof PortalConfig | null, config: PortalConfig | null | undefined): boolean {
+  if (!configKey) return true
+  if (!config) return true
+  return config[configKey] !== false
+}
+
+export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }: TopNavProps) {
+  const NAV_BASES = ALL_NAV.filter((n) => isVisible(n.configKey, portalConfig))
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 

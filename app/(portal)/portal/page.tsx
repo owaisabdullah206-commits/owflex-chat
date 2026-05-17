@@ -18,16 +18,17 @@ export default async function PortalPage({
   const { bot: botParam } = await searchParams
 
   const bots = await db
-    .select({ id: schema.bots.id, name: schema.bots.name })
+    .select({ id: schema.bots.id, name: schema.bots.name, portalConfig: schema.bots.portalConfig })
     .from(schema.bots)
     .where(eq(schema.bots.clientUserId, user.id))
 
   const bot = (botParam ? bots.find((b) => b.id === botParam) : null) ?? bots[0] ?? null
+  const portalConfig = (bot?.portalConfig ?? null) as import('@/components/portal/TopNav').PortalConfig | null
 
   if (!bot) {
     return (
       <div className="min-h-screen">
-        <TopNav userEmail={user.email} userName={user.name} bots={bots} />
+        <TopNav userEmail={user.email} userName={user.name} bots={bots} portalConfig={null} />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 text-center">
           <div className="w-12 h-12 rounded-full bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center mx-auto mb-4">
             <BotOff className="h-6 w-6 text-[var(--ink-subtle)]" />
@@ -59,7 +60,7 @@ export default async function PortalPage({
   return (
     <div className="min-h-screen">
       <AutoRefresh intervalMs={30_000} />
-      <TopNav userEmail={user.email} userName={user.name} bots={bots} activeBotId={bot.id} />
+      <TopNav userEmail={user.email} userName={user.name} bots={bots} activeBotId={bot.id} portalConfig={portalConfig} />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-8">

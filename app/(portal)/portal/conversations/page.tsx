@@ -1,7 +1,9 @@
 import { asc, desc, eq, inArray } from 'drizzle-orm'
+import { redirect } from 'next/navigation'
 import { requireClient } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { TopNav } from '@/components/portal/TopNav'
+import type { PortalConfig } from '@/components/portal/TopNav'
 import { ConversationList } from '@/components/portal/ConversationList'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
@@ -15,11 +17,14 @@ export default async function ConversationsPage({
   const { bot: botParam } = await searchParams
 
   const bots = await db
-    .select({ id: schema.bots.id, name: schema.bots.name })
+    .select({ id: schema.bots.id, name: schema.bots.name, portalConfig: schema.bots.portalConfig })
     .from(schema.bots)
     .where(eq(schema.bots.clientUserId, user.id))
 
   const bot = (botParam ? bots.find((b) => b.id === botParam) : null) ?? bots[0] ?? null
+  const portalConfig = (bot?.portalConfig ?? null) as PortalConfig | null
+
+  if (portalConfig?.showConversations === false) redirect('/portal')
 
   const rawConversations = bot
     ? await db
@@ -77,7 +82,7 @@ export default async function ConversationsPage({
   return (
     <div className="min-h-screen">
       <AutoRefresh intervalMs={30_000} />
-      <TopNav userEmail={user.email} userName={user.name} bots={bots} activeBotId={bot?.id} />
+      <TopNav userEmail={user.email} userName={user.name} bots={bots} activeBotId={bot?.id} portalConfig={portalConfig} />
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-[var(--ink)]">Conversations</h1>

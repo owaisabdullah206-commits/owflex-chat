@@ -1,8 +1,9 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { and, asc, eq } from 'drizzle-orm'
 import { requireClient } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { TopNav } from '@/components/portal/TopNav'
+import type { PortalConfig } from '@/components/portal/TopNav'
 import { ChatTranscript } from '@/components/portal/ChatTranscript'
 
 interface ConversationDetailPageProps {
@@ -16,10 +17,11 @@ export default async function ConversationDetailPage({ params }: ConversationDet
   // Tenant-isolated query: conversation must belong to a bot assigned to this client
   const [conversation] = await db
     .select({
-      id: schema.conversations.id,
-      pageUrl: schema.conversations.pageUrl,
-      startedAt: schema.conversations.startedAt,
-      botName: schema.bots.name,
+      id:           schema.conversations.id,
+      pageUrl:      schema.conversations.pageUrl,
+      startedAt:    schema.conversations.startedAt,
+      botName:      schema.bots.name,
+      portalConfig: schema.bots.portalConfig,
     })
     .from(schema.conversations)
     .innerJoin(schema.bots, eq(schema.conversations.botId, schema.bots.id))
@@ -32,6 +34,9 @@ export default async function ConversationDetailPage({ params }: ConversationDet
     .limit(1)
 
   if (!conversation) notFound()
+
+  const portalConfig = (conversation.portalConfig ?? null) as PortalConfig | null
+  if (portalConfig?.showConversations === false) redirect('/portal')
 
   const messages = await db
     .select({
@@ -46,7 +51,7 @@ export default async function ConversationDetailPage({ params }: ConversationDet
 
   return (
     <div className="min-h-screen">
-      <TopNav userEmail={user.email} userName={user.name} />
+      <TopNav userEmail={user.email} userName={user.name} portalConfig={portalConfig} />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-6">
           <a

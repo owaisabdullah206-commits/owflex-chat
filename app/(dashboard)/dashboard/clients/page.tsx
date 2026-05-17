@@ -4,20 +4,23 @@ import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { RelativeTime } from '@/components/shared/RelativeTime'
+import { ClientPortalAccess } from '@/components/dashboard/ClientPortalAccess'
+import type { PortalConfig } from '@/lib/db/queries/portal-config'
 
 const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-3)] border-b border-[var(--hairline)]'
-const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[13px]'
+const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[13px] align-top'
 
 export default async function ClientsPage() {
   const user = await requireDeveloper()
 
   const clients = await db
     .select({
-      clientEmail: schema.users.email,
-      clientName: schema.users.name,
-      botId: schema.bots.id,
-      botName: schema.bots.name,
-      joinedAt: schema.invitations.usedAt,
+      clientEmail:  schema.users.email,
+      clientName:   schema.users.name,
+      botId:        schema.bots.id,
+      botName:      schema.bots.name,
+      portalConfig: schema.bots.portalConfig,
+      joinedAt:     schema.invitations.usedAt,
     })
     .from(schema.bots)
     .innerJoin(schema.users, eq(schema.bots.clientUserId, schema.users.id))
@@ -97,6 +100,7 @@ export default async function ClientsPage() {
                     <th className={thClass}>name</th>
                     <th className={thClass}>bot</th>
                     <th className={thClass}>joined_at</th>
+                    <th className={thClass}>portal_access</th>
                     <th className={thClass}>actions</th>
                   </tr>
                 </thead>
@@ -119,6 +123,12 @@ export default async function ClientsPage() {
                       </td>
                       <td className={`${tdClass} text-[var(--ink-subtle)]`}>
                         {row.joinedAt ? <RelativeTime date={row.joinedAt} /> : '—'}
+                      </td>
+                      <td className={tdClass}>
+                        <ClientPortalAccess
+                          botId={row.botId}
+                          initial={(row.portalConfig as PortalConfig | null) ?? {}}
+                        />
                       </td>
                       <td className={tdClass}>
                         <a

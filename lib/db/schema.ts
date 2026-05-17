@@ -91,6 +91,7 @@ export const bots = pgTable('bots', {
   // pk_ + 29 hex chars = 32 chars. NEVER expose internal id publicly.
   embedKey:     varchar('embed_key', { length: 64 }).notNull().unique(),
   widgetConfig: jsonb('widget_config').notNull().default({}),
+  portalConfig: jsonb('portal_config').notNull().default({}),
   isActive:            boolean('is_active').notNull().default(true),
   smartRoutingEnabled: boolean('smart_routing_enabled').notNull().default(false),
   createdAt:           tsz('created_at').defaultNow().notNull(),
