@@ -1,8 +1,8 @@
 import { Redis } from '@upstash/redis'
 
-// Jina Embeddings v3 — free tier (1M tokens/month), supports dimensions=768 via Matryoshka,
-// task-specific LoRA adapters improve RAG quality (passage vs query distinction).
-const MODEL_NAME = 'jina-embeddings-v3'
+// Jina Embeddings v5 text-small — 677M params, 32K context, Matryoshka dims (768 chosen),
+// task-specific adapters for better RAG quality. Free tier via api.jina.ai.
+const MODEL_NAME = 'jina-embeddings-v5-text-small'
 const DIMENSIONS = 768
 const DAILY_TOKEN_LIMIT = 1_000_000
 const BATCH_SIZE = 100
