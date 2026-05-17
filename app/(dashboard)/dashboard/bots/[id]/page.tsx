@@ -322,12 +322,32 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'knowledge base' && (
-            <div>
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Knowledge Base</h2>
-              <p className="text-xs text-[var(--ink-muted)] mb-5">
-                Active entries are injected into the bot&apos;s system prompt on every chat. Changes apply within 5 minutes.
-              </p>
-              <FaqEditor botId={bot.id} initialFaqs={faqs} />
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+              <div className="xl:col-span-2">
+                <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Knowledge Base</h2>
+                <p className="text-xs text-[var(--ink-muted)] mb-5">
+                  Active entries are injected into the bot&apos;s system prompt on every chat. Changes apply within 5 minutes.
+                </p>
+                <FaqEditor botId={bot.id} initialFaqs={faqs} />
+              </div>
+              <div className="hidden xl:block">
+                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
+                  <p className="text-xs font-semibold text-[var(--ink)] uppercase tracking-wide">Tips</p>
+                  <p className="text-xs text-[var(--ink-muted)]">Active entries are injected into the bot&apos;s system prompt on every message. Keep answers concise.</p>
+                  <p className="text-xs text-[var(--ink-muted)]">
+                    For longer documents, use the{' '}
+                    <a href="?tab=documents" className="text-[var(--of-primary-text-dark)] hover:underline">
+                      Documents
+                    </a>{' '}
+                    tab instead.
+                  </p>
+                  <div className="pt-2 border-t border-[var(--hairline)]">
+                    <p className="text-xs text-[var(--ink-subtle)]">
+                      {faqs.filter((f) => f.isActive).length} active / {faqs.length} total entries
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -342,12 +362,25 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'unanswered' && (
-            <div>
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Unanswered Questions</h2>
-              <p className="text-xs text-[var(--ink-muted)] mb-5">
-                Responses where the bot expressed uncertainty. Add FAQ entries to fill these gaps.
-              </p>
-              <UnansweredList messages={unansweredMessages} />
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+              <div className="xl:col-span-2">
+                <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Unanswered Questions</h2>
+                <p className="text-xs text-[var(--ink-muted)] mb-5">
+                  Responses where the bot expressed uncertainty. Add FAQ entries to fill these gaps.
+                </p>
+                <UnansweredList messages={unansweredMessages} />
+              </div>
+              <div className="hidden xl:block">
+                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
+                  <p className="text-xs font-semibold text-[var(--ink)] uppercase tracking-wide">What to do</p>
+                  <p className="text-xs text-[var(--ink-muted)]">
+                    These are questions where the bot expressed uncertainty. Add FAQ entries to fill the gaps so visitors get accurate answers.
+                  </p>
+                  <a href="?tab=knowledge base" className="block text-xs text-[var(--of-primary-text-dark)] hover:underline">
+                    → Go to Knowledge Base
+                  </a>
+                </div>
+              </div>
             </div>
           )}
         </div>

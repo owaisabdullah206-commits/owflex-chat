@@ -1,6 +1,7 @@
 import { desc, eq } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
+import { PLAN_LIMITS } from '@/lib/limits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { LeadsSearch } from '@/components/dashboard/LeadsSearch'
@@ -10,7 +11,7 @@ export default async function LeadsPage() {
   const user = await requireDeveloper()
 
   const [org] = await db
-    .select({ id: schema.organizations.id })
+    .select({ id: schema.organizations.id, plan: schema.organizations.plan, leadsThisMonth: schema.organizations.leadsThisMonth })
     .from(schema.organizations)
     .where(eq(schema.organizations.ownerId, user.id))
     .limit(1)
@@ -33,13 +34,23 @@ export default async function LeadsPage() {
         .orderBy(desc(schema.leads.capturedAt))
     : []
 
+  const planKey = ((org?.plan ?? 'free') in PLAN_LIMITS ? org?.plan ?? 'free' : 'free') as keyof typeof PLAN_LIMITS
+  const leadsLimit = PLAN_LIMITS[planKey].leads
+
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
         <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)] flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-lg font-semibold text-[var(--ink)]">Leads</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-lg font-semibold text-[var(--ink)]">Leads</h1>
+              {org && (
+                <span className="text-xs text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                  {org.leadsThisMonth}/{leadsLimit === Infinity ? '∞' : leadsLimit} this month
+                </span>
+              )}
+            </div>
             <p className="text-sm text-[var(--ink-muted)] mt-0.5">All leads captured across your bots</p>
           </div>
           {leads.length > 0 && (

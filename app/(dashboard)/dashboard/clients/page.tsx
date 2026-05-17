@@ -47,7 +47,12 @@ export default async function ClientsPage() {
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
         <div className="flex items-center justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <div>
-            <h1 className="text-lg font-semibold text-[var(--ink)]">Clients</h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-lg font-semibold text-[var(--ink)]">Clients</h1>
+              <span className="text-xs text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                {rows.length} {rows.length === 1 ? 'client' : 'clients'}
+              </span>
+            </div>
             <p className="text-sm text-[var(--ink-muted)] mt-0.5">
               All active client accounts across your bots
             </p>

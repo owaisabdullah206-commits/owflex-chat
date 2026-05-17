@@ -27,7 +27,13 @@ function LoginContent() {
     try {
       const result = await authClient.signIn.email({ email, password })
       if (result.error) {
-        setError(result.error.message ?? 'Sign in failed. Check your credentials.')
+        const msg = result.error.message ?? ''
+        const isCredErr = msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('credential')
+        setError(
+          isCredErr
+            ? 'Email or password is incorrect. If you signed in with Google, use the button below.'
+            : (msg || 'Sign in failed. Please try again.')
+        )
       } else {
         router.push('/portal')
       }

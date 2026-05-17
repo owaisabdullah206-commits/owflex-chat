@@ -89,19 +89,25 @@ export default async function BillingPage() {
           </div>
           <RefreshButton />
         </div>
-        <div className="px-4 sm:px-8 py-6 space-y-6 max-w-xl">
-          <PlanUsage
-            plan={org.plan}
-            balance={balance}
-            freeTierCredits={FREE_TIER_CREDITS}
-            botCount={orgBots.length}
-            clientCount={clientCount}
-            docCount={docCount}
-            conversationsThisMonth={org.conversationsThisMonth}
-            leadsThisMonth={org.leadsThisMonth}
-            storageMb={storageMb}
-          />
-          <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
+        <div className="px-4 sm:px-8 py-6">
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 items-start">
+            <div className="xl:col-span-3">
+              <PlanUsage
+                plan={org.plan}
+                balance={balance}
+                freeTierCredits={FREE_TIER_CREDITS}
+                botCount={orgBots.length}
+                clientCount={clientCount}
+                docCount={docCount}
+                conversationsThisMonth={org.conversationsThisMonth}
+                leadsThisMonth={org.leadsThisMonth}
+                storageMb={storageMb}
+              />
+            </div>
+            <div className="xl:col-span-2">
+              <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
+            </div>
+          </div>
         </div>
       </main>
       <MobileNav />

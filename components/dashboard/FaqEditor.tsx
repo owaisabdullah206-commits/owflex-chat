@@ -63,7 +63,7 @@ export function FaqEditor({ botId, initialFaqs }: FaqEditorProps) {
   }
 
   return (
-    <div className="space-y-4 max-w-2xl">
+    <div className="space-y-4">
       {faqs.length === 0 && !showAddForm && (
         <div className="rounded-lg border border-dashed border-[var(--hairline)] bg-[var(--surface)] px-6 py-10 text-center">
           <p className="text-sm text-[var(--ink-muted)] mb-3">No FAQ entries yet.</p>

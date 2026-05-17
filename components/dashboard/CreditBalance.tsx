@@ -54,7 +54,7 @@ function PackRow({ packId, appUrl }: { packId: PackId; appUrl: string }) {
 
 export function CreditBalance({ balance, transactions, appUrl }: CreditBalanceProps) {
   return (
-    <div className="space-y-6 max-w-xl">
+    <div className="space-y-6">
       {/* Balance card */}
       <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] px-6 py-5">
         <p className="text-xs text-[var(--ink-muted)] uppercase tracking-wide mb-1">Credit Balance</p>

@@ -12,7 +12,7 @@ interface UnansweredListProps {
 export function UnansweredList({ messages }: UnansweredListProps) {
   if (messages.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-[var(--hairline)] bg-[var(--surface)] px-6 py-10 text-center max-w-2xl">
+      <div className="rounded-lg border border-dashed border-[var(--hairline)] bg-[var(--surface)] px-6 py-10 text-center">
         <p className="text-sm text-[var(--ink-muted)]">No unanswered questions yet — great job!</p>
         <p className="text-xs text-[var(--ink-muted)] mt-1">
           Questions will appear here when the bot expresses uncertainty in its responses.
@@ -22,7 +22,7 @@ export function UnansweredList({ messages }: UnansweredListProps) {
   }
 
   return (
-    <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)] max-w-2xl">
+    <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
       {messages.map((msg) => (
         <div key={msg.id} className="px-5 py-4">
           <div className="flex items-start justify-between gap-4">

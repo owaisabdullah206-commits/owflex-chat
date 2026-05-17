@@ -72,7 +72,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {isDirty && (
         <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
           You have unsaved changes
@@ -224,5 +225,68 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         {error && <span className="text-xs text-red-400">{error}</span>}
       </div>
     </form>
+    <div className="hidden xl:block">
+      <LiveBotPreview botName={name} primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
+    </div>
+    </div>
+  )
+}
+
+function LiveBotPreview({
+  botName,
+  primaryColor,
+  welcomeMessage,
+}: {
+  botName: string
+  primaryColor: string
+  welcomeMessage: string
+}) {
+  const initial = botName.trim().charAt(0).toUpperCase() || 'B'
+  const displayMessage = welcomeMessage.trim() || 'Hi! How can I help you today?'
+
+  return (
+    <div className="sticky top-24">
+      <p className="text-xs font-medium text-[var(--ink-muted)] mb-3 uppercase tracking-wide">Live Preview</p>
+      <div className="rounded-2xl border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden shadow-lg max-w-xs">
+        {/* Header */}
+        <div className="px-4 py-3 flex items-center gap-2" style={{ backgroundColor: primaryColor }}>
+          <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <span className="text-white text-xs font-bold">{initial}</span>
+          </div>
+          <span className="text-white text-sm font-medium truncate">{botName || 'My Bot'}</span>
+          <div className="ml-auto w-2 h-2 rounded-full bg-emerald-300 shrink-0" />
+        </div>
+        {/* Messages */}
+        <div className="p-3 space-y-2.5 bg-[var(--bg)] min-h-[180px]">
+          <div className="flex gap-2 items-end">
+            <div className="w-5 h-5 rounded-full shrink-0 mb-0.5" style={{ backgroundColor: primaryColor }} />
+            <div className="bg-[var(--surface)] border border-[var(--hairline)] text-[var(--ink)] text-xs rounded-2xl rounded-tl-sm px-3 py-2 max-w-[80%]">
+              {displayMessage}
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <div
+              className="text-white text-xs rounded-2xl rounded-tr-sm px-3 py-2 max-w-[80%]"
+              style={{ backgroundColor: primaryColor }}
+            >
+              Tell me about your services.
+            </div>
+          </div>
+        </div>
+        {/* Input bar */}
+        <div className="px-3 py-2.5 border-t border-[var(--hairline)] flex items-center gap-2 bg-[var(--surface)]">
+          <div className="flex-1 h-7 rounded-full bg-[var(--bg)] border border-[var(--hairline)]" />
+          <div
+            className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
+              <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <p className="text-xs text-[var(--ink-subtle)] mt-2">Updates as you change settings above.</p>
+    </div>
   )
 }

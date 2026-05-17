@@ -86,7 +86,7 @@ export function EditableName({ name }: { name: string }) {
       <p className="text-sm text-[var(--ink)]">{name}</p>
       <button
         onClick={startEdit}
-        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
+        className="opacity-40 hover:opacity-100 transition-opacity p-1 rounded text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
         aria-label="Edit name"
       >
         <Pencil className="h-3.5 w-3.5" />
