@@ -19,7 +19,7 @@ function BentoCard({
 }) {
   const spanClass = { 1: '', 2: 'md:col-span-2', 3: 'md:col-span-3', 4: 'md:col-span-4' }[span]
   return (
-    <div className={`bg-[var(--surface)] border border-[var(--hairline)] ${spanClass} ${className}`}>
+    <div className={`bg-[var(--surface)] ${spanClass} ${className}`}>
       {accent && <div className="h-[2px] bg-[var(--of-primary)] w-full" />}
       {children}
     </div>
@@ -52,7 +52,7 @@ export default async function AdminAnalyticsPage() {
   const stats = await getPlatformStats()
 
   const freeCount  = stats.planBreakdown.find((p) => p.plan === 'free')?.cnt  ?? 0
-  const grossColor = stats.grossProfitUsd >= 0 ? 'text-emerald-400' : 'text-[var(--of-error)]'
+  const grossColor = stats.grossProfitUsd >= 0 ? 'text-[var(--success-text)]' : 'text-[var(--error-text)]'
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">

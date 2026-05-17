@@ -36,7 +36,7 @@ export function PlatformPromptForm({ currentPrompt, onSave }: PlatformPromptForm
           onChange={(e) => setPrompt(e.target.value)}
           rows={12}
           placeholder="Leave empty to disable. This prompt prepends every bot's system prompt."
-          className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
+          className="rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
           disabled={isPending}
         />
         <p className="text-xs text-[var(--ink-muted)]">
@@ -47,7 +47,7 @@ export function PlatformPromptForm({ currentPrompt, onSave }: PlatformPromptForm
         <Button
           type="submit"
           disabled={isPending}
-          className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white"
+          className="rounded-none bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white"
         >
           {isPending ? 'Saving…' : 'Save Platform Prompt'}
         </Button>

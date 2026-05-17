@@ -40,7 +40,7 @@ function SourceTag({ source, isActive }: { source: 'manual' | 'openrouter-api'; 
       <span className={cn(
         'px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em]',
         isActive
-          ? 'bg-amber-500/15 text-amber-400 outline outline-1 outline-amber-500/30'
+          ? 'bg-[var(--of-warning)]/10 text-[var(--warning-text)] outline outline-1 outline-[var(--of-warning)]/30'
           : 'bg-[var(--surface-3)] text-[var(--ink-subtle)]',
       )}>
         Manual{isActive ? ' ★' : ''}
@@ -99,7 +99,7 @@ function EditRow({ modelId, current, onDone }: { modelId: string; current: Price
         />
       </div>
       {error && <span className="text-[10px] text-[var(--of-error)]">{error}</span>}
-      <button onClick={save} disabled={pending} className="p-1 text-emerald-400 hover:bg-emerald-500/10 disabled:opacity-40 transition-colors">
+      <button onClick={save} disabled={pending} className="p-1 text-[var(--success-text)] hover:bg-[var(--of-success)]/10 disabled:opacity-40 transition-colors">
         <Check className="h-3.5 w-3.5" />
       </button>
       <button onClick={onDone} className="p-1 text-[var(--ink-muted)] hover:bg-[var(--surface-3)] transition-colors">
@@ -236,7 +236,7 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
                           className={cn(
                             'px-3 py-1.5 transition-colors',
                             priority === 'manual'
-                              ? 'bg-amber-500/20 text-amber-400'
+                              ? 'bg-[var(--of-warning)]/15 text-[var(--warning-text)]'
                               : 'text-[var(--ink-muted)] hover:bg-[var(--surface-2)]',
                           )}
                         >
@@ -275,7 +275,7 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
                         <button
                           title="Clear manual override"
                           onClick={() => startTransition(async () => { await clearManualModelPrice(modelId) })}
-                          className="p-1.5 hover:bg-[var(--surface-3)] text-[var(--ink-muted)] hover:text-[var(--of-error-dark)] transition-colors"
+                          className="p-1.5 hover:bg-[var(--surface-3)] text-[var(--ink-muted)] hover:text-[var(--error-text)] transition-colors"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>

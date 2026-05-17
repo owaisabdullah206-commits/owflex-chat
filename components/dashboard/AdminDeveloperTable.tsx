@@ -30,8 +30,8 @@ const PLANS = ['free', 'starter', 'pro', 'agency'] as const
 const PLAN_COLORS: Record<string, string> = {
   free:    'text-[var(--ink-muted)]',
   starter: 'text-[var(--of-primary)]',
-  pro:     'text-emerald-400',
-  agency:  'text-amber-400',
+  pro:     'text-[var(--success-text)]',
+  agency:  'text-[var(--warning-text)]',
 }
 
 function Modal({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
@@ -125,7 +125,7 @@ function BanModal({ orgId, onClose }: { orgId: string; onClose: () => void }) {
       <div className="bg-[var(--surface)] border border-[var(--hairline)] w-full max-w-sm shadow-2xl">
         <div className="h-[2px] bg-[var(--of-error)]" />
         <div className="p-6 space-y-4">
-          <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--of-error-dark)]">Suspend Account</h3>
+          <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--error-text)]">Suspend Account</h3>
           <p className="text-xs text-[var(--ink-muted)]">Their bots will return 403. They can still log in.</p>
           <input
             type="text"
@@ -271,7 +271,7 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
                   {dev.bannedAt ? (
                     <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--of-error)]">Banned</span>
                   ) : (
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-400">Active</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wide text-[var(--success-text)]">Active</span>
                   )}
                 </td>
 
@@ -298,7 +298,7 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
                         title="Unban"
                         onClick={() => startTransition(async () => { await unbanOrg(dev.orgId) })}
                         disabled={pending}
-                        className="p-1.5 hover:bg-[var(--surface-3)] text-emerald-400 hover:text-emerald-300 transition-colors disabled:opacity-40"
+                        className="p-1.5 hover:bg-[var(--surface-3)] text-[var(--success-text)] hover:opacity-80 transition-colors disabled:opacity-40"
                       >
                         <Shield className="h-3.5 w-3.5" />
                       </button>
@@ -306,7 +306,7 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
                       <button
                         title="Suspend"
                         onClick={() => setBanModal(dev.orgId)}
-                        className="p-1.5 hover:bg-[var(--surface-3)] text-[var(--ink-muted)] hover:text-[var(--of-error-dark)] transition-colors"
+                        className="p-1.5 hover:bg-[var(--surface-3)] text-[var(--ink-muted)] hover:text-[var(--error-text)] transition-colors"
                       >
                         <ShieldOff className="h-3.5 w-3.5" />
                       </button>
