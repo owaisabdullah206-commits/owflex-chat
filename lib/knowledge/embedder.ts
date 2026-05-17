@@ -1,20 +1,19 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
 import { Redis } from '@upstash/redis'
 
-const MODEL_NAME = 'text-embedding-004'
+// text-embedding-004 was shut down Jan 14 2026.
+// gemini-embedding-001 on v1 supports MRL — outputDimensionality keeps schema-compatible 768-dim vectors.
+const MODEL_NAME = 'gemini-embedding-001'
 const DIMENSIONS = 768
 const DAILY_TOKEN_LIMIT = 1_000_000
 const BATCH_SIZE = 100
+
+const EMBED_URL = `https://generativelanguage.googleapis.com/v1/models/${MODEL_NAME}:embedContent`
 
 export class QuotaExhaustedError extends Error {
   constructor() {
     super('Gemini embedding daily quota exhausted. Job will be retried tomorrow.')
     this.name = 'QuotaExhaustedError'
   }
-}
-
-function getGenAI(): GoogleGenerativeAI {
-  return new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 }
 
 function getRedis(): Redis {
@@ -48,6 +47,35 @@ async function getRemainingQuota(): Promise<number> {
   return DAILY_TOKEN_LIMIT - Number(used)
 }
 
+async function embedOne(text: string): Promise<number[]> {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) throw new Error('GEMINI_API_KEY is not set')
+
+  const res = await fetch(`${EMBED_URL}?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: `models/${MODEL_NAME}`,
+      content: { parts: [{ text }] },
+      outputDimensionality: DIMENSIONS,
+    }),
+  })
+
+  if (res.status === 429) throw new QuotaExhaustedError()
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`Gemini embed HTTP ${res.status}: ${body}`)
+  }
+
+  const data = (await res.json()) as { embedding: { values: number[] } }
+  const values = data.embedding?.values
+  if (!Array.isArray(values) || values.length !== DIMENSIONS) {
+    throw new Error(`Unexpected embedding dimensions: ${values?.length ?? 0}`)
+  }
+  return values
+}
+
 export async function embedTexts(texts: string[]): Promise<number[][]> {
   if (texts.length === 0) return []
 
@@ -57,23 +85,12 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
     throw new QuotaExhaustedError()
   }
 
-  const genAI = getGenAI()
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME })
-
   const results: number[][] = []
 
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {
     const batch = texts.slice(i, i + BATCH_SIZE)
-    const batchResults = await Promise.all(
-      batch.map((text) => model.embedContent(text)),
-    )
-    for (const res of batchResults) {
-      const values = res.embedding.values
-      if (values.length !== DIMENSIONS) {
-        throw new Error(`Unexpected embedding dimensions: ${values.length}`)
-      }
-      results.push(values)
-    }
+    const batchResults = await Promise.all(batch.map(embedOne))
+    results.push(...batchResults)
   }
 
   await trackUsage(estimated)
