@@ -21,7 +21,7 @@ interface LeadsSearchProps {
 
 type Range = 'all' | 'today' | 'week' | 'month'
 
-const chipBase = 'flex items-center gap-1.5 h-7 px-2.5 rounded-[4px] text-[11px] transition-colors border cursor-pointer'
+const chipBase = 'flex items-center gap-1.5 h-7 px-2.5 text-[12px] transition-colors border cursor-pointer'
 const chipInactive = 'border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--ink)]'
 const chipActive = 'border-[var(--of-primary)]/50 bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-medium'
 
@@ -64,10 +64,10 @@ export function LeadsSearch({ leads, showBot = false }: LeadsSearchProps) {
   }
 
   const chips: { id: Range; label: string }[] = [
-    { id: 'all', label: 'all' },
-    { id: 'today', label: 'today' },
-    { id: 'week', label: '7d' },
-    { id: 'month', label: 'month' },
+    { id: 'all', label: 'All' },
+    { id: 'today', label: 'Today' },
+    { id: 'week', label: '7 days' },
+    { id: 'month', label: 'This month' },
   ]
 
   return (
@@ -79,8 +79,8 @@ export function LeadsSearch({ leads, showBot = false }: LeadsSearchProps) {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="name, email, phone…"
-            className="pl-7 pr-3 h-7 text-[12px] bg-[var(--surface)] border border-[var(--hairline)] rounded-[4px] text-[var(--ink)] placeholder:text-[var(--ink-subtle)] focus:outline-none focus:border-[var(--of-primary)] transition-colors"
+            placeholder="Name, email, phone…"
+            className="pl-7 pr-3 h-7 text-[13px] bg-[var(--surface)] border border-[var(--hairline)] text-[var(--ink)] placeholder:text-[var(--ink-subtle)] focus:outline-none focus:border-[var(--of-primary)] transition-colors"
             style={{ fontFamily: 'var(--font-mono)', width: 220 }}
           />
         </div>
@@ -93,7 +93,7 @@ export function LeadsSearch({ leads, showBot = false }: LeadsSearchProps) {
           >
             <span>{c.label}</span>
             <span
-              className={`text-[10px] px-1 rounded-[2px] ${range === c.id ? 'bg-[var(--of-primary)]/20 text-[var(--of-primary)]' : 'bg-[var(--surface-3)] text-[var(--ink-subtle)]'}`}
+              className={`text-[10px] px-1 ${range === c.id ? 'bg-[var(--of-primary)]/20 text-[var(--of-primary)]' : 'bg-[var(--surface-3)] text-[var(--ink-subtle)]'}`}
             >
               {counts[c.id]}
             </span>
@@ -101,18 +101,16 @@ export function LeadsSearch({ leads, showBot = false }: LeadsSearchProps) {
         ))}
         <div className="flex-1" />
         <span
-          className="text-[11px] text-[var(--ink-subtle)]"
+          className="text-[12px] text-[var(--ink-subtle)]"
           style={{ fontFamily: 'var(--font-mono)' }}
         >
-          {filtered.length} / {leads.length} rows
+          {filtered.length} / {leads.length}
         </span>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] px-4 py-10 text-center">
-          <p className="text-sm text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
-            no matches
-          </p>
+        <div className="border border-[var(--hairline)] bg-[var(--surface)] px-4 py-10 text-center">
+          <p className="text-sm text-[var(--ink-muted)]">No results found for &ldquo;{q}&rdquo;</p>
         </div>
       ) : (
         <LeadsTable leads={filtered} showBot={showBot} />

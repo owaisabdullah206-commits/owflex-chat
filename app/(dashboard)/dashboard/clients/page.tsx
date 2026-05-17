@@ -6,7 +6,7 @@ import { MobileNav } from '@/components/dashboard/MobileNav'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 
 const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
-const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[12px]'
+const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[13px]'
 
 export default async function ClientsPage() {
   const user = await requireDeveloper()
@@ -56,7 +56,7 @@ export default async function ClientsPage() {
               <span className="text-[var(--ink-muted)]">clients</span>
             </div>
             <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Clients</h1>
-            <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+            <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
               <span className="text-[var(--of-primary)]">{rows.length}</span> active {rows.length === 1 ? 'client' : 'clients'} across all bots
             </p>
           </div>
@@ -81,15 +81,15 @@ export default async function ClientsPage() {
             </p>
             <a
               href="/dashboard/bots"
-              className="flex items-center h-8 px-4 rounded-[4px] text-[12px] font-medium bg-[var(--of-primary)] text-white hover:bg-[var(--of-primary-hover)] transition-colors"
+              className="flex items-center h-8 px-4 text-[13px] font-medium bg-[var(--of-primary)] text-white hover:bg-[var(--of-primary-hover)] transition-colors"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
-              go_to_bots →
+              Go to Bots →
             </a>
           </div>
         ) : (
           <div className="px-4 sm:px-8 py-6 overflow-x-auto">
-            <div className="rounded-md border border-[var(--hairline)] overflow-hidden">
+            <div className="border border-[var(--hairline)] overflow-hidden">
               <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
                 <thead>
                   <tr>
@@ -125,7 +125,7 @@ export default async function ClientsPage() {
                           href={`/dashboard/bots/${row.botId}?tab=overview`}
                           className="text-[11px] text-[var(--ink-muted)] hover:text-[var(--ink)] underline underline-offset-2 transition-colors"
                         >
-                          view_bot
+                          View bot
                         </a>
                       </td>
                     </tr>

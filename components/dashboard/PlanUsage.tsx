@@ -110,14 +110,14 @@ export function PlanUsage({
           plan_usage
         </p>
         <span
-          className="text-[11px] px-2 py-0.5 rounded-[3px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] capitalize"
+          className="text-[11px] px-2 py-0.5 border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] capitalize"
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           {plan}
         </span>
       </div>
       {/* Stat grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-[var(--hairline)] rounded-md overflow-hidden border border-[var(--hairline)]">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-[var(--hairline)] overflow-hidden border border-[var(--hairline)]">
         <MetricCard
           label={isFree ? 'credits.monthly' : 'credits.remaining'}
           value={balance}
@@ -130,8 +130,8 @@ export function PlanUsage({
         <MetricCard label="docs" value={docCount} limitValue={limits.docs} />
         <MetricCard label="conversations" value={conversationsThisMonth} limitValue={limits.conversations} note="this month" />
         <MetricCard label="leads" value={leadsThisMonth} limitValue={limits.leads} note="this month" />
-        {/* Storage */}
-        <div className="bg-[var(--surface)] px-5 py-[18px] flex flex-col gap-1.5">
+        {/* Storage — spans remaining 2 cols in last row */}
+        <div className="col-span-2 bg-[var(--surface)] px-5 py-[18px] flex flex-col gap-1.5">
           <p
             className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)]"
             style={{ fontFamily: 'var(--font-mono)' }}

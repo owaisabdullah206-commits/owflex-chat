@@ -3,7 +3,7 @@
 import { useTransition, useState, useEffect } from 'react'
 import {
   MessageCircle, Bot, HelpCircle, Headphones, Sparkles,
-  Zap, MessageSquare, Smile, Sun, Moon,
+  Zap, MessageSquare, Smile, Sun, Moon, ChevronDown,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -119,7 +119,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
       {/* ── Left: form ── */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {isDirty && (
-          <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
+          <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 border-l-2 border-l-amber-400 px-3 py-2">
             You have unsaved changes
           </div>
         )}
@@ -129,7 +129,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Bot Name</Label>
           <Input id="name" value={name}
             onChange={(e) => { setName(e.target.value); markDirty() }}
-            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
             disabled={isPending} />
         </div>
 
@@ -139,7 +139,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           <Textarea id="systemPrompt" value={systemPrompt}
             onChange={(e) => { setSystemPrompt(e.target.value); markDirty() }}
             rows={5}
-            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
+            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none rounded-none"
             disabled={isPending} />
         </div>
 
@@ -153,13 +153,16 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
               </span>
             )}
           </Label>
-          <select id="model" value={model}
-            onChange={(e) => { setModel(e.target.value); markDirty() }}
-            disabled={isPending || isFreePlan}
-            className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ fontFamily: 'var(--font-mono)' }}>
-            {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
-          </select>
+          <div className="relative">
+            <select id="model" value={model}
+              onChange={(e) => { setModel(e.target.value); markDirty() }}
+              disabled={isPending || isFreePlan}
+              className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              style={{ fontFamily: 'var(--font-mono)' }}>
+              {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
+          </div>
         </div>
 
         {/* Welcome Message */}
@@ -168,7 +171,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           <Input id="welcomeMessage" value={welcomeMessage}
             onChange={(e) => { setWelcomeMessage(e.target.value); markDirty() }}
             maxLength={200}
-            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+            className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
             disabled={isPending} />
         </div>
 
@@ -179,11 +182,11 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             <input id="primaryColor" type="color" value={primaryColor}
               onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
               disabled={isPending}
-              className="h-9 w-14 rounded border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50" />
+              className="h-9 w-14 border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50" />
             <Input value={primaryColor}
               onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
               pattern="^#[0-9a-fA-F]{6}$" maxLength={7}
-              className="w-32 bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+              className="w-32 rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
               style={{ fontFamily: 'var(--font-mono)' }}
               disabled={isPending} />
           </div>
@@ -199,7 +202,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
                 type="button"
                 onClick={() => { setTriggerIcon(id); markDirty() }}
                 disabled={isPending}
-                className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border transition-all cursor-pointer ${
+                className={`flex flex-col items-center gap-1.5 py-3 border transition-all cursor-pointer ${
                   triggerIcon === id
                     ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)]'
                     : 'border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink-muted)] hover:border-[var(--hairline-strong)] hover:text-[var(--ink)]'
@@ -236,13 +239,16 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         {/* Widget Position */}
         <div className="space-y-1.5">
           <Label htmlFor="position" className="text-xs text-[var(--ink-muted)]">Widget Position</Label>
-          <select id="position" value={position}
-            onChange={(e) => { setPosition(e.target.value as 'bottom-right' | 'bottom-left'); markDirty() }}
-            disabled={isPending}
-            className="w-full rounded-md border border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink)] px-3 py-2 text-sm disabled:opacity-50">
-            <option value="bottom-right">Bottom Right</option>
-            <option value="bottom-left">Bottom Left</option>
-          </select>
+          <div className="relative">
+            <select id="position" value={position}
+              onChange={(e) => { setPosition(e.target.value as 'bottom-right' | 'bottom-left'); markDirty() }}
+              disabled={isPending}
+              className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer">
+              <option value="bottom-right">Bottom Right</option>
+              <option value="bottom-left">Bottom Left</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
+          </div>
         </div>
 
         {/* Toggles */}

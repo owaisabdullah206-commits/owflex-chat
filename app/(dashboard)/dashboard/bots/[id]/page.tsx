@@ -200,7 +200,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 <a
                   key={t}
                   href={`/dashboard/bots/${bot.id}?tab=${slug}`}
-                  className={`flex items-center h-7 px-2.5 rounded-[4px] text-[11px] transition-colors whitespace-nowrap ${
+                  className={`flex items-center h-7 px-2.5 text-[12px] transition-colors whitespace-nowrap ${
                     isActive
                       ? 'bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-semibold border border-[var(--of-primary)]/30'
                       : 'text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] border border-transparent'
@@ -219,7 +219,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Stat grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--hairline)] rounded-md overflow-hidden border border-[var(--hairline)]">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--hairline)] overflow-hidden border border-[var(--hairline)]">
                 <StatCard label="conversations.month" value={convMonthCount[0]?.count ?? 0} />
                 <StatCard label="leads.month" value={leadsMonthCount[0]?.count ?? 0} tone="primary" />
                 <StatCard label="conversations.week" value={convWeekCount[0]?.count ?? 0} />
@@ -236,7 +236,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 <EmbedCodeBlock embedKey={bot.embedKey} />
                 <p className="text-xs text-[var(--ink-muted)] mt-2" style={{ fontFamily: 'var(--font-mono)' }}>
                   paste before{' '}
-                  <code className="px-1 py-0.5 rounded-[3px] bg-[var(--surface-2)] text-[var(--ink)]">
+                  <code className="px-1 py-0.5 bg-[var(--surface-2)] text-[var(--ink)]">
                     {'</body>'}
                   </code>
                 </p>
@@ -244,7 +244,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
 
               {/* Bot Details + Client Access — same row on desktop */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
+                <div className="border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--hairline)]">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>embed_key</span>
                     <span className="text-[11px] text-[var(--ink)] break-all" style={{ fontFamily: 'var(--font-mono)' }}>{bot.embedKey}</span>
@@ -342,7 +342,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 <FaqEditor botId={bot.id} initialFaqs={faqs} />
               </div>
               <div className="hidden lg:block">
-                <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
+                <div className="border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>tips</p>
                   <p className="text-xs text-[var(--ink-muted)]">Keep FAQ answers concise — they&apos;re injected on every message.</p>
                   <p className="text-xs text-[var(--ink-muted)]">
@@ -382,7 +382,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 <UnansweredList messages={unansweredMessages} />
               </div>
               <div className="hidden lg:block">
-                <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
+                <div className="border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>what_to_do</p>
                   <p className="text-xs text-[var(--ink-muted)]">
                     Add FAQ entries to fill the gaps so visitors get accurate answers.

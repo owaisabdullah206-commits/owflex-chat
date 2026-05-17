@@ -34,7 +34,7 @@ export default async function BillingPage() {
           </div>
           <div className="px-4 sm:px-8 py-6">
             <p className="text-sm text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
-              no_org_found
+              No organization found.
             </p>
           </div>
         </main>
@@ -95,7 +95,7 @@ export default async function BillingPage() {
               <span className="text-[var(--ink-muted)]">billing</span>
             </div>
             <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Billing</h1>
-            <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+            <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
               credits.balance · usage · top-ups
             </p>
           </div>

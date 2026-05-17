@@ -54,7 +54,7 @@ export default async function LeadsPage() {
             </div>
             <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Leads</h1>
             {org && (
-              <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+              <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
                 <span className="text-[var(--of-primary)]">{org.leadsThisMonth}</span>
                 <span className="text-[var(--ink-subtle)]">/{leadsLimit === Infinity ? '∞' : leadsLimit}</span>
                 {' '}leads.month · {leads.length} total
@@ -65,11 +65,11 @@ export default async function LeadsPage() {
             <a
               href="/api/v1/leads/export"
               download
-              className="flex items-center gap-1.5 h-8 px-3 text-[11px] rounded-[4px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors mt-1"
+              className="flex items-center gap-1.5 h-8 px-3 text-[13px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors mt-1"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
               <Download className="h-3 w-3" />
-              export_csv
+              Export CSV
             </a>
           )}
         </div>

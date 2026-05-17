@@ -19,7 +19,7 @@ export function OnboardingBanner({ botId: _botId }: OnboardingBannerProps) {
   }
 
   return (
-    <div className="mx-4 sm:mx-8 mt-4 border-l-2 border-l-[var(--of-primary)] bg-[var(--of-primary)]/5 border border-[var(--of-primary)]/20 rounded-r-md px-5 py-4">
+    <div className="mx-4 sm:mx-8 mt-4 border-l-2 border-l-[var(--of-primary)] bg-[var(--of-primary)]/5 border border-[var(--of-primary)]/20 px-5 py-4">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p

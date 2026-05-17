@@ -39,7 +39,7 @@ export default async function SettingsPage() {
             <span className="text-[var(--ink-muted)]">settings</span>
           </div>
           <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Settings</h1>
-          <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+          <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
             account · workspace · session
           </p>
         </div>
@@ -54,7 +54,7 @@ export default async function SettingsPage() {
               >
                 account
               </p>
-              <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
+              <div className="border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
                 {/* Setting row — name */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--hairline)]">
                   <div>
@@ -82,7 +82,7 @@ export default async function SettingsPage() {
                     <p className="text-xs text-[var(--ink-muted)]">Login and notification address.</p>
                   </div>
                   <p
-                    className="text-[12px] text-[var(--ink)] ml-4"
+                    className="text-[13px] text-[var(--ink)] ml-4"
                     style={{ fontFamily: 'var(--font-mono)' }}
                   >
                     {user.email}
@@ -102,7 +102,7 @@ export default async function SettingsPage() {
                     </div>
                     <div className="ml-4 flex items-center gap-3">
                       <span
-                        className="text-[12px] font-medium text-[var(--ink)] capitalize"
+                        className="text-[13px] font-medium text-[var(--ink)] capitalize"
                         style={{ fontFamily: 'var(--font-mono)' }}
                       >
                         {org.plan}
@@ -112,7 +112,7 @@ export default async function SettingsPage() {
                         className="text-[11px] text-[var(--of-primary)] hover:underline underline-offset-2"
                         style={{ fontFamily: 'var(--font-mono)' }}
                       >
-                        billing →
+                        View Billing →
                       </a>
                     </div>
                   </div>
@@ -128,12 +128,12 @@ export default async function SettingsPage() {
               >
                 session
               </p>
-              <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] px-5 py-4">
+              <div className="border border-[var(--hairline)] bg-[var(--surface)] px-5 py-4">
                 <p
                   className="text-[11px] text-[var(--ink-muted)] mb-4"
                   style={{ fontFamily: 'var(--font-mono)' }}
                 >
-                  signed_in_as={user.email}
+                  Signed in as {user.email}
                 </p>
                 <SignOutButton />
               </div>

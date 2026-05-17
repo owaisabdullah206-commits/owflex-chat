@@ -54,7 +54,7 @@ export default async function BotsPage() {
               <span className="text-[var(--ink-muted)]">bots</span>
             </div>
             <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Bots</h1>
-            <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+            <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
               <span className="text-[var(--of-primary)]">{userBots.length}</span>
               <span className="text-[var(--ink-subtle)]">/{botLimit === Infinity ? '∞' : botLimit}</span>
               {' '}bots · {org?.plan ?? 'free'} plan

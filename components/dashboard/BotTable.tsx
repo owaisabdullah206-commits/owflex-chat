@@ -21,11 +21,11 @@ function formatDate(date: Date) {
 }
 
 const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
-const tdClass = 'px-4 py-3 text-sm border-b border-[var(--hairline)] last:border-b-0'
+const tdClass = 'px-4 py-3 text-[13px] border-b border-[var(--hairline)] last:border-b-0'
 
 export function BotTable({ bots }: BotTableProps) {
   return (
-    <div className="rounded-md border border-[var(--hairline)] overflow-hidden">
+    <div className="border border-[var(--hairline)] overflow-hidden">
       <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
         <thead>
           <tr>

@@ -24,7 +24,7 @@ function PackCard({ packId, appUrl }: { packId: PackId; appUrl: string }) {
   const pfReturnUrl = `${appUrl}/dashboard/billing`
 
   return (
-    <div className="bg-[var(--surface)] border border-[var(--hairline)] rounded-md p-4 flex flex-col gap-4">
+    <div className="bg-[var(--surface)] border border-[var(--hairline)] p-4 flex flex-col gap-4">
       <div>
         <p
           className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] mb-1"
@@ -46,14 +46,14 @@ function PackCard({ packId, appUrl }: { packId: PackId; appUrl: string }) {
       <div className="flex gap-2 mt-auto">
         <a
           href={`/api/billing/payfast-url?pack=${packId}&returnUrl=${encodeURIComponent(pfReturnUrl)}&notifyUrl=${encodeURIComponent(pfNotifyUrl)}`}
-          className="flex-1 text-center py-1.5 rounded-[4px] bg-[var(--of-primary)] text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
+          className="flex-1 text-center py-1.5 bg-[var(--of-primary)] text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           PayFast
         </a>
         <a
           href={`/api/billing/ls-url?pack=${packId}`}
-          className="flex-1 text-center py-1.5 rounded-[4px] border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
+          className="flex-1 text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           Lemon Squeezy
@@ -101,7 +101,7 @@ export function CreditBalance({ balance, transactions, appUrl }: CreditBalancePr
           >
             transactions.recent
           </p>
-          <div className="rounded-md border border-[var(--hairline)] overflow-hidden">
+          <div className="border border-[var(--hairline)] overflow-hidden">
             <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
               <thead>
                 <tr>

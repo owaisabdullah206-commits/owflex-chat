@@ -17,12 +17,12 @@ function truncate(str: string, len: number) {
 }
 
 const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
-const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[12px] last:border-b-0'
+const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[13px] last:border-b-0'
 
 export function ConversationTable({ conversations }: ConversationTableProps) {
   if (conversations.length === 0) {
     return (
-      <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] px-4 py-10 text-center">
+      <div className="border border-[var(--hairline)] bg-[var(--surface)] px-4 py-10 text-center">
         <p className="text-sm text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
           no_sessions_yet
         </p>
@@ -32,7 +32,7 @@ export function ConversationTable({ conversations }: ConversationTableProps) {
   }
 
   return (
-    <div className="rounded-md border border-[var(--hairline)] overflow-hidden">
+    <div className="border border-[var(--hairline)] overflow-hidden">
       <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
         <thead>
           <tr>
