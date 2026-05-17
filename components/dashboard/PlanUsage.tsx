@@ -12,51 +12,49 @@ interface PlanUsageProps {
   storageMb: number
 }
 
-type LimitValue = number | typeof Infinity
-
-function UsageRow({
+function MetricCard({
   label,
-  used,
-  limit,
+  value,
+  limitValue,
   suffix = '',
-  invert = false,
+  note = '',
+  wide = false,
 }: {
   label: string
-  used: number
-  limit: LimitValue
+  value: string | number
+  limitValue?: number | typeof Infinity
   suffix?: string
-  invert?: boolean
+  note?: string
+  wide?: boolean
 }) {
-  const isUnlimited = limit === Infinity
-  const pct = isUnlimited ? 0 : invert
-    ? Math.min(100, ((limit - used) / limit) * 100)
-    : Math.min(100, (used / (limit as number)) * 100)
-  const fillPct = isUnlimited ? 0 : Math.min(100, (used / (limit as number)) * 100)
-  const isNear = !isUnlimited && fillPct >= 80
-
-  const usedLabel = used.toLocaleString()
-  const limitLabel = isUnlimited ? 'Unlimited' : (limit as number).toLocaleString()
+  const isUnlimited = limitValue === Infinity || limitValue === undefined
+  const numValue = typeof value === 'number' ? value : parseFloat(String(value))
+  const hasBar = !isUnlimited && limitValue !== undefined && typeof numValue === 'number' && !isNaN(numValue)
+  const pct = hasBar ? Math.min(100, (numValue / (limitValue as number)) * 100) : 0
+  const isNear = hasBar && pct >= 80
 
   return (
-    <div className="px-5 py-3.5">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-xs text-[var(--ink-muted)]">{label}</span>
-        <span
-          className="text-xs text-[var(--ink)] tabular-nums"
-          style={{ fontFamily: 'var(--font-mono)' }}
-        >
-          {isUnlimited ? (
-            <span className="text-[var(--ink-subtle)]">Unlimited{suffix ? ` ${suffix}` : ''}</span>
-          ) : (
-            <>{usedLabel} / {limitLabel}{suffix ? ` ${suffix}` : ''}</>
-          )}
+    <div className={`rounded-xl border border-[var(--hairline)] bg-[var(--surface)] p-4 flex flex-col gap-1.5${wide ? ' col-span-2' : ''}`}>
+      <p className="text-xs text-[var(--ink-muted)]">{label}</p>
+      <div className="flex items-baseline gap-1 flex-wrap">
+        <span className="text-xl font-bold text-[var(--ink)] tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>
+          {typeof value === 'number' ? value.toLocaleString() : value}
         </span>
+        {!isUnlimited && limitValue !== undefined && (
+          <span className="text-xs text-[var(--ink-muted)]">
+            / {(limitValue as number).toLocaleString()}{suffix ? ` ${suffix}` : ''}
+          </span>
+        )}
+        {isUnlimited && (
+          <span className="text-xs text-[var(--ink-subtle)]">∞{suffix ? ` ${suffix}` : ''}</span>
+        )}
       </div>
-      {!isUnlimited && (
-        <div className="h-1.5 rounded-full bg-[var(--surface-2)] overflow-hidden">
+      {note && <p className="text-[10px] text-[var(--ink-subtle)]">{note}</p>}
+      {hasBar && (
+        <div className="h-1 rounded-full bg-[var(--surface-2)] overflow-hidden mt-0.5">
           <div
             className={`h-full rounded-full transition-all ${isNear ? 'bg-amber-500' : 'bg-[var(--of-primary)]'}`}
-            style={{ width: `${fillPct}%` }}
+            style={{ width: `${pct}%` }}
           />
         </div>
       )}
@@ -79,67 +77,52 @@ export function PlanUsage({
   const limits = PLAN_LIMITS[planKey]
   const isFree = plan === 'free'
 
-  const storageLabel =
+  const storageDisplay =
     storageMb < 1
       ? `${(storageMb * 1024).toFixed(0)} KB`
       : `${storageMb.toFixed(1)} MB`
-  const storageLimitLabel = limits.storageMb >= 1024
-    ? `${(limits.storageMb / 1024).toFixed(0)} GB`
-    : `${limits.storageMb} MB`
+  const storageLimitDisplay =
+    limits.storageMb >= 1024
+      ? `${(limits.storageMb / 1024).toFixed(0)} GB`
+      : `${limits.storageMb} MB`
 
   return (
-    <div className="rounded-xl border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
-      <div className="px-5 py-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-[var(--ink)]">Plan & Usage</h2>
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-sm font-semibold text-[var(--ink)]">Plan &amp; Usage</h2>
         <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--ink-muted)] capitalize">
           {plan}
         </span>
       </div>
-
-      {/* Credits */}
-      <div className="px-5 py-3.5">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-xs text-[var(--ink-muted)]">Credits</span>
-          <span className="text-xs text-[var(--ink)] tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>
-            {isFree ? (
-              <>{balance.toLocaleString()} / {freeTierCredits.toLocaleString()} tokens</>
-            ) : (
-              <>{balance.toLocaleString()} tokens remaining</>
-            )}
-          </span>
-        </div>
-        {isFree && (
-          <div className="h-1.5 rounded-full bg-[var(--surface-2)] overflow-hidden">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {/* Credits — 2 cols wide */}
+        <MetricCard
+          label={isFree ? 'Credits (resets monthly)' : 'Credits remaining'}
+          value={balance}
+          limitValue={isFree ? freeTierCredits : undefined}
+          suffix="tokens"
+          wide
+        />
+        <MetricCard label="Bots" value={botCount} limitValue={limits.bots} />
+        <MetricCard label="Clients" value={clientCount} limitValue={Infinity} />
+        <MetricCard label="Knowledge Docs" value={docCount} limitValue={limits.docs} />
+        <MetricCard label="Conversations" value={conversationsThisMonth} limitValue={limits.conversations} note="this month" />
+        <MetricCard label="Leads" value={leadsThisMonth} limitValue={limits.leads} note="this month" />
+        {/* Storage — custom value/limit */}
+        <div className="rounded-xl border border-[var(--hairline)] bg-[var(--surface)] p-4 flex flex-col gap-1.5">
+          <p className="text-xs text-[var(--ink-muted)]">Storage</p>
+          <div className="flex items-baseline gap-1 flex-wrap">
+            <span className="text-xl font-bold text-[var(--ink)] tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>
+              {storageDisplay}
+            </span>
+            <span className="text-xs text-[var(--ink-muted)]">/ {storageLimitDisplay}</span>
+          </div>
+          <div className="h-1 rounded-full bg-[var(--surface-2)] overflow-hidden mt-0.5">
             <div
-              className={`h-full rounded-full transition-all ${balance / freeTierCredits < 0.2 ? 'bg-amber-500' : 'bg-[var(--of-primary)]'}`}
-              style={{ width: `${Math.min(100, (balance / freeTierCredits) * 100)}%` }}
+              className={`h-full rounded-full transition-all ${(storageMb / limits.storageMb) >= 0.8 ? 'bg-amber-500' : 'bg-[var(--of-primary)]'}`}
+              style={{ width: `${Math.min(100, (storageMb / limits.storageMb) * 100)}%` }}
             />
           </div>
-        )}
-        {isFree && (
-          <p className="text-[10px] text-[var(--ink-subtle)] mt-1">Resets monthly</p>
-        )}
-      </div>
-
-      <UsageRow label="Bots" used={botCount} limit={limits.bots} />
-      <UsageRow label="Clients" used={clientCount} limit={Infinity} />
-      <UsageRow label="Knowledge docs" used={docCount} limit={limits.docs} />
-      <UsageRow label="Conversations this month" used={conversationsThisMonth} limit={limits.conversations} />
-      <UsageRow label="Leads this month" used={leadsThisMonth} limit={limits.leads} />
-
-      {/* Storage — custom formatting */}
-      <div className="px-5 py-3.5">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-xs text-[var(--ink-muted)]">Storage</span>
-          <span className="text-xs text-[var(--ink)] tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>
-            {storageLabel} / {storageLimitLabel}
-          </span>
-        </div>
-        <div className="h-1.5 rounded-full bg-[var(--surface-2)] overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all ${(storageMb / limits.storageMb) >= 0.8 ? 'bg-amber-500' : 'bg-[var(--of-primary)]'}`}
-            style={{ width: `${Math.min(100, (storageMb / limits.storageMb) * 100)}%` }}
-          />
         </div>
       </div>
     </div>

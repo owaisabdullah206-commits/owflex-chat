@@ -90,8 +90,8 @@ export default async function BillingPage() {
           <RefreshButton />
         </div>
         <div className="px-4 sm:px-8 py-6">
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 items-start">
-            <div className="xl:col-span-3">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div className="lg:col-span-2">
               <PlanUsage
                 plan={org.plan}
                 balance={balance}
@@ -104,7 +104,7 @@ export default async function BillingPage() {
                 storageMb={storageMb}
               />
             </div>
-            <div className="xl:col-span-2">
+            <div className="lg:col-span-1">
               <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
             </div>
           </div>

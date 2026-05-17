@@ -72,7 +72,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   }
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
     <form onSubmit={handleSubmit} className="space-y-6">
       {isDirty && (
         <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
@@ -225,7 +225,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         {error && <span className="text-xs text-red-400">{error}</span>}
       </div>
     </form>
-    <div className="hidden xl:block">
+    <div className="hidden lg:block">
       <LiveBotPreview botName={name} primaryColor={primaryColor} welcomeMessage={welcomeMessage} />
     </div>
     </div>

@@ -322,15 +322,15 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'knowledge base' && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-              <div className="xl:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+              <div className="lg:col-span-2">
                 <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Knowledge Base</h2>
                 <p className="text-xs text-[var(--ink-muted)] mb-5">
                   Active entries are injected into the bot&apos;s system prompt on every chat. Changes apply within 5 minutes.
                 </p>
                 <FaqEditor botId={bot.id} initialFaqs={faqs} />
               </div>
-              <div className="hidden xl:block">
+              <div className="hidden lg:block">
                 <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
                   <p className="text-xs font-semibold text-[var(--ink)] uppercase tracking-wide">Tips</p>
                   <p className="text-xs text-[var(--ink-muted)]">Active entries are injected into the bot&apos;s system prompt on every message. Keep answers concise.</p>
@@ -362,15 +362,15 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'unanswered' && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-              <div className="xl:col-span-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+              <div className="lg:col-span-2">
                 <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Unanswered Questions</h2>
                 <p className="text-xs text-[var(--ink-muted)] mb-5">
                   Responses where the bot expressed uncertainty. Add FAQ entries to fill these gaps.
                 </p>
                 <UnansweredList messages={unansweredMessages} />
               </div>
-              <div className="hidden xl:block">
+              <div className="hidden lg:block">
                 <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
                   <p className="text-xs font-semibold text-[var(--ink)] uppercase tracking-wide">What to do</p>
                   <p className="text-xs text-[var(--ink-muted)]">
