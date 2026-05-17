@@ -1,6 +1,7 @@
 'use client'
 import { useTheme } from '@/hooks/useTheme'
 import { ThemeToggleButton } from '@/components/shared/ThemeToggleButton'
+import { Toaster } from '@/components/ui/sonner'
 
 const themeScript = `(function(){
   var stored = localStorage.getItem('owflex-theme-dashboard');
@@ -27,6 +28,7 @@ export default function DashboardLayout({
           <main className="flex-1">{children}</main>
         </div>
       </div>
+      <Toaster position="bottom-right" />
     </>
   )
 }

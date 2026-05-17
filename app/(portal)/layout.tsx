@@ -1,4 +1,5 @@
 import { MobileBottomNav } from '@/components/portal/MobileBottomNav'
+import { Toaster } from '@/components/ui/sonner'
 
 const themeScript = `(function(){
   var stored = localStorage.getItem('owflex-theme-portal');
@@ -21,6 +22,7 @@ export default function PortalLayout({
         </div>
       </div>
       <MobileBottomNav />
+      <Toaster position="bottom-right" />
     </>
   )
 }

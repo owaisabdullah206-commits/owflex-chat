@@ -57,18 +57,22 @@ export function DocumentUploader({
       return
     }
     startTransition(async () => {
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch(`/api/v1/documents/upload?botId=${botId}`, {
-        method: 'POST',
-        body: formData,
-      })
-      const data = await res.json().catch(() => ({}))
-      if (res.ok || res.status === 202) {
-        toast.success(`"${file.name}" queued for processing`)
-        router.refresh()
-      } else {
-        toast.error(data.error ?? 'Upload failed')
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const res = await fetch(`/api/v1/documents/upload?botId=${botId}`, {
+          method: 'POST',
+          body: formData,
+        })
+        const data = await res.json().catch(() => ({}))
+        if (res.ok || res.status === 202) {
+          toast.success(`"${file.name}" queued for processing`)
+          router.refresh()
+        } else {
+          toast.error(data.error ?? 'Upload failed')
+        }
+      } catch {
+        toast.error('Upload failed — check your connection and try again.')
       }
     })
   }
@@ -77,18 +81,22 @@ export function DocumentUploader({
     e.preventDefault()
     if (!urlValue.trim()) return
     startTransition(async () => {
-      const res = await fetch('/api/v1/documents/url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ botId, url: urlValue.trim(), maxPages }),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (res.ok || res.status === 202) {
-        toast.success('URL queued for processing')
-        setUrlValue('')
-        router.refresh()
-      } else {
-        toast.error(data.error ?? 'Failed to add URL')
+      try {
+        const res = await fetch('/api/v1/documents/url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ botId, url: urlValue.trim(), maxPages }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (res.ok || res.status === 202) {
+          toast.success('URL queued for processing')
+          setUrlValue('')
+          router.refresh()
+        } else {
+          toast.error(data.error ?? 'Failed to add URL')
+        }
+      } catch {
+        toast.error('Failed to add URL — check your connection and try again.')
       }
     })
   }
