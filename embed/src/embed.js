@@ -7,16 +7,16 @@ var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="botto
 var ti="message-circle",br=16,te=false,tms=[];
 var op=0,busy=0,started=0,lastMsg="";
 
-/* ── Icon SVG paths (Lucide) ── */
+/* ── Icon SVG paths (exact Lucide v1.16.0) ── */
 var ICONS={
-  "message-circle":'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  "message-circle":'<path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>',
   "bot":'<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
   "help-circle":'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
   "headphones":'<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
-  "sparkles":'<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>',
-  "zap":'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
-  "message-square":'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-  "smile":'<circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  "sparkles":'<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/>',
+  "zap":'<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  "message-square":'<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/>',
+  "smile":'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
 };
 function iconSvg(id,size,sw){
   var p=ICONS[id]||ICONS["message-circle"];
@@ -82,7 +82,7 @@ var css=
 
 /* ── Input row ── */
 "#oF{padding:10px 12px;border-top:1px solid #f0f0f0;display:flex;gap:8px;align-items:center;flex-shrink:0;background:#fafafa}"+
-"#oI{flex:1;border:1.5px solid #e5e7eb;border-radius:22px;padding:9px 14px;font-size:13px;outline:0;transition:border-color .15s,box-shadow .15s;font-family:inherit;background:#fff;color:#111}"+
+"#oI{flex:1;border:1.5px solid #e5e7eb;border-radius:"+Math.max(4,br)+"px;height:40px;padding:0 14px;font-size:13px;outline:0;transition:border-color .15s,box-shadow .15s;font-family:inherit;background:#fff;color:#111;box-sizing:border-box}"+
 "#oI:focus{border-color:var(--ofp);box-shadow:0 0 0 3px rgba(0,0,0,.07)}"+
 "#oI:disabled{background:#f3f4f6;color:#9ca3af}"+
 "#oI::placeholder{color:#9ca3af}"+
@@ -91,7 +91,7 @@ var css=
 "#oS:disabled{opacity:.4;cursor:default;transform:none}"+
 
 /* ── Tooltip ── */
-(te?"#oTip{position:fixed;bottom:88px;"+side+":20px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
+(te?"#oTip{position:fixed;bottom:32px;"+side+":88px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
 
 /* ── Keyframes ── */
 "@keyframes ofFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}"+
@@ -131,11 +131,10 @@ if(te&&tms.length){
 
 /* Chat panel */
 var pnl=document.createElement("div");pnl.id="oP";pnl.className="h";pnl.setAttribute("role","dialog");
-var initial=esc(bn).charAt(0).toUpperCase()||"?";
 pnl.innerHTML=
   '<div id="oH">'+
     '<div style="display:flex;align-items:center;flex:1;min-width:0">'+
-      '<div id="oAv">'+initial+'<span id="oDot"></span></div>'+
+      '<div id="oAv">'+iconSvg(ti,18,2)+'<span id="oDot"></span></div>'+
       '<div style="min-width:0">'+
         '<div id="oHn">'+esc(bn)+'</div>'+
         '<div id="oSt">Online</div>'+

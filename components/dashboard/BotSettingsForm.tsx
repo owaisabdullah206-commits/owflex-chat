@@ -325,6 +325,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           welcomeMessage={welcomeMessage}
           triggerIcon={triggerIcon}
           borderRadius={borderRadius}
+          position={position}
           tooltipEnabled={tooltipEnabled}
           tooltipMessages={tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean)}
           theme={previewTheme}
@@ -342,6 +343,7 @@ function LiveBotPreview({
   welcomeMessage,
   triggerIcon,
   borderRadius,
+  position,
   tooltipEnabled,
   tooltipMessages,
   theme,
@@ -352,12 +354,14 @@ function LiveBotPreview({
   welcomeMessage: string
   triggerIcon: string
   borderRadius: number
+  position: 'bottom-right' | 'bottom-left'
   tooltipEnabled: boolean
   tooltipMessages: string[]
   theme: 'dark' | 'light'
   onToggleTheme: () => void
 }) {
   const isDark = theme === 'dark'
+  const isLeft = position === 'bottom-left'
   const c = isDark
     ? { bg: '#0C0A09', surface: '#171512', hairline: '#2A2622', ink: '#F5F0EB', inkMuted: '#A09890' }
     : { bg: '#FFFFFF', surface: '#F4F4F5', hairline: '#E4E4E7', ink: '#111111', inkMuted: '#6B7280' }
@@ -468,8 +472,8 @@ function LiveBotPreview({
           style={{ borderTop: `1px solid ${c.hairline}`, backgroundColor: c.surface }}
         >
           <div
-            className="flex-1 h-8 rounded-full px-3 flex items-center"
-            style={{ backgroundColor: c.bg, border: `1px solid ${c.hairline}` }}
+            className="flex-1 h-8 px-3 flex items-center"
+            style={{ backgroundColor: c.bg, border: `1px solid ${c.hairline}`, borderRadius: `${Math.max(4, borderRadius)}px` }}
           >
             <span className="text-xs" style={{ color: c.inkMuted }}>Type a message…</span>
           </div>
@@ -485,7 +489,18 @@ function LiveBotPreview({
       </div>
 
       {/* Trigger area */}
-      <div className="mt-3 flex flex-col items-end gap-2" style={{ width: '300px' }}>
+      <div
+        className="mt-3 flex items-center gap-2"
+        style={{ width: '300px', justifyContent: isLeft ? 'flex-start' : 'flex-end' }}
+      >
+        {isLeft && (
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <TriggerIcon className="h-6 w-6 text-white" />
+          </div>
+        )}
         {tooltipEnabled && (
           <div
             className="text-xs px-3 py-1.5 shadow-sm"
@@ -494,18 +509,23 @@ function LiveBotPreview({
               backgroundColor: isDark ? '#171512' : '#FFFFFF',
               color: isDark ? '#F5F0EB' : '#111111',
               border: `1px solid ${isDark ? '#2A2622' : '#E4E4E7'}`,
-              maxWidth: '200px',
+              maxWidth: '180px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}
           >
             {firstTip}
           </div>
         )}
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
-          style={{ backgroundColor: primaryColor }}
-        >
-          <TriggerIcon className="h-6 w-6 text-white" />
-        </div>
+        {!isLeft && (
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <TriggerIcon className="h-6 w-6 text-white" />
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-[var(--ink-subtle)] mt-2.5">Updates live as you change settings above.</p>
