@@ -1,17 +1,17 @@
 import { Redis } from '@upstash/redis'
 
-// text-embedding-004 was shut down Jan 14 2026.
-// gemini-embedding-001 on v1 supports MRL — outputDimensionality keeps schema-compatible 768-dim vectors.
-const MODEL_NAME = 'gemini-embedding-001'
+// Jina Embeddings v3 — free tier (1M tokens/month), supports dimensions=768 via Matryoshka,
+// task-specific LoRA adapters improve RAG quality (passage vs query distinction).
+const MODEL_NAME = 'jina-embeddings-v3'
 const DIMENSIONS = 768
 const DAILY_TOKEN_LIMIT = 1_000_000
 const BATCH_SIZE = 100
 
-const EMBED_URL = `https://generativelanguage.googleapis.com/v1/models/${MODEL_NAME}:embedContent`
+const EMBED_URL = 'https://api.jina.ai/v1/embeddings'
 
 export class QuotaExhaustedError extends Error {
   constructor() {
-    super('Gemini embedding daily quota exhausted. Job will be retried tomorrow.')
+    super('Jina embedding daily quota exhausted. Job will be retried tomorrow.')
     this.name = 'QuotaExhaustedError'
   }
 }
@@ -29,7 +29,6 @@ function quotaKey(): string {
 }
 
 async function estimateTokens(texts: string[]): Promise<number> {
-  // rough estimate: 1 token ≈ 4 chars
   return texts.reduce((sum, t) => sum + Math.ceil(t.length / 4), 0)
 }
 
@@ -37,7 +36,6 @@ async function trackUsage(tokens: number): Promise<void> {
   const redis = getRedis()
   const key = quotaKey()
   await redis.incrby(key, tokens)
-  // TTL 36 h so it covers the full reset window
   await redis.expire(key, 36 * 3600)
 }
 
@@ -47,17 +45,21 @@ async function getRemainingQuota(): Promise<number> {
   return DAILY_TOKEN_LIMIT - Number(used)
 }
 
-async function embedOne(text: string): Promise<number[]> {
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey) throw new Error('GEMINI_API_KEY is not set')
+async function callJina(texts: string[], task: 'retrieval.passage' | 'retrieval.query'): Promise<number[][]> {
+  const apiKey = process.env.JINA_API_KEY
+  if (!apiKey) throw new Error('JINA_API_KEY is not set')
 
-  const res = await fetch(`${EMBED_URL}?key=${apiKey}`, {
+  const res = await fetch(EMBED_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
     body: JSON.stringify({
-      model: `models/${MODEL_NAME}`,
-      content: { parts: [{ text }] },
-      outputDimensionality: DIMENSIONS,
+      model: MODEL_NAME,
+      input: texts,
+      task,
+      dimensions: DIMENSIONS,
     }),
   })
 
@@ -65,17 +67,22 @@ async function embedOne(text: string): Promise<number[]> {
 
   if (!res.ok) {
     const body = await res.text().catch(() => '')
-    throw new Error(`Gemini embed HTTP ${res.status}: ${body}`)
+    throw new Error(`Jina embed HTTP ${res.status}: ${body}`)
   }
 
-  const data = (await res.json()) as { embedding: { values: number[] } }
-  const values = data.embedding?.values
-  if (!Array.isArray(values) || values.length !== DIMENSIONS) {
-    throw new Error(`Unexpected embedding dimensions: ${values?.length ?? 0}`)
+  const data = (await res.json()) as { data: { embedding: number[]; index: number }[] }
+  const sorted = data.data.sort((a, b) => a.index - b.index)
+
+  for (const item of sorted) {
+    if (!Array.isArray(item.embedding) || item.embedding.length !== DIMENSIONS) {
+      throw new Error(`Unexpected embedding dimensions: ${item.embedding?.length ?? 0}`)
+    }
   }
-  return values
+
+  return sorted.map((item) => item.embedding)
 }
 
+// Used for indexing document chunks
 export async function embedTexts(texts: string[]): Promise<number[][]> {
   if (texts.length === 0) return []
 
@@ -89,7 +96,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
 
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {
     const batch = texts.slice(i, i + BATCH_SIZE)
-    const batchResults = await Promise.all(batch.map(embedOne))
+    const batchResults = await callJina(batch, 'retrieval.passage')
     results.push(...batchResults)
   }
 
@@ -97,7 +104,8 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
   return results
 }
 
+// Used for user queries at chat time
 export async function embedQuery(text: string): Promise<number[]> {
-  const [embedding] = await embedTexts([text])
+  const [embedding] = await callJina([text], 'retrieval.query')
   return embedding
 }
