@@ -22,12 +22,12 @@ export function EmbedCodeBlock({ embedKey }: EmbedCodeBlockProps) {
   }
 
   return (
-    <div className="rounded-lg border border-[var(--hairline)] overflow-hidden">
+    <div className="border border-[var(--hairline)] overflow-hidden">
       <div className="flex items-center justify-between px-4 py-2.5 bg-[var(--surface-2)] border-b border-[var(--hairline)]">
         <span className="text-xs text-[var(--ink-muted)] font-medium">Embed Script</span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md transition-colors
+          className="flex items-center gap-1.5 text-xs px-2.5 py-1 transition-colors
             bg-[var(--surface-3)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--surface-4)]"
         >
           {copied ? (

@@ -106,8 +106,8 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
 
         {inviteUrl ? (
           <div className="space-y-4 pt-2">
-            <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-4 py-3">
-              <p className="text-sm font-medium text-amber-400 mb-1">Email delivery failed</p>
+            <div className="bg-[var(--of-warning)]/10 border border-[var(--of-warning)]/20 px-4 py-3">
+              <p className="text-sm font-medium text-[var(--warning-text)] mb-1">Email delivery failed</p>
               <p className="text-xs text-[var(--ink-muted)]">
                 Your Resend account is in sandbox mode and can only deliver to your own email.
                 Share this invite link directly with the client:
@@ -117,11 +117,11 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
               <input
                 readOnly
                 value={inviteUrl}
-                className="flex-1 text-xs bg-[var(--surface-2)] border border-[var(--hairline)] rounded-md px-3 py-2 text-[var(--ink-muted)] truncate"
+                className="flex-1 text-xs bg-[var(--surface-2)] border border-[var(--hairline)] px-3 py-2 text-[var(--ink-muted)] truncate"
               />
               <button
                 onClick={handleCopy}
-                className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium bg-[var(--surface-2)] border border-[var(--hairline)] text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors cursor-pointer"
+                className="shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-[var(--surface-2)] border border-[var(--hairline)] text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors cursor-pointer"
               >
                 {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                 {copied ? 'Copied!' : 'Copy'}
@@ -130,7 +130,7 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
             <p className="text-xs text-[var(--ink-muted)]">
               To send real emails, verify your domain in the{' '}
               <span className="text-[var(--ink)]">Resend dashboard</span> and update{' '}
-              <code className="text-xs bg-[var(--surface-2)] px-1 rounded">RESEND_FROM_EMAIL</code>.
+              <code className="text-xs bg-[var(--surface-2)] px-1">RESEND_FROM_EMAIL</code>.
             </p>
             <div className="flex justify-end">
               <Button variant="ghost" onClick={() => handleClose(false)}>
@@ -160,7 +160,7 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
             </div>
 
             {error && (
-              <p className="text-sm text-[var(--of-error-dark)] bg-[var(--of-error-soft)] px-3 py-2 rounded-lg">
+              <p className="text-sm text-[var(--error-text)] bg-[var(--of-error)]/10 px-3 py-2">
                 {error}
               </p>
             )}

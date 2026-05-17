@@ -94,7 +94,7 @@ export function DocumentUploader({
   }
 
   return (
-    <div className="rounded-xl border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
+    <div className="border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
       {/* Tab bar */}
       <div className="flex border-b border-[var(--hairline)]">
         <button

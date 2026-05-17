@@ -207,7 +207,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                   }`}
                   style={{ fontFamily: 'var(--font-mono)' }}
                 >
-                  {t.toLowerCase().replace(' ', '_')}
+                  {t}
                 </a>
               )
             })}

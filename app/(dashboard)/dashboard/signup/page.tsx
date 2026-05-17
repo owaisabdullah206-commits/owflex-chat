@@ -45,7 +45,7 @@ export default function DashboardSignupPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-6">
-            <div className="w-7 h-7 rounded-md bg-[var(--of-primary)] flex items-center justify-center">
+            <div className="w-7 h-7 bg-[var(--of-primary)] flex items-center justify-center">
               <span className="text-white text-sm font-bold">O</span>
             </div>
             <span className="text-[var(--ink)] font-semibold text-lg tracking-tight">OwFlex</span>
@@ -54,7 +54,7 @@ export default function DashboardSignupPage() {
           <p className="text-sm text-[var(--ink-muted)] mt-1">Start managing your AI chatbots</p>
         </div>
 
-        <div className="bg-[var(--surface)] border border-[var(--hairline)] rounded-xl p-6">
+        <div className="bg-[var(--surface)] border border-[var(--hairline)] p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="name">Full name</Label>

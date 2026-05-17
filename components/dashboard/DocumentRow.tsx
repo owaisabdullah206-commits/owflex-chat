@@ -18,14 +18,14 @@ function formatDate(d: Date): string {
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
-    queued:     { label: 'Queued',     className: 'bg-yellow-500/10 text-yellow-400', icon: <Clock className="h-3 w-3" /> },
-    processing: { label: 'Processing', className: 'bg-blue-500/10 text-blue-400',    icon: <Loader2 className="h-3 w-3 animate-spin" /> },
-    ready:      { label: 'Ready',      className: 'bg-emerald-500/10 text-emerald-400', icon: <CheckCircle2 className="h-3 w-3" /> },
-    failed:     { label: 'Failed',     className: 'bg-red-500/10 text-red-400',      icon: <XCircle className="h-3 w-3" /> },
+    queued:     { label: 'Queued',     className: 'bg-[var(--of-warning)]/10 text-[var(--warning-text)]', icon: <Clock className="h-3 w-3" /> },
+    processing: { label: 'Processing', className: 'bg-[var(--of-primary)]/10 text-[var(--of-primary)]',   icon: <Loader2 className="h-3 w-3 animate-spin" /> },
+    ready:      { label: 'Ready',      className: 'bg-[var(--of-success)]/10 text-[var(--success-text)]', icon: <CheckCircle2 className="h-3 w-3" /> },
+    failed:     { label: 'Failed',     className: 'bg-[var(--of-error)]/10 text-[var(--error-text)]',     icon: <XCircle className="h-3 w-3" /> },
   }
   const s = map[status] ?? map.queued
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${s.className}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium ${s.className}`}>
       {s.icon}
       {s.label}
     </span>

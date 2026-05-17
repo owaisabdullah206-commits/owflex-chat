@@ -12,9 +12,9 @@ export function SignOutButton() {
   return (
     <button
       onClick={handle}
-      className="flex items-center gap-2 text-sm text-[var(--of-error-dark)]
-        border border-[var(--of-error-dark)] rounded-md px-4 py-2
-        hover:bg-[var(--of-error-soft)] transition-colors cursor-pointer"
+      className="flex items-center gap-2 text-sm text-[var(--error-text)]
+        border border-[var(--error-text)] px-4 py-2
+        hover:bg-[var(--of-error)]/10 transition-colors cursor-pointer"
     >
       <LogOut className="h-4 w-4" />
       Sign out

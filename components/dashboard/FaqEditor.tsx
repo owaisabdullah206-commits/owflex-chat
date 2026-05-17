@@ -65,7 +65,7 @@ export function FaqEditor({ botId, initialFaqs }: FaqEditorProps) {
   return (
     <div className="space-y-4">
       {faqs.length === 0 && !showAddForm && (
-        <div className="rounded-lg border border-dashed border-[var(--hairline)] bg-[var(--surface)] px-6 py-10 text-center">
+        <div className="border border-dashed border-[var(--hairline)] bg-[var(--surface)] px-6 py-10 text-center">
           <p className="text-sm text-[var(--ink-muted)] mb-3">No FAQ entries yet.</p>
           <Button
             size="sm"
@@ -78,7 +78,7 @@ export function FaqEditor({ botId, initialFaqs }: FaqEditorProps) {
       )}
 
       {faqs.length > 0 && (
-        <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
+        <div className="border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
           {faqs.map((faq) => (
             <div key={faq.id} className={`px-5 py-4 flex gap-4 items-start ${!faq.isActive ? 'opacity-50' : ''}`}>
               <div className="flex-1 min-w-0">
@@ -94,7 +94,7 @@ export function FaqEditor({ botId, initialFaqs }: FaqEditorProps) {
                 <button
                   onClick={() => handleDelete(faq.id)}
                   disabled={isPending}
-                  className="text-xs text-red-400 hover:text-red-300 disabled:opacity-40"
+                  className="text-xs text-[var(--error-text)] hover:opacity-80 disabled:opacity-40"
                 >
                   Delete
                 </button>
@@ -105,7 +105,7 @@ export function FaqEditor({ botId, initialFaqs }: FaqEditorProps) {
       )}
 
       {showAddForm && (
-        <form onSubmit={handleAdd} className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
+        <form onSubmit={handleAdd} className="border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
           <div className="space-y-1.5">
             <Label className="text-xs text-[var(--ink-muted)]">Question</Label>
             <Input
@@ -129,7 +129,7 @@ export function FaqEditor({ botId, initialFaqs }: FaqEditorProps) {
               required
             />
           </div>
-          {addError && <p className="text-xs text-red-400">{addError}</p>}
+          {addError && <p className="text-xs text-[var(--error-text)]">{addError}</p>}
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={isPending}
               className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white">

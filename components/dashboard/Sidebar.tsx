@@ -92,7 +92,7 @@ export function Sidebar() {
       <div className="px-2 pb-3">
         <button
           onClick={handleSignOut}
-          className="flex w-full items-center gap-2 px-3 py-[7px] text-[13px] text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors"
+          className="flex w-full items-center gap-2 px-3 py-[7px] text-[13px] text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors cursor-pointer"
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           <LogOut className="h-3.5 w-3.5" />

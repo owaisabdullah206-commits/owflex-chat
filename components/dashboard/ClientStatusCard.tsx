@@ -60,7 +60,7 @@ export function ClientStatusCard({ botId, client, invite }: ClientStatusCardProp
   }
 
   return (
-    <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
+    <div className="border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
       <div className="px-5 py-3">
         <p
           className="text-[11px] font-medium tracking-[0.5px] uppercase text-[var(--ink-muted)]"
@@ -82,14 +82,14 @@ export function ClientStatusCard({ botId, client, invite }: ClientStatusCardProp
                   </p>
                 )}
               </div>
-              <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="shrink-0 inline-flex items-center px-2 py-0.5 text-[11px] font-medium bg-[var(--of-success)]/10 text-[var(--success-text)] border border-[var(--of-success)]/20">
                 Active
               </span>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={handleCopyPortalLink}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] border border-[var(--hairline)] transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] border border-[var(--hairline)] transition-colors cursor-pointer"
               >
                 {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                 {copied ? 'Copied!' : 'Copy portal link'}
@@ -97,7 +97,7 @@ export function ClientStatusCard({ botId, client, invite }: ClientStatusCardProp
               <button
                 onClick={handleRemove}
                 disabled={removing}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-transparent text-[var(--of-error-dark)] border border-[var(--of-error-dark)] hover:bg-[var(--of-error-soft)] transition-colors disabled:opacity-50 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-transparent text-[var(--error-text)] border border-[var(--error-text)] hover:bg-[var(--of-error)]/10 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 <UserX className="h-3.5 w-3.5" />
                 {removing ? 'Removing…' : 'Remove access'}
@@ -118,7 +118,7 @@ export function ClientStatusCard({ botId, client, invite }: ClientStatusCardProp
               <button
                 onClick={() => handleResend(invite.email)}
                 disabled={resending}
-                className="px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] border border-[var(--hairline)] transition-colors disabled:opacity-50 cursor-pointer"
+                className="px-3 py-1.5 text-xs font-medium bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] border border-[var(--hairline)] transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {resending ? 'Resending…' : 'Resend'}
               </button>
@@ -128,13 +128,13 @@ export function ClientStatusCard({ botId, client, invite }: ClientStatusCardProp
           /* State 3: Invite expired */
           <>
             <div>
-              <p className="text-xs text-amber-400 mb-1">Invite expired</p>
+              <p className="text-xs text-[var(--warning-text)] mb-1">Invite expired</p>
               <p className="text-sm font-medium text-[var(--ink)] truncate">{invite.email}</p>
             </div>
             <button
               onClick={() => handleResend(invite.email)}
               disabled={resending}
-              className="px-3 py-1.5 rounded-md text-xs font-medium bg-[var(--of-primary)]/10 text-[var(--of-primary)] border border-[var(--of-primary)]/30 hover:bg-[var(--of-primary)]/20 transition-colors disabled:opacity-50 cursor-pointer"
+              className="px-3 py-1.5 text-xs font-medium bg-[var(--of-primary)]/10 text-[var(--of-primary)] border border-[var(--of-primary)]/30 hover:bg-[var(--of-primary)]/20 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {resending ? 'Resending…' : 'Resend invite'}
             </button>

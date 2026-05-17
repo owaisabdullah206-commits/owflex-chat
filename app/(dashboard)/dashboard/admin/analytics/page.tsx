@@ -72,65 +72,62 @@ export default async function AdminAnalyticsPage() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)] mb-3">
             Developers
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--hairline)] border border-[var(--hairline)] mb-6">
-            <BentoCard accent className="px-5 py-5">
-              <MetricLabel>Total Developers</MetricLabel>
-              <MetricValue size="xl">{stats.totalDevelopers}</MetricValue>
-              <MetricSub>{stats.paidDevelopers} paid · {freeCount} free</MetricSub>
-            </BentoCard>
-
-            <BentoCard accent className="px-5 py-5">
-              <MetricLabel>New This Month</MetricLabel>
-              <MetricValue size="xl">{stats.newSignupsThisMonth}</MetricValue>
-              <MetricSub>Signed up since month start</MetricSub>
-            </BentoCard>
-
-            <BentoCard accent className="px-5 py-5">
-              <MetricLabel>Total Bots</MetricLabel>
-              <MetricValue size="xl">{stats.totalBots}</MetricValue>
-              <MetricSub>{stats.activeBots} active</MetricSub>
-            </BentoCard>
-
-            <BentoCard accent className="px-5 py-5">
-              <MetricLabel>Messages / Month</MetricLabel>
-              <MetricValue size="xl">{stats.totalMessages.toLocaleString()}</MetricValue>
-              <MetricSub>{stats.totalLeads.toLocaleString()} leads captured</MetricSub>
-            </BentoCard>
+          <div className="border border-[var(--hairline)] mb-6">
+            <div className="h-[2px] bg-[var(--of-primary)] w-full" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--hairline)]">
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>Total Developers</MetricLabel>
+                <MetricValue size="xl">{stats.totalDevelopers}</MetricValue>
+                <MetricSub>{stats.paidDevelopers} paid · {freeCount} free</MetricSub>
+              </BentoCard>
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>New This Month</MetricLabel>
+                <MetricValue size="xl">{stats.newSignupsThisMonth}</MetricValue>
+                <MetricSub>Signed up since month start</MetricSub>
+              </BentoCard>
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>Total Bots</MetricLabel>
+                <MetricValue size="xl">{stats.totalBots}</MetricValue>
+                <MetricSub>{stats.activeBots} active</MetricSub>
+              </BentoCard>
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>Messages / Month</MetricLabel>
+                <MetricValue size="xl">{stats.totalMessages.toLocaleString()}</MetricValue>
+                <MetricSub>{stats.totalLeads.toLocaleString()} leads captured</MetricSub>
+              </BentoCard>
+            </div>
           </div>
 
           {/* ── Row 2: Revenue + profit (3+1 bento) ─────────────────────── */}
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)] mb-3">
             Revenue & Profit
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--hairline)] border border-[var(--hairline)] mb-6">
-            <BentoCard className="px-5 py-5">
-              <MetricLabel>Est. MRR</MetricLabel>
-              <MetricValue size="lg">₨{stats.estimatedMrrPkr.toLocaleString()}</MetricValue>
-              <MetricSub>Subscription-only · PKR</MetricSub>
-            </BentoCard>
-
-            <BentoCard className="px-5 py-5">
-              <MetricLabel>Credit Revenue</MetricLabel>
-              <MetricValue size="lg">${stats.creditRevenueUsd.toFixed(2)}</MetricValue>
-              <MetricSub>All-time purchases · USD</MetricSub>
-            </BentoCard>
-
-            <BentoCard className="px-5 py-5">
-              <MetricLabel>LLM Cost</MetricLabel>
-              <MetricValue size="lg">${stats.llmCostUsd.toFixed(4)}</MetricValue>
-              <MetricSub>All-time token spend · USD</MetricSub>
-            </BentoCard>
-
-            <BentoCard accent className="px-5 py-5">
-              <MetricLabel>Gross Profit</MetricLabel>
-              <p
-                className={`text-3xl font-bold leading-none ${grossColor}`}
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                ${stats.grossProfitUsd.toFixed(4)}
-              </p>
-              <MetricSub>Credit revenue − LLM cost</MetricSub>
-            </BentoCard>
+          <div className="border border-[var(--hairline)] mb-6">
+            <div className="h-[2px] bg-[var(--of-primary)] w-full" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--hairline)]">
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>Est. MRR</MetricLabel>
+                <MetricValue size="lg">₨{stats.estimatedMrrPkr.toLocaleString()}</MetricValue>
+                <MetricSub>Subscription-only · PKR</MetricSub>
+              </BentoCard>
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>Credit Revenue</MetricLabel>
+                <MetricValue size="lg">${stats.creditRevenueUsd.toFixed(2)}</MetricValue>
+                <MetricSub>All-time purchases · USD</MetricSub>
+              </BentoCard>
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>LLM Cost</MetricLabel>
+                <MetricValue size="lg">${stats.llmCostUsd.toFixed(4)}</MetricValue>
+                <MetricSub>All-time token spend · USD</MetricSub>
+              </BentoCard>
+              <BentoCard className="px-5 py-5">
+                <MetricLabel>Gross Profit</MetricLabel>
+                <p className={`text-3xl font-bold leading-none ${grossColor}`} style={{ fontFamily: 'var(--font-mono)' }}>
+                  ${stats.grossProfitUsd.toFixed(4)}
+                </p>
+                <MetricSub>Credit revenue − LLM cost</MetricSub>
+              </BentoCard>
+            </div>
           </div>
 
           {/* ── Row 3: Plan breakdown table ──────────────────────────────── */}

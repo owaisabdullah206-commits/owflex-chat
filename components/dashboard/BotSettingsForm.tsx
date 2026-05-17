@@ -148,7 +148,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           <Label htmlFor="model" className="text-xs text-[var(--ink-muted)]">
             Model
             {isFreePlan && (
-              <span className="ml-2 text-[10px] text-[var(--ink-muted)] bg-[var(--surface-2)] px-1.5 py-0.5 rounded">
+              <span className="ml-2 text-[10px] text-[var(--ink-muted)] bg-[var(--surface-2)] px-1.5 py-0.5">
                 Upgrade to change
               </span>
             )}

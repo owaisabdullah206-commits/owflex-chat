@@ -15,7 +15,7 @@ export function QuickActionsPanel({ botId }: QuickActionsPanelProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-[var(--hairline)] bg-[var(--surface)] p-4">
+      <div className="border border-[var(--hairline)] bg-[var(--surface)] p-4">
         <h3 className="text-xs font-semibold text-[var(--ink-muted)] uppercase tracking-wide mb-3">
           Quick Actions
         </h3>
@@ -24,7 +24,7 @@ export function QuickActionsPanel({ botId }: QuickActionsPanelProps) {
             <a
               key={href}
               href={href}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors"
+              className="flex items-center gap-2.5 px-3 py-2 text-sm text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors"
             >
               <Icon className="h-4 w-4 shrink-0" />
               {label}

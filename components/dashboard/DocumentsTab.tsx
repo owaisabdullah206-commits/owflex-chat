@@ -69,7 +69,7 @@ export async function DocumentsTab({ botId, orgId, plan }: Props) {
           </p>
         </div>
       ) : (
-        <div className="rounded-xl border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
+        <div className="border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
           <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--hairline)] text-xs text-[var(--ink-muted)] font-medium">
             <span className="flex-1">Document</span>
             <span>Status</span>

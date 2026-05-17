@@ -28,7 +28,7 @@ export function SmartRoutingToggle({ botId, initialEnabled }: Props) {
   }
 
   return (
-    <div className="flex items-start gap-4 rounded-xl border border-[var(--hairline)] bg-[var(--surface)] p-4">
+    <div className="flex items-start gap-4 border border-[var(--hairline)] bg-[var(--surface)] p-4">
       <Switch
         id="smart-routing"
         checked={optimisticEnabled}
