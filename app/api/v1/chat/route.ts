@@ -153,7 +153,10 @@ export async function POST(req: NextRequest) {
       getPlatformPrompt(),
       getActiveFaqs(bot.id),
       bot.documentCount > 0
-        ? retrieveContext(bot.id, message).catch(() => [])
+        ? retrieveContext(bot.id, message).catch((err) => {
+            console.error('[chat] retrieveContext failed:', err)
+            return []
+          })
         : Promise.resolve([]),
     ])
 

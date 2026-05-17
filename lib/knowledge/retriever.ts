@@ -4,7 +4,7 @@ import { embedQuery } from '@/lib/knowledge/embedder'
 import type { RetrievedChunk } from '@/lib/knowledge/prompt-builder'
 
 const DEFAULT_TOP_K = 4
-const DEFAULT_THRESHOLD = 0.65
+const DEFAULT_THRESHOLD = 0.40
 
 export async function retrieveContext(
   botId: string,
