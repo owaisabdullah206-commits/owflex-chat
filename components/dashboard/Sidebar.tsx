@@ -28,13 +28,14 @@ function NavLink({ href, label, icon: Icon, pathname }: {
     <Link
       href={href}
       className={cn(
-        'flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors',
+        'flex items-center gap-2 px-3 py-[7px] rounded-[4px] text-[12px] transition-colors',
         active
           ? 'bg-[var(--surface-2)] text-[var(--ink)] font-medium'
           : 'text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]',
       )}
+      style={{ fontFamily: 'var(--font-mono)' }}
     >
-      <Icon className={cn('h-4 w-4', active ? 'text-[var(--of-primary)]' : 'text-current')} />
+      <Icon className={cn('h-3.5 w-3.5 shrink-0', active ? 'text-[var(--of-primary)]' : 'text-current')} />
       {label}
     </Link>
   )
@@ -54,11 +55,14 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex fixed inset-y-0 left-0 w-56 flex-col bg-[var(--surface)] border-r border-[var(--hairline)] z-20">
       {/* Logo */}
-      <div className="flex items-center gap-2 h-14 px-4 border-b border-[var(--hairline)]">
-        <div className="w-6 h-6 rounded bg-[var(--of-primary)] flex items-center justify-center shrink-0">
-          <span className="text-white text-xs font-bold">O</span>
-        </div>
-        <span className="text-[var(--ink)] font-semibold text-sm tracking-tight">OwFlex</span>
+      <div className="flex items-center gap-2.5 h-12 px-4 border-b border-[var(--hairline)]">
+        <div className="w-2 h-2 rounded-full bg-[var(--of-primary)] shrink-0" />
+        <span
+          className="text-[var(--ink)] font-semibold text-sm tracking-[-0.02em]"
+          style={{ fontFamily: 'var(--font-mono)' }}
+        >
+          owflex
+        </span>
       </div>
 
       {/* Nav */}
@@ -69,9 +73,12 @@ export function Sidebar() {
 
         {isAdmin && (
           <>
-            <div className="pt-3 pb-1 px-3">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-[var(--ink-subtle)]">
-                Admin
+            <div className="pt-4 pb-1 px-3">
+              <span
+                className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)]"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                admin
               </span>
             </div>
             {adminItems.map(({ href, label, icon }) => (
@@ -85,10 +92,11 @@ export function Sidebar() {
       <div className="px-2 pb-3">
         <button
           onClick={handleSignOut}
-          className="flex w-full items-center gap-2.5 px-3 py-2 rounded-md text-sm text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors"
+          className="flex w-full items-center gap-2 px-3 py-[7px] rounded-[4px] text-[12px] text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors"
+          style={{ fontFamily: 'var(--font-mono)' }}
         >
-          <LogOut className="h-4 w-4" />
-          Sign out
+          <LogOut className="h-3.5 w-3.5" />
+          sign_out
         </button>
       </div>
     </aside>

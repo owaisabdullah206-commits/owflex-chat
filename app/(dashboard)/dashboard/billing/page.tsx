@@ -30,10 +30,12 @@ export default async function BillingPage() {
         <Sidebar />
         <main className="flex-1 md:ml-56 pb-16 md:pb-0">
           <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
-            <h1 className="text-lg font-semibold text-[var(--ink)]">Billing & Credits</h1>
+            <h1 className="text-xl font-bold text-[var(--ink)]">Billing</h1>
           </div>
           <div className="px-4 sm:px-8 py-6">
-            <p className="text-sm text-[var(--ink-muted)]">No organization found.</p>
+            <p className="text-sm text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+              no_org_found
+            </p>
           </div>
         </main>
         <MobileNav />
@@ -82,12 +84,22 @@ export default async function BillingPage() {
       <AutoRefresh intervalMs={30_000} />
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
-        <div className="flex items-center justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
+        <div className="flex items-start justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <div>
-            <h1 className="text-lg font-semibold text-[var(--ink)]">Billing & Credits</h1>
-            <p className="text-sm text-[var(--ink-muted)] mt-0.5">Usage, credit balance, and top-ups</p>
+            <div
+              className="flex items-center gap-1 mb-0.5 text-[10px] text-[var(--ink-subtle)] uppercase tracking-[0.1em]"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              <span>dashboard</span>
+              <span className="opacity-40">/</span>
+              <span className="text-[var(--ink-muted)]">billing</span>
+            </div>
+            <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Billing</h1>
+            <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+              credits.balance · usage · top-ups
+            </p>
           </div>
-          <RefreshButton />
+          <div className="mt-1"><RefreshButton /></div>
         </div>
         <div className="px-4 sm:px-8 py-6 space-y-8">
           <PlanUsage

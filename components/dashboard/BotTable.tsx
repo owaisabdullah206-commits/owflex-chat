@@ -1,7 +1,4 @@
 import Link from 'next/link'
-import {
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
-} from '@/components/ui/table'
 import { BotToggle } from '@/components/dashboard/BotToggle'
 
 interface Bot {
@@ -23,65 +20,65 @@ function formatDate(date: Date) {
   }).format(new Date(date))
 }
 
+const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
+const tdClass = 'px-4 py-3 text-sm border-b border-[var(--hairline)] last:border-b-0'
+
 export function BotTable({ bots }: BotTableProps) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Bot Name</TableHead>
-          <TableHead>Client</TableHead>
-          <TableHead>Created</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Embed Key</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {bots.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={5} className="text-center text-[var(--ink-muted)] py-8">
-              No bots yet
-            </TableCell>
-          </TableRow>
-        ) : (
-          bots.map((bot) => (
-            <TableRow key={bot.id}>
-              <TableCell>
-                <Link
-                  href={`/dashboard/bots/${bot.id}`}
-                  className="font-medium text-[var(--of-primary-text-dark)] hover:underline underline-offset-2"
-                >
-                  {bot.name}
-                </Link>
-              </TableCell>
-              <TableCell>
-                {bot.clientEmail ? (
-                  <span className="text-sm text-[var(--ink-muted)] truncate max-w-[180px] block">
-                    {bot.clientEmail}
+    <div className="rounded-md border border-[var(--hairline)] overflow-hidden">
+      <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
+        <thead>
+          <tr>
+            <th className={thClass}>bot_name</th>
+            <th className={thClass}>client</th>
+            <th className={thClass}>created_at</th>
+            <th className={thClass}>status</th>
+            <th className={thClass}>embed_key</th>
+          </tr>
+        </thead>
+        <tbody className="bg-[var(--surface)]">
+          {bots.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="px-4 py-10 text-center text-[var(--ink-muted)] text-xs">
+                no bots yet
+              </td>
+            </tr>
+          ) : (
+            bots.map((bot) => (
+              <tr key={bot.id} className="hover:bg-[var(--surface-2)] transition-colors">
+                <td className={tdClass}>
+                  <Link
+                    href={`/dashboard/bots/${bot.id}`}
+                    className="font-medium text-[var(--of-primary)] hover:underline underline-offset-2"
+                  >
+                    {bot.name}
+                  </Link>
+                </td>
+                <td className={tdClass}>
+                  {bot.clientEmail ? (
+                    <span className="text-[var(--ink-muted)] truncate max-w-[180px] block text-[12px]">
+                      {bot.clientEmail}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-[var(--ink-subtle)]">—</span>
+                  )}
+                </td>
+                <td className={`${tdClass} text-[var(--ink-muted)] text-[12px]`}>
+                  {formatDate(bot.createdAt)}
+                </td>
+                <td className={tdClass}>
+                  <BotToggle botId={bot.id} initialActive={bot.isActive} />
+                </td>
+                <td className={tdClass}>
+                  <span className="text-[11px] text-[var(--ink-subtle)]">
+                    {bot.embedKey.slice(0, 16)}…
                   </span>
-                ) : (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--surface-2)] text-[var(--ink-muted)] border border-[var(--hairline)]">
-                    No client
-                  </span>
-                )}
-              </TableCell>
-              <TableCell className="text-[var(--ink-muted)]">
-                {formatDate(bot.createdAt)}
-              </TableCell>
-              <TableCell>
-                <BotToggle botId={bot.id} initialActive={bot.isActive} />
-              </TableCell>
-              <TableCell>
-                <span
-                  className="text-xs text-[var(--ink-muted)]"
-                  style={{ fontFamily: 'var(--font-mono)' }}
-                >
-                  {bot.embedKey.slice(0, 12)}...
-                </span>
-              </TableCell>
-            </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   )
 }

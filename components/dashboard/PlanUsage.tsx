@@ -34,26 +34,40 @@ function MetricCard({
   const isNear = hasBar && pct >= 80
 
   return (
-    <div className={`rounded-xl border border-[var(--hairline)] bg-[var(--surface)] p-4 flex flex-col gap-1.5${wide ? ' col-span-2' : ''}`}>
-      <p className="text-xs text-[var(--ink-muted)]">{label}</p>
-      <div className="flex items-baseline gap-1 flex-wrap">
-        <span className="text-xl font-bold text-[var(--ink)] tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>
+    <div className={`bg-[var(--surface)] px-5 py-[18px] flex flex-col gap-1.5${wide ? ' col-span-2' : ''}`}>
+      <p
+        className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)]"
+        style={{ fontFamily: 'var(--font-mono)' }}
+      >
+        {label}
+      </p>
+      <div className="flex items-baseline gap-1.5 flex-wrap">
+        <span
+          className="text-[32px] font-semibold leading-none text-[var(--ink)]"
+          style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+        >
           {typeof value === 'number' ? value.toLocaleString() : value}
         </span>
         {!isUnlimited && limitValue !== undefined && (
-          <span className="text-xs text-[var(--ink-muted)]">
+          <span className="text-[12px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
             / {(limitValue as number).toLocaleString()}{suffix ? ` ${suffix}` : ''}
           </span>
         )}
         {isUnlimited && (
-          <span className="text-xs text-[var(--ink-subtle)]">∞{suffix ? ` ${suffix}` : ''}</span>
+          <span className="text-[12px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+            ∞{suffix ? ` ${suffix}` : ''}
+          </span>
         )}
       </div>
-      {note && <p className="text-[10px] text-[var(--ink-subtle)]">{note}</p>}
+      {note && (
+        <p className="text-[10px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+          {note}
+        </p>
+      )}
       {hasBar && (
-        <div className="h-1 rounded-full bg-[var(--surface-2)] overflow-hidden mt-0.5">
+        <div className="h-[3px] rounded-full bg-[var(--surface-2)] overflow-hidden mt-1">
           <div
-            className={`h-full rounded-full transition-all ${isNear ? 'bg-amber-500' : 'bg-[var(--of-primary)]'}`}
+            className={`h-full transition-all ${isNear ? 'bg-[var(--of-warning)]' : 'bg-[var(--of-primary)]'}`}
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -88,38 +102,56 @@ export function PlanUsage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-semibold text-[var(--ink)]">Plan &amp; Usage</h2>
-        <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--surface-2)] text-[var(--ink-muted)] capitalize">
+      <div className="flex items-center justify-between mb-3">
+        <p
+          className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
+          style={{ fontFamily: 'var(--font-mono)' }}
+        >
+          plan_usage
+        </p>
+        <span
+          className="text-[11px] px-2 py-0.5 rounded-[3px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] capitalize"
+          style={{ fontFamily: 'var(--font-mono)' }}
+        >
           {plan}
         </span>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {/* Credits — 2 cols wide */}
+      {/* Stat grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-[var(--hairline)] rounded-md overflow-hidden border border-[var(--hairline)]">
         <MetricCard
-          label={isFree ? 'Credits (resets monthly)' : 'Credits remaining'}
+          label={isFree ? 'credits.monthly' : 'credits.remaining'}
           value={balance}
           limitValue={isFree ? freeTierCredits : undefined}
           suffix="tokens"
           wide
         />
-        <MetricCard label="Bots" value={botCount} limitValue={limits.bots} />
-        <MetricCard label="Clients" value={clientCount} limitValue={Infinity} />
-        <MetricCard label="Knowledge Docs" value={docCount} limitValue={limits.docs} />
-        <MetricCard label="Conversations" value={conversationsThisMonth} limitValue={limits.conversations} note="this month" />
-        <MetricCard label="Leads" value={leadsThisMonth} limitValue={limits.leads} note="this month" />
-        {/* Storage — custom value/limit */}
-        <div className="rounded-xl border border-[var(--hairline)] bg-[var(--surface)] p-4 flex flex-col gap-1.5">
-          <p className="text-xs text-[var(--ink-muted)]">Storage</p>
-          <div className="flex items-baseline gap-1 flex-wrap">
-            <span className="text-xl font-bold text-[var(--ink)] tabular-nums" style={{ fontFamily: 'var(--font-mono)' }}>
+        <MetricCard label="bots" value={botCount} limitValue={limits.bots} />
+        <MetricCard label="clients" value={clientCount} limitValue={Infinity} />
+        <MetricCard label="docs" value={docCount} limitValue={limits.docs} />
+        <MetricCard label="conversations" value={conversationsThisMonth} limitValue={limits.conversations} note="this month" />
+        <MetricCard label="leads" value={leadsThisMonth} limitValue={limits.leads} note="this month" />
+        {/* Storage */}
+        <div className="bg-[var(--surface)] px-5 py-[18px] flex flex-col gap-1.5">
+          <p
+            className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            storage
+          </p>
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <span
+              className="text-[32px] font-semibold leading-none text-[var(--ink)]"
+              style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+            >
               {storageDisplay}
             </span>
-            <span className="text-xs text-[var(--ink-muted)]">/ {storageLimitDisplay}</span>
+            <span className="text-[12px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+              / {storageLimitDisplay}
+            </span>
           </div>
-          <div className="h-1 rounded-full bg-[var(--surface-2)] overflow-hidden mt-0.5">
+          <div className="h-[3px] rounded-full bg-[var(--surface-2)] overflow-hidden mt-1">
             <div
-              className={`h-full rounded-full transition-all ${(storageMb / limits.storageMb) >= 0.8 ? 'bg-amber-500' : 'bg-[var(--of-primary)]'}`}
+              className={`h-full transition-all ${(storageMb / limits.storageMb) >= 0.8 ? 'bg-[var(--of-warning)]' : 'bg-[var(--of-primary)]'}`}
               style={{ width: `${Math.min(100, (storageMb / limits.storageMb) * 100)}%` }}
             />
           </div>

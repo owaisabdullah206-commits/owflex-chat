@@ -2,9 +2,6 @@
 
 import { useState } from 'react'
 import { ExternalLink } from 'lucide-react'
-import {
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
-} from '@/components/ui/table'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 import { formatPhone } from '@/lib/utils/phone'
 
@@ -23,6 +20,9 @@ interface LeadsTableProps {
   showBot?: boolean
 }
 
+const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
+const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[12px]'
+
 export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
   const [sortAsc, setSortAsc] = useState(false)
 
@@ -34,56 +34,58 @@ export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
   if (leads.length === 0) {
     return (
       <p className="text-sm text-[var(--ink-muted)] py-4">
-        No leads yet. They'll appear here once visitors submit their contact info via the embed.
+        No leads yet. They&apos;ll appear here once visitors submit their contact info via the embed.
       </p>
     )
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Phone</TableHead>
-          {showBot && <TableHead>Bot</TableHead>}
-          <TableHead>
-            <button
-              onClick={() => setSortAsc(!sortAsc)}
-              className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-[var(--ink-subtle)] hover:text-[var(--ink)] transition-colors"
-            >
-              Date
-              <span className="text-[10px]">{sortAsc ? '↑' : '↓'}</span>
-            </button>
-          </TableHead>
-          <TableHead>Chat</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sorted.map((lead) => (
-          <TableRow key={lead.id}>
-            <TableCell className="font-medium">{lead.name ?? '—'}</TableCell>
-            <TableCell className="text-[var(--ink-muted)]">{lead.email ?? '—'}</TableCell>
-            <TableCell className="text-[var(--ink-muted)]">{formatPhone(lead.phone)}</TableCell>
-            {showBot && (
-              <TableCell className="text-[var(--ink-muted)]">{lead.botName ?? '—'}</TableCell>
-            )}
-            <TableCell>
-              <RelativeTime date={lead.capturedAt} className="text-xs text-[var(--ink-muted)]" />
-            </TableCell>
-            <TableCell>
-              {lead.conversationId && (
-                <a
-                  href={`/portal/conversations/${lead.conversationId}`}
-                  className="text-[var(--of-primary-text-dark)] hover:underline"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
+    <div className="rounded-md border border-[var(--hairline)] overflow-hidden">
+      <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
+        <thead>
+          <tr>
+            <th className={thClass}>name</th>
+            <th className={thClass}>email</th>
+            <th className={thClass}>phone</th>
+            {showBot && <th className={thClass}>bot</th>}
+            <th className={thClass}>
+              <button
+                onClick={() => setSortAsc(!sortAsc)}
+                className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] hover:text-[var(--ink)] transition-colors"
+              >
+                captured_at
+                <span>{sortAsc ? '↑' : '↓'}</span>
+              </button>
+            </th>
+            <th className={thClass}>chat</th>
+          </tr>
+        </thead>
+        <tbody className="bg-[var(--surface)]">
+          {sorted.map((lead) => (
+            <tr key={lead.id} className="hover:bg-[var(--surface-2)] transition-colors">
+              <td className={`${tdClass} font-medium text-[var(--ink)]`}>{lead.name ?? '—'}</td>
+              <td className={`${tdClass} text-[var(--ink-muted)]`}>{lead.email ?? '—'}</td>
+              <td className={`${tdClass} text-[var(--ink-muted)]`}>{formatPhone(lead.phone)}</td>
+              {showBot && (
+                <td className={`${tdClass} text-[var(--ink-muted)]`}>{lead.botName ?? '—'}</td>
               )}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              <td className={`${tdClass} text-[var(--ink-subtle)]`}>
+                <RelativeTime date={lead.capturedAt} />
+              </td>
+              <td className={tdClass}>
+                {lead.conversationId && (
+                  <a
+                    href={`/portal/conversations/${lead.conversationId}`}
+                    className="text-[var(--of-primary)] hover:underline"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

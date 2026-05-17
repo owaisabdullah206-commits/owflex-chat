@@ -156,20 +156,25 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
-          <div className="flex items-center gap-3 flex-1">
-            <a
-              href="/dashboard/bots"
-              className="inline-flex items-center gap-1 text-sm text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
+        <div className="flex items-start justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
+          <div className="flex-1 min-w-0">
+            <div
+              className="flex items-center gap-1 mb-0.5 text-[10px] text-[var(--ink-subtle)] uppercase tracking-[0.1em]"
+              style={{ fontFamily: 'var(--font-mono)' }}
             >
-              <ChevronLeft className="h-4 w-4" />
-              Bots
-            </a>
-            <span className="text-[var(--hairline-md)]">/</span>
-            <h1 className="text-lg font-semibold text-[var(--ink)]">{bot.name}</h1>
-            <BotToggle botId={bot.id} initialActive={bot.isActive} />
+              <a href="/dashboard/bots" className="hover:text-[var(--ink-muted)] transition-colors">bots</a>
+              <span className="opacity-40">/</span>
+              <span className="text-[var(--ink-muted)] truncate">{bot.name}</span>
+            </div>
+            <div className="flex items-center gap-2.5 mt-0.5">
+              <h1 className="text-xl font-bold text-[var(--ink)] leading-tight truncate">{bot.name}</h1>
+              <BotToggle botId={bot.id} initialActive={bot.isActive} />
+            </div>
+            <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+              embed_key={bot.embedKey.slice(0, 16)}…
+            </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-1 shrink-0">
             <RefreshButton />
             <DeleteBotButton botId={bot.id} botName={bot.name} />
           </div>
@@ -187,7 +192,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
             <BotTabSelect botId={bot.id} tabs={TABS} activeTab={activeTab} />
           </div>
           {/* Desktop tabs */}
-          <div className="hidden sm:flex gap-1 px-8 overflow-x-auto">
+          <div className="hidden sm:flex items-center gap-1 px-8 py-2 overflow-x-auto">
             {TABS.map((t) => {
               const slug = t.toLowerCase()
               const isActive = activeTab === slug
@@ -195,13 +200,14 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 <a
                   key={t}
                   href={`/dashboard/bots/${bot.id}?tab=${slug}`}
-                  className={`px-3 py-3 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                  className={`flex items-center h-7 px-2.5 rounded-[4px] text-[11px] transition-colors whitespace-nowrap ${
                     isActive
-                      ? 'text-[var(--ink)] border-[var(--of-primary)]'
-                      : 'text-[var(--ink-muted)] border-transparent hover:text-[var(--ink)]'
+                      ? 'bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-semibold border border-[var(--of-primary)]/30'
+                      : 'text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] border border-transparent'
                   }`}
+                  style={{ fontFamily: 'var(--font-mono)' }}
                 >
-                  {t}
+                  {t.toLowerCase().replace(' ', '_')}
                 </a>
               )
             })}
@@ -212,44 +218,44 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         <div className="px-4 sm:px-8 py-6">
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              {/* Stats row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <StatCard label="Conversations this month" value={convMonthCount[0]?.count ?? 0} />
-                <StatCard label="Leads this month" value={leadsMonthCount[0]?.count ?? 0} />
-                <StatCard label="Conversations this week" value={convWeekCount[0]?.count ?? 0} />
+              {/* Stat grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-[var(--hairline)] rounded-md overflow-hidden border border-[var(--hairline)]">
+                <StatCard label="conversations.month" value={convMonthCount[0]?.count ?? 0} />
+                <StatCard label="leads.month" value={leadsMonthCount[0]?.count ?? 0} tone="primary" />
+                <StatCard label="conversations.week" value={convWeekCount[0]?.count ?? 0} />
               </div>
 
               {/* Embed code */}
               <div>
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Embed Script</h2>
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  embed_script
+                </p>
                 <EmbedCodeBlock embedKey={bot.embedKey} />
-                <p className="text-xs text-[var(--ink-muted)] mt-2">
-                  Paste this script before the closing{' '}
-                  <code style={{ fontFamily: 'var(--font-mono)' }} className="px-1 py-0.5 rounded bg-[var(--surface-2)]">
+                <p className="text-xs text-[var(--ink-muted)] mt-2" style={{ fontFamily: 'var(--font-mono)' }}>
+                  paste before{' '}
+                  <code className="px-1 py-0.5 rounded-[3px] bg-[var(--surface-2)] text-[var(--ink)]">
                     {'</body>'}
-                  </code>{' '}
-                  tag of any website.
+                  </code>
                 </p>
               </div>
 
               {/* Bot Details + Client Access — same row on desktop */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
-                  <div className="px-5 py-4">
-                    <p className="text-xs text-[var(--ink-muted)] mb-1">Embed Key</p>
-                    <p className="text-sm text-[var(--ink)] break-all" style={{ fontFamily: 'var(--font-mono)' }}>
-                      {bot.embedKey}
-                    </p>
+                <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--hairline)]">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>embed_key</span>
+                    <span className="text-[11px] text-[var(--ink)] break-all" style={{ fontFamily: 'var(--font-mono)' }}>{bot.embedKey}</span>
                   </div>
-                  <div className="px-5 py-4">
-                    <p className="text-xs text-[var(--ink-muted)] mb-1">Model</p>
-                    <p className="text-sm text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                      {bot.model}
-                    </p>
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--hairline)]">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>model</span>
+                    <span className="text-[12px] text-[var(--of-primary)]" style={{ fontFamily: 'var(--font-mono)' }}>{bot.model}</span>
                   </div>
-                  <div className="px-5 py-4">
-                    <p className="text-xs text-[var(--ink-muted)] mb-1">System Prompt</p>
-                    <p className="text-sm text-[var(--ink)] whitespace-pre-wrap">{bot.systemPrompt}</p>
+                  <div className="px-4 py-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-2" style={{ fontFamily: 'var(--font-mono)' }}>system_prompt</p>
+                    <p className="text-xs text-[var(--ink-muted)] whitespace-pre-wrap leading-relaxed">{bot.systemPrompt}</p>
                   </div>
                 </div>
                 <div className="space-y-4">
@@ -262,24 +268,28 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
 
           {activeTab === 'conversations' && (
             <div>
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-4">
-                All Conversations
-                <span className="ml-2 text-[var(--ink-muted)] font-normal" style={{ fontFamily: 'var(--font-mono)' }}>
-                  ({conversations.length})
+              <div className="flex items-baseline gap-2 mb-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                  sessions
+                </p>
+                <span className="text-[11px] text-[var(--of-primary)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                  {conversations.length}
                 </span>
-              </h2>
+              </div>
               <ConversationTable conversations={conversations} />
             </div>
           )}
 
           {activeTab === 'leads' && (
             <div>
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-4">
-                All Leads
-                <span className="ml-2 text-[var(--ink-muted)] font-normal" style={{ fontFamily: 'var(--font-mono)' }}>
-                  ({leads.length})
+              <div className="flex items-baseline gap-2 mb-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                  leads.captured
+                </p>
+                <span className="text-[11px] text-[var(--of-primary)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                  {leads.length}
                 </span>
-              </h2>
+              </div>
               <LeadsTable leads={leads} />
             </div>
           )}
@@ -287,7 +297,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           {activeTab === 'settings' && (
             <div className="space-y-8">
               <div>
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-5">Bot Settings</h2>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-5" style={{ fontFamily: 'var(--font-mono)' }}>bot_settings</p>
                 <BotSettingsForm
                   botId={bot.id}
                   orgPlan={bot.orgPlan}
@@ -313,9 +323,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Smart Routing</h2>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>smart_routing</p>
                 <p className="text-xs text-[var(--ink-muted)] mb-4">
-                  Classifies each message and routes complex questions to a stronger model, reducing average credit cost on mixed traffic.
+                  Routes complex questions to a stronger model, reducing average credit cost on mixed traffic.
                 </p>
                 <SmartRoutingToggle botId={bot.id} initialEnabled={bot.smartRoutingEnabled} />
               </div>
@@ -325,26 +335,26 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           {activeTab === 'knowledge base' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
               <div className="lg:col-span-2">
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Knowledge Base</h2>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>knowledge_base</p>
                 <p className="text-xs text-[var(--ink-muted)] mb-5">
-                  Active entries are injected into the bot&apos;s system prompt on every chat. Changes apply within 5 minutes.
+                  Active entries are injected into the system prompt on every chat. Changes apply within 5 minutes.
                 </p>
                 <FaqEditor botId={bot.id} initialFaqs={faqs} />
               </div>
               <div className="hidden lg:block">
-                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
-                  <p className="text-xs font-semibold text-[var(--ink)] uppercase tracking-wide">Tips</p>
-                  <p className="text-xs text-[var(--ink-muted)]">Active entries are injected into the bot&apos;s system prompt on every message. Keep answers concise.</p>
+                <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>tips</p>
+                  <p className="text-xs text-[var(--ink-muted)]">Keep FAQ answers concise — they&apos;re injected on every message.</p>
                   <p className="text-xs text-[var(--ink-muted)]">
-                    For longer documents, use the{' '}
-                    <a href="?tab=documents" className="text-[var(--of-primary-text-dark)] hover:underline">
-                      Documents
+                    For longer docs, use the{' '}
+                    <a href="?tab=documents" className="text-[var(--of-primary)] hover:underline" style={{ fontFamily: 'var(--font-mono)' }}>
+                      documents
                     </a>{' '}
-                    tab instead.
+                    tab.
                   </p>
                   <div className="pt-2 border-t border-[var(--hairline)]">
-                    <p className="text-xs text-[var(--ink-subtle)]">
-                      {faqs.filter((f) => f.isActive).length} active / {faqs.length} total entries
+                    <p className="text-[11px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                      active={faqs.filter((f) => f.isActive).length} / total={faqs.length}
                     </p>
                   </div>
                 </div>
@@ -354,9 +364,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
 
           {activeTab === 'documents' && (
             <div>
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Documents</h2>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>documents</p>
               <p className="text-xs text-[var(--ink-muted)] mb-5">
-                Upload files or add a URL. The bot will retrieve relevant context from these documents at chat time.
+                Upload files or add a URL. The bot retrieves relevant context from these documents at chat time.
               </p>
               <DocumentsTab botId={bot.id} orgId={bot.orgId} plan={bot.orgPlan} />
             </div>
@@ -365,20 +375,20 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           {activeTab === 'unanswered' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
               <div className="lg:col-span-2">
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-1">Unanswered Questions</h2>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>unanswered_questions</p>
                 <p className="text-xs text-[var(--ink-muted)] mb-5">
                   Responses where the bot expressed uncertainty. Add FAQ entries to fill these gaps.
                 </p>
                 <UnansweredList messages={unansweredMessages} />
               </div>
               <div className="hidden lg:block">
-                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-3">
-                  <p className="text-xs font-semibold text-[var(--ink)] uppercase tracking-wide">What to do</p>
+                <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>what_to_do</p>
                   <p className="text-xs text-[var(--ink-muted)]">
-                    These are questions where the bot expressed uncertainty. Add FAQ entries to fill the gaps so visitors get accurate answers.
+                    Add FAQ entries to fill the gaps so visitors get accurate answers.
                   </p>
-                  <a href="?tab=knowledge base" className="block text-xs text-[var(--of-primary-text-dark)] hover:underline">
-                    → Go to Knowledge Base
+                  <a href="?tab=knowledge base" className="block text-xs text-[var(--of-primary)] hover:underline" style={{ fontFamily: 'var(--font-mono)' }}>
+                    → knowledge_base
                   </a>
                 </div>
               </div>

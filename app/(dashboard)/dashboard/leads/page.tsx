@@ -41,26 +41,35 @@ export default async function LeadsPage() {
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
-        <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)] flex items-center justify-between gap-4">
+        {/* Page header */}
+        <div className="flex items-start justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-lg font-semibold text-[var(--ink)]">Leads</h1>
-              {org && (
-                <span className="text-xs text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                  {org.leadsThisMonth}/{leadsLimit === Infinity ? '∞' : leadsLimit} this month
-                </span>
-              )}
+            <div
+              className="flex items-center gap-1 mb-0.5 text-[10px] text-[var(--ink-subtle)] uppercase tracking-[0.1em]"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              <span>dashboard</span>
+              <span className="opacity-40">/</span>
+              <span className="text-[var(--ink-muted)]">leads</span>
             </div>
-            <p className="text-sm text-[var(--ink-muted)] mt-0.5">All leads captured across your bots</p>
+            <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Leads</h1>
+            {org && (
+              <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+                <span className="text-[var(--of-primary)]">{org.leadsThisMonth}</span>
+                <span className="text-[var(--ink-subtle)]">/{leadsLimit === Infinity ? '∞' : leadsLimit}</span>
+                {' '}leads.month · {leads.length} total
+              </p>
+            )}
           </div>
           {leads.length > 0 && (
             <a
               href="/api/v1/leads/export"
               download
-              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md bg-[var(--surface)] border border-[var(--hairline)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 h-8 px-3 text-[11px] rounded-[4px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors mt-1"
+              style={{ fontFamily: 'var(--font-mono)' }}
             >
-              <Download className="h-3.5 w-3.5" />
-              Export CSV
+              <Download className="h-3 w-3" />
+              export_csv
             </a>
           )}
         </div>
@@ -68,9 +77,20 @@ export default async function LeadsPage() {
         <div className="px-4 sm:px-8 py-6 overflow-x-auto">
           {leads.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
-              <h2 className="text-base font-semibold text-[var(--ink)] mb-1">No leads yet</h2>
-              <p className="text-sm text-[var(--ink-muted)] text-center max-w-xs">
-                Leads will appear here once your embedded chatbots start capturing visitor contact info.
+              <div
+                className="text-[32px] font-semibold text-[var(--ink-subtle)] mb-2 leading-none"
+                style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+              >
+                0
+              </div>
+              <p
+                className="text-[11px] uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                leads.captured
+              </p>
+              <p className="text-sm text-[var(--ink-muted)] text-center max-w-xs mt-3">
+                Leads appear here once your bots start capturing visitor contact info.
               </p>
             </div>
           ) : (

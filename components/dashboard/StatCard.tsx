@@ -1,32 +1,43 @@
-import { Card } from '@/components/ui/card'
-
 interface StatCardProps {
   label: string
   value: number | string
   delta?: number
+  tone?: 'primary' | 'success' | 'default'
 }
 
-export function StatCard({ label, value, delta }: StatCardProps) {
+export function StatCard({ label, value, delta, tone }: StatCardProps) {
+  const valueColor =
+    tone === 'primary'
+      ? 'text-[var(--of-primary)]'
+      : tone === 'success'
+      ? 'text-[var(--of-success)]'
+      : 'text-[var(--ink)]'
+
   return (
-    <Card className="bg-[var(--surface-2)] border-[var(--hairline)] px-5 py-4">
-      <p
-        className="text-2xl font-semibold text-[var(--ink)]"
+    <div className="bg-[var(--surface)] px-5 py-[18px]">
+      <div
+        className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] mb-2"
         style={{ fontFamily: 'var(--font-mono)' }}
       >
-        {value}
-      </p>
-      <div className="flex items-center gap-2 mt-1">
-        <p className="text-xs text-[var(--ink-muted)]">{label}</p>
-        {delta !== undefined && (
-          <span
-            className={`text-xs font-medium ${
-              delta >= 0 ? 'text-[var(--of-success)]' : 'text-[var(--of-error)]'
-            }`}
-          >
-            {delta >= 0 ? '+' : ''}{delta}%
-          </span>
-        )}
+        {label}
       </div>
-    </Card>
+      <div
+        className={`text-[32px] font-semibold leading-none ${valueColor}`}
+        style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+      >
+        {value}
+      </div>
+      {delta !== undefined && (
+        <div className="mt-2">
+          <span
+            className={`text-[11px] font-medium ${delta >= 0 ? 'text-[var(--of-success)]' : 'text-[var(--of-error)]'}`}
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            {delta >= 0 ? '▲ +' : '▼ '}
+            {Math.abs(delta)}%
+          </span>
+        </div>
+      )}
+    </div>
   )
 }

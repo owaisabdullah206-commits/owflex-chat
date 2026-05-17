@@ -19,24 +19,27 @@ export function OnboardingBanner({ botId: _botId }: OnboardingBannerProps) {
   }
 
   return (
-    <div className="mx-4 sm:mx-8 mt-4 rounded-xl border border-[var(--of-primary)]/30 bg-[var(--of-primary)]/5 px-5 py-4">
+    <div className="mx-4 sm:mx-8 mt-4 border-l-2 border-l-[var(--of-primary)] bg-[var(--of-primary)]/5 border border-[var(--of-primary)]/20 rounded-r-md px-5 py-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-[var(--ink)] mb-2">
-            Bot created! Here&apos;s what to do next:
+          <p
+            className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--of-primary)] mb-2"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            bot.created · next_steps
           </p>
-          <ol className="space-y-1.5 text-sm text-[var(--ink-muted)]">
-            <li className="flex items-center gap-2">
-              <span className="text-emerald-500 font-medium shrink-0">✓</span>
-              Bot created — your embed key is ready
+          <ol className="space-y-1 text-xs text-[var(--ink-muted)]">
+            <li className="flex items-center gap-2" style={{ fontFamily: 'var(--font-mono)' }}>
+              <span className="text-[var(--of-success)] shrink-0">✓</span>
+              embed_key is ready
             </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[var(--ink-subtle)] shrink-0 font-medium">2.</span>
-              Copy the embed script from the <strong className="text-[var(--ink)]">Overview</strong> tab and paste it into your website
+            <li className="flex items-center gap-2" style={{ fontFamily: 'var(--font-mono)' }}>
+              <span className="text-[var(--ink-subtle)] shrink-0">2.</span>
+              copy embed script from <span className="text-[var(--ink)]">overview</span> tab → paste before {'</body>'}
             </li>
-            <li className="flex items-center gap-2">
-              <span className="text-[var(--ink-subtle)] shrink-0 font-medium">3.</span>
-              Use the <strong className="text-[var(--ink)]">Invite</strong> button above to give your client portal access
+            <li className="flex items-center gap-2" style={{ fontFamily: 'var(--font-mono)' }}>
+              <span className="text-[var(--ink-subtle)] shrink-0">3.</span>
+              invite client via the <span className="text-[var(--ink)]">settings</span> tab
             </li>
           </ol>
         </div>

@@ -5,13 +5,10 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { SignOutButton } from '@/components/dashboard/SignOutButton'
 import { EditableName } from '@/components/dashboard/EditableName'
-import { CreditCard } from 'lucide-react'
 
 export default async function SettingsPage() {
   const user = await requireDeveloper()
 
-  // Query DB directly for the current name — BetterAuth's session cookie caches
-  // the name at login time and won't reflect updates made via the settings form.
   const [[dbUser], [org]] = await Promise.all([
     db
       .select({ name: schema.users.name })
@@ -31,69 +28,114 @@ export default async function SettingsPage() {
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
+        {/* Page header */}
         <div className="px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
-          <h1 className="text-lg font-semibold text-[var(--ink)]">Settings</h1>
-          <p className="text-sm text-[var(--ink-muted)] mt-0.5">Account and workspace preferences</p>
+          <div
+            className="flex items-center gap-1 mb-0.5 text-[10px] text-[var(--ink-subtle)] uppercase tracking-[0.1em]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            <span>dashboard</span>
+            <span className="opacity-40">/</span>
+            <span className="text-[var(--ink-muted)]">settings</span>
+          </div>
+          <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Settings</h1>
+          <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+            account · workspace · session
+          </p>
         </div>
 
         <div className="px-4 sm:px-8 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             {/* Left — Account */}
             <div className="lg:col-span-2">
-              <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Account</h2>
-              <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] divide-y divide-[var(--hairline)]">
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1.5">Name</p>
-                  <EditableName name={displayName} />
+              <p
+                className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                account
+              </p>
+              <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
+                {/* Setting row — name */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--hairline)]">
+                  <div>
+                    <p
+                      className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] mb-0.5"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      display_name
+                    </p>
+                    <p className="text-xs text-[var(--ink-muted)]">Shown in the dashboard and emails.</p>
+                  </div>
+                  <div className="ml-4 shrink-0">
+                    <EditableName name={displayName} />
+                  </div>
                 </div>
-                <div className="px-5 py-4">
-                  <p className="text-xs text-[var(--ink-muted)] mb-1">Email</p>
-                  <p className="text-sm text-[var(--ink)]">{user.email}</p>
+                {/* Setting row — email */}
+                <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--hairline)]">
+                  <div>
+                    <p
+                      className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] mb-0.5"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      email
+                    </p>
+                    <p className="text-xs text-[var(--ink-muted)]">Login and notification address.</p>
+                  </div>
+                  <p
+                    className="text-[12px] text-[var(--ink)] ml-4"
+                    style={{ fontFamily: 'var(--font-mono)' }}
+                  >
+                    {user.email}
+                  </p>
                 </div>
+                {/* Setting row — plan */}
                 {org && (
-                  <div className="px-5 py-4">
-                    <p className="text-xs text-[var(--ink-muted)] mb-1">Plan</p>
-                    <p className="text-sm text-[var(--ink)] capitalize">{org.plan}</p>
+                  <div className="flex items-center justify-between px-5 py-4">
+                    <div>
+                      <p
+                        className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] mb-0.5"
+                        style={{ fontFamily: 'var(--font-mono)' }}
+                      >
+                        plan
+                      </p>
+                      <p className="text-xs text-[var(--ink-muted)]">Your current subscription tier.</p>
+                    </div>
+                    <div className="ml-4 flex items-center gap-3">
+                      <span
+                        className="text-[12px] font-medium text-[var(--ink)] capitalize"
+                        style={{ fontFamily: 'var(--font-mono)' }}
+                      >
+                        {org.plan}
+                      </span>
+                      <a
+                        href="/dashboard/billing"
+                        className="text-[11px] text-[var(--of-primary)] hover:underline underline-offset-2"
+                        style={{ fontFamily: 'var(--font-mono)' }}
+                      >
+                        billing →
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Right — Billing + Session */}
-            <div className="space-y-4">
-              {/* Billing */}
-              <div>
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Billing</h2>
-                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5">
-                  <div className="flex items-start gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-[var(--surface-2)] flex items-center justify-center shrink-0">
-                      <CreditCard className="h-4 w-4 text-[var(--ink-muted)]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-[var(--ink)]">Credits &amp; Usage</p>
-                      <p className="text-xs text-[var(--ink-muted)] mt-0.5">
-                        View your credit balance, usage stats, and top up.
-                      </p>
-                    </div>
-                  </div>
-                  <a
-                    href="/dashboard/billing"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--of-primary-text-dark)] hover:underline"
-                  >
-                    Go to Billing →
-                  </a>
-                </div>
-              </div>
-
-              {/* Session */}
-              <div>
-                <h2 className="text-sm font-semibold text-[var(--ink)] mb-3">Session</h2>
-                <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5">
-                  <p className="text-xs text-[var(--ink-muted)] mb-3">
-                    You are signed in as <span className="text-[var(--ink)]">{user.email}</span>
-                  </p>
-                  <SignOutButton />
-                </div>
+            {/* Right — Session */}
+            <div>
+              <p
+                className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                session
+              </p>
+              <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] px-5 py-4">
+                <p
+                  className="text-[11px] text-[var(--ink-muted)] mb-4"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  signed_in_as={user.email}
+                </p>
+                <SignOutButton />
               </div>
             </div>
           </div>

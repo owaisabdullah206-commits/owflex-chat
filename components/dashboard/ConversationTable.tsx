@@ -1,7 +1,4 @@
 import { ExternalLink } from 'lucide-react'
-import {
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell,
-} from '@/components/ui/table'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 
 interface Conversation {
@@ -19,53 +16,56 @@ function truncate(str: string, len: number) {
   return str.length > len ? str.slice(0, len) + '…' : str
 }
 
+const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
+const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[12px] last:border-b-0'
+
 export function ConversationTable({ conversations }: ConversationTableProps) {
   if (conversations.length === 0) {
     return (
-      <p className="text-sm text-[var(--ink-muted)] py-4">
-        No conversations yet. They'll appear here once visitors start chatting via the embed.
-      </p>
+      <div className="rounded-md border border-[var(--hairline)] bg-[var(--surface)] px-4 py-10 text-center">
+        <p className="text-sm text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+          no_sessions_yet
+        </p>
+        <p className="text-xs text-[var(--ink-subtle)] mt-1">Sessions appear once visitors start chatting via the embed.</p>
+      </div>
     )
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Date</TableHead>
-          <TableHead>Page URL</TableHead>
-          <TableHead>Messages</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {conversations.map((conv) => (
-          <TableRow key={conv.id}>
-            <TableCell>
-              <RelativeTime date={conv.startedAt} className="text-sm text-[var(--ink)]" />
-            </TableCell>
-            <TableCell>
-              {conv.pageUrl ? (
-                <div className="flex items-center gap-1.5">
-                  <ExternalLink className="h-3 w-3 text-[var(--ink-subtle)] shrink-0" />
-                  <span className="text-sm text-[var(--ink-muted)] truncate max-w-xs">
-                    {truncate(conv.pageUrl, 40)}
-                  </span>
-                </div>
-              ) : (
-                <span className="text-[var(--ink-subtle)] text-sm">—</span>
-              )}
-            </TableCell>
-            <TableCell>
-              <span
-                className="text-sm text-[var(--ink)]"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
+    <div className="rounded-md border border-[var(--hairline)] overflow-hidden">
+      <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
+        <thead>
+          <tr>
+            <th className={thClass}>started_at</th>
+            <th className={thClass}>page_url</th>
+            <th className={thClass}>msg_count</th>
+          </tr>
+        </thead>
+        <tbody className="bg-[var(--surface)]">
+          {conversations.map((conv) => (
+            <tr key={conv.id} className="hover:bg-[var(--surface-2)] transition-colors">
+              <td className={`${tdClass} text-[var(--ink-muted)]`}>
+                <RelativeTime date={conv.startedAt} />
+              </td>
+              <td className={tdClass}>
+                {conv.pageUrl ? (
+                  <div className="flex items-center gap-1.5">
+                    <ExternalLink className="h-3 w-3 text-[var(--ink-subtle)] shrink-0" />
+                    <span className="text-[var(--ink-muted)] truncate max-w-xs">
+                      {truncate(conv.pageUrl, 50)}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-[var(--ink-subtle)]">—</span>
+                )}
+              </td>
+              <td className={`${tdClass} text-[var(--ink)]`}>
                 {conv.messageCount}
-              </span>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }

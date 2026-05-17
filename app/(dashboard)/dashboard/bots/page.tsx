@@ -6,7 +6,7 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { BotTable } from '@/components/dashboard/BotTable'
 import { Button } from '@/components/ui/button'
-import { Bot } from 'lucide-react'
+import { Plus } from 'lucide-react'
 
 export default async function BotsPage() {
   const user = await requireDeveloper()
@@ -42,22 +42,36 @@ export default async function BotsPage() {
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
-        <div className="flex items-center justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
+        {/* Page header */}
+        <div className="flex items-start justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">
           <div>
-            <h1 className="text-lg font-semibold text-[var(--ink)]">Bots</h1>
-            <p className="text-sm text-[var(--ink-muted)] mt-0.5">Manage your AI chatbots</p>
+            <div
+              className="flex items-center gap-1 mb-0.5 text-[10px] text-[var(--ink-subtle)] uppercase tracking-[0.1em]"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              <span>dashboard</span>
+              <span className="opacity-40">/</span>
+              <span className="text-[var(--ink-muted)]">bots</span>
+            </div>
+            <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Bots</h1>
+            <p className="text-[12px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+              <span className="text-[var(--of-primary)]">{userBots.length}</span>
+              <span className="text-[var(--ink-subtle)]">/{botLimit === Infinity ? '∞' : botLimit}</span>
+              {' '}bots · {org?.plan ?? 'free'} plan
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
-              {userBots.length}/{botLimit === Infinity ? '∞' : botLimit} bots
-            </span>
+          <div className="flex items-center gap-2 mt-1">
             {atLimit ? (
-              <Button disabled title="Upgrade your plan to add more bots">
-                Create bot
+              <Button disabled title="Upgrade your plan to add more bots" size="sm">
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                New bot
               </Button>
             ) : (
-              <Button asChild>
-                <a href="/dashboard/bots/new">Create bot</a>
+              <Button asChild size="sm">
+                <a href="/dashboard/bots/new">
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  New bot
+                </a>
               </Button>
             )}
           </div>
@@ -65,15 +79,26 @@ export default async function BotsPage() {
 
         {userBots.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 sm:px-8">
-            <div className="w-12 h-12 rounded-xl bg-[var(--surface-2)] border border-[var(--hairline)] flex items-center justify-center mb-4">
-              <Bot className="h-6 w-6 text-[var(--ink-muted)]" />
+            <div
+              className="text-[32px] font-semibold text-[var(--ink-subtle)] mb-3 leading-none"
+              style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+            >
+              0
             </div>
-            <h2 className="text-base font-semibold text-[var(--ink)] mb-1">No bots yet</h2>
-            <p className="text-sm text-[var(--ink-muted)] text-center max-w-xs mb-5">
+            <p
+              className="text-[11px] uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              bots.total
+            </p>
+            <p className="text-sm text-[var(--ink-muted)] text-center max-w-xs mb-6 mt-3">
               Create your first bot and get an embed script to drop on any website.
             </p>
             <Button asChild>
-              <a href="/dashboard/bots/new">Create your first bot</a>
+              <a href="/dashboard/bots/new">
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Create your first bot
+              </a>
             </Button>
           </div>
         ) : (
