@@ -39,6 +39,10 @@ export async function GET(req: NextRequest) {
     position?: string
     welcomeMessage?: string
     leadCaptureEnabled?: boolean
+    triggerIcon?: string
+    borderRadius?: number
+    tooltipEnabled?: boolean
+    tooltipMessages?: string[]
   }
 
   return NextResponse.json(
@@ -48,6 +52,10 @@ export async function GET(req: NextRequest) {
       welcomeMessage: config.welcomeMessage ?? 'Hi! How can I help you today?',
       position: config.position ?? 'bottom-right',
       leadCaptureEnabled: config.leadCaptureEnabled !== false,
+      triggerIcon: config.triggerIcon ?? 'message-circle',
+      borderRadius: typeof config.borderRadius === 'number' ? config.borderRadius : 16,
+      tooltipEnabled: config.tooltipEnabled === true,
+      tooltipMessages: Array.isArray(config.tooltipMessages) ? config.tooltipMessages : [],
     },
     {
       headers: { 'Cache-Control': 'public, max-age=300' },

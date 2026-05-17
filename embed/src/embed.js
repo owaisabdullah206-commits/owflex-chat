@@ -3,7 +3,25 @@ var sc=document.currentScript,k=sc&&sc.dataset&&sc.dataset.key;if(!k)return;
 var bu=(sc.src||"").replace("/embed.js","");
 var sid=sessionStorage.getItem("_of")||("owflex_"+Date.now()+"_"+Math.random().toString(36).slice(2,8));
 sessionStorage.setItem("_of",sid);
-var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right",op=0,busy=0,started=0,lastMsg="";
+var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
+var ti="message-circle",br=16,te=false,tms=[];
+var op=0,busy=0,started=0,lastMsg="";
+
+/* ── Icon SVG paths (Lucide) ── */
+var ICONS={
+  "message-circle":'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  "bot":'<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+  "help-circle":'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+  "headphones":'<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
+  "sparkles":'<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>',
+  "zap":'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  "message-square":'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  "smile":'<circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+};
+function iconSvg(id,size,sw){
+  var p=ICONS[id]||ICONS["message-circle"];
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="'+sw+'" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+}
 
 fetch(bu+"/api/v1/widget-config?key="+k)
   .then(function(r){return r.json();})
@@ -11,32 +29,36 @@ fetch(bu+"/api/v1/widget-config?key="+k)
     bn=c.botName||bn;pc=c.primaryColor||pc;
     wm=c.welcomeMessage||wm;lc=c.leadCaptureEnabled!==false;
     pos=c.position||pos;
+    ti=c.triggerIcon||ti;
+    br=typeof c.borderRadius==="number"?c.borderRadius:br;
+    te=c.tooltipEnabled===true;
+    tms=Array.isArray(c.tooltipMessages)&&c.tooltipMessages.length?c.tooltipMessages:tms;
     go();
   })
   .catch(go);
 
 function go(){
-// Defer if body not yet available (e.g. script in <head> before DOMContentLoaded)
 if(!document.body){document.addEventListener("DOMContentLoaded",go);return;}
 var isLeft=pos==="bottom-left";
 var side=isLeft?"left":"right";
 var opp=isLeft?"right":"left";
+var msgBr=Math.max(4,br)+"px";
 var css=
 ":root{--ofp:"+pc+"}"+
 
-/* ── Glow ring (separate z-layer, behind button) ── */
+/* ── Glow ring ── */
 "#obg{position:fixed;bottom:14px;"+side+":14px;"+opp+":auto;width:74px;height:74px;border-radius:50%;background:var(--ofp);z-index:2147483644;opacity:.3;filter:blur(16px);pointer-events:none;animation:ofPulse 2.5s ease-in-out infinite}"+
 
 /* ── Launch button ── */
 "#ob{position:fixed;bottom:24px;"+side+":24px;"+opp+":auto;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:var(--ofp);z-index:2147483646;box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ofFloat 3s ease-in-out infinite;transition:transform .15s,box-shadow .15s}"+
 "#ob:hover{animation:none;transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,.3)}"+
 
-/* ── Button icons (swap with CSS) ── */
+/* ── Button icons ── */
 "#obI,.obX{position:absolute;transition:opacity .2s,transform .2s;display:flex;align-items:center;justify-content:center}"+
 ".obX{opacity:0;transform:rotate(-90deg) scale(.5)}"+
 
 /* ── Chat panel ── */
-"#oP{position:fixed;bottom:90px;"+side+":20px;"+opp+":auto;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:18px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom "+side+";transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1)}"+
+"#oP{position:fixed;bottom:90px;"+side+":20px;"+opp+":auto;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:"+br+"px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom "+side+";transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1)}"+
 "#oP.h{opacity:0;transform:scale(0.88) translateY(16px);pointer-events:none}"+
 
 /* ── Header ── */
@@ -52,7 +74,7 @@ var css=
 "#oM{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.1) transparent}"+
 
 /* ── Bubbles ── */
-".u,.b{max-width:82%;padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.6;word-break:break-word;animation:ofIn .22s ease}"+
+".u,.b{max-width:82%;padding:9px 13px;border-radius:"+msgBr+";font-size:13px;line-height:1.6;word-break:break-word;animation:ofIn .22s ease}"+
 ".u{align-self:flex-end;background:var(--ofp);color:#fff;border-bottom-right-radius:3px}"+
 ".b{align-self:flex-start;background:#f1f5f9;color:#1e293b;border-bottom-left-radius:3px}"+
 ".berr{background:#fef2f2;color:#dc2626}"+
@@ -67,6 +89,9 @@ var css=
 "#oS{width:40px;height:40px;flex-shrink:0;border:0;border-radius:50%;background:var(--ofp);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .12s;box-shadow:0 2px 8px rgba(0,0,0,.15)}"+
 "#oS:hover{transform:scale(1.1)}"+
 "#oS:disabled{opacity:.4;cursor:default;transform:none}"+
+
+/* ── Tooltip ── */
+(te?"#oTip{position:fixed;bottom:88px;"+side+":20px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
 
 /* ── Keyframes ── */
 "@keyframes ofFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}"+
@@ -84,13 +109,25 @@ var glow=document.createElement("div");glow.id="obg";document.body.appendChild(g
 /* Launch button with morphing icons */
 var btn=document.createElement("button");btn.id="ob";btn.setAttribute("aria-label","Open chat");
 btn.innerHTML=
-  '<span id="obI">'+
-    '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'+
-  '</span>'+
+  '<span id="obI">'+iconSvg(ti,22,2.3)+'</span>'+
   '<span class="obX" id="obX">'+
     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'+
   '</span>';
 document.body.appendChild(btn);
+
+/* Tooltip */
+var tipEl=null,tipIdx=0;
+if(te&&tms.length){
+  tipEl=document.createElement("div");tipEl.id="oTip";
+  tipEl.textContent=tms[0];
+  document.body.appendChild(tipEl);
+  if(tms.length>1){
+    setInterval(function(){
+      tipIdx=(tipIdx+1)%tms.length;
+      tipEl.textContent=tms[tipIdx];
+    },4000);
+  }
+}
 
 /* Chat panel */
 var pnl=document.createElement("div");pnl.id="oP";pnl.className="h";pnl.setAttribute("role","dialog");
@@ -131,12 +168,11 @@ function setStatus(text,thinking){
 function openPanel(){
   op=1;
   pnl.classList.remove("h");
-  /* Morphing: show X, hide chat icon */
   icChat.style.cssText="opacity:0;transform:rotate(90deg) scale(.5)";
   icX.style.cssText="opacity:1;transform:none";
-  /* Pause float + hide glow */
   btn.style.animation="none";
   glow.style.animationPlayState="paused";glow.style.opacity="0";
+  if(tipEl)tipEl.style.display="none";
   if(!started){started=1;addBot(wm);}
   setTimeout(function(){inp.focus();},60);
 }
@@ -144,12 +180,11 @@ function openPanel(){
 function closePanel(){
   op=0;
   pnl.classList.add("h");
-  /* Morphing: show chat icon, hide X */
   icChat.style.cssText="opacity:1;transform:none";
   icX.style.cssText="opacity:0;transform:rotate(-90deg) scale(.5)";
-  /* Resume float + glow */
   btn.style.animation="ofFloat 3s ease-in-out infinite";
   glow.style.animationPlayState="";glow.style.opacity="";
+  if(tipEl)tipEl.style.display="";
 }
 
 btn.onclick=function(){op?closePanel():openPanel();};

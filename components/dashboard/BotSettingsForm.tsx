@@ -312,8 +312,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white">
             {isPending ? 'Saving…' : 'Save Changes'}
           </Button>
-          {saved  && <span className="text-xs text-emerald-400">Saved — widget updates within 5 minutes</span>}
-          {error  && <span className="text-xs text-red-400">{error}</span>}
+          {saved  && <span className="text-xs text-[var(--success-text)]">Saved — widget updates within 5 minutes</span>}
+          {error  && <span className="text-xs text-[var(--error-text)]">{error}</span>}
         </div>
       </form>
 
