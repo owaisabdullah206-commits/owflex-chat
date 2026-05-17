@@ -90,9 +90,13 @@ export async function POST(req: NextRequest) {
     byteSize: 0,
   })
 
-  // Enqueue ingestion job
-  const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
-  await publishJSON(ingestUrl, { docId, sourceType: 'url', url, maxPages })
+  // Enqueue ingestion job — non-blocking: doc is saved, reindex button covers failures
+  try {
+    const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
+    await publishJSON(ingestUrl, { docId, sourceType: 'url', url, maxPages })
+  } catch (err) {
+    console.error('[url-doc] QStash publishJSON failed (doc saved, ingestion not queued):', err)
+  }
 
   return NextResponse.json({ docId, status: 'queued' }, { status: 202 })
 }

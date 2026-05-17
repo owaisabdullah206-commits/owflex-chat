@@ -103,8 +103,20 @@ export async function POST(req: NextRequest) {
   const storageKey = `org/${botRow.orgId}/bot/${botId}/doc/${docId}.${ext}`
 
   // Upload to R2
-  const buffer = Buffer.from(await file.arrayBuffer())
-  await putObject(storageKey, buffer, mimeType)
+  let buffer: Buffer
+  try {
+    buffer = Buffer.from(await file.arrayBuffer())
+    await putObject(storageKey, buffer, mimeType)
+  } catch (err) {
+    console.error('[upload] R2 putObject failed:', err)
+    const detail = !process.env.R2_ENDPOINT
+      ? 'R2 storage is not configured (R2_ENDPOINT missing).'
+      : `R2 error: ${err instanceof Error ? err.message : String(err)}`
+    return NextResponse.json(
+      { error: `File storage failed. ${detail}`, code: 'STORAGE_ERROR', status: 500 },
+      { status: 500 },
+    )
+  }
 
   // Create document record
   await createDoc({
@@ -117,9 +129,13 @@ export async function POST(req: NextRequest) {
     byteSize: file.size,
   })
 
-  // Enqueue ingestion job
-  const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
-  await publishJSON(ingestUrl, { docId, sourceType: 'file' })
+  // Enqueue ingestion job — non-blocking: doc is saved, reindex button covers failures
+  try {
+    const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
+    await publishJSON(ingestUrl, { docId, sourceType: 'file' })
+  } catch (err) {
+    console.error('[upload] QStash publishJSON failed (doc saved, ingestion not queued):', err)
+  }
 
   return NextResponse.json({ docId, status: 'queued' }, { status: 202 })
 }
