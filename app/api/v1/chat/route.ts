@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
 
     // Compose system prompt: [platform] + [bot] + [doc context] + [FAQ context] + [lead instructions]
     const [platformPrompt, activeFaqs, retrievedChunks] = await Promise.all([
-      getPlatformPrompt(),
+      getPlatformPrompt().then((p) => { console.log('[chat] platformPrompt chars:', p.length); return p }),
       getActiveFaqs(bot.id),
       bot.documentCount > 0
         ? retrieveContext(bot.id, message).catch((err) => {
