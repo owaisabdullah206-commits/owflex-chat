@@ -205,3 +205,74 @@ select option {
   background-color: var(--surface-2, #211E1A);
   color: var(--ink, #F5F0EB);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MARKETING — hairline-strong + extra marketing tokens
+   ───────────────────────────────────────────────────────────────────────────── */
+.marketing {
+  --hairline-strong: #C4BCB0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK SECTION TOKENS — fixed dark values used inside dark strips/sections
+   on marketing pages regardless of any theme toggle
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --dark-bg:              #0A0A0A;
+  --dark-surface:         #131313;
+  --dark-surface-2:       #1A1A1A;
+  --dark-hairline:        rgba(255, 255, 255, 0.08);
+  --dark-hairline-strong: rgba(255, 255, 255, 0.14);
+  --dark-ink:             #FAFAF9;
+  --dark-ink-subtle:      #A8A29E;
+  --dark-ink-muted:       #78716C;
+
+  /* Border radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  /* Marketing shadow scale */
+  --shadow-sm: 0 1px 2px rgba(12,10,9,.04), 0 1px 1px rgba(12,10,9,.03);
+  --shadow-md: 0 4px 16px rgba(12,10,9,.06), 0 1px 2px rgba(12,10,9,.04);
+  --shadow-lg: 0 24px 60px -20px rgba(12,10,9,.18), 0 8px 24px -8px rgba(12,10,9,.08);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REVEAL ANIMATION — IntersectionObserver entry animation
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes ofReveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MARQUEE — two-row sliding testimonials (opposite directions)
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes marqueeL {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes marqueeR {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GRID BACKGROUND — subtle dot-grid used on hero and CTA sections
+   ───────────────────────────────────────────────────────────────────────────── */
+/* Footer link hover (server component can't use JS hover) */
+.mkt-footer-link:hover {
+  color: var(--ink);
+}
+
+.mkt-grid-bg {
+  background-image:
+    linear-gradient(var(--hairline, rgba(12,10,9,.08)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hairline, rgba(12,10,9,.08)) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 100%);
+}
