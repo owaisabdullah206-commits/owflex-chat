@@ -42,6 +42,41 @@ export function generatePaymentUrl(
   return `${getBaseUrl()}?${qs}`
 }
 
+export const PLAN_PRICES_PKR = {
+  starter: 2500,
+  pro:     7500,
+  agency:  20000,
+} as const
+
+export type PlanId = keyof typeof PLAN_PRICES_PKR
+
+export function generatePlanPaymentUrl(
+  orgId: string,
+  planId: PlanId,
+  returnUrl: string,
+  notifyUrl: string,
+): string {
+  const amount = PLAN_PRICES_PKR[planId]
+  const mPaymentId = `plan:${orgId}:${planId}:${Date.now()}`
+
+  const params: Record<string, string> = {
+    merchant_id:      process.env.PAYFAST_MERCHANT_ID ?? '',
+    merchant_key:     process.env.PAYFAST_MERCHANT_KEY ?? '',
+    return_url:       returnUrl,
+    notify_url:       notifyUrl,
+    m_payment_id:     mPaymentId,
+    amount:           amount.toFixed(2),
+    item_name:        `OwFlex ${planId.charAt(0).toUpperCase() + planId.slice(1)} Plan`,
+    item_description: `Monthly subscription — ${planId} tier`,
+  }
+
+  const qs = Object.entries(params)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&')
+
+  return `${getBaseUrl()}?${qs}`
+}
+
 export interface ItnVerifyResult {
   valid: boolean
   paymentId: string

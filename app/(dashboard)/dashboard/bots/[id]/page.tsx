@@ -12,6 +12,8 @@ import { QuickActionsPanel } from '@/components/dashboard/QuickActionsPanel'
 import { EmbedCodeBlock } from '@/components/dashboard/EmbedCodeBlock'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { ConversationTable } from '@/components/dashboard/ConversationTable'
+import { ConversationFilters } from '@/components/dashboard/ConversationFilters'
+import { searchConversations } from '@/lib/db/queries/bots'
 import { LeadsTable } from '@/components/dashboard/LeadsTable'
 import { BotSettingsForm } from '@/components/dashboard/BotSettingsForm'
 import { BotToggle } from '@/components/dashboard/BotToggle'
@@ -29,13 +31,13 @@ const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base'
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ tab?: string }>
+  searchParams: Promise<{ tab?: string; q?: string; from?: string; to?: string }>
 }
 
 export default async function BotDetailPage({ params, searchParams }: BotDetailPageProps) {
   const user = await requireDeveloper()
   const { id } = await params
-  const { tab = 'overview' } = await searchParams
+  const { tab = 'overview', q, from: fromStr, to: toStr } = await searchParams
 
   const [bot] = await db
     .select({
@@ -66,18 +68,14 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
   const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 
+  const convFilters = {
+    q: q || undefined,
+    from: fromStr ? new Date(fromStr) : undefined,
+    to: toStr ? new Date(toStr) : undefined,
+  }
+
   const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, faqs, unansweredMessages, clientRows, inviteRows] = await Promise.all([
-    db
-      .select({
-        id: schema.conversations.id,
-        pageUrl: schema.conversations.pageUrl,
-        startedAt: schema.conversations.startedAt,
-        messageCount: schema.conversations.messageCount,
-      })
-      .from(schema.conversations)
-      .where(eq(schema.conversations.botId, bot.id))
-      .orderBy(desc(schema.conversations.startedAt))
-      .limit(100),
+    searchConversations(bot.id, convFilters),
     db
       .select({
         id: schema.leads.id,
@@ -268,6 +266,12 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
 
           {activeTab === 'conversations' && (
             <div>
+              <ConversationFilters
+                botId={bot.id}
+                defaultQ={q}
+                defaultFrom={fromStr}
+                defaultTo={toStr}
+              />
               <div className="flex items-baseline gap-2 mb-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
                   sessions

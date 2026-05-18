@@ -403,6 +403,8 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - TypeScript 5.x, Node.js 20 (Vercel runtime) (001-phase-2-platform)
 - pgvector + HNSW (vector search), Cloudflare R2 (object storage), Upstash QStash (queue), Google Gemini text-embedding-004 (embeddings), Firecrawl (URL scraping), unpdf + mammoth (parsers) (002-phase-3-knowledge)
+- TypeScript 5.x strict mode, Next.js 16.2.6 (App Router) + Drizzle ORM, BetterAuth, Upstash Redis, Resend, PayFast SDK (custom `lib/billing/payfast.ts`), Lemon Squeezy SDK (custom `lib/billing/lemon-squeezy.ts`), Tailwind CSS v4, shadcn/ui (004-monetization-go-live)
+- Neon PostgreSQL (existing schema — zero new migrations) (004-monetization-go-live)
 
 ## Recent Changes
 - 002-phase-3-knowledge: Added document/URL ingestion pipeline + RAG retrieval at chat time + smart model routing (per-bot toggle). New tables: documents, document_chunks (vector(768) + HNSW), routing_decisions. New env vars: R2_*, QSTASH_*, GEMINI_API_KEY, FIRECRAWL_API_KEY.

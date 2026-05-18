@@ -1,4 +1,5 @@
 import { count, desc, eq, inArray } from 'drizzle-orm'
+import { Redis } from '@upstash/redis'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { getBalance, FREE_TIER_CREDITS } from '@/lib/credits'
@@ -7,6 +8,8 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { CreditBalance } from '@/components/dashboard/CreditBalance'
 import { PlanUsage } from '@/components/dashboard/PlanUsage'
+import { CreditStatusBanner } from '@/components/dashboard/CreditStatusBanner'
+import { PlanUpgradeSection } from '@/components/dashboard/PlanUpgradeSection'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 
@@ -54,7 +57,13 @@ export default async function BillingPage() {
     orgBots.filter((b) => b.clientUserId).map((b) => b.clientUserId),
   ).size
 
-  const [balance, transactions, storageMb, docRow] = await Promise.all([
+  const yyyyMM = new Date().toISOString().slice(0, 7)
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  })
+
+  const [balance, transactions, storageMb, docRow, graceTtl, graceUsed] = await Promise.all([
     getBalance(org.id),
     db
       .select({
@@ -74,10 +83,14 @@ export default async function BillingPage() {
           .from(schema.documents)
           .where(inArray(schema.documents.botId, botIds))
       : Promise.resolve([{ c: 0 }]),
+    redis.ttl(`credit_grace:${org.id}:${yyyyMM}`),
+    redis.get(`credit_grace_used:${org.id}:${yyyyMM}`),
   ])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const docCount = docRow[0]?.c ?? 0
+  const graceActive = (graceTtl ?? 0) > 0
+  const graceDisabled = graceUsed !== null && !graceActive
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -102,6 +115,8 @@ export default async function BillingPage() {
           <div className="mt-1"><RefreshButton /></div>
         </div>
         <div className="px-4 sm:px-8 py-6 space-y-8">
+          <CreditStatusBanner graceActive={graceActive} graceDisabled={graceDisabled} plan={org.plan} />
+          <PlanUpgradeSection currentPlan={org.plan} />
           <PlanUsage
             plan={org.plan}
             balance={balance}
@@ -114,6 +129,20 @@ export default async function BillingPage() {
             storageMb={storageMb}
           />
           <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
+          {org.plan === 'starter' && (
+            <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface-1)] px-4 py-3 flex items-center gap-3">
+              <span className="text-sm text-[var(--ink-muted)]">
+                Weekly email digest is available on{' '}
+                <span className="text-[var(--ink)]">Pro and above</span>.{' '}
+                <a
+                  href="/api/billing/payfast-plan-url?plan=pro"
+                  className="text-[var(--accent)] hover:underline"
+                >
+                  Upgrade to Pro →
+                </a>
+              </span>
+            </div>
+          )}
         </div>
       </main>
       <MobileNav />

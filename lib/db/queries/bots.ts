@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath, updateTag } from 'next/cache'
 import { z } from 'zod'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, exists, gte, lte, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
@@ -187,4 +187,44 @@ export async function createBot(
 
   revalidatePath('/dashboard/bots')
   redirect(`/dashboard/bots/${newBot.id}?onboarding=1`)
+}
+
+export async function searchConversations(
+  botId: string,
+  filters: { q?: string; from?: Date; to?: Date },
+  limit = 100,
+) {
+  const conditions = [eq(schema.conversations.botId, botId)]
+
+  if (filters.q) {
+    const term = `%${filters.q}%`
+    conditions.push(
+      exists(
+        db
+          .select({ _: sql<number>`1` })
+          .from(schema.messages)
+          .where(
+            and(
+              eq(schema.messages.conversationId, schema.conversations.id),
+              sql`${schema.messages.content} ILIKE ${term}`,
+            ),
+          ),
+      ),
+    )
+  }
+
+  if (filters.from) conditions.push(gte(schema.conversations.startedAt, filters.from))
+  if (filters.to) conditions.push(lte(schema.conversations.startedAt, filters.to))
+
+  return db
+    .select({
+      id: schema.conversations.id,
+      pageUrl: schema.conversations.pageUrl,
+      startedAt: schema.conversations.startedAt,
+      messageCount: schema.conversations.messageCount,
+    })
+    .from(schema.conversations)
+    .where(and(...conditions))
+    .orderBy(desc(schema.conversations.startedAt))
+    .limit(limit)
 }

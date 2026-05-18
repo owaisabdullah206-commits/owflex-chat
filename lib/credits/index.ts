@@ -5,6 +5,14 @@ import { STRONG_MODEL } from '@/lib/ai/litellm'
 
 export const FREE_TIER_CREDITS = 50_000
 
+export const PLAN_CREDIT_ALLOCATIONS: Record<string, number> = {
+  free:       2_000_000,
+  starter:    30_000_000,
+  pro:        150_000_000,
+  agency:     750_000_000,
+  enterprise: 750_000_000,
+}
+
 function getRedis(): Redis {
   return new Redis({
     url: process.env.UPSTASH_REDIS_REST_URL!,

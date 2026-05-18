@@ -1,5 +1,6 @@
 export const CLASSIFIER_MODEL = 'deepseek/deepseek-v4-flash'
 export const STRONG_MODEL = 'anthropic/claude-haiku-4-5-20251001'
+export const FALLBACK_MODEL = 'deepseek/deepseek-v4-flash'
 
 export const SUPPORTED_MODELS = [
   'deepseek/deepseek-v4-flash',

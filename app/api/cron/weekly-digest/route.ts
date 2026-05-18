@@ -22,18 +22,24 @@ export async function GET(req: NextRequest) {
 
   let sent = 0
   let skipped = 0
+  let skippedPlan = 0
   const errors: string[] = []
 
   for (const dev of developers) {
     if (!dev.email) { skipped++; continue }
 
     const [org] = await db
-      .select({ id: schema.organizations.id })
+      .select({ id: schema.organizations.id, plan: schema.organizations.plan })
       .from(schema.organizations)
       .where(eq(schema.organizations.ownerId, dev.id))
       .limit(1)
 
     if (!org) { skipped++; continue }
+
+    if (org.plan === 'free' || org.plan === 'starter') {
+      skippedPlan++
+      continue
+    }
 
     try {
       const stats = await getWeeklyStats(org.id)
@@ -44,5 +50,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ sent, skipped, errors })
+  return NextResponse.json({ sent, skipped, skipped_plan: skippedPlan, errors })
 }

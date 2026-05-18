@@ -3,7 +3,8 @@ import { z } from 'zod'
 import { and, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { getLeadsRatelimit } from '@/lib/ratelimit'
-import { checkLeadLimit } from '@/lib/limits'
+import { checkLeadLimit, PLAN_LIMITS } from '@/lib/limits'
+import { checkAndWarnUsage } from '@/lib/credits/usage-warnings'
 
 const bodySchema = z
   .object({
@@ -53,8 +54,16 @@ export async function POST(req: NextRequest) {
 
   try {
     const [bot] = await db
-      .select({ id: schema.bots.id, orgId: schema.bots.orgId })
+      .select({
+        id: schema.bots.id,
+        orgId: schema.bots.orgId,
+        orgPlan: schema.organizations.plan,
+        leadsThisMonth: schema.organizations.leadsThisMonth,
+        ownerEmail: schema.users.email,
+      })
       .from(schema.bots)
+      .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+      .innerJoin(schema.users, eq(schema.organizations.ownerId, schema.users.id))
       .where(and(eq(schema.bots.embedKey, embedKey), eq(schema.bots.isActive, true)))
       .limit(1)
 
@@ -100,6 +109,13 @@ export async function POST(req: NextRequest) {
       .update(schema.organizations)
       .set({ leadsThisMonth: sql`${schema.organizations.leadsThisMonth} + 1` })
       .where(eq(schema.organizations.id, bot.orgId))
+
+    // Non-blocking 90% lead usage warning
+    if (bot.ownerEmail) {
+      const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
+      const leadLimit = PLAN_LIMITS[planKey].leads
+      void checkAndWarnUsage(bot.orgId, 'leads', bot.leadsThisMonth + 1, leadLimit, bot.orgPlan, bot.ownerEmail)
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
