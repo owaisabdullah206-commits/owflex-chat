@@ -300,7 +300,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
               onChange={(e) => { setTooltipMessages(e.target.value); markDirty() }}
               rows={4}
               placeholder={`Need help? Ask me!\nHi there! How can I assist?\nGot questions? I'm here!`}
-              className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none text-xs"
+              className="rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none text-xs"
               disabled={isPending}
             />
           </div>
