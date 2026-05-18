@@ -7,6 +7,20 @@ const querySchema = z.object({
   key: z.string().min(1),
 })
 
+type WidgetConfig = {
+  primaryColor?: string
+  position?: string
+  welcomeMessage?: string
+  leadCaptureEnabled?: boolean
+  triggerIcon?: string
+  borderRadius?: number
+  tooltipEnabled?: boolean
+  tooltipMessages?: string[]
+  brandingEnabled?: boolean
+  brandingText?: string
+  brandingUrl?: string
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const parsed = querySchema.safeParse({ key: searchParams.get('key') })
@@ -20,10 +34,12 @@ export async function GET(req: NextRequest) {
 
   const [bot] = await db
     .select({
-      name: schema.bots.name,
+      name:    schema.bots.name,
       widgetConfig: schema.bots.widgetConfig,
+      orgPlan: schema.organizations.plan,
     })
     .from(schema.bots)
+    .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
     .where(and(eq(schema.bots.embedKey, parsed.data.key), eq(schema.bots.isActive, true)))
     .limit(1)
 
@@ -34,15 +50,24 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const config = (bot.widgetConfig ?? {}) as {
-    primaryColor?: string
-    position?: string
-    welcomeMessage?: string
-    leadCaptureEnabled?: boolean
-    triggerIcon?: string
-    borderRadius?: number
-    tooltipEnabled?: boolean
-    tooltipMessages?: string[]
+  const config = (bot.widgetConfig ?? {}) as WidgetConfig
+
+  // Enforce branding based on plan — plan overrides developer config
+  const plan = bot.orgPlan
+  let brandingEnabled = false
+  let brandingText    = 'Powered by OwFlex'
+  let brandingUrl     = 'https://owflex.com'
+
+  if (plan === 'free') {
+    brandingEnabled = true  // forced on; developer cannot disable
+  } else if (plan === 'starter' || plan === 'pro') {
+    brandingEnabled = config.brandingEnabled !== false  // default on, can opt out
+    // text/URL always OwFlex — no custom branding at these tiers
+  } else {
+    // agency / enterprise — full control
+    brandingEnabled = config.brandingEnabled === true  // default off
+    brandingText    = config.brandingText?.trim() || 'Powered by OwFlex'
+    brandingUrl     = config.brandingUrl?.trim()  || 'https://owflex.com'
   }
 
   return NextResponse.json(
@@ -56,6 +81,9 @@ export async function GET(req: NextRequest) {
       borderRadius: typeof config.borderRadius === 'number' ? config.borderRadius : 16,
       tooltipEnabled: config.tooltipEnabled === true,
       tooltipMessages: Array.isArray(config.tooltipMessages) ? config.tooltipMessages : [],
+      brandingEnabled,
+      brandingText,
+      brandingUrl,
     },
     {
       headers: { 'Cache-Control': 'public, max-age=300' },

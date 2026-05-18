@@ -22,6 +22,9 @@ const updateBotSchema = z.object({
     borderRadius:       z.number().min(0).max(24).optional(),
     tooltipEnabled:     z.boolean().optional(),
     tooltipMessages:    z.array(z.string().max(120)).max(5).optional(),
+    brandingEnabled:    z.boolean().optional(),
+    brandingText:       z.string().max(60).optional(),
+    brandingUrl:        z.string().url().max(255).optional(),
   }).optional(),
 })
 
@@ -60,8 +63,15 @@ export async function updateBot(
   }
 
   if (parsed.data.widgetConfig !== undefined) {
+    const wc = { ...parsed.data.widgetConfig }
+    // Strip custom branding text/URL for plans without white-label rights
+    const canCustomBrand = botRow.orgPlan === 'agency' || botRow.orgPlan === 'enterprise'
+    if (!canCustomBrand) {
+      delete wc.brandingText
+      delete wc.brandingUrl
+    }
     // Atomic JSONB merge — preserves existing keys not in the patch
-    update.widgetConfig = sql`${schema.bots.widgetConfig} || ${JSON.stringify(parsed.data.widgetConfig)}::jsonb`
+    update.widgetConfig = sql`${schema.bots.widgetConfig} || ${JSON.stringify(wc)}::jsonb`
   }
 
   if (Object.keys(update).length === 0) return {}

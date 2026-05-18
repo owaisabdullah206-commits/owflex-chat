@@ -1,11 +1,12 @@
-import { and, count, eq, sql } from 'drizzle-orm'
+import { and, count, eq, gte, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
 export const PLAN_LIMITS = {
-  free:    { bots: 1,  conversations: 200,    leads: 50,        docs: 5,   crawlPages: 10,   storageMb: 5    },
-  starter: { bots: 2,  conversations: 2_000,  leads: Infinity,  docs: 20,  crawlPages: 50,   storageMb: 25   },
-  pro:     { bots: 5,  conversations: 10_000, leads: Infinity,  docs: 75,  crawlPages: 200,  storageMb: 100  },
-  agency:  { bots: 20, conversations: 50_000, leads: Infinity,  docs: 500, crawlPages: 1000, storageMb: 500  },
+  free:       { bots: 1,        conversations: 200,      leads: 15,        docs: 0,        crawlPages: 0,        storageMb: 0        },
+  starter:    { bots: 2,        conversations: 3_000,    leads: Infinity,  docs: 20,       crawlPages: 20,       storageMb: 25       },
+  pro:        { bots: 8,        conversations: 15_000,   leads: Infinity,  docs: 50,       crawlPages: 100,      storageMb: 100      },
+  agency:     { bots: Infinity, conversations: 75_000,   leads: Infinity,  docs: 500,      crawlPages: 1000,     storageMb: 500      },
+  enterprise: { bots: Infinity, conversations: Infinity, leads: Infinity,  docs: Infinity, crawlPages: Infinity, storageMb: Infinity },
 } as const
 
 type Plan = keyof typeof PLAN_LIMITS
@@ -39,7 +40,33 @@ export async function checkBotLimit(orgId: string): Promise<{ allowed: boolean }
   return { allowed: (result?.count ?? 0) < limits.bots }
 }
 
-export async function checkConversationLimit(org: Org): Promise<{ allowed: boolean }> {
+interface BotLimitInfo {
+  botId: string
+  monthlyConvLimit: number | null
+}
+
+export async function checkConversationLimit(
+  org: Org,
+  bot?: BotLimitInfo,
+): Promise<{ allowed: boolean }> {
+  // Bot-level cap: if set, enforce it regardless of org pool headroom
+  if (bot && bot.monthlyConvLimit !== null) {
+    const startOfMonth = new Date()
+    startOfMonth.setUTCDate(1)
+    startOfMonth.setUTCHours(0, 0, 0, 0)
+
+    const [row] = await db
+      .select({ cnt: count() })
+      .from(schema.conversations)
+      .where(
+        and(
+          eq(schema.conversations.botId, bot.botId),
+          gte(schema.conversations.startedAt, startOfMonth),
+        ),
+      )
+    if ((row?.cnt ?? 0) >= bot.monthlyConvLimit) return { allowed: false }
+  }
+
   const limits = getLimits(org.plan)
   return { allowed: org.conversationsThisMonth < limits.conversations }
 }

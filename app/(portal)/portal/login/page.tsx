@@ -53,9 +53,6 @@ function LoginContent() {
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="text-center mb-8">
-          <p className="text-[10px] font-medium uppercase tracking-widest text-[var(--ink-subtle)] mb-4">
-            Powered by OwFlex
-          </p>
           <div className="inline-flex items-center gap-2 mb-4">
             <div className="w-8 h-8 rounded-lg bg-[var(--of-primary)] flex items-center justify-center shadow-sm">
               <span className="text-white text-sm font-bold">O</span>

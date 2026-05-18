@@ -48,6 +48,9 @@ interface BotSettingsFormProps {
     borderRadius: number
     tooltipEnabled: boolean
     tooltipMessages: string[]
+    brandingEnabled: boolean
+    brandingText: string
+    brandingUrl: string
   }
 }
 
@@ -70,6 +73,9 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [borderRadius, setBorderRadius]         = useState(initial.borderRadius)
   const [tooltipEnabled, setTooltipEnabled]     = useState(initial.tooltipEnabled)
   const [tooltipMessages, setTooltipMessages]   = useState(initial.tooltipMessages.join('\n'))
+  const [brandingEnabled, setBrandingEnabled]   = useState(initial.brandingEnabled)
+  const [brandingText, setBrandingText]         = useState(initial.brandingText)
+  const [brandingUrl, setBrandingUrl]           = useState(initial.brandingUrl)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>('dark')
 
   const isFreePlan = orgPlan === 'free'
@@ -102,6 +108,9 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           borderRadius,
           tooltipEnabled,
           tooltipMessages: tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean),
+          brandingEnabled,
+          brandingText: brandingText.trim() || undefined,
+          brandingUrl:  brandingUrl.trim()  || undefined,
         },
       })
       if (result.error) {
@@ -305,6 +314,62 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             />
           </div>
         )}
+
+        {/* Widget Attribution */}
+        <div className="border-t border-[var(--hairline)] pt-4 space-y-3">
+          <p className="text-sm font-medium text-[var(--ink)]">Widget Attribution</p>
+          {orgPlan === 'free' && (
+            <p className="text-xs text-[var(--ink-muted)] bg-[var(--surface)] border border-[var(--hairline)] px-3 py-2">
+              Your widget displays &ldquo;Powered by OwFlex&rdquo; on the free plan.
+            </p>
+          )}
+          {(orgPlan === 'starter' || orgPlan === 'pro') && (
+            <div className="flex items-center justify-between py-1">
+              <div>
+                <p className="text-sm text-[var(--ink)]">Show &ldquo;Powered by OwFlex&rdquo;</p>
+                <p className="text-xs text-[var(--ink-muted)]">Attribution footer inside the widget</p>
+              </div>
+              <Switch checked={brandingEnabled}
+                onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
+                disabled={isPending} />
+            </div>
+          )}
+          {(orgPlan === 'agency' || orgPlan === 'enterprise') && (
+            <>
+              <div className="flex items-center justify-between py-1">
+                <div>
+                  <p className="text-sm text-[var(--ink)]">Show attribution footer</p>
+                  <p className="text-xs text-[var(--ink-muted)]">Custom branding in widget footer</p>
+                </div>
+                <Switch checked={brandingEnabled}
+                  onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
+                  disabled={isPending} />
+              </div>
+              {brandingEnabled && (
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[var(--ink-muted)]">Attribution Text</Label>
+                    <Input value={brandingText}
+                      onChange={(e) => { setBrandingText(e.target.value); markDirty() }}
+                      maxLength={60}
+                      placeholder="Powered by My Agency"
+                      className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
+                      disabled={isPending} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[var(--ink-muted)]">Attribution URL</Label>
+                    <Input value={brandingUrl}
+                      onChange={(e) => { setBrandingUrl(e.target.value); markDirty() }}
+                      type="url"
+                      placeholder="https://myagency.com"
+                      className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
+                      disabled={isPending} />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
 
         {/* Submit */}
         <div className="flex items-center gap-3 pt-2">

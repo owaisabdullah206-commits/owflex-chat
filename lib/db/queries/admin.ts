@@ -7,10 +7,11 @@ import { requirePlatformOwner } from '@/lib/auth/session'
 import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
 
 const PKR_PRICES: Record<string, number> = {
-  free:    0,
-  starter: 2000,
-  pro:     6000,
-  agency:  15000,
+  free:       0,
+  starter:    2500,
+  pro:        7500,
+  agency:     20000,
+  enterprise: 0,  // custom pricing — excluded from MRR calc
 }
 
 // ── READ QUERIES ──────────────────────────────────────────────────────────────
@@ -214,7 +215,7 @@ export async function changeOrgPlan(
   plan: string,
 ): Promise<{ error?: string }> {
   await requirePlatformOwner()
-  const validPlans = ['free', 'starter', 'pro', 'agency']
+  const validPlans = ['free', 'starter', 'pro', 'agency', 'enterprise']
   if (!validPlans.includes(plan)) return { error: 'Invalid plan' }
 
   await db.update(schema.organizations)

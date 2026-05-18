@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
         convCount:           schema.organizations.conversationsThisMonth,
         bannedAt:            schema.organizations.bannedAt,
         smartRoutingEnabled: schema.bots.smartRoutingEnabled,
+        monthlyConvLimit:    schema.bots.monthlyConvLimit,
         documentCount: sql<number>`(
           SELECT COUNT(*)::int FROM documents
           WHERE bot_id = ${schema.bots.id} AND status = 'ready'
@@ -185,11 +186,10 @@ export async function POST(req: NextRequest) {
     })
 
     // Check conversation limit before processing
-    const { allowed: convAllowed } = await checkConversationLimit({
-      plan: bot.orgPlan,
-      conversationsThisMonth: bot.convCount,
-      leadsThisMonth: 0,
-    })
+    const { allowed: convAllowed } = await checkConversationLimit(
+      { plan: bot.orgPlan, conversationsThisMonth: bot.convCount, leadsThisMonth: 0 },
+      { botId: bot.id, monthlyConvLimit: bot.monthlyConvLimit },
+    )
     if (!convAllowed) {
       return NextResponse.json(
         { error: 'Monthly conversation limit reached. Upgrade your plan to continue.', code: 'PLAN_LIMIT', status: 402 },

@@ -307,6 +307,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                     model: bot.model,
                     ...(() => {
                       const wc = (bot.widgetConfig ?? {}) as Record<string, unknown>
+                      const isAgencyPlus = bot.orgPlan === 'agency' || bot.orgPlan === 'enterprise'
                       return {
                         primaryColor:       (wc.primaryColor as string)  ?? '#0EA5E9',
                         position:           ((wc.position as string) === 'bottom-left' ? 'bottom-left' : 'bottom-right') as 'bottom-right' | 'bottom-left',
@@ -317,6 +318,12 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         borderRadius:       typeof wc.borderRadius === 'number' ? wc.borderRadius : 16,
                         tooltipEnabled:     (wc.tooltipEnabled as boolean) === true,
                         tooltipMessages:    Array.isArray(wc.tooltipMessages) ? (wc.tooltipMessages as string[]) : [],
+                        // Branding: starter/pro default ON; agency/enterprise default OFF
+                        brandingEnabled:    isAgencyPlus
+                          ? (wc.brandingEnabled as boolean) === true
+                          : (wc.brandingEnabled as boolean) !== false,
+                        brandingText:       (wc.brandingText as string) ?? '',
+                        brandingUrl:        (wc.brandingUrl as string) ?? '',
                       }
                     })(),
                   }}

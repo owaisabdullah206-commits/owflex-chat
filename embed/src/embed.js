@@ -5,6 +5,7 @@ var sid=sessionStorage.getItem("_of")||("owflex_"+Date.now()+"_"+Math.random().t
 sessionStorage.setItem("_of",sid);
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
 var ti="message-circle",br=16,te=false,tms=[];
+var be=false,bt="Powered by OwFlex",burl="https://owflex.com";
 var op=0,busy=0,started=0,lastMsg="";
 
 /* ── Icon SVG paths (exact Lucide v1.16.0) ── */
@@ -33,6 +34,9 @@ fetch(bu+"/api/v1/widget-config?key="+k)
     br=typeof c.borderRadius==="number"?c.borderRadius:br;
     te=c.tooltipEnabled===true;
     tms=Array.isArray(c.tooltipMessages)&&c.tooltipMessages.length?c.tooltipMessages:tms;
+    be=c.brandingEnabled===true;
+    if(c.brandingText)bt=c.brandingText;
+    if(c.brandingUrl)burl=c.brandingUrl;
     go();
   })
   .catch(go);
@@ -148,7 +152,8 @@ pnl.innerHTML=
     '<button id="oS" aria-label="Send message">'+
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'+
     '</button>'+
-  '</div>';
+  '</div>'+
+  (be?'<div id="oB" style="text-align:center!important;padding:3px 0!important;font-size:10px!important;opacity:0.45!important;border-top:1px solid #f0f0f0!important;background:#fafafa!important;flex-shrink:0!important;"><a href="'+esc(burl)+'" target="_blank" rel="noopener" style="color:inherit!important;text-decoration:none!important;">'+esc(bt)+'</a></div>':'');
 document.body.appendChild(pnl);
 
 var ms=document.getElementById("oM"),
