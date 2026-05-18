@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { RefreshCw, Pencil, X, Check, Zap, AlertCircle } from 'lucide-react'
+import { useState, useTransition, useMemo } from 'react'
+import { RefreshCw, Pencil, X, Check, Zap, AlertCircle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   refreshModelPrices,
@@ -110,10 +110,49 @@ function EditRow({ modelId, current, onDone }: { modelId: string; current: Price
   )
 }
 
+type SortKey = 'name' | 'input-asc' | 'input-desc' | 'output-asc' | 'output-desc' | 'provider'
+type SortOption = { label: string; key: SortKey; icon: 'asc' | 'desc' | 'alpha' }
+
+const SORT_OPTIONS: SortOption[] = [
+  { label: 'Model A–Z',      key: 'name',        icon: 'alpha' },
+  { label: 'Provider A–Z',   key: 'provider',    icon: 'alpha' },
+  { label: 'Input ↑',        key: 'input-asc',   icon: 'asc'   },
+  { label: 'Input ↓',        key: 'input-desc',  icon: 'desc'  },
+  { label: 'Output ↑',       key: 'output-asc',  icon: 'asc'   },
+  { label: 'Output ↓',       key: 'output-desc', icon: 'desc'  },
+]
+
+function activePrice(entry: ModelEntry): number {
+  const val = entry.active?.promptPricePer1M
+  return val ? parseFloat(val) : -1
+}
+function activeOutput(entry: ModelEntry): number {
+  const val = entry.active?.completionPricePer1M
+  return val ? parseFloat(val) : -1
+}
+
 export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]; lastFetched: Date | null }) {
   const [editing, setEditing]         = useState<string | null>(null)
   const [pending, startTransition]    = useTransition()
   const [refreshMsg, setRefreshMsg]   = useState('')
+  const [sortKey, setSortKey]         = useState<SortKey>('name')
+
+  const sorted = useMemo(() => {
+    const arr = [...models]
+    switch (sortKey) {
+      case 'name':        return arr.sort((a, b) => a.modelId.localeCompare(b.modelId))
+      case 'provider':    return arr.sort((a, b) => {
+        const pa = a.modelId.split('/')[0] ?? ''
+        const pb = b.modelId.split('/')[0] ?? ''
+        return pa.localeCompare(pb) || a.modelId.localeCompare(b.modelId)
+      })
+      case 'input-asc':   return arr.sort((a, b) => activePrice(a) - activePrice(b))
+      case 'input-desc':  return arr.sort((a, b) => activePrice(b) - activePrice(a))
+      case 'output-asc':  return arr.sort((a, b) => activeOutput(a) - activeOutput(b))
+      case 'output-desc': return arr.sort((a, b) => activeOutput(b) - activeOutput(a))
+      default:            return arr
+    }
+  }, [models, sortKey])
 
   function handleRefresh() {
     setRefreshMsg('')
@@ -127,7 +166,7 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
   return (
     <div className="space-y-4">
       {/* Header actions */}
-      <div className="flex items-center gap-4 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         <button
           onClick={handleRefresh}
           disabled={pending}
@@ -136,8 +175,33 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
           <RefreshCw className={cn('h-3.5 w-3.5', pending && 'animate-spin')} />
           Refresh All Prices
         </button>
+
+        {/* Sort controls */}
+        <div className="flex items-center gap-1.5 ml-auto">
+          <ArrowUpDown className="h-3 w-3 text-[var(--ink-subtle)]" />
+          <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]">Sort</span>
+          <div className="flex border border-[var(--hairline-md)]">
+            {SORT_OPTIONS.map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => setSortKey(opt.key)}
+                className={cn(
+                  'px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide transition-colors border-r border-[var(--hairline-md)] last:border-r-0 flex items-center gap-1',
+                  sortKey === opt.key
+                    ? 'bg-[var(--of-primary)] text-white'
+                    : 'text-[var(--ink-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--ink)]',
+                )}
+              >
+                {opt.icon === 'asc'   && <ArrowUp   className="h-2.5 w-2.5" />}
+                {opt.icon === 'desc'  && <ArrowDown  className="h-2.5 w-2.5" />}
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {lastFetched && (
-          <span className="text-[11px] text-[var(--ink-subtle)] font-mono">
+          <span className="text-[11px] text-[var(--ink-subtle)] font-mono w-full">
             Last fetched: {new Date(lastFetched).toLocaleString()}
           </span>
         )}
@@ -170,7 +234,7 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
             </tr>
           </thead>
           <tbody>
-            {models.map(({ modelId, manual, api, active, priority }) => {
+            {sorted.map(({ modelId, manual, api, active, priority }) => {
               const hasBoth = !!manual && !!api
               const isEditingThis = editing === modelId
 
