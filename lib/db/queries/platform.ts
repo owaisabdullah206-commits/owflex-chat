@@ -1,8 +1,7 @@
-'use server'
-
 import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
+// Plain async function — safe to import in API routes and server components
 export async function getPlatformPrompt(): Promise<string> {
   const [row] = await db
     .select({ systemPrompt: schema.platformConfig.systemPrompt })
@@ -12,7 +11,9 @@ export async function getPlatformPrompt(): Promise<string> {
   return row?.systemPrompt ?? ''
 }
 
+// Server action — inline 'use server' so client components (PlatformPromptForm) can call it
 export async function setPlatformPrompt(text: string): Promise<void> {
+  'use server'
   await db
     .insert(schema.platformConfig)
     .values({ id: 'default', systemPrompt: text })

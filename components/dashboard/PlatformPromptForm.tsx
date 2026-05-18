@@ -40,7 +40,7 @@ export function PlatformPromptForm({ currentPrompt, onSave }: PlatformPromptForm
           disabled={isPending}
         />
         <p className="text-xs text-[var(--ink-muted)]">
-          Changes take effect within 5 minutes (cache TTL). An empty prompt means no platform prefix.
+          Changes take effect immediately. An empty prompt means no platform prefix.
         </p>
       </div>
       <div className="flex items-center gap-3">
@@ -51,7 +51,7 @@ export function PlatformPromptForm({ currentPrompt, onSave }: PlatformPromptForm
         >
           {isPending ? 'Saving…' : 'Save Platform Prompt'}
         </Button>
-        {saved && <span className="text-xs text-emerald-400">Saved — effective within 5 minutes</span>}
+        {saved && <span className="text-xs text-emerald-400">Saved — changes are live</span>}
       </div>
     </form>
   )

@@ -111,15 +111,15 @@ function EditRow({ modelId, current, onDone }: { modelId: string; current: Price
 }
 
 type SortKey = 'name' | 'input-asc' | 'input-desc' | 'output-asc' | 'output-desc' | 'provider'
-type SortOption = { label: string; key: SortKey; icon: 'asc' | 'desc' | 'alpha' }
+type SortOption = { label: string; title: string; key: SortKey; icon: 'asc' | 'desc' | 'alpha' }
 
 const SORT_OPTIONS: SortOption[] = [
-  { label: 'Model A–Z',      key: 'name',        icon: 'alpha' },
-  { label: 'Provider A–Z',   key: 'provider',    icon: 'alpha' },
-  { label: 'Input ↑',        key: 'input-asc',   icon: 'asc'   },
-  { label: 'Input ↓',        key: 'input-desc',  icon: 'desc'  },
-  { label: 'Output ↑',       key: 'output-asc',  icon: 'asc'   },
-  { label: 'Output ↓',       key: 'output-desc', icon: 'desc'  },
+  { label: 'A–Z',  title: 'Model A–Z',              key: 'name',        icon: 'alpha' },
+  { label: 'Prov', title: 'Provider A–Z',            key: 'provider',    icon: 'alpha' },
+  { label: 'In',   title: 'Input price low → high',  key: 'input-asc',   icon: 'asc'   },
+  { label: 'In',   title: 'Input price high → low',  key: 'input-desc',  icon: 'desc'  },
+  { label: 'Out',  title: 'Output price low → high', key: 'output-asc',  icon: 'asc'   },
+  { label: 'Out',  title: 'Output price high → low', key: 'output-desc', icon: 'desc'  },
 ]
 
 function activePrice(entry: ModelEntry): number {
@@ -184,9 +184,10 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
             {SORT_OPTIONS.map((opt) => (
               <button
                 key={opt.key}
+                title={opt.title}
                 onClick={() => setSortKey(opt.key)}
                 className={cn(
-                  'px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide transition-colors border-r border-[var(--hairline-md)] last:border-r-0 flex items-center gap-1',
+                  'px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide transition-colors border-r border-[var(--hairline-md)] last:border-r-0 flex items-center gap-0.5',
                   sortKey === opt.key
                     ? 'bg-[var(--of-primary)] text-white'
                     : 'text-[var(--ink-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--ink)]',
