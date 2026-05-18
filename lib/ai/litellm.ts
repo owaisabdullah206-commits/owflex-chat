@@ -3,9 +3,14 @@ export const STRONG_MODEL = 'anthropic/claude-haiku-4-5-20251001'
 
 export const SUPPORTED_MODELS = [
   'deepseek/deepseek-v4-flash',
-  'gemini/gemini-2.0-flash',
+  'google/gemini-2.5-flash-lite',
   'openai/gpt-4o-mini',
+  'openai/gpt-oss-120b',
   'anthropic/claude-haiku-4-5-20251001',
+  'openrouter/owl-alpha',
+  'google/gemma-4-31b-it',
+  'meta-llama/llama-3.1-70b-instruct',
+  'tencent/hy3-preview',
 ] as const
 
 export type SupportedModel = (typeof SUPPORTED_MODELS)[number]

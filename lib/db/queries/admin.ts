@@ -267,15 +267,20 @@ export async function sendPasswordReset(email: string): Promise<{ error?: string
   return {}
 }
 
-// Maps our LiteLLM model IDs → OpenRouter canonical model list IDs.
-// Chat/completions accepts our IDs as aliases; the /api/v1/models list uses these canonical IDs.
+// Maps our model IDs → OpenRouter canonical model list IDs.
+// Chat/completions accepts aliases; /api/v1/models uses canonical IDs.
 // Verified against openrouter.ai/models as of May 2026.
 const OPENROUTER_ID_CANDIDATES: Record<string, string[]> = {
   'deepseek/deepseek-v4-flash':          ['deepseek/deepseek-v4-flash'],
-  'gemini/gemini-2.0-flash':             ['google/gemini-2.0-flash-001', 'google/gemini-2.0-flash'],
+  'google/gemini-2.5-flash-lite':        ['google/gemini-2.5-flash-lite'],
   'openai/gpt-4o-mini':                  ['openai/gpt-4o-mini'],
+  'openai/gpt-oss-120b':                 ['openai/gpt-oss-120b'],
   // OpenRouter uses dots + no date suffix: claude-haiku-4.5 not claude-haiku-4-5-20251001
   'anthropic/claude-haiku-4-5-20251001': ['anthropic/claude-haiku-4.5'],
+  'openrouter/owl-alpha':                ['openrouter/owl-alpha'],
+  'google/gemma-4-31b-it':               ['google/gemma-4-31b-it'],
+  'meta-llama/llama-3.1-70b-instruct':  ['meta-llama/llama-3.1-70b-instruct'],
+  'tencent/hy3-preview':                 ['tencent/hy3-preview'],
 }
 
 export async function refreshModelPrices(): Promise<{ error?: string; count?: number }> {
