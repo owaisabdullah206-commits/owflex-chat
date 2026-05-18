@@ -232,27 +232,25 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
 
                 {/* Plan */}
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
+                  <div className="relative inline-flex items-center gap-1 cursor-pointer">
                     <span className={cn(
                       'text-[11px] font-bold uppercase tracking-wide',
                       PLAN_COLORS[dev.plan] ?? 'text-[var(--ink-muted)]',
                     )}>
                       {dev.plan}
                     </span>
-                    <div className="relative">
-                      <select
-                        defaultValue={dev.plan}
-                        onChange={(e) => {
-                          startTransition(async () => { await changeOrgPlan(dev.orgId, e.target.value) })
-                        }}
-                        className="appearance-none text-[10px] opacity-0 absolute inset-0 w-full cursor-pointer"
-                      >
-                        {PLANS.map((p) => (
-                          <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
-                        ))}
-                      </select>
-                      <ChevronDown className="h-3 w-3 text-[var(--ink-subtle)] cursor-pointer" />
-                    </div>
+                    <ChevronDown className="h-3 w-3 text-[var(--ink-subtle)]" />
+                    <select
+                      defaultValue={dev.plan}
+                      onChange={(e) => {
+                        startTransition(async () => { await changeOrgPlan(dev.orgId, e.target.value) })
+                      }}
+                      className="appearance-none opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                    >
+                      {PLANS.map((p) => (
+                        <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
+                      ))}
+                    </select>
                   </div>
                 </td>
 

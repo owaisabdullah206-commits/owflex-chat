@@ -81,14 +81,14 @@ var css=
 ".ok{font-size:11px;color:#10b981;text-align:center;padding:4px 0}"+
 
 /* ── Input row ── */
-"#oF{padding:10px 12px;border-top:1px solid #f0f0f0;display:flex;gap:8px;align-items:center;flex-shrink:0;background:#fafafa}"+
-"#oI{flex:1;border:1.5px solid #e5e7eb;border-radius:"+Math.max(4,br)+"px;height:40px;padding:0 14px;font-size:13px;outline:0;transition:border-color .15s,box-shadow .15s;font-family:inherit;background:#fff;color:#111;box-sizing:border-box}"+
-"#oI:focus{border-color:var(--ofp);box-shadow:0 0 0 3px rgba(0,0,0,.07)}"+
-"#oI:disabled{background:#f3f4f6;color:#9ca3af}"+
+"#oF{padding:10px 12px;border-top:1px solid #f0f0f0;display:flex!important;flex-direction:row!important;gap:8px;align-items:center!important;flex-shrink:0;background:#fafafa;flex-wrap:nowrap!important}"+
+"#oI{flex:1!important;border:1.5px solid #e5e7eb!important;border-radius:"+Math.max(4,br)+"px;height:40px!important;min-height:40px!important;max-height:40px!important;padding:0 14px!important;font-size:13px;outline:0!important;transition:border-color .15s,box-shadow .15s;font-family:inherit;background:#fff!important;color:#111!important;box-sizing:border-box!important;display:block!important;vertical-align:middle!important;margin:0!important;line-height:normal!important}"+
+"#oI:focus{border-color:var(--ofp)!important;box-shadow:0 0 0 3px rgba(14,165,233,.15)!important}"+
+"#oI:disabled{background:#f3f4f6!important;color:#9ca3af!important}"+
 "#oI::placeholder{color:#9ca3af}"+
-"#oS{width:40px;height:40px;flex-shrink:0;border:0;border-radius:50%;background:var(--ofp);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .12s;box-shadow:0 2px 8px rgba(0,0,0,.15)}"+
+"#oS{width:40px!important;height:40px!important;flex-shrink:0!important;border:0!important;border-radius:50%!important;background:var(--ofp)!important;color:#fff!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;transition:opacity .15s,transform .12s;box-shadow:0 2px 8px rgba(0,0,0,.15);padding:0!important;margin:0!important;vertical-align:middle!important;line-height:1!important;font-size:0!important}"+
 "#oS:hover{transform:scale(1.1)}"+
-"#oS:disabled{opacity:.4;cursor:default;transform:none}"+
+"#oS:disabled{opacity:.4!important;cursor:default!important;transform:none!important}"+
 
 /* ── Tooltip ── */
 (te?"#oTip{position:fixed;bottom:32px;"+side+":88px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+

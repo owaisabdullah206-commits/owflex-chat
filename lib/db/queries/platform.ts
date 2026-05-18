@@ -1,21 +1,16 @@
 'use server'
 
-import { revalidateTag, unstable_cache } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
-export const getPlatformPrompt = unstable_cache(
-  async (): Promise<string> => {
-    const [row] = await db
-      .select({ systemPrompt: schema.platformConfig.systemPrompt })
-      .from(schema.platformConfig)
-      .where(eq(schema.platformConfig.id, 'default'))
-      .limit(1)
-    return row?.systemPrompt ?? ''
-  },
-  ['platform-prompt'],
-  { tags: ['platform-prompt'], revalidate: 300 },
-)
+export async function getPlatformPrompt(): Promise<string> {
+  const [row] = await db
+    .select({ systemPrompt: schema.platformConfig.systemPrompt })
+    .from(schema.platformConfig)
+    .where(eq(schema.platformConfig.id, 'default'))
+    .limit(1)
+  return row?.systemPrompt ?? ''
+}
 
 export async function setPlatformPrompt(text: string): Promise<void> {
   await db
@@ -25,5 +20,4 @@ export async function setPlatformPrompt(text: string): Promise<void> {
       target: schema.platformConfig.id,
       set: { systemPrompt: text, updatedAt: new Date() },
     })
-  revalidateTag('platform-prompt', 'max')
 }

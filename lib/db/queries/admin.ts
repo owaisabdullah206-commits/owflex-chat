@@ -267,6 +267,17 @@ export async function sendPasswordReset(email: string): Promise<{ error?: string
   return {}
 }
 
+// Maps our LiteLLM model IDs → OpenRouter canonical model list IDs.
+// Chat/completions accepts our IDs as aliases; the /api/v1/models list uses these canonical IDs.
+// Verified against openrouter.ai/models as of May 2026.
+const OPENROUTER_ID_CANDIDATES: Record<string, string[]> = {
+  'deepseek/deepseek-v4-flash':          ['deepseek/deepseek-v4-flash'],
+  'gemini/gemini-2.0-flash':             ['google/gemini-2.0-flash-001', 'google/gemini-2.0-flash'],
+  'openai/gpt-4o-mini':                  ['openai/gpt-4o-mini'],
+  // OpenRouter uses dots + no date suffix: claude-haiku-4.5 not claude-haiku-4-5-20251001
+  'anthropic/claude-haiku-4-5-20251001': ['anthropic/claude-haiku-4.5'],
+}
+
 export async function refreshModelPrices(): Promise<{ error?: string; count?: number }> {
   await requirePlatformOwner()
 
@@ -280,22 +291,35 @@ export async function refreshModelPrices(): Promise<{ error?: string; count?: nu
       data: Array<{ id: string; pricing?: { prompt?: string; completion?: string } }>
     }
 
+    // Build reverse lookup: OpenRouter ID → our LiteLLM model ID
+    const orIdToLitellmId = new Map<string, string>()
+    for (const [litellmId, candidates] of Object.entries(OPENROUTER_ID_CANDIDATES)) {
+      for (const orId of candidates) {
+        orIdToLitellmId.set(orId, litellmId)
+      }
+    }
+
     const now = new Date()
-    // Only fetch prices for models we actually support
+    const seen = new Set<string>() // deduplicate per LiteLLM ID
     const rows = json.data
       .filter((m) =>
-        (SUPPORTED_MODELS as readonly string[]).includes(m.id) &&
+        orIdToLitellmId.has(m.id) &&
         m.pricing?.prompt != null &&
         m.pricing?.completion != null,
       )
-      .map((m) => ({
-        modelId:              m.id,
-        // OpenRouter returns USD per single token; convert to per 1M
-        promptPricePer1M:     String(parseFloat(m.pricing!.prompt!) * 1_000_000),
-        completionPricePer1M: String(parseFloat(m.pricing!.completion!) * 1_000_000),
-        source:               'openrouter-api' as const,
-        effectiveFrom:        now,
-      }))
+      .flatMap((m) => {
+        const litellmId = orIdToLitellmId.get(m.id)!
+        if (seen.has(litellmId)) return []
+        seen.add(litellmId)
+        return [{
+          modelId:              litellmId,
+          // OpenRouter returns USD per single token; convert to per 1M
+          promptPricePer1M:     String(parseFloat(m.pricing!.prompt!) * 1_000_000),
+          completionPricePer1M: String(parseFloat(m.pricing!.completion!) * 1_000_000),
+          source:               'openrouter-api' as const,
+          effectiveFrom:        now,
+        }]
+      })
 
     if (rows.length > 0) {
       await db.insert(schema.modelPrices).values(rows)
