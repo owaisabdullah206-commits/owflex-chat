@@ -31,7 +31,8 @@ function fmt(val: string | null | undefined) {
   if (!val) return '—'
   const n = parseFloat(val)
   if (isNaN(n)) return '—'
-  return `$${n.toFixed(4)}`
+  // toFixed(4) then parseFloat strips trailing zeros: 1.0000→$1, 0.1120→$0.112
+  return `$${parseFloat(n.toFixed(4))}`
 }
 
 function SourceTag({ source, isActive }: { source: 'manual' | 'openrouter-api'; isActive: boolean }) {
