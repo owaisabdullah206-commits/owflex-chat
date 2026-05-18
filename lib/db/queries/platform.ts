@@ -10,15 +10,3 @@ export async function getPlatformPrompt(): Promise<string> {
     .limit(1)
   return row?.systemPrompt ?? ''
 }
-
-// Server action — inline 'use server' so client components (PlatformPromptForm) can call it
-export async function setPlatformPrompt(text: string): Promise<void> {
-  'use server'
-  await db
-    .insert(schema.platformConfig)
-    .values({ id: 'default', systemPrompt: text })
-    .onConflictDoUpdate({
-      target: schema.platformConfig.id,
-      set: { systemPrompt: text, updatedAt: new Date() },
-    })
-}
