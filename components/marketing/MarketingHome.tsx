@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
   MessageSquare, Zap, Monitor, Palette, Cpu, Globe,
   Code2, UserPlus, BarChart3, Check, ArrowRight, ArrowUpRight,
-  MessageSquareX, Clock, PackageX, Shield, Sparkles,
+  MessageSquareX, Clock, PackageX, Shield, Sparkles, Sun, Moon,
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
 
@@ -56,7 +56,7 @@ function Reveal({
 
 // ─── Nav ─────────────────────────────────────────────────────────────────────
 
-function Nav() {
+function Nav({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }) {
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -151,14 +151,22 @@ function Nav() {
               {label}
             </Link>
           ))}
-          <div
+          <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 8px' }} />
+          <button
+            onClick={onToggleDark}
+            aria-label="Toggle theme"
             style={{
-              width: 1,
-              height: 18,
-              background: 'var(--hairline)',
-              margin: '0 8px',
+              width: 34, height: 34, display: 'grid', placeItems: 'center',
+              background: 'transparent',
+              border: '1px solid var(--hairline-strong)',
+              borderRadius: 8,
+              color: 'var(--ink-subtle)',
+              cursor: 'pointer',
+              transition: 'color .15s, background-color .15s',
             }}
-          />
+          >
+            {dark ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
           <Link
             href="/dashboard/signin"
             style={{
@@ -568,7 +576,7 @@ function PortalMockup() {
         style={{
           display: 'grid',
           gridTemplateColumns: '168px 1fr',
-          minHeight: 380,
+          minHeight: 310,
           background: 'var(--surface)',
         }}
       >
@@ -1574,8 +1582,8 @@ function CTABanner() {
               position: 'relative',
               overflow: 'hidden',
             }}
-            className="mkt-grid-bg"
           >
+            <div className="mkt-grid-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
@@ -1772,20 +1780,26 @@ function HeroLeadCopy() {
 // ─── Root Component ───────────────────────────────────────────────────────────
 
 export default function MarketingHome() {
+  const [darkMode, setDarkMode] = useState(false)
+
   return (
-    <div className="marketing" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <Nav />
+    <div
+      className={`marketing${darkMode ? ' dark' : ''}`}
+      style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}
+    >
+      <Nav dark={darkMode} onToggleDark={() => setDarkMode((d) => !d)} />
 
       {/* Hero */}
       <section
         style={{
-          paddingTop: 72,
-          paddingBottom: 64,
+          paddingTop: 48,
+          paddingBottom: 40,
           position: 'relative',
           overflow: 'hidden',
         }}
-        className="mkt-grid-bg"
       >
+        {/* Grid background on its own layer so mask-image doesn't affect content */}
+        <div className="mkt-grid-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative' }}>
           <div
             style={{

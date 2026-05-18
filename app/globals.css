@@ -262,6 +262,23 @@ select option {
 /* ─────────────────────────────────────────────────────────────────────────────
    GRID BACKGROUND — subtle dot-grid used on hero and CTA sections
    ───────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────────
+   MARKETING DARK: full-page dark toggle on owflex.com
+   ───────────────────────────────────────────────────────────────────────────── */
+.marketing.dark {
+  --bg:              #0A0A0A;
+  --surface:         #131313;
+  --surface-2:       #1A1A1A;
+  --ink:             #F5F5F5;
+  --ink-muted:       #A8A29E;
+  --ink-subtle:      #6B6560;
+  --ink-tertiary:    #52525B;
+  --hairline:        rgba(255, 255, 255, 0.08);
+  --hairline-soft:   rgba(255, 255, 255, 0.05);
+  --hairline-strong: rgba(255, 255, 255, 0.14);
+  --primary-text:    var(--of-primary-text-dark);
+}
+
 /* Footer link hover (server component can't use JS hover) */
 .mkt-footer-link:hover {
   color: var(--ink);

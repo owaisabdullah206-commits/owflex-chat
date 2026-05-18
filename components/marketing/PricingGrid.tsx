@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Check, Minus, ArrowRight, ArrowUpRight,
-  Sparkles, Shield, ChevronDown,
+  Sparkles, Shield, ChevronDown, Sun, Moon,
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
 
@@ -242,7 +242,7 @@ const QUOTES_ROW_2 = [
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function Nav({ currency, setCurrency }: { currency: Currency; setCurrency: (c: Currency) => void }) {
+function Nav({ currency, setCurrency, dark, onToggleDark }: { currency: Currency; setCurrency: (c: Currency) => void; dark: boolean; onToggleDark: () => void }) {
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -324,6 +324,17 @@ function Nav({ currency, setCurrency }: { currency: Currency; setCurrency: (c: C
               </button>
             ))}
           </div>
+          <button
+            onClick={onToggleDark}
+            aria-label="Toggle theme"
+            style={{
+              width: 34, height: 34, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              border: '1px solid var(--hairline)', borderRadius: 8, background: 'transparent',
+              color: 'var(--ink-subtle)', cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            {dark ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
           <Link href="/dashboard/signin" style={{ height: 36, padding: '0 12px', display: 'inline-flex', alignItems: 'center', fontSize: 14, color: 'var(--ink-subtle)', border: '1px solid var(--hairline)', borderRadius: 8, textDecoration: 'none' }}>
             Sign in
           </Link>
@@ -380,20 +391,23 @@ function CompareCell({ v }: { v: boolean | string }) {
   return <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink)' }}>{v}</span>
 }
 
-// ─── Plan cards ───────────────────────────────────────────────────────────────
+// ─── Plan cards — Traditional layout ─────────────────────────────────────────
 
-function CardCompact({ plan, currency }: { plan: Plan; currency: Currency }) {
+function PlanCardTraditional({ plan, currency }: { plan: Plan; currency: Currency }) {
   return (
-    <div style={{ gridColumn: 'span 1', display: 'flex', flexDirection: 'column', gap: 14, padding: 22, background: 'var(--surface)', border: '1px solid var(--hairline)', borderRadius: 14, transition: 'border-color .2s' }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', gap: 14, padding: 22,
+      background: 'var(--surface)', border: '1px solid var(--hairline)',
+      borderRadius: 14, transition: 'border-color .2s',
+    }}>
       <div>
         <div style={{ fontSize: 14.5, fontWeight: 600 }}>{plan.name}</div>
         <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 2 }}>{plan.tagline}</div>
       </div>
       <PriceDisplay plan={plan} currency={currency} />
-      <div style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontSize: 10.5, letterSpacing: '0.04em', textTransform: 'uppercase', borderTop: '1px solid var(--hairline)', paddingTop: 12 }}>
-        Includes
+      <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 12 }}>
+        <FeatureList items={plan.features} dense />
       </div>
-      <FeatureList items={plan.features} dense />
       <Link href={plan.href} style={{ marginTop: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline)', textDecoration: 'none', transition: 'border-color .15s' }}>
         {plan.cta}
       </Link>
@@ -401,135 +415,34 @@ function CardCompact({ plan, currency }: { plan: Plan; currency: Currency }) {
   )
 }
 
-function CardStandard({ plan, currency }: { plan: Plan; currency: Currency }) {
-  return (
-    <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: 16, padding: 26, background: 'var(--surface)', border: '1px solid var(--hairline)', borderRadius: 14, transition: 'border-color .2s' }}>
-      <div>
-        <div style={{ fontSize: 15, fontWeight: 600 }}>{plan.name}</div>
-        <div style={{ fontSize: 12.5, color: 'var(--ink-muted)', marginTop: 2 }}>{plan.tagline}</div>
-      </div>
-      <PriceDisplay plan={plan} currency={currency} />
-      <div style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontSize: 10.5, letterSpacing: '0.04em', textTransform: 'uppercase', borderTop: '1px solid var(--hairline)', paddingTop: 14 }}>
-        Everything in Free, plus
-      </div>
-      <FeatureList items={plan.features} dense />
-      <Link href={plan.href} style={{ marginTop: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'white', background: 'var(--of-primary)', textDecoration: 'none', border: '1px solid transparent', transition: 'background-color .15s' }}>
-        {plan.cta} <ArrowRight size={14} />
-      </Link>
-    </div>
-  )
-}
-
-function CardFeatured({ plan, currency }: { plan: Plan; currency: Currency }) {
-  const mid = Math.ceil(plan.features.length / 2)
+function PlanCardFeaturedSlim({ plan, currency }: { plan: Plan; currency: Currency }) {
   return (
     <div style={{
-      gridColumn: 'span 3',
       background: 'var(--dark-bg)', color: 'var(--dark-ink)',
-      borderRadius: 14, padding: 30,
+      borderRadius: 14, padding: 22,
       border: '1px solid var(--dark-hairline-strong)',
       boxShadow: 'var(--shadow-lg)',
-      display: 'flex', flexDirection: 'column', gap: 18,
-      position: 'relative',
+      display: 'flex', flexDirection: 'column', gap: 14, position: 'relative',
     }}>
-      {/* Radial glow */}
-      <div style={{ position: 'absolute', inset: 0, borderRadius: 14, pointerEvents: 'none', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: -100, right: -80, width: 320, height: 320, background: 'radial-gradient(circle, rgba(14,165,233,.22), transparent 65%)' }} />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', position: 'relative' }}>
-        <div>
-          <div style={{ fontSize: 15, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
-            {plan.name}
-            <span style={{ background: 'var(--of-primary)', color: 'white', borderRadius: 999, padding: '2px 8px', fontSize: 10, fontFamily: 'var(--font-mono)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <Sparkles size={9} /> Most popular
-            </span>
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--dark-ink-muted)', marginTop: 4 }}>{plan.tagline}</div>
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--dark-ink-muted)', textAlign: 'right', fontFamily: 'var(--font-mono)' }}>
-          14-day trial<br />no card needed
-        </div>
-      </div>
-      <div style={{ position: 'relative' }}>
-        <PriceDisplay plan={plan} dark currency={currency} />
-      </div>
-      <div style={{ fontFamily: 'var(--font-mono)', color: 'var(--dark-ink-muted)', fontSize: 10.5, letterSpacing: '0.04em', textTransform: 'uppercase', borderTop: '1px solid var(--dark-hairline)', paddingTop: 14, position: 'relative' }}>
-        Everything in Starter, plus
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px', position: 'relative' }}>
-        <FeatureList items={plan.features.slice(0, mid)} dark dense />
-        <FeatureList items={plan.features.slice(mid)} dark dense />
-      </div>
-      <div style={{ display: 'flex', gap: 10, position: 'relative', marginTop: 4 }}>
-        <Link href={plan.href} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '12px 16px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'white', background: 'var(--of-primary)', textDecoration: 'none', border: '1px solid transparent' }}>
-          {plan.cta} <ArrowRight size={14} />
-        </Link>
-        <Link href="/pricing#compare" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '12px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--dark-ink)', border: '1px solid var(--dark-hairline-strong)', textDecoration: 'none' }}>
-          Compare plans
-        </Link>
-      </div>
-    </div>
-  )
-}
-
-function CardHorizontal({ plan, currency }: { plan: Plan; currency: Currency }) {
-  const mid = Math.ceil(plan.features.length / 2)
-  return (
-    <div style={{
-      gridColumn: 'span 4',
-      padding: 28, position: 'relative', overflow: 'hidden',
-      background: 'var(--surface)', border: '1px solid var(--hairline)',
-      borderTop: '2px solid var(--of-primary)',
-      borderRadius: 14,
-      display: 'grid', gridTemplateColumns: 'minmax(0, 280px) 1fr auto', gap: 28, alignItems: 'flex-start',
-      transition: 'border-color .2s',
-    }}>
+      <span style={{
+        position: 'absolute', top: -10, right: 18,
+        background: 'var(--of-primary)', color: 'white',
+        borderRadius: 999, padding: '2px 10px',
+        fontSize: 10, fontFamily: 'var(--font-mono)', fontWeight: 600,
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+      }}>
+        <Sparkles size={9} /> Most popular
+      </span>
       <div>
-        <div style={{ fontSize: 15, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
-          {plan.name}
-          <span style={{ borderRadius: 999, border: '1px solid rgba(14,165,233,.3)', color: 'var(--of-primary-deep)', background: 'var(--of-primary-soft)', fontSize: 10, fontFamily: 'var(--font-mono)', padding: '2px 8px' }}>
-            White-label
-          </span>
-        </div>
-        <div style={{ fontSize: 13, color: 'var(--ink-muted)', marginTop: 4, marginBottom: 18 }}>{plan.tagline}</div>
-        <PriceDisplay plan={plan} currency={currency} />
-        <div style={{ fontFamily: 'var(--font-mono)', marginTop: 14, fontSize: 10.5, color: 'var(--ink-muted)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-          Everything in Pro, plus
-        </div>
+        <div style={{ fontSize: 14.5, fontWeight: 600 }}>{plan.name}</div>
+        <div style={{ fontSize: 12, color: 'var(--dark-ink-muted)', marginTop: 2 }}>{plan.tagline}</div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 18px', alignSelf: 'center' }}>
-        <FeatureList items={plan.features.slice(0, mid)} dense />
-        <FeatureList items={plan.features.slice(mid)} dense />
+      <PriceDisplay plan={plan} dark currency={currency} />
+      <div style={{ borderTop: '1px solid var(--dark-hairline)', paddingTop: 12 }}>
+        <FeatureList items={plan.features} dark dense />
       </div>
-      <Link href={plan.href} style={{ alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: 6, padding: '12px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'white', background: 'var(--of-primary)', textDecoration: 'none', border: '1px solid transparent', whiteSpace: 'nowrap' }}>
+      <Link href={plan.href} style={{ marginTop: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'white', background: 'var(--of-primary)', textDecoration: 'none', border: '1px solid transparent' }}>
         {plan.cta} <ArrowRight size={14} />
-      </Link>
-    </div>
-  )
-}
-
-function CardMinimal({ plan, currency }: { plan: Plan; currency: Currency }) {
-  const { display } = fmtPrice(plan.pkr, plan.usd, currency)
-  return (
-    <div style={{
-      gridColumn: 'span 2',
-      padding: 26,
-      background: 'var(--surface-2)', border: '1px solid var(--hairline)',
-      borderRadius: 14,
-      display: 'flex', flexDirection: 'column', gap: 14,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <Shield size={16} style={{ color: 'var(--of-primary)' }} />
-        <div style={{ fontSize: 15, fontWeight: 600 }}>{plan.name}</div>
-      </div>
-      <div style={{ fontSize: 13, color: 'var(--ink-subtle)' }}>{plan.tagline}</div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 32, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1, marginTop: 4 }}>{display}</div>
-      <div style={{ fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)', fontSize: 10.5, letterSpacing: '0.04em', textTransform: 'uppercase', borderTop: '1px solid var(--hairline)', paddingTop: 12 }}>
-        Includes
-      </div>
-      <FeatureList items={plan.features} dense />
-      <Link href={plan.href} style={{ marginTop: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline)', textDecoration: 'none' }}>
-        {plan.cta} <ArrowUpRight size={13} />
       </Link>
     </div>
   )
@@ -597,6 +510,7 @@ function TestimonialsSection({ dark }: { dark: boolean }) {
 export default function PricingGrid() {
   const [currency, setCurrency] = useState<Currency>('PKR')
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [darkMode, setDarkMode] = useState(false)
 
   const freePlan = PLANS[0]
   const starterPlan = PLANS[1]
@@ -605,11 +519,12 @@ export default function PricingGrid() {
   const enterprisePlan = PLANS[4]
 
   return (
-    <div className="marketing" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <Nav currency={currency} setCurrency={setCurrency} />
+    <div className={`marketing${darkMode ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
+      <Nav currency={currency} setCurrency={setCurrency} dark={darkMode} onToggleDark={() => setDarkMode((d) => !d)} />
 
       {/* Pricing Header */}
-      <section style={{ paddingTop: 64, paddingBottom: 40, position: 'relative', overflow: 'hidden' }} className="mkt-grid-bg">
+      <section style={{ paddingTop: 64, paddingBottom: 40, position: 'relative', overflow: 'hidden' }}>
+        <div className="mkt-grid-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 11, padding: '4px 12px', borderRadius: 999, border: '1px solid rgba(14,165,233,.3)', background: 'var(--of-primary-soft)', color: 'var(--of-primary-deep)', fontWeight: 500 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)' }} />
@@ -644,19 +559,41 @@ export default function PricingGrid() {
         </div>
       </section>
 
-      {/* Bento Plan Grid */}
+      {/* Traditional Plan Grid */}
       <section style={{ paddingBlock: 24 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <Reveal>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gridAutoRows: 'min-content', gap: 14 }}>
-              <CardCompact plan={freePlan} currency={currency} />
-              <CardStandard plan={starterPlan} currency={currency} />
-              <CardFeatured plan={proPlan} currency={currency} />
-              <CardHorizontal plan={agencyPlan} currency={currency} />
-              <CardMinimal plan={enterprisePlan} currency={currency} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+              {[freePlan, starterPlan, proPlan, agencyPlan].map((plan) => {
+                const isFeat = 'featured' in plan && !!(plan as { featured?: boolean }).featured
+                return isFeat
+                  ? <PlanCardFeaturedSlim key={plan.key} plan={plan} currency={currency} />
+                  : <PlanCardTraditional key={plan.key} plan={plan} currency={currency} />
+              })}
             </div>
           </Reveal>
-          <Reveal style={{ display: 'flex', justifyContent: 'center', marginTop: 22 }}>
+          {/* Enterprise banner */}
+          <Reveal style={{ marginTop: 14 }}>
+            <div style={{
+              background: 'var(--surface)', border: '1px solid var(--hairline)',
+              borderLeft: '3px solid var(--of-primary)',
+              borderRadius: 14, padding: '22px 26px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap',
+            }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Shield size={16} style={{ color: 'var(--of-primary)' }} /> {enterprisePlan.name}
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--ink-subtle)', marginTop: 4, maxWidth: 540 }}>
+                  {enterprisePlan.tagline} — BYOK, audit logs, SLA, optional on-prem. Talk to us about data residency, model preferences, and integration needs.
+                </div>
+              </div>
+              <Link href={enterprisePlan.href} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '11px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'white', background: 'var(--of-primary)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Talk to sales <ArrowUpRight size={14} />
+              </Link>
+            </div>
+          </Reveal>
+          <Reveal style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-muted)', display: 'flex', alignItems: 'center', gap: 10 }}>
               <span>Annual: pay 10 months, get 12</span>
               <span style={{ color: 'var(--hairline-strong)' }}>·</span>
