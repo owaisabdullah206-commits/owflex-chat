@@ -16,7 +16,7 @@ export default async function BillingPage() {
 
   const [org] = await db
     .select({
-      id: schema.organizations.id,
+      id:   schema.organizations.id,
       plan: schema.organizations.plan,
     })
     .from(schema.organizations)
@@ -49,7 +49,7 @@ export default async function BillingPage() {
   })
 
   const [balance, transactions, graceTtl, graceUsed] = await Promise.all([
-    getBalance(org.id),
+    getBalance(org.id, org.plan),
     db
       .select({
         id: schema.creditTransactions.id,

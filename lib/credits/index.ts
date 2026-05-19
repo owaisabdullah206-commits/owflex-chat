@@ -24,10 +24,12 @@ function creditKey(orgId: string): string {
   return `credits:${orgId}`
 }
 
-export async function getBalance(orgId: string): Promise<number> {
+export async function getBalance(orgId: string, plan?: string): Promise<number> {
   const redis = getRedis()
   const val = await redis.get<number>(creditKey(orgId))
-  return val !== null ? Number(val) : FREE_TIER_CREDITS
+  if (val !== null) return Number(val)
+  // Redis key missing — return the plan's full allocation so the UI is accurate
+  return plan ? (PLAN_CREDIT_ALLOCATIONS[plan] ?? FREE_TIER_CREDITS) : FREE_TIER_CREDITS
 }
 
 export async function debit(

@@ -53,7 +53,7 @@ export default async function UsagePage() {
   ).size
 
   const [balance, storageMb, docRow] = await Promise.all([
-    getBalance(org.id),
+    getBalance(org.id, org.plan),
     getStorageUsedMb(org.id),
     botIds.length > 0
       ? db

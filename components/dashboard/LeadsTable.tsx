@@ -75,7 +75,7 @@ export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
               <td className={tdClass}>
                 {lead.conversationId && (
                   <a
-                    href={`/portal/conversations/${lead.conversationId}`}
+                    href={`/dashboard/conversations/${lead.conversationId}`}
                     className="text-[var(--of-primary)] hover:underline"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
