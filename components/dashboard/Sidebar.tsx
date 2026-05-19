@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity } from 'lucide-react'
+import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity, GitBranch } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
 
@@ -17,6 +17,7 @@ const navItems = [
 const adminItems = [
   { href: '/dashboard/admin/developers', label: 'Developers', icon: Users },
   { href: '/dashboard/admin/analytics',  label: 'Analytics',  icon: BarChart2 },
+  { href: '/dashboard/admin/routing',    label: 'Routing',    icon: GitBranch },
   { href: '/dashboard/admin/models',     label: 'Models',     icon: Cpu },
   { href: '/dashboard/admin/platform',   label: 'Platform',   icon: Shield },
 ]

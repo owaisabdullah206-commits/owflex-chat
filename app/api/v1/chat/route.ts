@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { and, desc, eq, sql } from 'drizzle-orm'
+import { Redis } from '@upstash/redis'
 import { db, schema } from '@/lib/db'
 import { chatCompletion, FALLBACK_MODEL, type ChatMessage } from '@/lib/ai/litellm'
 import { handleCreditExhaustion } from '@/lib/credits/grace'
@@ -347,6 +348,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ reply: content, conversationId: conversation.id })
   } catch (err) {
     console.error('[chat] error:', err)
+    // Store error in Redis for admin visibility (non-blocking, capped at 200)
+    try {
+      const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL!,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+      })
+      const entry = JSON.stringify({
+        t: new Date().toISOString(),
+        embedKey: parsed.success ? parsed.data.embedKey.slice(0, 16) + '…' : 'parse_err',
+        err: err instanceof Error ? err.message : String(err),
+      })
+      await redis.lpush('chat:errors', entry)
+      await redis.ltrim('chat:errors', 0, 199)
+    } catch { /* Redis down — don't mask the original error */ }
     return NextResponse.json(
       { error: 'Internal server error', code: 'INTERNAL_ERROR', status: 500 },
       { status: 500 },
