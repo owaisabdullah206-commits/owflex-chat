@@ -9,18 +9,18 @@ export async function sendWelcomeEmail({
   name: string
   email: string
 }): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.owflex.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
   const dashboardUrl = `${appUrl}/dashboard`
 
   try {
     await resend.emails.send({
-      from: 'OwFlex <noreply@owflex.com>',
+      from: 'octively <noreply@octively.com>',
       to: email,
-      subject: 'Welcome to OwFlex — your first bot is one step away',
+      subject: 'Welcome to octively — your first bot is one step away',
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#111;">
           <h2 style="font-size:22px;margin-bottom:6px;">Welcome, ${name}!</h2>
-          <p style="margin:0 0 20px;color:#444;">Your OwFlex account is ready. Here's what you get on the free plan:</p>
+          <p style="margin:0 0 20px;color:#444;">Your octively account is ready. Here's what you get on the free plan:</p>
 
           <div style="background:#F5F1EC;border-radius:10px;padding:16px 20px;margin-bottom:24px;">
             <table style="width:100%;border-collapse:collapse;">
@@ -54,7 +54,7 @@ export async function sendWelcomeEmail({
           </a>
 
           <p style="margin:0;font-size:12px;color:#888;">
-            You're receiving this because you created an OwFlex account with ${email}.
+            You're receiving this because you created an octively account with ${email}.
           </p>
         </div>
       `,

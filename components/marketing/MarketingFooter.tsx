@@ -109,7 +109,7 @@ export default function MarketingFooter() {
                   color: 'var(--ink)',
                 }}
               >
-                owflex
+                octively
               </span>
             </div>
             <p
@@ -211,7 +211,7 @@ export default function MarketingFooter() {
           }}
         >
           <div style={{ fontFamily: 'var(--font-mono)' }}>
-            © {new Date().getFullYear()} OwFlex — v0.7.0
+            © {new Date().getFullYear()} octively — v0.7.0
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span

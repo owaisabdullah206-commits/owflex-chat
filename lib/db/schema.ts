@@ -25,7 +25,7 @@ export const users = pgTable('users', {
   email:         varchar('email', { length: 255 }).notNull().unique(),
   emailVerified: boolean('email_verified').notNull().default(false),
   image:         text('image'),
-  // OwFlex extension: 'developer' | 'client'
+  // octively extension: 'developer' | 'client'
   role:          varchar('role', { length: 20 }).notNull().default('developer'),
   createdAt:     timestamp('created_at').notNull(),
   updatedAt:     timestamp('updated_at').notNull(),

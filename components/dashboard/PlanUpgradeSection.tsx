@@ -297,7 +297,7 @@ export function PlanUpgradeSection({ currentPlan }: Props) {
                 ))}
               </ul>
               <a
-                href="mailto:hello@owflex.com?subject=Enterprise plan inquiry"
+                href="mailto:hello@octively.com?subject=Enterprise plan inquiry"
                 className="text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
                 style={{ fontFamily: 'var(--font-mono)' }}
               >

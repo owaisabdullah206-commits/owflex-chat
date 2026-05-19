@@ -47,7 +47,7 @@ export async function chatCompletion({
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      'HTTP-Referer': 'https://owflex.com',
+      'HTTP-Referer': 'https://octively.com',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({

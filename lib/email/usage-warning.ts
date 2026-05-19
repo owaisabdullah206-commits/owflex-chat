@@ -17,13 +17,13 @@ export async function sendUsageWarningEmail({
   remaining: number
   planName: string
 }): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.owflex.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
   const billingUrl = `${appUrl}/dashboard/billing`
   const metricLabel = metric === 'credits' ? 'credits' : metric
 
   try {
     await resend.emails.send({
-      from: 'OwFlex <noreply@owflex.com>',
+      from: 'octively <noreply@octively.com>',
       to,
       subject: `You've used ${pctUsed}% of your ${planName} ${metricLabel} limit`,
       html: `

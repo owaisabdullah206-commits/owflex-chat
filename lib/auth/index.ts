@@ -78,11 +78,11 @@ export const auth = betterAuth({
   },
 
   trustedOrigins: [
-    'https://owflex-chat.vercel.app',
+    'https://octively-chat.vercel.app',
     // Wildcard covers every preview deployment regardless of hash
-    'https://owflex-chat-*-owaisabdullah206-1391s-projects.vercel.app',
-    'https://admin.owflex.com',
-    'https://app.owflex.com',
+    'https://octively-chat-*-owaisabdullah206-1391s-projects.vercel.app',
+    'https://admin.octively.com',
+    'https://app.octively.com',
     'http://localhost:3000',
   ],
 })

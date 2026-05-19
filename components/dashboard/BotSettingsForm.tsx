@@ -108,7 +108,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           borderRadius,
           tooltipEnabled,
           tooltipMessages: tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean),
-          brandingEnabled,
+          brandingEnabled: (orgPlan === 'agency' || orgPlan === 'enterprise') ? brandingEnabled : true,
           brandingText: brandingText.trim() || undefined,
           brandingUrl:  brandingUrl.trim()  || undefined,
         },
@@ -124,7 +124,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* ── Left: form ── */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {isDirty && (
@@ -315,62 +315,6 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           </div>
         )}
 
-        {/* Widget Attribution */}
-        <div className="border-t border-[var(--hairline)] pt-4 space-y-3">
-          <p className="text-sm font-medium text-[var(--ink)]">Widget Attribution</p>
-          {orgPlan === 'free' && (
-            <p className="text-xs text-[var(--ink-muted)] bg-[var(--surface)] border border-[var(--hairline)] px-3 py-2">
-              Your widget displays &ldquo;Powered by OwFlex&rdquo; on the free plan.
-            </p>
-          )}
-          {(orgPlan === 'starter' || orgPlan === 'pro') && (
-            <div className="flex items-center justify-between py-1">
-              <div>
-                <p className="text-sm text-[var(--ink)]">Show &ldquo;Powered by OwFlex&rdquo;</p>
-                <p className="text-xs text-[var(--ink-muted)]">Attribution footer inside the widget</p>
-              </div>
-              <Switch checked={brandingEnabled}
-                onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
-                disabled={isPending} />
-            </div>
-          )}
-          {(orgPlan === 'agency' || orgPlan === 'enterprise') && (
-            <>
-              <div className="flex items-center justify-between py-1">
-                <div>
-                  <p className="text-sm text-[var(--ink)]">Show attribution footer</p>
-                  <p className="text-xs text-[var(--ink-muted)]">Custom branding in widget footer</p>
-                </div>
-                <Switch checked={brandingEnabled}
-                  onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
-                  disabled={isPending} />
-              </div>
-              {brandingEnabled && (
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-[var(--ink-muted)]">Attribution Text</Label>
-                    <Input value={brandingText}
-                      onChange={(e) => { setBrandingText(e.target.value); markDirty() }}
-                      maxLength={60}
-                      placeholder="Powered by My Agency"
-                      className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
-                      disabled={isPending} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs text-[var(--ink-muted)]">Attribution URL</Label>
-                    <Input value={brandingUrl}
-                      onChange={(e) => { setBrandingUrl(e.target.value); markDirty() }}
-                      type="url"
-                      placeholder="https://myagency.com"
-                      className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
-                      disabled={isPending} />
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
         {/* Submit */}
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit" disabled={isPending}
@@ -380,6 +324,45 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           {saved  && <span className="text-xs text-[var(--success-text)]">Saved — widget updates within 5 minutes</span>}
           {error  && <span className="text-xs text-[var(--error-text)]">{error}</span>}
         </div>
+
+        {/* Attribution — agency/enterprise white-label only, intentionally low-visibility */}
+        {(orgPlan === 'agency' || orgPlan === 'enterprise') && (
+          <div className="pt-6 mt-2 border-t border-[var(--hairline)]">
+            <div className="flex items-center justify-between">
+              <span
+                className="text-[10px] text-[var(--ink-subtle)]"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                attribution_footer
+              </span>
+              <Switch
+                checked={brandingEnabled}
+                onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
+                disabled={isPending}
+              />
+            </div>
+            {brandingEnabled && (
+              <div className="mt-3 space-y-2">
+                <Input
+                  value={brandingText}
+                  onChange={(e) => { setBrandingText(e.target.value); markDirty() }}
+                  maxLength={60}
+                  placeholder="Powered by My Agency"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+                <Input
+                  value={brandingUrl}
+                  onChange={(e) => { setBrandingUrl(e.target.value); markDirty() }}
+                  type="url"
+                  placeholder="https://myagency.com"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </form>
 
       {/* ── Right: live preview ── */}
@@ -394,7 +377,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           tooltipEnabled={tooltipEnabled}
           tooltipMessages={tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean)}
           brandingEnabled={brandingEnabled}
-          brandingText={brandingText.trim() || 'Powered by OwFlex'}
+          brandingText={brandingText.trim() || 'Powered by octively'}
           theme={previewTheme}
           onToggleTheme={() => setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark')}
         />
@@ -445,7 +428,7 @@ function LiveBotPreview({
   const innerBr     = `${Math.max(4, borderRadius - 4)}px`
 
   return (
-    <div className="sticky top-24">
+    <div className="sticky top-20">
       {/* Header bar */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">Live Preview</p>

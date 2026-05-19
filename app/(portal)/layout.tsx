@@ -2,7 +2,7 @@ import { MobileBottomNav } from '@/components/portal/MobileBottomNav'
 import { Toaster } from '@/components/ui/sonner'
 
 const themeScript = `(function(){
-  var stored = localStorage.getItem('owflex-theme-portal');
+  var stored = localStorage.getItem('octively-theme-portal');
   var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   var theme = stored || (systemDark ? 'dark' : 'light');
   document.documentElement.classList.add('portal', theme);

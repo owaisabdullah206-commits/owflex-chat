@@ -1,11 +1,11 @@
 (function(){try{
 var sc=document.currentScript,k=sc&&sc.dataset&&sc.dataset.key;if(!k)return;
 var bu=(sc.src||"").replace("/embed.js","");
-var sid=sessionStorage.getItem("_of")||("owflex_"+Date.now()+"_"+Math.random().toString(36).slice(2,8));
+var sid=sessionStorage.getItem("_of")||("octively_"+Date.now()+"_"+Math.random().toString(36).slice(2,8));
 sessionStorage.setItem("_of",sid);
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
 var ti="message-circle",br=16,te=false,tms=[];
-var be=false,bt="Powered by OwFlex",burl="https://owflex.com";
+var be=false,bt="Powered by Octively",burl="https://octively.com";
 var op=0,busy=0,started=0,lastMsg="";
 
 /* ── Icon SVG paths (exact Lucide v1.16.0) ── */
@@ -267,13 +267,13 @@ function captureLead(text){
         var el=document.createElement("div");el.className="ok";
         if(r.ok){el.textContent="✓ Details saved";}
         else{
-          r.json().then(function(j){console.error("[owflex:leads]",r.status,j);}).catch(function(){});
+          r.json().then(function(j){console.error("[octively:leads]",r.status,j);}).catch(function(){});
           el.textContent="⚠ Could not save your details ("+r.status+")";el.style.color="#ef4444";
         }
         ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
       })
       .catch(function(e){
-        console.error("[owflex:leads] fetch failed:",e);
+        console.error("[octively:leads] fetch failed:",e);
         var el=document.createElement("div");el.className="ok";el.style.color="#ef4444";
         el.textContent="⚠ Could not save your details (network error)";
         ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
@@ -322,7 +322,7 @@ sb.onclick=send;
 inp.onkeydown=function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};
 }
 
-window.addEventListener("owflex:lead",function(e){
+window.addEventListener("octively:lead",function(e){
   try{fetch(bu+"/api/v1/leads",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify(Object.assign({embedKey:k,sessionId:sid},e.detail||{}))});}catch(e){}
 });

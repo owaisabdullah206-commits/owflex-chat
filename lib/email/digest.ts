@@ -28,11 +28,11 @@ function generateDigestHtml(params: {
   return `
     <!DOCTYPE html>
     <html>
-    <head><meta charset="utf-8"><title>Your OwFlex Week</title></head>
+    <head><meta charset="utf-8"><title>Your octively Week</title></head>
     <body style="background:#0C0A09;color:#e5e5e5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:40px 20px;margin:0">
       <div style="max-width:560px;margin:0 auto">
         <div style="margin-bottom:32px">
-          <span style="color:#0EA5E9;font-size:18px;font-weight:700">OwFlex</span>
+          <span style="color:#0EA5E9;font-size:18px;font-weight:700">octively</span>
           <span style="color:#555;font-size:12px;margin-left:12px">${weekRange}</span>
         </div>
 
@@ -59,7 +59,7 @@ function generateDigestHtml(params: {
         </div>
 
         <p style="color:#444;font-size:11px;margin-top:32px">
-          You're receiving this because you have a bot on OwFlex. Sent every Monday at 8am PKT.
+          You're receiving this because you have a bot on octively. Sent every Monday at 8am PKT.
         </p>
       </div>
     </body>
@@ -71,15 +71,15 @@ export async function sendDigestEmail(
   developer: { name: string; email: string },
   stats: WeeklyStats,
 ): Promise<void> {
-  const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.owflex.com'
+  const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
   const now = new Date()
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   const weekRange = `${weekAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
 
   await resend.emails.send({
-    from: 'digest@owflex.com',
+    from: 'digest@octively.com',
     to: developer.email,
-    subject: `Your OwFlex Week: ${stats.conversationCount} conversations, ${stats.leadCount} leads`,
+    subject: `Your octively Week: ${stats.conversationCount} conversations, ${stats.leadCount} leads`,
     html: generateDigestHtml({
       developerName: developer.name,
       conversationCount: stats.conversationCount,

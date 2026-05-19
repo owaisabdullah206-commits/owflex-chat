@@ -30,7 +30,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   MARKETING: owflex.com — cream canvas, light only
+   MARKETING: octively.com — cream canvas, light only
    ───────────────────────────────────────────────────────────────────────────── */
 .marketing {
   --bg:           #FAFAF9;
@@ -48,7 +48,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DASHBOARD DARK (default): admin.owflex.com
+   DASHBOARD DARK (default): admin.octively.com
    ───────────────────────────────────────────────────────────────────────────── */
 .dashboard {
   --bg:               #0C0A09;
@@ -71,7 +71,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DASHBOARD LIGHT: admin.owflex.com — manual light toggle
+   DASHBOARD LIGHT: admin.octively.com — manual light toggle
    ───────────────────────────────────────────────────────────────────────────── */
 .dashboard.light {
   --bg:              #FAFAFA;
@@ -95,7 +95,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   PORTAL LIGHT (default): app.owflex.com
+   PORTAL LIGHT (default): app.octively.com
    ───────────────────────────────────────────────────────────────────────────── */
 .portal {
   --bg:              #FAFAFA;
@@ -120,7 +120,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   PORTAL DARK: app.owflex.com — manual dark toggle
+   PORTAL DARK: app.octively.com — manual dark toggle
    ───────────────────────────────────────────────────────────────────────────── */
 .portal.dark {
   --bg:              #0F0F0F;
@@ -260,7 +260,7 @@ select option {
    GRID BACKGROUND — subtle dot-grid used on hero and CTA sections
    ───────────────────────────────────────────────────────────────────────────── */
 /* ─────────────────────────────────────────────────────────────────────────────
-   MARKETING DARK: full-page dark toggle on owflex.com
+   MARKETING DARK: full-page dark toggle on octively.com
    ───────────────────────────────────────────────────────────────────────────── */
 .marketing.dark {
   --bg:              #0A0A0A;

@@ -9,12 +9,12 @@ export async function sendCreditGraceEmail({
   to: string
   botName: string
 }): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.owflex.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
   const billingUrl = `${appUrl}/dashboard/billing`
 
   try {
     await resend.emails.send({
-      from: 'OwFlex <noreply@owflex.com>',
+      from: 'octively <noreply@octively.com>',
       to,
       subject: `Your bot "${botName}" is running on the default model — 2 hours before service interruption`,
       html: `

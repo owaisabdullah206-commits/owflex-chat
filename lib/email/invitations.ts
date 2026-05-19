@@ -15,13 +15,13 @@ export async function sendClientInvitation({
 }: SendClientInvitationParams): Promise<{ sent: boolean }> {
   try {
     const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL ?? 'OwFlex <onboarding@resend.dev>',
+      from: process.env.RESEND_FROM_EMAIL ?? 'octively <onboarding@resend.dev>',
       to: clientEmail,
       subject: `You've been invited to view ${botName}`,
       html: `
         <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#1e293b">
           <div style="margin-bottom:24px">
-            <span style="font-size:20px;font-weight:700;color:#0EA5E9">OwFlex</span>
+            <span style="font-size:20px;font-weight:700;color:#0EA5E9">octively</span>
           </div>
           <h2 style="font-size:22px;font-weight:700;margin:0 0 12px">You're invited!</h2>
           <p style="font-size:15px;color:#475569;margin:0 0 24px;line-height:1.6">

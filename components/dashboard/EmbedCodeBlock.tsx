@@ -11,7 +11,7 @@ interface EmbedCodeBlockProps {
 export function EmbedCodeBlock({ embedKey }: EmbedCodeBlockProps) {
   const [copied, setCopied] = useState(false)
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.owflex.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
   const snippet = `<script src="${appUrl}/embed.js" data-key="${embedKey}"></script>`
 
   async function handleCopy() {

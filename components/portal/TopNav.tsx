@@ -84,7 +84,7 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
               <path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 9.6A3.6 3.6 0 1 1 8 4.4a3.6 3.6 0 0 1 0 7.2z" fill="white"/>
             </svg>
           </div>
-          <span className="text-sm font-semibold text-[var(--ink)] tracking-tight">OwFlex</span>
+          <span className="text-sm font-semibold text-[var(--ink)] tracking-tight">octively</span>
         </div>
 
         {/* Separator */}

@@ -55,19 +55,19 @@ export async function GET(req: NextRequest) {
   // Enforce branding based on plan — plan overrides developer config
   const plan = bot.orgPlan
   let brandingEnabled = false
-  let brandingText    = 'Powered by OwFlex'
-  let brandingUrl     = 'https://owflex.com'
+  let brandingText    = 'Powered by octively'
+  let brandingUrl     = 'https://octively.com'
 
   if (plan === 'free') {
     brandingEnabled = true  // forced on; developer cannot disable
   } else if (plan === 'starter' || plan === 'pro') {
     brandingEnabled = config.brandingEnabled !== false  // default on, can opt out
-    // text/URL always OwFlex — no custom branding at these tiers
+    // text/URL always octively — no custom branding at these tiers
   } else {
     // agency / enterprise — full control
     brandingEnabled = config.brandingEnabled === true  // default off
-    brandingText    = config.brandingText?.trim() || 'Powered by OwFlex'
-    brandingUrl     = config.brandingUrl?.trim()  || 'https://owflex.com'
+    brandingText    = config.brandingText?.trim() || 'Powered by octively'
+    brandingUrl     = config.brandingUrl?.trim()  || 'https://octively.com'
   }
 
   return NextResponse.json(

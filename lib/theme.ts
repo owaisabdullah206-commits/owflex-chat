@@ -7,7 +7,7 @@ export const DEFAULTS: Record<Surface, Theme> = {
 }
 
 function storageKey(surface: Surface) {
-  return `owflex-theme-${surface}`
+  return `octively-theme-${surface}`
 }
 
 export function getInitialTheme(surface: Surface): Theme {

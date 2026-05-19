@@ -113,7 +113,7 @@ function Nav({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }
               display: 'inline-block',
             }}
           />
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>owflex</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>octively</span>
           <span
             style={{
               fontFamily: 'var(--font-mono)',
@@ -235,7 +235,7 @@ function DashboardSidebar({ small = false }: { small?: boolean }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: small ? '4px 4px 12px' : '4px 6px 22px' }}>
         <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--of-primary)' }} />
         <span style={{ fontSize: small ? 10 : 13, fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
-          owflex
+          octively
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -529,7 +529,7 @@ function FloatingEmbedChip() {
       </span>
       <span>
         <span style={{ color: '#94a3b8' }}>&lt;script src=&quot;</span>
-        owflex.com/embed.js
+        octively.com/embed.js
         <span style={{ color: '#94a3b8' }}>&quot; /&gt;</span>
       </span>
     </div>
@@ -578,7 +578,7 @@ function PortalMockup() {
             border: '1px solid var(--hairline)',
           }}
         >
-          <Globe size={11} /> admin.owflex.com/bots/ai-agent
+          <Globe size={11} /> admin.octively.com/bots/ai-agent
         </div>
         <div style={{ width: 60 }} />
       </div>
@@ -748,13 +748,13 @@ function HowItWorks() {
       Icon: Code2,
       n: '01',
       h: 'Drop in the embed script',
-      p: 'One <script> tag on any client website — WordPress, Shopify, Wix, or plain HTML. Your OwFlex bot goes live instantly.',
+      p: 'One <script> tag on any client website — WordPress, Shopify, Wix, or plain HTML. Your octively bot goes live instantly.',
     },
     {
       Icon: UserPlus,
       n: '02',
       h: 'Invite your client to their portal',
-      p: 'They get a magic link to app.owflex.com. White-labelled on Agency plan — they see your branding, not ours.',
+      p: 'They get a magic link to app.octively.com. White-labelled on Agency plan — they see your branding, not ours.',
     },
     {
       Icon: BarChart3,
@@ -1214,7 +1214,7 @@ function FeatureBento() {
             <BentoTile span={3} Icon={Zap} title="Lead capture & export" sub="Auto-detect leads in conversations. Export to CSV or push to Zapier (Phase 4).">
               <BentoLeadCount />
             </BentoTile>
-            <BentoTile span={3} Icon={Palette} title="White-label branding" sub="Strip every trace of OwFlex on Agency plan. Custom subdomains. Your widget, your logo, your portal.">
+            <BentoTile span={3} Icon={Palette} title="White-label branding" sub="Strip every trace of octively on Agency plan. Custom subdomains. Your widget, your logo, your portal.">
               <BentoWhiteLabel />
             </BentoTile>
             <BentoTile span={2} Icon={Cpu} title="Multi-provider AI" sub="Top-tier models from every major provider. Switch per bot, route by complexity, never get locked in.">
@@ -1422,13 +1422,13 @@ function PricingTeaser() {
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. OwFlex paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
-  { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to OwFlex Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
+  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
   { q: 'The credit system is the killer feature. I let small clients use the included models, and upsell premium clients onto flagship tiers without lifting a finger.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
   { q: 'I onboarded a tea-export client in 12 minutes. They were sending Urdu queries to the bot and getting Urdu replies. Their finance team now exports leads to CSV themselves.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
 ]
 const QUOTES_ROW_2 = [
-  { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single OwFlex pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
+  { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
   { q: 'Switched four clients off Botpress in a weekend. Embed key swap, that\'s the whole migration. Conversation history came along via the import endpoint.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
   { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS — now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
   { q: 'I bill in PKR via PayFast, my UK client pays USD via Lemon Squeezy, both land in the same dashboard. No more two-spreadsheet accounting.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
@@ -1561,7 +1561,7 @@ function Testimonials({ dark = true }: { dark?: boolean }) {
             maxWidth: 560,
           }}
         >
-          Real reviews from the developer and agency communities OwFlex was built for.
+          Real reviews from the developer and agency communities octively was built for.
         </p>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1627,7 +1627,7 @@ function CTABanner() {
               Start in 60 seconds. Bill your first retainer this week.
             </h2>
             <p style={{ position: 'relative', textAlign: 'center', maxWidth: 540, fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.6 }}>
-              Create your first OwFlex bot, add it to your client&apos;s site, invite them to their portal. That&apos;s the whole onboarding.
+              Create your first octively bot, add it to your client&apos;s site, invite them to their portal. That&apos;s the whole onboarding.
             </p>
             <div
               style={{
@@ -1735,7 +1735,7 @@ function HeroLeadCopy() {
         <span style={{ color: 'var(--of-primary)' }}>chatbot portal.</span>
       </h1>
       <p style={{ fontSize: 17, color: 'var(--ink-muted)', lineHeight: 1.65, margin: 0, maxWidth: '52ch' }}>
-        OwFlex powers your AI chatbots <em>and</em> gives every client a white-label portal — conversations, leads, and analytics all in one place. One embed script. No rebuilding.
+        octively powers your AI chatbots <em>and</em> gives every client a white-label portal — conversations, leads, and analytics all in one place. One embed script. No rebuilding.
       </p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <Link

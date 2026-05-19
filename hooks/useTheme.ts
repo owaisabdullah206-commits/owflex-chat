@@ -12,7 +12,7 @@ export function useTheme(surface: Surface) {
 
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const handler = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('owflex-theme')) {
+      if (!localStorage.getItem('octively-theme')) {
         const t: Theme = e.matches ? 'dark' : 'light'
         setTheme(t)
         applyTheme(surface, t)

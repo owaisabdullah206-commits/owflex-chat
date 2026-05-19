@@ -5,15 +5,16 @@ import type { NextRequest } from 'next/server'
 const betterAuthHandler = toNextJsHandler(auth)
 
 const ALLOWED_ORIGINS = new Set([
-  'https://owflex-chat.vercel.app',
-  'https://admin.owflex.com',
-  'https://app.owflex.com',
+  'https://octively-chat.vercel.app',
+  'https://octively.vercel.app',
+  'https://admin.octively.com',
+  'https://app.octively.com',
   'http://localhost:3000',
 ])
 
 // Matches all preview deployments for this project regardless of deployment hash
 const PREVIEW_RE =
-  /^https:\/\/owflex-chat-[a-z0-9]+-owaisabdullah206-1391s-projects\.vercel\.app$/
+  /^https:\/\/octively-chat-[a-z0-9]+-owaisabdullah206-1391s-projects\.vercel\.app$/
 
 function getCorsOrigin(req: NextRequest): string | null {
   const origin = req.headers.get('origin')
