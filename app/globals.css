@@ -33,15 +33,17 @@
    MARKETING: owflex.com — cream canvas, light only
    ───────────────────────────────────────────────────────────────────────────── */
 .marketing {
-  --bg:           #F5F1EC;
+  --bg:           #FAFAF9;
   --surface:      #FFFFFF;
-  --surface-2:    #EBE7E1;
-  --ink:          #111111;
-  --ink-muted:    #626260;
-  --ink-subtle:   #7B7B78;
-  --ink-tertiary: #9C9FA5;
-  --hairline:     #D3CEC6;
-  --hairline-soft:#EBE7E1;
+  --surface-2:    #F5F5F4;
+  --surface-3:    #EFEEEB;
+  --ink:          #0C0A09;
+  --ink-muted:    #57534E;
+  --ink-subtle:   #78716C;
+  --ink-tertiary: #A8A29E;
+  --hairline:     rgba(12, 10, 9, 0.08);
+  --hairline-soft:rgba(12, 10, 9, 0.05);
+  --hairline-strong: rgba(12, 10, 9, 0.14);
   --primary-text: var(--of-primary-text-light);
 }
 
@@ -204,4 +206,93 @@ select {
 select option {
   background-color: var(--surface-2, #211E1A);
   color: var(--ink, #F5F0EB);
+}
+
+/* hairline-strong is now defined in the main .marketing block above */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK SECTION TOKENS — fixed dark values used inside dark strips/sections
+   on marketing pages regardless of any theme toggle
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --dark-bg:              #0A0A0A;
+  --dark-surface:         #131313;
+  --dark-surface-2:       #1A1A1A;
+  --dark-hairline:        rgba(255, 255, 255, 0.08);
+  --dark-hairline-strong: rgba(255, 255, 255, 0.14);
+  --dark-ink:             #FAFAF9;
+  --dark-ink-subtle:      #A8A29E;
+  --dark-ink-muted:       #78716C;
+
+  /* Border radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  /* Marketing shadow scale */
+  --shadow-sm: 0 1px 2px rgba(12,10,9,.04), 0 1px 1px rgba(12,10,9,.03);
+  --shadow-md: 0 4px 16px rgba(12,10,9,.06), 0 1px 2px rgba(12,10,9,.04);
+  --shadow-lg: 0 24px 60px -20px rgba(12,10,9,.18), 0 8px 24px -8px rgba(12,10,9,.08);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REVEAL ANIMATION — IntersectionObserver entry animation
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes ofReveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MARQUEE — two-row sliding testimonials (opposite directions)
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes marqueeL {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes marqueeR {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GRID BACKGROUND — subtle dot-grid used on hero and CTA sections
+   ───────────────────────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────────
+   MARKETING DARK: full-page dark toggle on owflex.com
+   ───────────────────────────────────────────────────────────────────────────── */
+.marketing.dark {
+  --bg:              #0A0A0A;
+  --surface:         #131313;
+  --surface-2:       #1A1A1A;
+  --ink:             #F5F5F5;
+  --ink-muted:       #A8A29E;
+  --ink-subtle:      #6B6560;
+  --ink-tertiary:    #52525B;
+  --hairline:        rgba(255, 255, 255, 0.08);
+  --hairline-soft:   rgba(255, 255, 255, 0.05);
+  --hairline-strong: rgba(255, 255, 255, 0.14);
+  --primary-text:    var(--of-primary-text-dark);
+}
+
+/* Footer link hover (server component can't use JS hover) */
+.mkt-footer-link:hover {
+  color: var(--ink);
+}
+
+.mkt-grid-bg {
+  background-image:
+    linear-gradient(rgba(12,10,9,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(12,10,9,.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 30%, transparent 100%);
+}
+
+.marketing.dark .mkt-grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
 }

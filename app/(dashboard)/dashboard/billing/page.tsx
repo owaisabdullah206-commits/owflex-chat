@@ -1,12 +1,13 @@
-import { count, desc, eq, inArray } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
+import { Redis } from '@upstash/redis'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
-import { getBalance, FREE_TIER_CREDITS } from '@/lib/credits'
-import { getStorageUsedMb, PLAN_LIMITS } from '@/lib/limits'
+import { getBalance } from '@/lib/credits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { CreditBalance } from '@/components/dashboard/CreditBalance'
-import { PlanUsage } from '@/components/dashboard/PlanUsage'
+import { CreditStatusBanner } from '@/components/dashboard/CreditStatusBanner'
+import { PlanUpgradeSection } from '@/components/dashboard/PlanUpgradeSection'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 
@@ -17,8 +18,6 @@ export default async function BillingPage() {
     .select({
       id: schema.organizations.id,
       plan: schema.organizations.plan,
-      conversationsThisMonth: schema.organizations.conversationsThisMonth,
-      leadsThisMonth: schema.organizations.leadsThisMonth,
     })
     .from(schema.organizations)
     .where(eq(schema.organizations.ownerId, user.id))
@@ -43,18 +42,13 @@ export default async function BillingPage() {
     )
   }
 
-  // Fetch bots first — needed for client count and doc count
-  const orgBots = await db
-    .select({ id: schema.bots.id, clientUserId: schema.bots.clientUserId })
-    .from(schema.bots)
-    .where(eq(schema.bots.orgId, org.id))
+  const yyyyMM = new Date().toISOString().slice(0, 7)
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  })
 
-  const botIds = orgBots.map((b) => b.id)
-  const clientCount = new Set(
-    orgBots.filter((b) => b.clientUserId).map((b) => b.clientUserId),
-  ).size
-
-  const [balance, transactions, storageMb, docRow] = await Promise.all([
+  const [balance, transactions, graceTtl, graceUsed] = await Promise.all([
     getBalance(org.id),
     db
       .select({
@@ -67,17 +61,13 @@ export default async function BillingPage() {
       .where(eq(schema.creditTransactions.orgId, org.id))
       .orderBy(desc(schema.creditTransactions.createdAt))
       .limit(20),
-    getStorageUsedMb(org.id),
-    botIds.length > 0
-      ? db
-          .select({ c: count() })
-          .from(schema.documents)
-          .where(inArray(schema.documents.botId, botIds))
-      : Promise.resolve([{ c: 0 }]),
+    redis.ttl(`credit_grace:${org.id}:${yyyyMM}`),
+    redis.get(`credit_grace_used:${org.id}:${yyyyMM}`),
   ])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const docCount = docRow[0]?.c ?? 0
+  const graceActive = (graceTtl ?? 0) > 0
+  const graceDisabled = graceUsed !== null && !graceActive
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -96,24 +86,30 @@ export default async function BillingPage() {
             </div>
             <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Billing</h1>
             <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
-              credits.balance · usage · top-ups
+              plans · top-ups · transactions
             </p>
           </div>
           <div className="mt-1"><RefreshButton /></div>
         </div>
         <div className="px-4 sm:px-8 py-6 space-y-8">
-          <PlanUsage
-            plan={org.plan}
-            balance={balance}
-            freeTierCredits={FREE_TIER_CREDITS}
-            botCount={orgBots.length}
-            clientCount={clientCount}
-            docCount={docCount}
-            conversationsThisMonth={org.conversationsThisMonth}
-            leadsThisMonth={org.leadsThisMonth}
-            storageMb={storageMb}
-          />
-          <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} />
+          <CreditStatusBanner graceActive={graceActive} graceDisabled={graceDisabled} plan={org.plan} />
+          <PlanUpgradeSection currentPlan={org.plan} />
+          <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} plan={org.plan} />
+          {org.plan === 'starter' && (
+            <div className="border border-[var(--hairline)] bg-[var(--surface)] px-4 py-3 flex items-center gap-3">
+              <span className="text-[11px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                weekly_digest= available on{' '}
+                <span className="text-[var(--ink)]">pro+</span>
+                {' · '}
+                <a
+                  href="/api/billing/payfast-plan-url?plan=pro"
+                  className="text-[var(--accent)] hover:underline"
+                >
+                  upgrade →
+                </a>
+              </span>
+            </div>
+          )}
         </div>
       </main>
       <MobileNav />

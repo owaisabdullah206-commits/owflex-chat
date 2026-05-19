@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'crypto'
-import { CREDIT_PACKS, type PackId } from './payfast'
+import { CREDIT_PACKS, type PackId, type PlanId } from './payfast'
+export type { PlanId }
 
 // Lemon Squeezy variant ID → pack mapping (set these in LS dashboard)
 const VARIANT_TO_PACK: Record<string, PackId> = {
@@ -56,4 +57,52 @@ export function extractOrderInfo(payload: LsOrderPayload): {
 export function generateCheckoutUrl(orgId: string, variantId: string): string {
   const storeId = process.env.LEMON_SQUEEZY_STORE_ID ?? ''
   return `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+}
+
+// Plan subscription helpers
+
+const PLAN_VARIANT_MAP: Record<string, PlanId> = {
+  [process.env.LS_VARIANT_PLAN_STARTER ?? '']: 'starter',
+  [process.env.LS_VARIANT_PLAN_PRO     ?? '']: 'pro',
+  [process.env.LS_VARIANT_PLAN_AGENCY  ?? '']: 'agency',
+}
+
+export function getPlanVariantId(planId: PlanId): string | null {
+  const envKey = `LS_VARIANT_PLAN_${planId.toUpperCase()}` as keyof NodeJS.ProcessEnv
+  const variantId = process.env[envKey] ?? ''
+  return variantId || null
+}
+
+export interface LsSubscriptionPayload {
+  data: {
+    id: string
+    attributes: {
+      status: 'active' | 'past_due' | 'unpaid' | 'cancelled' | 'expired'
+      variant_id: number
+      custom_data?: {
+        org_id?: string
+      }
+    }
+  }
+}
+
+export function generatePlanCheckoutUrl(orgId: string, planId: PlanId): string {
+  const variantId = getPlanVariantId(planId)
+  if (!variantId) throw new Error(`LS_VARIANT_PLAN_${planId.toUpperCase()} env var not set`)
+  const storeId = process.env.LEMON_SQUEEZY_STORE_ID ?? ''
+  return `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+}
+
+export function extractSubscriptionInfo(payload: LsSubscriptionPayload): {
+  subscriptionId: string
+  status: string
+  orgId: string
+  planId: PlanId | null
+} {
+  const subscriptionId = payload.data.id
+  const status = payload.data.attributes.status
+  const orgId = payload.data.attributes.custom_data?.org_id ?? ''
+  const variantId = String(payload.data.attributes.variant_id)
+  const planId = PLAN_VARIANT_MAP[variantId] ?? null
+  return { subscriptionId, status, orgId, planId }
 }

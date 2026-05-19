@@ -11,6 +11,7 @@ interface CreditBalanceProps {
   balance: number
   transactions: Transaction[]
   appUrl: string
+  plan: string
 }
 
 function PackCard({ packId, appUrl }: { packId: PackId; appUrl: string }) {
@@ -66,10 +67,13 @@ function PackCard({ packId, appUrl }: { packId: PackId; appUrl: string }) {
 const thClass = 'px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] bg-[var(--surface-2)] border-b border-[var(--hairline)]'
 const tdClass = 'px-4 py-3 border-b border-[var(--hairline)] text-[12px]'
 
-export function CreditBalance({ balance, transactions, appUrl }: CreditBalanceProps) {
+export function CreditBalance({ balance, transactions, appUrl, plan }: CreditBalanceProps) {
+  const canTopUp = plan !== 'free'
+
   return (
     <div className="space-y-6">
-      {/* Buy Credits */}
+      {/* Buy Credits — hidden for free plan */}
+      {canTopUp && (
       <div>
         <div className="flex items-baseline justify-between mb-3">
           <p
@@ -91,6 +95,7 @@ export function CreditBalance({ balance, transactions, appUrl }: CreditBalancePr
           payfast=PKR · lemon_squeezy=USD · credits.ttl=never
         </p>
       </div>
+      )}
 
       {/* Recent transactions */}
       {transactions.length > 0 && (

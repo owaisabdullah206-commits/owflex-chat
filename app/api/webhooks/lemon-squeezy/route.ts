@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
-import { verifyWebhook, extractOrderInfo, type LsOrderPayload } from '@/lib/billing/lemon-squeezy'
+import {
+  verifyWebhook,
+  extractOrderInfo,
+  extractSubscriptionInfo,
+  type LsOrderPayload,
+  type LsSubscriptionPayload,
+} from '@/lib/billing/lemon-squeezy'
 import * as creditLib from '@/lib/credits'
+
+const SUBSCRIPTION_EVENTS = new Set(['subscription_created', 'subscription_payment_success'])
 
 export async function POST(req: NextRequest) {
   // Must read raw body BEFORE parsing JSON for HMAC verification
@@ -15,6 +23,40 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
+  // Plan subscription events
+  if (SUBSCRIPTION_EVENTS.has(eventName)) {
+    let payload: LsSubscriptionPayload
+    try {
+      payload = JSON.parse(rawBody.toString()) as LsSubscriptionPayload
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+    }
+
+    const { subscriptionId, status, orgId, planId } = extractSubscriptionInfo(payload)
+
+    if (status !== 'active' || !orgId || !planId) {
+      return NextResponse.json({ received: true })
+    }
+
+    // Idempotency check
+    const [existing] = await db
+      .select({ id: schema.creditTransactions.id })
+      .from(schema.creditTransactions)
+      .where(eq(schema.creditTransactions.refId, subscriptionId))
+      .limit(1)
+
+    if (!existing) {
+      await db
+        .update(schema.organizations)
+        .set({ plan: planId })
+        .where(eq(schema.organizations.id, orgId))
+      await creditLib.logTransaction(orgId, 0, 'plan_upgrade', subscriptionId)
+    }
+
+    return NextResponse.json({ received: true })
+  }
+
+  // Credit pack order_created event (existing logic)
   if (eventName !== 'order_created') {
     return NextResponse.json({ received: true })
   }

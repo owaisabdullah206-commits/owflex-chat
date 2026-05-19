@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
-import { chatCompletion, type ChatMessage } from '@/lib/ai/litellm'
+import { chatCompletion, FALLBACK_MODEL, type ChatMessage } from '@/lib/ai/litellm'
+import { handleCreditExhaustion } from '@/lib/credits/grace'
 import { getChatRatelimit } from '@/lib/ratelimit'
 import { getPlatformPrompt } from '@/lib/db/queries/platform'
 import { getActiveFaqs } from '@/lib/db/queries/faqs'
 import { flagIfUnanswered } from '@/lib/ai/uncertainty'
 import * as creditLib from '@/lib/credits'
-import { checkConversationLimit } from '@/lib/limits'
+import { checkConversationLimit, PLAN_LIMITS } from '@/lib/limits'
+import { checkAndWarnUsage } from '@/lib/credits/usage-warnings'
 import { retrieveContext } from '@/lib/knowledge/retriever'
 import { renderDocContext, composeSystemPrompt } from '@/lib/knowledge/prompt-builder'
 import { routeMessage } from '@/lib/ai/router'
@@ -78,6 +80,7 @@ export async function POST(req: NextRequest) {
     const [bot] = await db
       .select({
         id:                  schema.bots.id,
+        name:                schema.bots.name,
         systemPrompt:        schema.bots.systemPrompt,
         model:               schema.bots.model,
         widgetConfig:        schema.bots.widgetConfig,
@@ -87,6 +90,7 @@ export async function POST(req: NextRequest) {
         bannedAt:            schema.organizations.bannedAt,
         smartRoutingEnabled: schema.bots.smartRoutingEnabled,
         monthlyConvLimit:    schema.bots.monthlyConvLimit,
+        ownerEmail:          schema.users.email,
         documentCount: sql<number>`(
           SELECT COUNT(*)::int FROM documents
           WHERE bot_id = ${schema.bots.id} AND status = 'ready'
@@ -94,6 +98,7 @@ export async function POST(req: NextRequest) {
       })
       .from(schema.bots)
       .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+      .innerJoin(schema.users, eq(schema.organizations.ownerId, schema.users.id))
       .where(and(eq(schema.bots.embedKey, embedKey), eq(schema.bots.isActive, true)))
       .limit(1)
 
@@ -199,12 +204,12 @@ export async function POST(req: NextRequest) {
 
     // Debit-first: estimate tokens, debit before LLM call
     const estimatedTokens = Math.ceil(message.length / 4) * 3
-    const { ok: creditOk } = await creditLib.debit(bot.orgId, estimatedTokens)
-    if (!creditOk) {
-      return NextResponse.json(
-        { error: 'Insufficient credits', code: 'NO_CREDITS', status: 402 },
-        { status: 402 },
-      )
+    const { ok: creditOk, balance: postDebitBalance } = await creditLib.debit(bot.orgId, estimatedTokens)
+
+    // Non-blocking credit usage warning (after successful debit only)
+    if (creditOk && bot.ownerEmail) {
+      const creditAlloc = creditLib.PLAN_CREDIT_ALLOCATIONS[bot.orgPlan] ?? creditLib.FREE_TIER_CREDITS
+      void checkAndWarnUsage(bot.orgId, 'credits', creditAlloc - postDebitBalance, creditAlloc, bot.orgPlan, bot.ownerEmail)
     }
 
     // Smart routing (if enabled — router handles its own debit/refund for strong model)
@@ -218,7 +223,18 @@ export async function POST(req: NextRequest) {
       creditCost: number
     } | null = null
 
-    if (bot.smartRoutingEnabled) {
+    if (!creditOk) {
+      // Credits exhausted — enter grace period logic (no 402 to widget users)
+      const { action } = await handleCreditExhaustion(bot.orgId, bot.orgPlan, bot.name)
+      if (action === 'disable') {
+        return NextResponse.json(
+          { message: 'This chatbot is temporarily unavailable. Please try again later.' },
+          { status: 200 },
+        )
+      }
+      // action === 'fallback': use default model, skip smart routing
+      resolvedModel = FALLBACK_MODEL
+    } else if (bot.smartRoutingEnabled) {
       const routeResult = await routeMessage({
         text: message,
         botDefaultModel: bot.model,
@@ -254,15 +270,15 @@ export async function POST(req: NextRequest) {
       outputTokens = result.outputTokens
       modelUsed = result.modelUsed
     } catch (llmErr) {
-      // Full refund on LLM failure
-      await creditLib.refund(bot.orgId, estimatedTokens)
+      // Full refund on LLM failure (only if credits were actually debited)
+      if (creditOk) await creditLib.refund(bot.orgId, estimatedTokens)
       throw llmErr
     }
 
     // Reconcile: refund the overestimate, log actual debit
     const actualDebit = routingDecisionData?.creditCost ?? estimatedTokens
     const overpay = actualDebit - tokensUsed
-    if (overpay > 0) await creditLib.refund(bot.orgId, overpay)
+    if (creditOk && overpay > 0) await creditLib.refund(bot.orgId, overpay)
 
     // Compute USD cost using active model price (manual takes priority over API price)
     let costUsd = '0'
@@ -290,8 +306,10 @@ export async function POST(req: NextRequest) {
       flaggedUnanswered: flagIfUnanswered(content),
     }).returning({ id: schema.messages.id })
 
-    // Log credit transaction (refId = messageId for idempotency)
-    await creditLib.logTransaction(bot.orgId, -tokensUsed, 'chat_debit', insertedMsg.id)
+    // Log credit transaction only when credits were actually debited
+    if (creditOk) {
+      await creditLib.logTransaction(bot.orgId, -tokensUsed, 'chat_debit', insertedMsg.id)
+    }
 
     // Record routing decision if smart routing was active
     if (bot.smartRoutingEnabled && routingDecisionData) {
@@ -318,6 +336,13 @@ export async function POST(req: NextRequest) {
         .set({ conversationsThisMonth: sql`${schema.organizations.conversationsThisMonth} + 1` })
         .where(eq(schema.organizations.id, bot.orgId)),
     ])
+
+    // Non-blocking 90% usage warning check
+    const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
+    const convLimit = PLAN_LIMITS[planKey].conversations
+    if (bot.ownerEmail) {
+      void checkAndWarnUsage(bot.orgId, 'conversations', bot.convCount + 1, convLimit, bot.orgPlan, bot.ownerEmail)
+    }
 
     return NextResponse.json({ reply: content, conversationId: conversation.id })
   } catch (err) {
