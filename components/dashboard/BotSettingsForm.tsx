@@ -393,6 +393,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           position={position}
           tooltipEnabled={tooltipEnabled}
           tooltipMessages={tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean)}
+          brandingEnabled={brandingEnabled}
+          brandingText={brandingText.trim() || 'Powered by OwFlex'}
           theme={previewTheme}
           onToggleTheme={() => setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark')}
         />
@@ -411,6 +413,8 @@ function LiveBotPreview({
   position,
   tooltipEnabled,
   tooltipMessages,
+  brandingEnabled,
+  brandingText,
   theme,
   onToggleTheme,
 }: {
@@ -422,6 +426,8 @@ function LiveBotPreview({
   position: 'bottom-right' | 'bottom-left'
   tooltipEnabled: boolean
   tooltipMessages: string[]
+  brandingEnabled: boolean
+  brandingText: string
   theme: 'dark' | 'light'
   onToggleTheme: () => void
 }) {
@@ -551,6 +557,22 @@ function LiveBotPreview({
             </svg>
           </div>
         </div>
+
+        {/* Branding footer */}
+        {brandingEnabled && (
+          <div
+            className="text-center py-1"
+            style={{
+              borderTop: `1px solid ${c.hairline}`,
+              backgroundColor: c.surface,
+              fontSize: '10px',
+              opacity: 0.45,
+              color: c.ink,
+            }}
+          >
+            {brandingText}
+          </div>
+        )}
       </div>
 
       {/* Trigger area */}

@@ -55,19 +55,173 @@ interface Props {
   currentPlan: string
 }
 
+function PlanCard({ plan, featured = false }: { plan: 'starter' | 'pro' | 'agency'; featured?: boolean }) {
+  const meta = PLAN_META[plan]
+
+  if (featured) {
+    /* Hero tile — full-width, horizontal layout */
+    return (
+      <div
+        className="relative overflow-hidden border border-[var(--hairline)] bg-[var(--surface)] col-span-2"
+        style={{ borderTopColor: meta.accent, borderTopWidth: 2 }}
+      >
+        {/* Faint accent glow */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.04]"
+          style={{ background: `radial-gradient(ellipse at 20% 50%, ${meta.accent}, transparent 60%)` }}
+        />
+        <div className="relative flex flex-col sm:flex-row gap-6 p-6">
+          {/* Left — name + price + CTAs */}
+          <div className="flex flex-col gap-4 sm:min-w-[200px]">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span style={{ color: meta.accent }}>{meta.icon}</span>
+                <span
+                  className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink)]"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  {plan}
+                </span>
+                <span
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-sm"
+                  style={{ fontFamily: 'var(--font-mono)', background: `${meta.accent}22`, color: meta.accent }}
+                >
+                  Most popular
+                </span>
+              </div>
+              <p className="text-[10px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                {meta.blurb}
+              </p>
+            </div>
+            <div>
+              <p
+                className="text-[38px] font-semibold leading-none text-[var(--ink)]"
+                style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+              >
+                ₨{PLAN_PRICES_PKR[plan].toLocaleString()}
+                <span className="text-[15px] text-[var(--ink-subtle)] ml-1">/mo</span>
+              </p>
+              <p className="text-[11px] text-[var(--ink-muted)] mt-1.5" style={{ fontFamily: 'var(--font-mono)' }}>
+                or {PLAN_USD[plan]}/mo USD · limited time discount
+              </p>
+            </div>
+            <div className="flex gap-2 mt-auto">
+              <a
+                href={`/api/billing/payfast-plan-url?plan=${plan}`}
+                className="flex-1 text-center py-2 text-white text-[11px] font-semibold hover:opacity-90 transition-opacity"
+                style={{ fontFamily: 'var(--font-mono)', background: meta.accent }}
+              >
+                PayFast
+              </a>
+              <a
+                href={`/api/billing/ls-plan-url?plan=${plan}`}
+                className="flex-1 text-center py-2 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                Lemon Squeezy
+              </a>
+            </div>
+          </div>
+          {/* Divider */}
+          <div className="hidden sm:block w-px bg-[var(--hairline)] self-stretch" />
+          {/* Right — features */}
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 flex-1 self-center">
+            {meta.features.map((f) => (
+              <li key={f} className="flex items-start gap-2 text-[11px] text-[var(--ink-muted)]">
+                <span className="mt-0.5 shrink-0 font-bold" style={{ color: meta.accent }}>✓</span>
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
+  /* Regular tile */
+  return (
+    <div
+      className="relative overflow-hidden flex flex-col gap-4 p-5 border border-[var(--hairline)] bg-[var(--surface)]"
+      style={{ borderTopColor: meta.accent, borderTopWidth: 2 }}
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span style={{ color: meta.accent }}>{meta.icon}</span>
+            <span
+              className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink)]"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              {plan}
+            </span>
+          </div>
+          <p className="text-[10px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+            {meta.blurb}
+          </p>
+        </div>
+        <span
+          className="text-[10px] font-semibold px-2 py-0.5 shrink-0 whitespace-nowrap"
+          style={{ fontFamily: 'var(--font-mono)', background: `${meta.accent}18`, color: meta.accent }}
+        >
+          limited time
+        </span>
+      </div>
+      <div>
+        <p
+          className="text-[32px] font-semibold leading-none text-[var(--ink)]"
+          style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+        >
+          ₨{PLAN_PRICES_PKR[plan].toLocaleString()}
+          <span className="text-[14px] text-[var(--ink-subtle)] ml-1">/mo</span>
+        </p>
+        <p className="text-[11px] text-[var(--ink-muted)] mt-1" style={{ fontFamily: 'var(--font-mono)' }}>
+          or {PLAN_USD[plan]}/mo USD
+        </p>
+      </div>
+      <ul className="space-y-1.5 flex-1">
+        {meta.features.map((f) => (
+          <li key={f} className="flex items-start gap-2 text-[11px] text-[var(--ink-muted)]">
+            <span className="mt-0.5 shrink-0" style={{ color: meta.accent }}>✓</span>
+            {f}
+          </li>
+        ))}
+      </ul>
+      <div className="flex gap-2 mt-auto">
+        <a
+          href={`/api/billing/payfast-plan-url?plan=${plan}`}
+          className="flex-1 text-center py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
+          style={{ fontFamily: 'var(--font-mono)', background: meta.accent }}
+        >
+          PayFast
+        </a>
+        <a
+          href={`/api/billing/ls-plan-url?plan=${plan}`}
+          className="flex-1 text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
+          style={{ fontFamily: 'var(--font-mono)' }}
+        >
+          Lemon Squeezy
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export function PlanUpgradeSection({ currentPlan }: Props) {
   const currentIdx = PLAN_ORDER.indexOf(currentPlan as KnownPlan)
   const upgradablePlans = (['starter', 'pro', 'agency'] as const).filter((p) => {
-    const idx = PLAN_ORDER.indexOf(p)
-    return idx > currentIdx
+    return PLAN_ORDER.indexOf(p) > currentIdx
   })
+  const showEnterprise = currentIdx < PLAN_ORDER.indexOf('enterprise')
 
-  if (upgradablePlans.length === 0 && currentPlan !== 'enterprise') return null
+  if (upgradablePlans.length === 0 && !showEnterprise) return null
+
+  const hasPro = upgradablePlans.includes('pro')
+  const nonProPlans = upgradablePlans.filter((p) => p !== 'pro')
 
   return (
     <section>
-      {/* Section header */}
-      <div className="flex items-center justify-between mb-3">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
         <div>
           <p
             className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
@@ -89,133 +243,67 @@ export function PlanUpgradeSection({ currentPlan }: Props) {
         </a>
       </div>
 
-      {/* Bento grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--hairline)] border border-[var(--hairline)] overflow-hidden">
-        {upgradablePlans.map((plan) => {
-          const meta = PLAN_META[plan]
-          return (
-            <div
-              key={plan}
-              className="bg-[var(--surface)] p-5 flex flex-col gap-4 relative overflow-hidden group"
-            >
-              {/* Subtle accent top bar */}
-              <div
-                className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{ background: meta.accent }}
-              />
+      {/* Bento grid — 2 columns, real gap */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-              {/* Plan name + icon */}
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span style={{ color: meta.accent }}>{meta.icon}</span>
-                    <span
-                      className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink)]"
-                      style={{ fontFamily: 'var(--font-mono)' }}
-                    >
-                      {plan}
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                    {meta.blurb}
-                  </p>
-                </div>
-                <span className="text-[10px] font-medium px-2 py-0.5 bg-[var(--accent)]/10 text-[var(--accent)] shrink-0">
-                  Launch
+        {/* Pro card — full-width featured hero tile */}
+        {hasPro && <PlanCard plan="pro" featured />}
+
+        {/* Starter and Agency — regular 1-col tiles */}
+        {nonProPlans.map((plan) => (
+          <PlanCard key={plan} plan={plan} />
+        ))}
+
+        {/* Enterprise — full-width at the bottom */}
+        {showEnterprise && (
+          <div className="relative overflow-hidden flex flex-col sm:flex-row gap-6 p-5 border border-[var(--hairline)] bg-[var(--surface)] sm:col-span-2 sm:items-center">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--ink-muted)]" />
+            {/* Left */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Building2 className="h-4 w-4 text-[var(--ink-muted)]" />
+                <span
+                  className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink)]"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  enterprise
                 </span>
               </div>
-
-              {/* Price */}
+              <p className="text-[10px] text-[var(--ink-subtle)] mb-3" style={{ fontFamily: 'var(--font-mono)' }}>
+                Unlimited everything · custom credit rates · dedicated SLA
+              </p>
               <div>
                 <p
-                  className="text-[32px] font-semibold leading-none text-[var(--ink)]"
+                  className="text-[28px] font-semibold leading-none text-[var(--ink)]"
                   style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
                 >
-                  ₨{PLAN_PRICES_PKR[plan].toLocaleString()}
-                  <span className="text-[14px] text-[var(--ink-subtle)] ml-1">/mo</span>
+                  Custom
                 </p>
                 <p className="text-[11px] text-[var(--ink-muted)] mt-1" style={{ fontFamily: 'var(--font-mono)' }}>
-                  or {PLAN_USD[plan]}/mo USD
+                  tailored pricing
                 </p>
               </div>
-
-              {/* Features */}
-              <ul className="space-y-1.5 flex-1">
-                {meta.features.map((f) => (
+            </div>
+            {/* Divider */}
+            <div className="hidden sm:block w-px bg-[var(--hairline)] self-stretch" />
+            {/* Right */}
+            <div className="flex flex-col gap-3 sm:min-w-[260px]">
+              <ul className="space-y-1.5">
+                {['Unlimited bots · conversations · storage', 'Dedicated support + SLA', 'BYOK — bring your own LLM key'].map((f) => (
                   <li key={f} className="flex items-start gap-2 text-[11px] text-[var(--ink-muted)]">
-                    <span className="mt-0.5 shrink-0" style={{ color: meta.accent }}>✓</span>
+                    <span className="text-[var(--ink-subtle)] mt-0.5 shrink-0">✓</span>
                     {f}
                   </li>
                 ))}
               </ul>
-
-              {/* CTAs */}
-              <div className="flex gap-2 mt-auto">
-                <a
-                  href={`/api/billing/payfast-plan-url?plan=${plan}`}
-                  className="flex-1 text-center py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
-                  style={{ fontFamily: 'var(--font-mono)', background: meta.accent }}
-                >
-                  PayFast
-                </a>
-                <a
-                  href={`/api/billing/ls-plan-url?plan=${plan}`}
-                  className="flex-1 text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
-                  style={{ fontFamily: 'var(--font-mono)' }}
-                >
-                  Lemon Squeezy
-                </a>
-              </div>
-            </div>
-          )
-        })}
-
-        {/* Enterprise bento tile */}
-        {currentIdx < PLAN_ORDER.indexOf('enterprise') && (
-          <div className="bg-[var(--surface)] p-5 flex flex-col gap-4 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--ink-subtle)]" />
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Building2 className="h-4 w-4 text-[var(--ink-muted)]" />
-                  <span
-                    className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink)]"
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
-                    enterprise
-                  </span>
-                </div>
-                <p className="text-[10px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                  Unlimited everything · custom rates
-                </p>
-              </div>
-            </div>
-            <div>
-              <p
-                className="text-[32px] font-semibold leading-none text-[var(--ink)]"
-                style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
+              <a
+                href="mailto:hello@owflex.com?subject=Enterprise plan inquiry"
+                className="text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
+                style={{ fontFamily: 'var(--font-mono)' }}
               >
-                Custom
-              </p>
-              <p className="text-[11px] text-[var(--ink-muted)] mt-1" style={{ fontFamily: 'var(--font-mono)' }}>
-                tailored pricing
-              </p>
+                Contact Us →
+              </a>
             </div>
-            <ul className="space-y-1.5 flex-1">
-              {['Unlimited bots · conversations · storage', 'Dedicated support + SLA', 'BYOK — bring your own LLM key'].map((f) => (
-                <li key={f} className="flex items-start gap-2 text-[11px] text-[var(--ink-muted)]">
-                  <span className="text-[var(--ink-subtle)] mt-0.5 shrink-0">✓</span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <a
-              href="mailto:hello@owflex.com?subject=Enterprise plan inquiry"
-              className="text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors mt-auto"
-              style={{ fontFamily: 'var(--font-mono)' }}
-            >
-              Contact Us →
-            </a>
           </div>
         )}
       </div>
