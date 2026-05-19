@@ -79,6 +79,7 @@ export const auth = betterAuth({
 
   trustedOrigins: [
     'https://octively-chat.vercel.app',
+    'https://octively.vercel.app',
     // Wildcard covers every preview deployment regardless of hash
     'https://octively-chat-*-owaisabdullah206-1391s-projects.vercel.app',
     'https://admin.octively.com',
