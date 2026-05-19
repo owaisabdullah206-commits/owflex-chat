@@ -142,7 +142,7 @@ function Nav({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }
               style={{
                 padding: '8px 12px',
                 fontSize: 14,
-                color: 'var(--ink-subtle)',
+                color: 'var(--ink-muted)',
                 textDecoration: 'none',
                 borderRadius: 8,
                 transition: 'color .15s',
@@ -176,7 +176,7 @@ function Nav({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }
               alignItems: 'center',
               gap: 6,
               fontSize: 14,
-              color: 'var(--ink-subtle)',
+              color: 'var(--ink-muted)',
               border: '1px solid var(--hairline)',
               borderRadius: 8,
               textDecoration: 'none',
@@ -414,7 +414,7 @@ function DashboardMain({ small = false }: { small?: boolean }) {
         <StatBlock label="CONVERSATIONS.WEEK" value="14" small={small} />
       </div>
 
-      {/* Embed script */}
+      {/* Recent Leads */}
       {!small && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div
@@ -425,7 +425,7 @@ function DashboardMain({ small = false }: { small?: boolean }) {
               color: 'var(--ink-muted)',
             }}
           >
-            EMBED_SCRIPT
+            RECENT_LEADS
           </div>
           <div style={{ border: '1px solid var(--hairline)', borderRadius: 6, overflow: 'hidden' }}>
             <div
@@ -438,50 +438,62 @@ function DashboardMain({ small = false }: { small?: boolean }) {
                 borderBottom: '1px solid var(--hairline)',
               }}
             >
-              <span style={{ fontSize: 11, fontWeight: 500 }}>Embed Script</span>
+              <span style={{ fontSize: 11, fontWeight: 500 }}>Leads</span>
               <span
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: 10,
-                  color: 'var(--ink-subtle)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
+                  color: 'var(--of-success)',
                   padding: '2px 8px',
-                  border: '1px solid var(--hairline)',
+                  border: '1px solid rgba(16,185,129,.25)',
                   borderRadius: 4,
-                  background: 'var(--surface)',
+                  background: 'var(--of-success-soft)',
                 }}
               >
-                Copy
+                3 new
               </span>
             </div>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                padding: '10px 12px',
-                fontSize: 10.5,
-                color: 'var(--ink-subtle)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {'<script src="https://owflex.com/embed.js" data-key="pk_97f8271585094…"></script>'}
-            </div>
-          </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ink-muted)' }}>
-            paste before{' '}
-            <span
-              style={{
-                background: 'var(--surface-2)',
-                padding: '1px 5px',
-                borderRadius: 3,
-                color: 'var(--ink-subtle)',
-              }}
-            >
-              {'</body>'}
-            </span>
+            {[
+              { name: 'Ahmed Khan', email: 'ahmed@…', time: '2m ago' },
+              { name: 'Sara Malik', email: 'sara@…', time: '18m ago' },
+              { name: 'Usman Ali', email: 'usman@…', time: '1h ago' },
+            ].map(({ name, email, time }, i) => (
+              <div
+                key={i}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  borderBottom: i < 2 ? '1px solid var(--hairline)' : 'none',
+                  fontSize: 11,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      background: 'var(--of-primary-soft)',
+                      color: 'var(--of-primary-deep)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      fontSize: 9,
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {name[0]}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 500, fontSize: 11 }}>{name}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, color: 'var(--ink-muted)' }}>{email}</div>
+                  </div>
+                </div>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, color: 'var(--ink-muted)' }}>{time}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -737,7 +749,7 @@ function HowItWorks() {
       Icon: Code2,
       n: '01',
       h: 'Drop in the embed script',
-      p: 'One <script> tag in your client\'s site. Your existing chatbot (Next.js, OpenAI, anything) keeps running — OwFlex just listens.',
+      p: 'One <script> tag on any client website — WordPress, Shopify, Wix, or plain HTML. Your OwFlex bot goes live instantly.',
     },
     {
       Icon: UserPlus,
@@ -1000,14 +1012,14 @@ function BentoWhiteLabel() {
 
 function BentoModels() {
   const providers = [
-    { name: 'Anthropic', tier: 'Top tier', active: true },
-    { name: 'OpenAI', tier: 'Mid tier', active: false },
-    { name: 'Google', tier: 'Pro tier', active: false },
-    { name: 'DeepSeek', tier: 'Default', active: false },
+    { name: 'Anthropic', model: 'claude-opus-4', active: true },
+    { name: 'OpenAI', model: 'gpt-4o', active: false },
+    { name: 'Google', model: 'gemini-2.0', active: false },
+    { name: 'DeepSeek', model: 'deepseek-v3', active: false },
   ]
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 5 }}>
-      {providers.map(({ name, tier, active }, i) => (
+      {providers.map(({ name, model, active }, i) => (
         <div
           key={i}
           style={{
@@ -1024,7 +1036,7 @@ function BentoModels() {
           <span style={{ color: active ? 'var(--of-primary-deep)' : 'var(--ink)', fontSize: 12, fontWeight: active ? 500 : 400 }}>
             {name}
           </span>
-          <span style={{ color: 'var(--ink-muted)', fontSize: 10.5 }}>{tier}</span>
+          <span style={{ color: 'var(--ink-muted)', fontSize: 10.5 }}>{model}</span>
         </div>
       ))}
     </div>
@@ -1084,7 +1096,7 @@ function BentoIsolation() {
 }
 
 function BentoBotStack() {
-  const stacks = ['Next.js', 'OpenAI SDK', 'LangChain', 'Python', 'FastAPI', 'n8n', 'WordPress', 'Make']
+  const stacks = ['WordPress', 'Shopify', 'Wix', 'Webflow', 'Squarespace', 'React / Next.js', 'HTML', 'Static Sites']
   return (
     <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: 5 }}>
       {stacks.map((s, i) => (
@@ -1212,7 +1224,7 @@ function FeatureBento() {
             <BentoTile span={2} Icon={Shield} title="Tenant isolation" sub="Every query scoped to bot_id. No cross-leaks. Audited by design.">
               <BentoIsolation />
             </BentoTile>
-            <BentoTile span={2} Icon={Globe} title="Works with any bot" sub="Next.js, FastAPI, n8n, a Python script — if it sends messages, OwFlex shows them.">
+            <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One script tag — drop it on WordPress, Shopify, Wix, or any HTML site. Live in minutes.">
               <BentoBotStack />
             </BentoTile>
           </div>
@@ -1616,7 +1628,7 @@ function CTABanner() {
               Start in 60 seconds. Bill your first retainer this week.
             </h2>
             <p style={{ position: 'relative', textAlign: 'center', maxWidth: 540, fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.6 }}>
-              Create your first bot portal, drop in the embed script, invite your client. That&apos;s the whole onboarding.
+              Create your first OwFlex bot, add it to your client&apos;s site, invite them to their portal. That&apos;s the whole onboarding.
             </p>
             <div
               style={{
@@ -1724,7 +1736,7 @@ function HeroLeadCopy() {
         <span style={{ color: 'var(--of-primary)' }}>chatbot portal.</span>
       </h1>
       <p style={{ fontSize: 17, color: 'var(--ink-muted)', lineHeight: 1.65, margin: 0, maxWidth: '52ch' }}>
-        OwFlex is the white-label dashboard your SMB clients log into to see conversations, leads, and analytics from the custom chatbot <em>you</em> already built. One embed script — no backend, no rebuilding.
+        OwFlex powers your AI chatbots <em>and</em> gives every client a white-label portal — conversations, leads, and analytics all in one place. One embed script. No rebuilding.
       </p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <Link

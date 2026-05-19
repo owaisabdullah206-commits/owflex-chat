@@ -335,7 +335,7 @@ function Nav({ currency, setCurrency, dark, onToggleDark }: { currency: Currency
           >
             {dark ? <Sun size={15} /> : <Moon size={15} />}
           </button>
-          <Link href="/dashboard/signin" style={{ height: 36, padding: '0 12px', display: 'inline-flex', alignItems: 'center', fontSize: 14, color: 'var(--ink-subtle)', border: '1px solid var(--hairline)', borderRadius: 8, textDecoration: 'none' }}>
+          <Link href="/dashboard/signin" style={{ height: 36, padding: '0 12px', display: 'inline-flex', alignItems: 'center', fontSize: 14, color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 8, textDecoration: 'none' }}>
             Sign in
           </Link>
           <Link href="/dashboard/signup" style={{ height: 36, padding: '0 14px', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 500, color: 'white', background: 'var(--of-primary)', borderRadius: 8, textDecoration: 'none', border: '1px solid transparent' }}>
@@ -675,16 +675,16 @@ export default function PricingGrid() {
             <div style={{ overflowX: 'auto', border: '1px solid var(--hairline)', borderRadius: 14, background: 'var(--surface)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 880, fontSize: 13.5 }}>
                 <thead>
-                  <tr style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--surface-2)' }}>
+                  <tr style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--surface)' }}>
                     <th
                       style={{
                         textAlign: 'left', padding: '20px 20px',
-                        fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 12,
-                        color: 'var(--ink)', letterSpacing: '0.04em', textTransform: 'uppercase', width: '32%',
-                        borderBottom: '2px solid var(--hairline)',
+                        fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12,
+                        color: 'var(--ink-muted)', letterSpacing: '0.04em', textTransform: 'uppercase', width: '32%',
+                        borderBottom: '1px solid var(--hairline)',
                       }}
                     >
-                      Feature
+                      Plan
                     </th>
                     {PLANS.map((p, i) => {
                       const { display, suffix } = fmtPrice(p.pkr, p.usd, currency)
@@ -695,8 +695,8 @@ export default function PricingGrid() {
                           style={{
                             padding: '18px 14px', textAlign: 'left', fontWeight: 600,
                             borderLeft: '1px solid var(--hairline)',
-                            borderBottom: '2px solid var(--hairline)',
-                            background: isFeat ? 'color-mix(in srgb, var(--of-primary) 5%, var(--surface-2))' : 'var(--surface-2)',
+                            borderBottom: '1px solid var(--hairline)',
+                            background: isFeat ? 'color-mix(in srgb, var(--of-primary) 5%, var(--surface))' : 'var(--surface)',
                             minWidth: 120, verticalAlign: 'top',
                           }}
                         >
@@ -827,7 +827,8 @@ export default function PricingGrid() {
       <section style={{ paddingBlock: 80 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <Reveal>
-            <div style={{ background: 'var(--surface)', border: '1px solid var(--hairline-strong)', borderRadius: 20, padding: '56px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, textAlign: 'center', position: 'relative', overflow: 'hidden' }} className="mkt-grid-bg">
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--hairline-strong)', borderRadius: 20, padding: '56px 40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+              <div className="mkt-grid-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
               <span style={{ fontFamily: 'var(--font-mono)', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, padding: '4px 12px', borderRadius: 999, border: '1px solid rgba(14,165,233,.3)', background: 'var(--of-primary-soft)', color: 'var(--of-primary-deep)', fontWeight: 500, position: 'relative' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)' }} />
                 Free forever · No credit card
