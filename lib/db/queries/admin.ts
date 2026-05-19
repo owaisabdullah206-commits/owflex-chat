@@ -56,9 +56,13 @@ export async function getPlatformStats() {
         .from(schema.users)
         .where(eq(schema.users.role, 'developer')),
 
-      // Plan breakdown for MRR
+      // Plan breakdown for MRR — only orgs owned by developers
       db.select({ plan: schema.organizations.plan, cnt: count() })
         .from(schema.organizations)
+        .innerJoin(schema.users, and(
+          eq(schema.users.id, schema.organizations.ownerId),
+          eq(schema.users.role, 'developer'),
+        ))
         .groupBy(schema.organizations.plan),
 
       // Bot stats

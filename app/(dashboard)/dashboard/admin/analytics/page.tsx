@@ -51,7 +51,7 @@ export default async function AdminAnalyticsPage() {
   await requirePlatformOwner()
   const stats = await getPlatformStats()
 
-  const freeCount  = stats.planBreakdown.find((p) => p.plan === 'free')?.cnt  ?? 0
+  const freeCount  = stats.totalDevelopers - stats.paidDevelopers
   const grossColor = stats.grossProfitUsd >= 0 ? 'text-[var(--success-text)]' : 'text-[var(--error-text)]'
 
   return (
