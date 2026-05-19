@@ -54,11 +54,12 @@ const PLANS = [
     href: '/dashboard/signup',
     features: [
       '1 bot · 200 conversations / month',
-      '15 leads / month',
-      '5 FAQs per bot',
+      '2M credits included / month',
+      '15 leads / month · 5 FAQs per bot',
       '7-day conversation history',
       'Color-only widget customization',
       'Forced "Powered by OwFlex" badge',
+      'WordPress plugin',
       'Community support',
     ],
   },
@@ -74,15 +75,15 @@ const PLANS = [
     href: '/dashboard/signup',
     features: [
       '2 bots · 3,000 conversations / month',
-      'Unlimited leads + CSV export',
-      '25 MB document storage',
-      '30-day conversation history',
-      '20 FAQs per bot',
+      '30M credits included / month',
+      'Unlimited leads / month · 20 FAQs per bot',
+      '25 MB document storage · 30-day history',
       'Full widget customization',
-      'Hide "Powered by OwFlex" badge',
-      'Budget-tier models from every major provider',
-      'Lead capture + strict mode controls',
-      'Email support',
+      'Can turn off "Powered by OwFlex" badge',
+      'Lead capture on/off · strict mode',
+      'Budget-tier AI models',
+      'FAQ editor — basic (Phase 2)',
+      'WordPress plugin · email support',
     ],
   },
   {
@@ -98,17 +99,15 @@ const PLANS = [
     featured: true,
     features: [
       '8 bots · 15,000 conversations / month',
-      'Unlimited history & leads',
-      '100 MB document storage',
-      '50 FAQs per bot',
-      'Mid-tier flagships from OpenAI, Anthropic, Google, DeepSeek',
-      'Smart auto-routing — save 60–80% on LLM costs',
-      'PDF document upload + auto-chunking',
-      'Website scraping (Firecrawl)',
-      'Unanswered questions detection + weekly digest',
-      'Human handoff & escalation alerts',
-      'Advanced analytics + flagged conversations',
-      'Priority email support',
+      '150M credits included / month',
+      'Unlimited leads / month · 50 FAQs per bot',
+      '100 MB document storage · unlimited history',
+      'Mid-range AI models · advanced analytics',
+      'Unanswered questions list · weekly digest (Phase 2)',
+      'PDF upload + website scraping (Phase 3)',
+      'Smart model routing (Phase 3)',
+      'Human handoff & escalation (Phase 3)',
+      'WordPress plugin · priority email support',
     ],
   },
   {
@@ -122,17 +121,16 @@ const PLANS = [
     cta: 'Start Agency trial',
     href: '/dashboard/signup',
     features: [
-      'Unlimited bots · 75,000 conversations / mo',
-      '500 MB document storage',
-      'Full white-label — strip every OwFlex pixel',
-      'Custom branding text + URL on widget',
-      'Custom client-portal subdomains (chat.youragency.com)',
-      'Sub-tenant client management',
-      'Per-bot resource allocation',
-      'All model tiers — including top-tier flagship',
-      'Best credit top-up rate (40% off)',
-      'API access + webhook integrations',
-      'Dedicated onboarding + Slack support',
+      'Unlimited bots · 75,000 conversations / month',
+      '750M credits / month · better top-up rate',
+      'Unlimited leads · unlimited FAQs',
+      '500 MB document storage · unlimited history',
+      'All AI models · full analytics',
+      'Full white-label — custom branding text + URL',
+      'White-label portal login + custom subdomain (Phase 3)',
+      'Sub-tenant management · per-bot allocation (Phase 3)',
+      'API access + webhook integrations (Phase 4)',
+      'Audit log viewer (Phase 4) · dedicated support',
     ],
   },
   {
@@ -146,32 +144,39 @@ const PLANS = [
     href: '#',
     features: [
       'Everything in Agency',
-      'BYOK — bring your own LLM API keys',
-      'Audit log viewer + 1-year retention',
+      'Custom conversation & credit volume',
+      'BYOK — bring your own LLM API keys (Phase 4)',
+      'Dedicated support + SLA',
       'SOC 2 / DPA on request',
       'Optional self-hosted / on-prem deployment',
       'Custom data residency (PK, EU, US)',
-      '99.9% SLA + named support engineer',
     ],
   },
 ] as const
 
 type Plan = (typeof PLANS)[number]
+type Billing = 'monthly' | 'annual'
 
-function fmtPrice(pkr: number | 'custom', usd: number | 'custom', currency: Currency) {
+function fmtPrice(pkr: number | 'custom', usd: number | 'custom', currency: Currency, billing: Billing = 'monthly') {
   if (pkr === 0) return { display: currency === 'PKR' ? '₨0' : '$0', suffix: '' }
   if (pkr === 'custom') return { display: 'Custom', suffix: '' }
-  if (currency === 'PKR') return { display: `₨${(pkr as number).toLocaleString()}`, suffix: '/mo' }
-  return { display: `$${usd}`, suffix: '/mo' }
+  const annualFactor = billing === 'annual' ? (10 / 12) : 1
+  if (currency === 'PKR') {
+    const monthly = Math.round((pkr as number) * annualFactor / 100) * 100
+    return { display: `₨${monthly.toLocaleString()}`, suffix: billing === 'annual' ? '/mo · billed yearly' : '/mo' }
+  }
+  const monthly = Math.round((usd as number) * annualFactor)
+  return { display: `$${monthly}`, suffix: billing === 'annual' ? '/mo · billed yearly' : '/mo' }
 }
 
 // ─── Comparison table data ────────────────────────────────────────────────────
 
 const COMPARE_ROWS = [
-  { section: 'Core' },
+  { section: 'Core limits' },
   { feat: 'Bots', values: ['1', '2', '8', 'Unlimited', 'Unlimited'] },
   { feat: 'Conversations / month', values: ['200', '3,000', '15,000', '75,000', 'Custom'] },
   { feat: 'Credits included / month', values: ['2M', '30M', '150M', '750M', 'Custom'] },
+  { feat: 'Addon credit top-ups', values: [false, true, true, 'Better rate', 'Best rate'] },
   { feat: 'Leads / month', values: ['15', '∞', '∞', '∞', '∞'] },
   { feat: 'FAQs per bot', values: ['5', '20', '50', '∞', '∞'] },
   { feat: 'Document storage', values: ['—', '25 MB', '100 MB', '500 MB', 'Custom'] },
@@ -179,27 +184,34 @@ const COMPARE_ROWS = [
 
   { section: 'Widget & branding' },
   { feat: 'Full widget customization', values: ['Color only', true, true, true, true] },
-  { feat: 'Hide "Powered by OwFlex"', values: [false, true, true, true, true] },
+  { feat: '"Powered by OwFlex" badge', values: ['Forced ON', 'Can turn off', 'Can turn off', 'Custom / OFF', 'Custom / OFF'] },
   { feat: 'Custom branding text + URL', values: [false, false, false, true, true] },
-  { feat: 'White-label client portal', values: [false, false, false, true, true] },
+  { feat: 'White-label portal login', values: [false, false, false, true, true] },
   { feat: 'Custom portal subdomain', values: [false, false, false, true, true] },
+  { feat: 'Separate client portal', values: [true, true, true, 'White-label', 'White-label'] },
 
   { section: 'AI & intelligence' },
-  { feat: 'Model tier', values: ['Flash (hidden)', 'Budget', 'Mid-range', 'All tiers', 'All tiers'] },
-  { feat: 'Smart auto-routing', values: [false, false, true, true, true] },
+  { feat: 'AI model selection', values: ['Flash only', 'Budget tier', 'Mid-range', 'All tiers', 'All tiers'] },
+  { feat: 'Analytics', values: ['Basic', 'Basic', 'Advanced + flagged', 'Full', 'Full'] },
+  { feat: 'Smart auto-routing (Phase 3)', values: [false, false, true, true, true] },
   { feat: 'Unanswered questions list', values: [false, false, true, true, true] },
-  { feat: 'Document upload (PDF)', values: [false, false, true, true, true] },
-  { feat: 'Website scraping', values: [false, false, true, true, true] },
+  { feat: 'Document upload — PDF (Phase 3)', values: [false, false, true, true, true] },
+  { feat: 'Website scraping (Phase 3)', values: [false, false, true, true, true] },
 
   { section: 'Operations' },
   { feat: 'Lead capture on/off', values: [false, true, true, true, true] },
   { feat: 'Strict mode', values: [false, true, true, true, true] },
-  { feat: 'Human handoff / escalation', values: [false, false, true, true, true] },
-  { feat: 'Weekly email digest', values: [false, false, true, true, true] },
-  { feat: 'Sub-tenant management', values: [false, false, false, true, true] },
-  { feat: 'Audit log viewer', values: [false, false, false, false, true] },
-  { feat: 'API access + webhooks', values: [false, false, false, true, true] },
-  { feat: 'BYOK — bring your own LLM key', values: [false, false, false, false, true] },
+  { feat: 'Trigger tooltip', values: [true, true, true, true, true] },
+  { feat: 'Human handoff / escalation (Phase 3)', values: [false, false, true, true, true] },
+  { feat: 'Weekly email digest (Phase 2)', values: [false, false, true, true, true] },
+  { feat: 'Knowledge base — FAQ editor (Phase 2)', values: [false, 'Basic', true, true, true] },
+  { feat: 'Sub-tenant management (Phase 3)', values: [false, false, false, true, true] },
+  { feat: 'Per-bot resource allocation (Phase 3)', values: [false, false, false, true, true] },
+  { feat: 'API access (Phase 4)', values: [false, false, false, true, true] },
+  { feat: 'Webhook integrations — Zapier / n8n (Phase 4)', values: [false, false, false, true, true] },
+  { feat: 'Audit log viewer (Phase 4)', values: [false, false, false, true, true] },
+  { feat: 'BYOK — bring your own LLM key (Phase 4)', values: [false, false, false, false, true] },
+  { feat: 'WordPress plugin', values: [true, true, true, true, true] },
 
   { section: 'Support' },
   { feat: 'Support level', values: ['Community', 'Email', 'Priority email', 'Dedicated', 'Dedicated + SLA'] },
@@ -347,8 +359,8 @@ function Nav({ currency, setCurrency, dark, onToggleDark }: { currency: Currency
   )
 }
 
-function PriceDisplay({ plan, dark, currency }: { plan: Plan; dark?: boolean; currency: Currency }) {
-  const { display, suffix } = fmtPrice(plan.pkr, plan.usd, currency)
+function PriceDisplay({ plan, dark, currency, billing = 'monthly' }: { plan: Plan; dark?: boolean; currency: Currency; billing?: Billing }) {
+  const { display, suffix } = fmtPrice(plan.pkr, plan.usd, currency, billing)
   const fullPkr = 'fullPkr' in plan ? plan.fullPkr : undefined
   const fullUsd = 'fullUsd' in plan ? plan.fullUsd : undefined
   const full = currency === 'PKR' ? fullPkr : fullUsd
@@ -358,12 +370,17 @@ function PriceDisplay({ plan, dark, currency }: { plan: Plan; dark?: boolean; cu
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 44, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1 }}>{display}</span>
         {suffix && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: dark ? 'var(--dark-ink-muted)' : 'var(--ink-muted)' }}>{suffix}</span>}
       </div>
-      {full && (
+      {billing === 'monthly' && full && (
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: dark ? 'var(--dark-ink-muted)' : 'var(--ink-muted)', marginTop: 6 }}>
           <span style={{ textDecoration: 'line-through' }}>
             {currency === 'PKR' ? `₨${(fullPkr as number).toLocaleString()}` : `$${fullUsd}`}
           </span>{' '}
           <span style={{ color: 'var(--of-success)' }}>launch price</span>
+        </div>
+      )}
+      {billing === 'annual' && plan.pkr !== 0 && plan.pkr !== 'custom' && (
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--of-success)', marginTop: 6 }}>
+          2 months free — save {currency === 'PKR' ? `₨${Math.round((plan.pkr as number) * 2).toLocaleString()}` : `$${Math.round((plan.usd as number) * 2)}`}
         </div>
       )}
     </div>
@@ -393,7 +410,7 @@ function CompareCell({ v }: { v: boolean | string }) {
 
 // ─── Plan cards — Traditional layout ─────────────────────────────────────────
 
-function PlanCardTraditional({ plan, currency }: { plan: Plan; currency: Currency }) {
+function PlanCardTraditional({ plan, currency, billing }: { plan: Plan; currency: Currency; billing: Billing }) {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', gap: 14, padding: 22,
@@ -404,7 +421,7 @@ function PlanCardTraditional({ plan, currency }: { plan: Plan; currency: Currenc
         <div style={{ fontSize: 14.5, fontWeight: 600 }}>{plan.name}</div>
         <div style={{ fontSize: 12, color: 'var(--ink-muted)', marginTop: 2 }}>{plan.tagline}</div>
       </div>
-      <PriceDisplay plan={plan} currency={currency} />
+      <PriceDisplay plan={plan} currency={currency} billing={billing} />
       <div style={{ borderTop: '1px solid var(--hairline)', paddingTop: 12 }}>
         <FeatureList items={plan.features} dense />
       </div>
@@ -415,7 +432,7 @@ function PlanCardTraditional({ plan, currency }: { plan: Plan; currency: Currenc
   )
 }
 
-function PlanCardFeaturedSlim({ plan, currency }: { plan: Plan; currency: Currency }) {
+function PlanCardFeaturedSlim({ plan, currency, billing }: { plan: Plan; currency: Currency; billing: Billing }) {
   return (
     <div style={{
       background: 'var(--dark-bg)', color: 'var(--dark-ink)',
@@ -437,7 +454,7 @@ function PlanCardFeaturedSlim({ plan, currency }: { plan: Plan; currency: Curren
         <div style={{ fontSize: 14.5, fontWeight: 600 }}>{plan.name}</div>
         <div style={{ fontSize: 12, color: 'var(--dark-ink-muted)', marginTop: 2 }}>{plan.tagline}</div>
       </div>
-      <PriceDisplay plan={plan} dark currency={currency} />
+      <PriceDisplay plan={plan} dark currency={currency} billing={billing} />
       <div style={{ borderTop: '1px solid var(--dark-hairline)', paddingTop: 12 }}>
         <FeatureList items={plan.features} dark dense />
       </div>
@@ -509,6 +526,7 @@ function TestimonialsSection({ dark }: { dark: boolean }) {
 
 export default function PricingGrid() {
   const [currency, setCurrency] = useState<Currency>('PKR')
+  const [billing, setBilling] = useState<Billing>('monthly')
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [darkMode, setDarkMode] = useState(false)
 
@@ -556,6 +574,24 @@ export default function PricingGrid() {
               </button>
             ))}
           </div>
+          {/* Billing period toggle */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '6px 14px', borderRadius: 999, border: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+            <button
+              onClick={() => setBilling('monthly')}
+              style={{ border: 0, cursor: 'pointer', padding: '2px 10px', borderRadius: 999, fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: billing === 'monthly' ? 500 : 400, color: billing === 'monthly' ? 'var(--ink)' : 'var(--ink-subtle)', background: billing === 'monthly' ? 'var(--surface)' : 'transparent', transition: 'all .15s' }}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBilling('annual')}
+              style={{ border: 0, cursor: 'pointer', padding: '2px 10px', borderRadius: 999, fontSize: 13, fontFamily: 'var(--font-mono)', fontWeight: billing === 'annual' ? 500 : 400, color: billing === 'annual' ? 'var(--ink)' : 'var(--ink-subtle)', background: billing === 'annual' ? 'var(--surface)' : 'transparent', transition: 'all .15s', display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              Annual
+              <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--of-success)', background: 'var(--of-success-soft)', border: '1px solid rgba(16,185,129,.2)', borderRadius: 999, padding: '1px 6px' }}>
+                2 months free
+              </span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -567,8 +603,8 @@ export default function PricingGrid() {
               {[freePlan, starterPlan, proPlan, agencyPlan].map((plan) => {
                 const isFeat = 'featured' in plan && !!(plan as { featured?: boolean }).featured
                 return isFeat
-                  ? <PlanCardFeaturedSlim key={plan.key} plan={plan} currency={currency} />
-                  : <PlanCardTraditional key={plan.key} plan={plan} currency={currency} />
+                  ? <PlanCardFeaturedSlim key={plan.key} plan={plan} currency={currency} billing={billing} />
+                  : <PlanCardTraditional key={plan.key} plan={plan} currency={currency} billing={billing} />
               })}
             </div>
           </Reveal>

@@ -317,7 +317,7 @@ function StatBlock({ label, value, small, accent }: { label: string; value: stri
 }
 
 function DashboardMain({ small = false }: { small?: boolean }) {
-  const tabs = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge', 'Documents', 'Unanswered']
+  const tabs = ['Overview', 'Conversations', 'Leads', 'Settings']
   return (
     <main
       style={{
@@ -408,10 +408,9 @@ function DashboardMain({ small = false }: { small?: boolean }) {
       )}
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: small ? 6 : 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: small ? 6 : 10 }}>
         <StatBlock label="CONVERSATIONS.MONTH" value="14" small={small} />
         <StatBlock label="LEADS.MONTH" value="3" small={small} accent />
-        <StatBlock label="CONVERSATIONS.WEEK" value="14" small={small} />
       </div>
 
       {/* Recent Leads */}
@@ -1013,9 +1012,9 @@ function BentoWhiteLabel() {
 function BentoModels() {
   const providers = [
     { name: 'Anthropic', model: 'claude-opus-4', active: true },
-    { name: 'OpenAI', model: 'gpt-4o', active: false },
-    { name: 'Google', model: 'gemini-2.0', active: false },
-    { name: 'DeepSeek', model: 'deepseek-v3', active: false },
+    { name: 'OpenAI', model: 'gpt-5', active: false },
+    { name: 'Google', model: 'gemini-3', active: false },
+    { name: 'DeepSeek', model: 'deepseek-v4', active: false },
   ]
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 5 }}>
@@ -1239,9 +1238,9 @@ function FeatureBento() {
 function PricingTeaser() {
   const [currency, setCurrency] = useState<'PKR' | 'USD'>('PKR')
   const plans = [
-    { key: 'free', name: 'Free', pkr: 0, usd: 0, blurb: '1 bot · 200 convos/mo', feats: ['Forced OwFlex branding', '7-day history'] },
-    { key: 'starter', name: 'Starter', pkr: 2500, usd: 15, blurb: '2 bots · 3K convos/mo', feats: ['Lead capture controls', 'Hide OwFlex branding'] },
-    { key: 'pro', name: 'Pro', pkr: 7500, usd: 29, blurb: '8 bots · 15K convos/mo', feats: ['Unlimited history', 'Documents + scraping'], featured: true },
+    { key: 'free', name: 'Free', pkr: 0, usd: 0, blurb: '1 bot · 200 convos · 2M credits/mo', feats: ['15 leads/month · 5 FAQs per bot', '7-day conversation history', 'Color-only widget customization', 'WordPress plugin · community support'] },
+    { key: 'starter', name: 'Starter', pkr: 2500, usd: 15, blurb: '2 bots · 3K convos · 30M credits/mo', feats: ['Unlimited leads · 20 FAQs per bot', '25 MB storage · 30-day history', 'Full widget · budget AI models', 'Lead capture · strict mode · email support'] },
+    { key: 'pro', name: 'Pro', pkr: 7500, usd: 29, blurb: '8 bots · 15K convos · 150M credits/mo', feats: ['Unlimited leads · 50 FAQs · 100 MB storage', 'Unlimited history · mid-range AI models', 'Advanced analytics · unanswered questions', 'PDF upload · scraping · smart routing (Ph. 3)'], featured: true },
   ]
   const fmt = (pkr: number, usd: number) =>
     currency === 'PKR' ? (pkr === 0 ? '₨0' : `₨${pkr.toLocaleString()}`) : (usd === 0 ? '$0' : `$${usd}`)
