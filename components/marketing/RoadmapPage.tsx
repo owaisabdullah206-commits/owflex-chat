@@ -58,14 +58,14 @@ export default function RoadmapPage() {
 
           {/* Shipped */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '10px 14px', background: 'var(--surface-2)', border: '1px solid var(--hairline)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '10px 14px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 10 }}>
               <Check size={15} style={{ color: 'var(--of-success)' }} />
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--of-success)' }}>Shipped</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-subtle)', marginLeft: 'auto' }}>{SHIPPED.length} items</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {SHIPPED.map((item) => (
-                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', border: '1px solid var(--hairline)', background: 'var(--surface)', fontSize: 13.5, lineHeight: 1.5 }}>
+                <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', border: '1px solid var(--hairline)', borderRadius: 8, background: 'var(--surface)', fontSize: 13.5, lineHeight: 1.5 }}>
                   <Check size={13} style={{ color: 'var(--of-success)', flexShrink: 0, marginTop: 2 }} />
                   <span style={{ color: 'var(--ink-muted)' }}>{item}</span>
                 </div>
@@ -75,14 +75,14 @@ export default function RoadmapPage() {
 
           {/* In progress */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '10px 14px', background: 'rgba(14,165,233,0.06)', border: '1px solid var(--of-primary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '10px 14px', background: 'rgba(14,165,233,0.06)', border: '1px solid var(--of-primary)', borderRadius: 10 }}>
               <Zap size={14} style={{ color: 'var(--of-primary)' }} />
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--of-primary)' }}>In progress</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-subtle)', marginLeft: 'auto' }}>{IN_PROGRESS.length} items</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {IN_PROGRESS.map(({ title, desc }) => (
-                <div key={title} style={{ padding: '16px 14px', border: '1px solid var(--of-primary)', background: 'rgba(14,165,233,0.04)' }}>
+                <div key={title} style={{ padding: '16px 14px', border: '1px solid var(--of-primary)', borderRadius: 8, background: 'rgba(14,165,233,0.04)' }}>
                   <p style={{ fontWeight: 600, fontSize: 13.5, marginBottom: 5, color: 'var(--ink)' }}>{title}</p>
                   <p style={{ fontSize: 12.5, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.5 }}>{desc}</p>
                 </div>
@@ -92,14 +92,14 @@ export default function RoadmapPage() {
 
           {/* Planned */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '10px 14px', background: 'var(--surface-2)', border: '1px solid var(--hairline)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, padding: '10px 14px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 10 }}>
               <Clock size={14} style={{ color: 'var(--ink-subtle)' }} />
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--ink-muted)' }}>Planned</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-subtle)', marginLeft: 'auto' }}>{PLANNED.length} items</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {PLANNED.map(({ title, desc }) => (
-                <div key={title} style={{ padding: '16px 14px', border: '1px solid var(--hairline)', background: 'var(--surface)' }}>
+                <div key={title} style={{ padding: '16px 14px', border: '1px solid var(--hairline)', borderRadius: 8, background: 'var(--surface)' }}>
                   <p style={{ fontWeight: 600, fontSize: 13.5, marginBottom: 5, color: 'var(--ink-muted)' }}>{title}</p>
                   <p style={{ fontSize: 12.5, color: 'var(--ink-subtle)', margin: 0, lineHeight: 1.5 }}>{desc}</p>
                 </div>

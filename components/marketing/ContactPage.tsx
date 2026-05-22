@@ -95,7 +95,7 @@ export default function ContactPage() {
               </div>
             </a>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px', border: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '16px', border: '1px solid var(--hairline)', borderRadius: 10, background: 'var(--surface-2)' }}>
               <Clock size={16} style={{ color: 'var(--ink-subtle)', marginTop: 2, flexShrink: 0 }} />
               <div>
                 <p style={{ fontWeight: 500, fontSize: 13, margin: '0 0 4px' }}>Response time</p>
@@ -108,7 +108,7 @@ export default function ContactPage() {
           </div>
 
           {/* Right — contact form */}
-          <div style={{ border: '1px solid var(--hairline)', background: 'var(--surface)', padding: 32 }}>
+          <div style={{ border: '1px solid var(--hairline)', borderRadius: 16, background: 'var(--surface)', padding: 32 }}>
             {submitted ? (
               <div style={{ textAlign: 'center', padding: '32px 0' }}>
                 <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--of-primary-soft)', display: 'grid', placeItems: 'center', margin: '0 auto 16px', color: 'var(--of-primary)' }}>

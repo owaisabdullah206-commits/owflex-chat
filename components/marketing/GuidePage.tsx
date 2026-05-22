@@ -65,7 +65,7 @@ export default function GuidePage() {
               </li>
             ))}
           </ul>
-          <div style={{ marginTop: 32, padding: '16px', border: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+          <div style={{ marginTop: 32, padding: '16px', border: '1px solid var(--hairline)', borderRadius: 10, background: 'var(--surface-2)' }}>
             <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 10 }}>Get started</p>
             <Link
               href="/dashboard/signup"
@@ -93,7 +93,7 @@ export default function GuidePage() {
                 { n: '03', title: 'Add the embed script', body: 'Copy the <script> tag from the bot settings page and paste it before the </body> tag on your client\'s site.' },
                 { n: '04', title: 'Invite the client', body: 'Go to Clients → Invite. Enter your client\'s email. They get a link to set a password and access their portal.' },
               ].map(({ n, title, body }) => (
-                <div key={n} style={{ display: 'flex', gap: 16, padding: '20px', border: '1px solid var(--hairline)', background: 'var(--surface)' }}>
+                <div key={n} style={{ display: 'flex', gap: 16, padding: '20px', border: '1px solid var(--hairline)', borderRadius: 10, background: 'var(--surface)' }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--of-primary)', fontWeight: 600, flexShrink: 0 }}>{n}</span>
                   <div>
                     <p style={{ fontWeight: 600, fontSize: 15, marginBottom: 6 }}>{title}</p>
@@ -108,7 +108,7 @@ export default function GuidePage() {
             <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 20 }}>
               Add the following script to any HTML page. Replace <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>bot_XXXX</code> with your bot&apos;s embed key from the Dashboard.
             </p>
-            <div style={{ position: 'relative', border: '1px solid var(--hairline)', background: 'var(--surface-2)', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', border: '1px solid var(--hairline)', borderRadius: 10, background: 'var(--surface-2)', overflow: 'hidden' }}>
               <pre style={{ fontFamily: 'var(--font-mono)', fontSize: 13, padding: '20px 24px', margin: 0, overflowX: 'auto', lineHeight: 1.6, color: 'var(--ink)' }}>
                 {EMBED_SNIPPET}
               </pre>
@@ -135,7 +135,7 @@ export default function GuidePage() {
             <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 20 }}>
               All API endpoints require a Bearer token from your workspace settings. Base URL: <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>https://Octively.com/api/v1</code>
             </p>
-            <div style={{ border: '1px solid var(--hairline)', overflowX: 'auto' }}>
+            <div style={{ border: '1px solid var(--hairline)', borderRadius: 10, overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 480 }}>
                 <thead>
                   <tr style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--hairline)' }}>
@@ -175,7 +175,7 @@ export default function GuidePage() {
                 { provider: 'Google', name: 'Gemini 2.0 Flash' },
                 { provider: 'Mistral', name: 'Mistral Large' },
               ].map(({ provider, name }) => (
-                <div key={name} style={{ padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--hairline)' }}>
+                <div key={name} style={{ padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 8 }}>
                   <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-subtle)', margin: '0 0 4px' }}>{provider}</p>
                   <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', margin: 0 }}>{name}</p>
                 </div>
@@ -202,7 +202,7 @@ export default function GuidePage() {
           </DocSection>
 
           {/* CTA */}
-          <div style={{ marginTop: 56, padding: '32px', border: '1px solid var(--of-primary)', background: 'var(--of-primary-soft)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 }}>
+          <div style={{ marginTop: 56, padding: '32px', border: '1px solid var(--of-primary)', borderRadius: 14, background: 'var(--of-primary-soft)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 }}>
             <div>
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>Ready to build?</p>
               <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>Get your embed key — free plan, no card required.</p>

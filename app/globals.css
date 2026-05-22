@@ -319,6 +319,8 @@ select option {
   .mkt-changelog-row       { grid-template-columns: 1fr !important; gap: 4px !important; }
   .mkt-bento               { grid-template-columns: 1fr !important; }
   .mkt-bento > *           { grid-column: span 1 !important; grid-row: span 1 !important; }
+  .mkt-logobar-label       { display: none !important; }
+  .mkt-logobar-wrap        { flex-direction: column !important; gap: 16px !important; }
   .mkt-step-connector-v    { display: none !important; }
   .mkt-step-connector-h    { display: none !important; }
   .mkt-steps-grid          { gap: 24px !important; }

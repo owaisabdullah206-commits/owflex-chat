@@ -458,28 +458,39 @@ function LogoBar() {
   return (
     <section
       style={{
-        paddingBlock: 32,
+        paddingBlock: 28,
         borderTop: '1px solid var(--hairline)',
         borderBottom: '1px solid var(--hairline)',
         background: 'var(--surface-2)',
         overflow: 'hidden',
       }}
     >
-      <p
-        style={{
-          textAlign: 'center',
-          fontFamily: 'var(--font-mono)',
-          fontSize: 10,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          color: 'var(--ink-subtle)',
-          marginBottom: 18,
-        }}
+      {/* Desktop: label left, marquee fills the rest. Mobile: label stacked above */}
+      <div
+        className="mkt-logobar-wrap"
+        style={{ display: 'flex', alignItems: 'center', gap: 0 }}
       >
-        Trusted by Pakistani developers building for
-      </p>
+        <div
+          className="mkt-logobar-label"
+          style={{
+            flexShrink: 0,
+            padding: '0 28px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 10,
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-subtle)',
+            whiteSpace: 'nowrap',
+            borderRight: '1px solid var(--hairline)',
+            alignSelf: 'stretch',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          Trusted by Pakistani developers building for —
+        </div>
 
-      <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
         {/* fade edges */}
         <div style={{ position: 'absolute', inset: '0 auto 0 0', width: 80, background: 'linear-gradient(to right, var(--surface-2), transparent)', zIndex: 1, pointerEvents: 'none' }} />
         <div style={{ position: 'absolute', inset: '0 0 0 auto', width: 80, background: 'linear-gradient(to left, var(--surface-2), transparent)', zIndex: 1, pointerEvents: 'none' }} />
@@ -519,6 +530,7 @@ function LogoBar() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </section>
   )

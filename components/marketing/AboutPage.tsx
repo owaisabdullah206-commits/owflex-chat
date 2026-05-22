@@ -57,7 +57,7 @@ export default function AboutPage() {
           </div>
 
           {/* Founder card */}
-          <div style={{ border: '1px solid var(--hairline)', background: 'var(--surface)', padding: 32 }}>
+          <div style={{ border: '1px solid var(--hairline)', borderRadius: 16, background: 'var(--surface)', padding: 32 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
               <div style={{
                 width: 56,
@@ -98,8 +98,8 @@ export default function AboutPage() {
           <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 48, textAlign: 'center' }}>What we stand for</h2>
           <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {VALUES.map(({ Icon, title, body }) => (
-              <div key={title} style={{ border: '1px solid var(--hairline)', background: 'var(--bg)', padding: '28px 24px' }}>
-                <div style={{ width: 36, height: 36, background: 'var(--of-primary-soft)', display: 'grid', placeItems: 'center', marginBottom: 16, color: 'var(--of-primary)' }}>
+              <div key={title} style={{ border: '1px solid var(--hairline)', borderRadius: 14, background: 'var(--bg)', padding: '28px 24px' }}>
+                <div style={{ width: 42, height: 42, background: 'var(--of-primary-soft)', borderRadius: 10, display: 'grid', placeItems: 'center', marginBottom: 16, color: 'var(--of-primary)' }}>
                   <Icon size={18} />
                 </div>
                 <h3 style={{ fontWeight: 600, fontSize: 16, marginBottom: 10 }}>{title}</h3>
