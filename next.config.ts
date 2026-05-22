@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
-    '/embed.js': ['./embed/src/embed.js'],
+    '/api/embed': ['./embed/src/embed.js'],
   },
   async headers() {
     return [
