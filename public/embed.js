@@ -257,9 +257,10 @@ var ms=document.getElementById("oM"),
     icX=document.getElementById("obX");
 
 // Hide input row + disable controls while lead form is pending
+// Must use setProperty("important") to beat display:flex!important in the stylesheet
 if(clb&&!sessionStorage.getItem("_ofl")){
   var _oFEl=document.getElementById("oF");
-  if(_oFEl)_oFEl.style.display="none";
+  if(_oFEl)_oFEl.style.setProperty("display","none","important");
   if(inp)inp.disabled=true;
   if(sb)sb.disabled=true;
 }
@@ -271,7 +272,7 @@ function setStatus(text,thinking){
 
 function showLeadForm(){
   var oFEl=document.getElementById("oF");
-  if(oFEl)oFEl.style.display="none";
+  if(oFEl)oFEl.style.setProperty("display","none","important");
   if(document.getElementById("oLF"))return;
   var frm=document.createElement("div");frm.id="oLF";
   frm.style.cssText="padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto";
@@ -307,7 +308,7 @@ function showLeadForm(){
       if(r.ok){
         sessionStorage.setItem("_ofl","1");
         frm.remove();
-        var oFEl2=document.getElementById("oF");if(oFEl2)oFEl2.style.display="";
+        var oFEl2=document.getElementById("oF");if(oFEl2)oFEl2.style.removeProperty("display");
         inp.disabled=false;sb.disabled=false;
         if(!started){started=1;addBot(wm);}
         setTimeout(function(){inp.focus();},60);
