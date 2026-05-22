@@ -48,13 +48,14 @@ var side=isLeft?"left":"right";
 var opp=isLeft?"right":"left";
 var msgBr=Math.max(4,br)+"px";
 var css=
+":host{all:initial}"+
 ":root{--ofp:"+pc+"}"+
 
 /* ── Glow ring ── */
 "#obg{position:fixed;bottom:14px;"+side+":14px;"+opp+":auto;width:74px;height:74px;border-radius:50%;background:var(--ofp);z-index:2147483644;opacity:.3;filter:blur(16px);pointer-events:none;animation:ofPulse 2.5s ease-in-out infinite}"+
 
 /* ── Launch button ── */
-"#ob{position:fixed;bottom:24px;"+side+":24px;"+opp+":auto;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:var(--ofp);z-index:2147483646;box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ofFloat 3s ease-in-out infinite;transition:transform .15s,box-shadow .15s}"+
+"#ob{position:fixed;bottom:24px;"+side+":24px;"+opp+":auto;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:var(--ofp);z-index:2147483646;box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ofFloat 3s ease-in-out infinite;transition:transform .15s,box-shadow .15s;pointer-events:auto}"+
 "#ob:hover{animation:none;transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,.3)}"+
 
 /* ── Button icons ── */
@@ -62,7 +63,7 @@ var css=
 ".obX{opacity:0;transform:rotate(-90deg) scale(.5)}"+
 
 /* ── Chat panel ── */
-"#oP{position:fixed;bottom:90px;"+side+":20px;"+opp+":auto;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:"+br+"px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom "+side+";transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1)}"+
+"#oP{position:fixed;bottom:90px;"+side+":20px;"+opp+":auto;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:"+br+"px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom "+side+";transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1);pointer-events:auto}"+
 "#oP.h{opacity:0;transform:scale(0.88) translateY(16px);pointer-events:none}"+
 
 /* ── Header ── */
@@ -94,6 +95,10 @@ var css=
 "#oS:hover{transform:scale(1.1)}"+
 "#oS:disabled{opacity:.4!important;cursor:default!important;transform:none!important}"+
 
+/* ── Branding — tamper-proof via shadow DOM; no external selector can reach this ── */
+"#oB{display:flex!important;align-items:center!important;justify-content:center!important;padding:4px 0!important;font-size:10px!important;border-top:1px solid #f0f0f0!important;background:#fafafa!important;flex-shrink:0!important;opacity:0.5!important;visibility:visible!important;height:auto!important;overflow:visible!important;clip:auto!important;clip-path:none!important}"+
+"#oB a{color:inherit!important;text-decoration:none!important;pointer-events:auto!important}"+
+
 /* ── Tooltip ── */
 (te?"#oTip{position:fixed;bottom:32px;"+side+":88px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
 
@@ -105,10 +110,20 @@ var css=
 "@keyframes ofDot{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}"+
 ".od{display:inline-block;width:7px;height:7px;border-radius:50%;background:#94a3b8;animation:ofDot 1.3s infinite ease-in-out}";
 
-document.head.insertAdjacentHTML("beforeend","<style>"+css+"</style>");
+/* ── Shadow DOM host — isolates widget from page CSS and JS ── */
+var host=document.createElement("div");
+/* Zero footprint: takes no layout space, passes through pointer events */
+host.style.cssText="position:absolute;width:0;height:0;overflow:visible;pointer-events:none;border:0;padding:0;margin:0;";
+document.body.appendChild(host);
+/* closed mode: host.shadowRoot === null for any external code */
+var shadow=host.attachShadow({mode:"closed"});
+
+var styleEl=document.createElement("style");
+styleEl.textContent=css;
+shadow.appendChild(styleEl);
 
 /* Glow ring */
-var glow=document.createElement("div");glow.id="obg";document.body.appendChild(glow);
+var glow=document.createElement("div");glow.id="obg";shadow.appendChild(glow);
 
 /* Launch button with morphing icons */
 var btn=document.createElement("button");btn.id="ob";btn.setAttribute("aria-label","Open chat");
@@ -117,14 +132,14 @@ btn.innerHTML=
   '<span class="obX" id="obX">'+
     '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'+
   '</span>';
-document.body.appendChild(btn);
+shadow.appendChild(btn);
 
 /* Tooltip */
 var tipEl=null,tipIdx=0;
 if(te&&tms.length){
   tipEl=document.createElement("div");tipEl.id="oTip";
   tipEl.textContent=tms[0];
-  document.body.appendChild(tipEl);
+  shadow.appendChild(tipEl);
   if(tms.length>1){
     setInterval(function(){
       tipIdx=(tipIdx+1)%tms.length;
@@ -153,16 +168,40 @@ pnl.innerHTML=
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'+
     '</button>'+
   '</div>'+
-  (be?'<div id="oB" style="text-align:center!important;padding:3px 0!important;font-size:10px!important;opacity:0.45!important;border-top:1px solid #f0f0f0!important;background:#fafafa!important;flex-shrink:0!important;"><a href="'+esc(burl)+'" target="_blank" rel="noopener" style="color:inherit!important;text-decoration:none!important;">'+esc(bt)+'</a></div>':'');
-document.body.appendChild(pnl);
+  (be?'<div id="oB"><a href="'+esc(burl)+'" target="_blank" rel="noopener">'+esc(bt)+'</a></div>':'');
+shadow.appendChild(pnl);
 
-var ms=document.getElementById("oM"),
-    inp=document.getElementById("oI"),
-    sb=document.getElementById("oS"),
-    stEl=document.getElementById("oSt"),
-    dotEl=document.getElementById("oDot"),
-    icChat=document.getElementById("obI"),
-    icX=document.getElementById("obX");
+/* ── Anti-tamper: MutationObserver guards branding inside shadow closure ──
+   External code cannot reach shadow elements (closed mode), but this adds
+   protection against any future internal misuse. */
+if(be){
+  var brandEl=shadow.getElementById("oB");
+  if(brandEl){
+    new MutationObserver(function(muts){
+      for(var i=0;i<muts.length;i++){
+        var m=muts[i];
+        /* Branding element removed from DOM — put it back */
+        if(m.type==="childList"){
+          for(var j=0;j<m.removedNodes.length;j++){
+            if(m.removedNodes[j]===brandEl){pnl.appendChild(brandEl);break;}
+          }
+        }
+        /* Style attribute on branding tampered — strip it */
+        if(m.type==="attributes"&&m.target===brandEl){
+          brandEl.removeAttribute("style");
+        }
+      }
+    }).observe(pnl,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});
+  }
+}
+
+var ms=shadow.getElementById("oM"),
+    inp=shadow.getElementById("oI"),
+    sb=shadow.getElementById("oS"),
+    stEl=shadow.getElementById("oSt"),
+    dotEl=shadow.getElementById("oDot"),
+    icChat=shadow.getElementById("obI"),
+    icX=shadow.getElementById("obX");
 
 function setStatus(text,thinking){
   stEl.textContent=text;
@@ -192,7 +231,7 @@ function closePanel(){
 }
 
 btn.onclick=function(){op?closePanel():openPanel();};
-document.getElementById("oC").onclick=closePanel;
+shadow.getElementById("oC").onclick=closePanel;
 
 function renderMd(raw){
   var s=esc(raw);
@@ -244,7 +283,7 @@ function showTyping(){
   '</span>';
   ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
 }
-function hideTyping(){var t=document.getElementById("oT");if(t)t.remove();}
+function hideTyping(){var t=shadow.getElementById("oT");if(t)t.remove();}
 
 function lock(v){
   busy=v;sb.disabled=inp.disabled=v;
