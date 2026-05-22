@@ -1,6 +1,6 @@
 (function(){try{
 var sc=document.currentScript,k=sc&&sc.dataset&&sc.dataset.key;if(!k)return;
-var bu=(sc.src||"").replace("/embed.js","");
+var bu=sc.src?new URL(sc.src).origin:"";
 var sid=sessionStorage.getItem("_of")||("octively_"+Date.now()+"_"+Math.random().toString(36).slice(2,8));
 sessionStorage.setItem("_of",sid);
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
