@@ -256,13 +256,11 @@ var ms=document.getElementById("oM"),
     icChat=document.getElementById("obI"),
     icX=document.getElementById("obX");
 
-// Hide input row + disable controls while lead form is pending
-// Must use setProperty("important") to beat display:flex!important in the stylesheet
+// Hide messages + input row before panel is ever shown (no flash)
 if(clb&&!sessionStorage.getItem("_ofl")){
-  var _oFEl=document.getElementById("oF");
-  if(_oFEl)_oFEl.style.setProperty("display","none","important");
-  if(inp)inp.disabled=true;
-  if(sb)sb.disabled=true;
+  ms.style.setProperty("display","none","important");
+  document.getElementById("oF").style.setProperty("display","none","important");
+  inp.disabled=true;sb.disabled=true;
 }
 
 function setStatus(text,thinking){
@@ -271,30 +269,37 @@ function setStatus(text,thinking){
 }
 
 function showLeadForm(){
-  var oFEl=document.getElementById("oF");
-  if(oFEl)oFEl.style.setProperty("display","none","important");
   if(document.getElementById("oLF"))return;
+  // Hide messages area + input — covers the case where panel was already open
+  ms.style.setProperty("display","none","important");
+  document.getElementById("oF").style.setProperty("display","none","important");
+  inp.disabled=true;sb.disabled=true;
+  // Build form as direct child of panel (fills space between header and branding)
   var frm=document.createElement("div");frm.id="oLF";
-  frm.style.cssText="padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto";
-  var iSt="border:1.5px solid #e5e7eb;border-radius:8px;height:38px;padding:0 12px;font-size:13px;outline:none;font-family:inherit;color:#111;background:#fff;box-sizing:border-box;width:100%;transition:border-color .15s";
+  frm.style.cssText="flex:1;padding:28px 20px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;background:#fff";
+  var iSt="border:1.5px solid #e5e7eb;border-radius:8px;height:40px;padding:0 12px;font-size:13px;outline:none;font-family:inherit;color:#111;background:#fff;box-sizing:border-box;width:100%;transition:border-color .15s";
   frm.innerHTML=
-    '<p style="font-size:13px;color:#374151;font-weight:600;margin:0">Before we start</p>'+
-    '<p style="font-size:12px;color:#6b7280;margin:0">Share your details so we can follow up if needed.</p>'+
+    '<div>'+
+      '<p style="font-size:14px;color:#111827;font-weight:700;margin:0 0 4px">Before we start</p>'+
+      '<p style="font-size:12px;color:#6b7280;margin:0">Share your details so we can follow up if needed.</p>'+
+    '</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+
-      '<label style="font-size:11px;color:#6b7280;font-weight:500">Name <span style="color:#ef4444">*</span></label>'+
+      '<label style="font-size:11px;color:#6b7280;font-weight:600;letter-spacing:.03em">Name <span style="color:#ef4444">*</span></label>'+
       '<input id="oLFn" type="text" placeholder="Your name" style="'+iSt+'">'+
     '</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+
-      '<label style="font-size:11px;color:#6b7280;font-weight:500">Email <span style="color:#ef4444">*</span></label>'+
+      '<label style="font-size:11px;color:#6b7280;font-weight:600;letter-spacing:.03em">Email <span style="color:#ef4444">*</span></label>'+
       '<input id="oLFe" type="email" placeholder="you@example.com" style="'+iSt+'">'+
     '</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+
-      '<label style="font-size:11px;color:#6b7280;font-weight:500">Phone <span style="color:#6b7280;font-size:10px">(optional)</span></label>'+
+      '<label style="font-size:11px;color:#6b7280;font-weight:600;letter-spacing:.03em">Phone <span style="color:#6b7280;font-weight:400">(optional)</span></label>'+
       '<input id="oLFp" type="tel" placeholder="+1 (555) 000-0000" style="'+iSt+'">'+
     '</div>'+
-    '<div id="oLFerr" style="display:none;font-size:11px;color:#ef4444"></div>'+
-    '<button id="oLFs" style="height:40px;background:var(--ofp);color:#fff;border:0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Start chatting →</button>';
-  ms.appendChild(frm);
+    '<div id="oLFerr" style="display:none;font-size:11px;color:#ef4444;padding:6px 10px;background:#fef2f2;border-radius:6px"></div>'+
+    '<button id="oLFs" style="margin-top:4px;height:42px;background:var(--ofp);color:#fff;border:0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s">Start chatting →</button>';
+  // Insert between header (#oH) and branding (#oB) — right after messages area
+  var oFEl=document.getElementById("oF");
+  pnl.insertBefore(frm,oFEl);
   var nI=document.getElementById("oLFn"),eI=document.getElementById("oLFe"),phI=document.getElementById("oLFp");
   var errEl=document.getElementById("oLFerr"),sb2=document.getElementById("oLFs");
   sb2.onclick=function(){
@@ -308,7 +313,8 @@ function showLeadForm(){
       if(r.ok){
         sessionStorage.setItem("_ofl","1");
         frm.remove();
-        var oFEl2=document.getElementById("oF");if(oFEl2)oFEl2.style.removeProperty("display");
+        ms.style.removeProperty("display");
+        document.getElementById("oF").style.removeProperty("display");
         inp.disabled=false;sb.disabled=false;
         if(!started){started=1;addBot(wm);}
         setTimeout(function(){inp.focus();},60);
