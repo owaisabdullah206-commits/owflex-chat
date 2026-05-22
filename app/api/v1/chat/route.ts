@@ -176,8 +176,9 @@ export async function POST(req: NextRequest) {
 
     const docContextBlock = renderDocContext(retrievedChunks)
 
-    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; strictMode?: boolean }
-    const leadEnabled = wc.leadCaptureEnabled !== false
+    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; collectLeadBefore?: boolean; strictMode?: boolean }
+    // If the pre-chat form already collected contact info, suppress in-chat lead prompting
+    const leadEnabled = wc.leadCaptureEnabled !== false && wc.collectLeadBefore !== true
     const strictMode = wc.strictMode === true
     const strictInstructions = strictMode
       ? leadEnabled

@@ -256,6 +256,14 @@ var ms=document.getElementById("oM"),
     icChat=document.getElementById("obI"),
     icX=document.getElementById("obX");
 
+// Hide input row + disable controls while lead form is pending
+if(clb&&!sessionStorage.getItem("_ofl")){
+  var _oFEl=document.getElementById("oF");
+  if(_oFEl)_oFEl.style.display="none";
+  if(inp)inp.disabled=true;
+  if(sb)sb.disabled=true;
+}
+
 function setStatus(text,thinking){
   stEl.textContent=text;
   dotEl.style.background=thinking?"#f59e0b":"#4ade80";
@@ -300,6 +308,7 @@ function showLeadForm(){
         sessionStorage.setItem("_ofl","1");
         frm.remove();
         var oFEl2=document.getElementById("oF");if(oFEl2)oFEl2.style.display="";
+        inp.disabled=false;sb.disabled=false;
         if(!started){started=1;addBot(wm);}
         setTimeout(function(){inp.focus();},60);
       }else{
