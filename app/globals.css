@@ -297,10 +297,14 @@ select option {
     linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
 }
 
+.mkt-hamburger { display: none; }
+
 /* ─── Marketing responsive breakpoints ─────────────────────── */
 @media (max-width: 767px) {
-  .mkt-nav-links    { display: none !important; }
-  .mkt-nav-sign-in  { display: none !important; }
+  .mkt-nav-links      { display: none !important; }
+  .mkt-nav-sign-in    { display: none !important; }
+  .mkt-nav-start-free { display: none !important; }
+  .mkt-hamburger      { display: grid !important; }
   .mkt-hero-grid    { grid-template-columns: 1fr !important; }
   .mkt-grid-2       { grid-template-columns: 1fr !important; }
   .mkt-grid-3       { grid-template-columns: 1fr !important; }

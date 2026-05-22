@@ -33,25 +33,66 @@ export default function ForFreelancersPage() {
       {/* Hero */}
       <section style={{ paddingBlock: '80px 72px', borderBottom: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ maxWidth: 640 }}>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 18 }}>For freelancers</p>
-            <h1 style={{ fontSize: 52, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.07, marginBottom: 20 }}>
-              Look like a pro.<br />Charge like one.
-            </h1>
-            <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.65, maxWidth: 520, marginBottom: 36 }}>
-              Stop answering &ldquo;what did the bot say?&rdquo; emails. Give your client a portal and move on to the next project.
-            </p>
-            <Link
-              href="/dashboard/signup"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                height: 46, padding: '0 24px',
-                background: 'var(--of-primary)', color: 'white',
-                fontSize: 15, fontWeight: 500, borderRadius: 8, textDecoration: 'none',
-              }}
-            >
-              Start free — no card required <ArrowRight size={15} />
-            </Link>
+          <div className="mkt-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 420px)', gap: 56, alignItems: 'center' }}>
+            {/* Left — copy */}
+            <div>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 18 }}>For freelancers</p>
+              <h1 style={{ fontSize: 52, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.07, marginBottom: 20 }}>
+                Look like a pro.<br />Charge like one.
+              </h1>
+              <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.65, maxWidth: 520, marginBottom: 36 }}>
+                Stop answering &ldquo;what did the bot say?&rdquo; emails. Give your client a portal and move on to the next project.
+              </p>
+              <Link
+                href="/dashboard/signup"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  height: 46, padding: '0 24px',
+                  background: 'var(--of-primary)', color: 'white',
+                  fontSize: 15, fontWeight: 500, borderRadius: 8, textDecoration: 'none',
+                }}
+              >
+                Start free — no card required <ArrowRight size={15} />
+              </Link>
+            </div>
+            {/* Right — portal preview */}
+            <div style={{ border: '1px solid var(--hairline)', background: 'var(--surface)', overflow: 'hidden' }}>
+              {/* Portal header */}
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--hairline)', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ width: 20, height: 20, borderRadius: 4, background: 'var(--of-primary)', display: 'grid', placeItems: 'center' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, color: 'white' }}>K</span>
+                </div>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink)', fontWeight: 500 }}>Karachi Kurta Co.</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--of-success)', marginLeft: 'auto' }}>● Live</span>
+              </div>
+              {/* Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', padding: '16px', gap: 12, borderBottom: '1px solid var(--hairline)' }}>
+                {[
+                  { value: '47', label: 'Conversations' },
+                  { value: '12', label: 'Leads' },
+                  { value: '98%', label: 'Uptime' },
+                ].map(({ value, label }) => (
+                  <div key={label} style={{ textAlign: 'center' }}>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--ink)', margin: 0 }}>{value}</p>
+                    <p style={{ fontSize: 10.5, color: 'var(--ink-muted)', margin: 0 }}>{label}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Recent conversation */}
+              <div style={{ padding: '14px 16px' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 10 }}>Latest conversation</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ink-subtle)', flexShrink: 0, marginTop: 1 }}>User</span>
+                    <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.5, background: 'var(--surface-2)', padding: '6px 10px', borderRadius: '0 6px 6px 6px', flex: 1 }}>What are your delivery times?</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexDirection: 'row-reverse' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--of-primary)', flexShrink: 0, marginTop: 1 }}>Bot</span>
+                    <p style={{ fontSize: 12, color: 'var(--ink)', margin: 0, lineHeight: 1.5, background: 'var(--of-primary-soft)', padding: '6px 10px', borderRadius: '6px 0 6px 6px', flex: 1 }}>We deliver within 2–3 business days across Pakistan. Express options available.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

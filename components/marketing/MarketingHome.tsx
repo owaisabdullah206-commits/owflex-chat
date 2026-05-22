@@ -855,10 +855,10 @@ function BentoWhiteLabel() {
 
 function BentoModels() {
   const providers = [
-    { name: 'Anthropic', model: 'claude-opus-4', active: true },
-    { name: 'OpenAI', model: 'gpt-5', active: false },
-    { name: 'Google', model: 'gemini-3', active: false },
-    { name: 'DeepSeek', model: 'deepseek-v4', active: false },
+    { name: 'Anthropic', model: 'claude-3.5-sonnet', active: true },
+    { name: 'OpenAI', model: 'gpt-4o', active: false },
+    { name: 'Google', model: 'gemini-2.0-flash', active: false },
+    { name: 'Mistral', model: 'mistral-large', active: false },
   ]
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 5 }}>
@@ -939,7 +939,7 @@ function BentoIsolation() {
 }
 
 function BentoBotStack() {
-  const stacks = ['WordPress', 'Shopify', 'Wix', 'Webflow', 'Squarespace', 'React / Next.js', 'HTML', 'Static Sites']
+  const stacks = ['WordPress', 'Shopify', 'Wix', 'Webflow', 'Squarespace', 'React / Vue', 'HTML', 'Static Sites']
   return (
     <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: 5 }}>
       {stacks.map((s, i) => (

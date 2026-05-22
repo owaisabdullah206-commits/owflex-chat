@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: 'Which AI models can my bots use?',
-    a: 'Any model supported by LiteLLM — DeepSeek, GPT-4o, Claude, Gemini, and more. You can pick a different model per bot.',
+    a: 'Any leading AI model — GPT-4o, Claude, Gemini, Mistral, and more. You can pick a different model per bot from your dashboard.',
   },
   {
     q: 'What happens when I hit my plan limits?',
@@ -122,7 +122,7 @@ export default function ContactPage() {
                 style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
               >
                 <h3 style={{ fontWeight: 600, fontSize: 17, marginBottom: 4 }}>Send a message</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="mkt-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <Field label="Name" name="name" placeholder="Owais" required />
                   <Field label="Email" name="email" type="email" placeholder="you@agency.com" required />
                 </div>
@@ -173,7 +173,7 @@ export default function ContactPage() {
           <div style={{ marginTop: 32, textAlign: 'center' }}>
             <p style={{ fontSize: 14, color: 'var(--ink-muted)' }}>
               Still have questions?{' '}
-              <Link href="/docs" style={{ color: 'var(--of-primary)' }}>Read the docs</Link>
+              <Link href="/guide" style={{ color: 'var(--of-primary)' }}>Read the guide</Link>
               {' '}or{' '}
               <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--of-primary)' }}>chat on WhatsApp</a>.
             </p>

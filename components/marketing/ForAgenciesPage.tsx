@@ -49,37 +49,78 @@ export default function ForAgenciesPage() {
       {/* Hero */}
       <section style={{ paddingBlock: '80px 72px', borderBottom: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ maxWidth: 680 }}>
-            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 18 }}>For agencies</p>
-            <h1 style={{ fontSize: 52, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.07, marginBottom: 20 }}>
-              Your clients.<br />Your brand.<br />Their chatbot.
-            </h1>
-            <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.65, maxWidth: 540, marginBottom: 36 }}>
-              Build chatbots for 10 clients. Each one gets a portal that looks like it was built by you — because it was.
-            </p>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <Link
-                href="/dashboard/signup"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  height: 46, padding: '0 24px',
-                  background: 'var(--of-primary)', color: 'white',
-                  fontSize: 15, fontWeight: 500, borderRadius: 8, textDecoration: 'none',
-                }}
-              >
-                Start managing clients <ArrowRight size={15} />
-              </Link>
-              <Link
-                href="/pricing"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  height: 46, padding: '0 20px',
-                  border: '1px solid var(--hairline)', background: 'transparent',
-                  color: 'var(--ink)', fontSize: 15, borderRadius: 8, textDecoration: 'none',
-                }}
-              >
-                See Agency pricing
-              </Link>
+          <div className="mkt-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 480px)', gap: 56, alignItems: 'center' }}>
+            {/* Left — copy */}
+            <div>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 18 }}>For agencies</p>
+              <h1 style={{ fontSize: 52, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.07, marginBottom: 20 }}>
+                Your clients.<br />Your brand.<br />Their chatbot.
+              </h1>
+              <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.65, maxWidth: 540, marginBottom: 36 }}>
+                Build chatbots for 10 clients. Each one gets a portal that looks like it was built by you — because it was.
+              </p>
+              <div style={{ display: 'flex', gap: 12 }}>
+                <Link
+                  href="/dashboard/signup"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    height: 46, padding: '0 24px',
+                    background: 'var(--of-primary)', color: 'white',
+                    fontSize: 15, fontWeight: 500, borderRadius: 8, textDecoration: 'none',
+                  }}
+                >
+                  Start managing clients <ArrowRight size={15} />
+                </Link>
+                <Link
+                  href="/pricing"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    height: 46, padding: '0 20px',
+                    border: '1px solid var(--hairline)', background: 'transparent',
+                    color: 'var(--ink)', fontSize: 15, borderRadius: 8, textDecoration: 'none',
+                  }}
+                >
+                  See Agency pricing
+                </Link>
+              </div>
+            </div>
+            {/* Right — visual */}
+            <div style={{ border: '1px solid var(--hairline)', background: 'var(--surface)', overflow: 'hidden' }}>
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--hairline)', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Client portals</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--of-success)' }}>● 4 active</span>
+              </div>
+              {[
+                { name: 'Karachi Kurta Co.', bots: 2, status: 'Active', leads: 34 },
+                { name: 'Dawn Studio', bots: 1, status: 'Active', leads: 12 },
+                { name: 'Pak Travels', bots: 3, status: 'Active', leads: 67 },
+                { name: 'Lahore Auto Parts', bots: 1, status: 'Setup', leads: 0 },
+              ].map((client, i) => (
+                <div
+                  key={client.name}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '14px 20px',
+                    borderBottom: i < 3 ? '1px solid var(--hairline)' : 'none',
+                  }}
+                >
+                  <div style={{ width: 32, height: 32, borderRadius: 6, background: 'var(--of-primary-soft)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, color: 'var(--of-primary)' }}>{client.name.charAt(0)}</span>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 500, fontSize: 13.5, margin: 0, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{client.name}</p>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10.5, color: 'var(--ink-muted)', margin: 0 }}>{client.bots} bot{client.bots > 1 ? 's' : ''}</p>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: client.status === 'Active' ? 'var(--of-success)' : 'var(--ink-subtle)', margin: 0 }}>● {client.status}</p>
+                    {client.leads > 0 && <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ink-muted)', margin: 0 }}>{client.leads} leads</p>}
+                  </div>
+                </div>
+              ))}
+              <div style={{ padding: '12px 20px', background: 'var(--surface-2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ink-subtle)' }}>Your agency · All clients</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--of-primary)' }}>+ Invite client</span>
+              </div>
             </div>
           </div>
         </div>

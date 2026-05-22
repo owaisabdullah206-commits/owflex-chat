@@ -10,7 +10,7 @@ const SIDEBAR = [
   { id: 'getting-started', label: 'Getting started' },
   { id: 'embed-guide', label: 'Embed guide' },
   { id: 'api', label: 'API reference' },
-  { id: 'models', label: 'Supported models' },
+  { id: 'models', label: 'AI models' },
   { id: 'faq', label: 'FAQ' },
 ]
 
@@ -161,16 +161,28 @@ export default function GuidePage() {
             </div>
           </DocSection>
 
-          <DocSection id="models" title="Supported models">
+          <DocSection id="models" title="Supported AI models">
             <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 16 }}>
-              Octively routes all AI calls through LiteLLM. You can select a model per bot from the bot settings page. Any model string supported by LiteLLM works.
+              Choose the model that best fits each bot — from fast and budget-friendly to frontier-class. Select per bot from the bot settings page.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-              {['deepseek/deepseek-v4-flash', 'gpt-4o', 'gpt-4o-mini', 'claude-3-5-sonnet', 'gemini-2.0-flash', 'mistral/mistral-large'].map((m) => (
-                <div key={m} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, padding: '8px 10px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', color: 'var(--ink-muted)' }}>{m}</div>
+            <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {[
+                { provider: 'OpenAI', name: 'GPT-4o' },
+                { provider: 'OpenAI', name: 'GPT-4o Mini' },
+                { provider: 'Anthropic', name: 'Claude 3.5 Sonnet' },
+                { provider: 'Anthropic', name: 'Claude 3 Haiku' },
+                { provider: 'Google', name: 'Gemini 2.0 Flash' },
+                { provider: 'Mistral', name: 'Mistral Large' },
+              ].map(({ provider, name }) => (
+                <div key={name} style={{ padding: '10px 12px', background: 'var(--surface-2)', border: '1px solid var(--hairline)' }}>
+                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-subtle)', margin: '0 0 4px' }}>{provider}</p>
+                  <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--ink)', margin: 0 }}>{name}</p>
+                </div>
               ))}
             </div>
-            <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginTop: 12 }}>Default model: <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>deepseek/deepseek-v4-flash</code></p>
+            <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginTop: 12 }}>
+              More models available. All inference is routed through a unified gateway — switch models without changing your embed code.
+            </p>
           </DocSection>
 
           <DocSection id="faq" title="FAQ">
