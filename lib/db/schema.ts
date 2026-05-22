@@ -94,6 +94,9 @@ export const bots = pgTable('bots', {
   portalConfig: jsonb('portal_config').notNull().default({}),
   isActive:            boolean('is_active').notNull().default(true),
   smartRoutingEnabled: boolean('smart_routing_enabled').notNull().default(false),
+  // Null = fall back to bot.model (light) or global STRONG_MODEL (strong)
+  routingLightModel:   varchar('routing_light_model', { length: 100 }),
+  routingStrongModel:  varchar('routing_strong_model', { length: 100 }),
   // Per-bot resource caps (null = draws from org pool with no bot-level cap)
   monthlyConvLimit:    integer('monthly_conv_limit'),
   monthlyLeadLimit:    integer('monthly_lead_limit'),

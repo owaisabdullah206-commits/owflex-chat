@@ -90,6 +90,8 @@ export async function POST(req: NextRequest) {
         convCount:           schema.organizations.conversationsThisMonth,
         bannedAt:            schema.organizations.bannedAt,
         smartRoutingEnabled: schema.bots.smartRoutingEnabled,
+        routingLightModel:   schema.bots.routingLightModel,
+        routingStrongModel:  schema.bots.routingStrongModel,
         monthlyConvLimit:    schema.bots.monthlyConvLimit,
         ownerEmail:          schema.users.email,
         documentCount: sql<number>`(
@@ -241,6 +243,8 @@ export async function POST(req: NextRequest) {
         botDefaultModel: bot.model,
         orgId: bot.orgId,
         baseEstimate: estimatedTokens,
+        lightModel: bot.routingLightModel,
+        strongModel: bot.routingStrongModel,
       })
       resolvedModel = routeResult.modelToUse
       routingDecisionData = {

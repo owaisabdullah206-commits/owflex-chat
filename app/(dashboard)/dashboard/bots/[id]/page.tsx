@@ -21,7 +21,6 @@ import { DeleteBotButton } from '@/components/dashboard/DeleteBotButton'
 import { FaqEditor } from '@/components/dashboard/FaqEditor'
 import { UnansweredList } from '@/components/dashboard/UnansweredList'
 import { DocumentsTab } from '@/components/dashboard/DocumentsTab'
-import { SmartRoutingToggle } from '@/components/dashboard/SmartRoutingToggle'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 import { BotTabSelect } from '@/components/dashboard/BotTabSelect'
@@ -53,6 +52,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       orgId: schema.bots.orgId,
       orgPlan: schema.organizations.plan,
       smartRoutingEnabled: schema.bots.smartRoutingEnabled,
+      routingLightModel:   schema.bots.routingLightModel,
+      routingStrongModel:  schema.bots.routingStrongModel,
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -309,6 +310,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                     name: bot.name,
                     systemPrompt: bot.systemPrompt,
                     model: bot.model,
+                    smartRoutingEnabled: bot.smartRoutingEnabled,
+                    routingLightModel: bot.routingLightModel ?? null,
+                    routingStrongModel: bot.routingStrongModel ?? null,
                     ...(() => {
                       const wc = (bot.widgetConfig ?? {}) as Record<string, unknown>
                       const isAgencyPlus = bot.orgPlan === 'agency' || bot.orgPlan === 'enterprise'
@@ -332,13 +336,6 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                     })(),
                   }}
                 />
-              </div>
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>smart_routing</p>
-                <p className="text-xs text-[var(--ink-muted)] mb-4">
-                  Routes complex questions to a stronger model, reducing average credit cost on mixed traffic.
-                </p>
-                <SmartRoutingToggle botId={bot.id} initialEnabled={bot.smartRoutingEnabled} />
               </div>
             </div>
           )}

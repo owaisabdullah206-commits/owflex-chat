@@ -9,9 +9,12 @@ import { requireDeveloper } from '@/lib/auth/session'
 import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
 
 const updateBotSchema = z.object({
-  name:         z.string().min(1).max(255).optional(),
-  systemPrompt: z.string().min(1).optional(),
-  model:        z.enum(SUPPORTED_MODELS).optional(),
+  name:                z.string().min(1).max(255).optional(),
+  systemPrompt:        z.string().min(1).optional(),
+  model:               z.enum(SUPPORTED_MODELS).optional(),
+  smartRoutingEnabled: z.boolean().optional(),
+  routingLightModel:   z.enum(SUPPORTED_MODELS).nullable().optional(),
+  routingStrongModel:  z.enum(SUPPORTED_MODELS).nullable().optional(),
   widgetConfig: z.object({
     primaryColor:       z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     position:           z.enum(['bottom-right', 'bottom-left']).optional(),
@@ -61,6 +64,10 @@ export async function updateBot(
   if (parsed.data.model !== undefined && botRow.orgPlan !== 'free') {
     update.model = parsed.data.model
   }
+
+  if (parsed.data.smartRoutingEnabled !== undefined) update.smartRoutingEnabled = parsed.data.smartRoutingEnabled
+  if (parsed.data.routingLightModel !== undefined) update.routingLightModel = parsed.data.routingLightModel
+  if (parsed.data.routingStrongModel !== undefined) update.routingStrongModel = parsed.data.routingStrongModel
 
   if (parsed.data.widgetConfig !== undefined) {
     const wc = { ...parsed.data.widgetConfig }

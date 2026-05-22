@@ -39,6 +39,9 @@ interface BotSettingsFormProps {
     name: string
     systemPrompt: string
     model: string
+    smartRoutingEnabled: boolean
+    routingLightModel: string | null
+    routingStrongModel: string | null
     primaryColor: string
     position: 'bottom-right' | 'bottom-left'
     welcomeMessage: string
@@ -64,6 +67,9 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [name, setName]                         = useState(initial.name)
   const [systemPrompt, setSystemPrompt]         = useState(initial.systemPrompt)
   const [model, setModel]                       = useState(initial.model)
+  const [smartRouting, setSmartRouting]         = useState(initial.smartRoutingEnabled)
+  const [lightModel, setLightModel]             = useState<string>(initial.routingLightModel ?? initial.model)
+  const [strongModel, setStrongModel]           = useState<string>(initial.routingStrongModel ?? 'anthropic/claude-haiku-4-5-20251001')
   const [primaryColor, setPrimaryColor]         = useState(initial.primaryColor)
   const [position, setPosition]                 = useState(initial.position)
   const [welcomeMessage, setWelcomeMessage]     = useState(initial.welcomeMessage)
@@ -98,6 +104,9 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         name,
         systemPrompt,
         model: model as SupportedModel,
+        smartRoutingEnabled: smartRouting,
+        routingLightModel: smartRouting ? lightModel as SupportedModel : null,
+        routingStrongModel: smartRouting ? strongModel as SupportedModel : null,
         widgetConfig: {
           primaryColor,
           position,
@@ -152,7 +161,84 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             disabled={isPending} />
         </div>
 
-        {/* Model */}
+        {/* Smart Routing */}
+        <div className="border border-[var(--hairline)] bg-[var(--surface)]">
+          <div className="flex items-start justify-between gap-4 p-4">
+            <div>
+              <p className="text-sm font-medium text-[var(--ink)]">Smart routing</p>
+              <p className="text-xs text-[var(--ink-muted)] mt-0.5">
+                {smartRouting
+                  ? 'Classifies each message and routes to the right model tier.'
+                  : 'All messages use the single model below. Enable to route by complexity.'}
+              </p>
+            </div>
+            <Switch
+              checked={smartRouting}
+              onCheckedChange={(v) => { setSmartRouting(v); markDirty() }}
+              disabled={isPending || isFreePlan}
+              className="mt-0.5 shrink-0"
+            />
+          </div>
+
+          {smartRouting && (
+            <div className="border-t border-[var(--hairline)] divide-y divide-[var(--hairline)]">
+              {/* Light model */}
+              <div className="px-4 py-3 flex items-center gap-3">
+                <div className="w-28 shrink-0">
+                  <p className="text-[11px] font-medium text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>light_model</p>
+                  <p className="text-[10px] text-[var(--ink-subtle)]">greetings · faq</p>
+                </div>
+                <div className="relative flex-1">
+                  <select value={lightModel}
+                    onChange={(e) => { setLightModel(e.target.value); markDirty() }}
+                    disabled={isPending}
+                    className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:border-[var(--of-primary)] cursor-pointer"
+                    style={{ fontFamily: 'var(--font-mono)' }}>
+                    {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--ink-muted)]" />
+                </div>
+              </div>
+              {/* Default model (knowledge) */}
+              <div className="px-4 py-3 flex items-center gap-3">
+                <div className="w-28 shrink-0">
+                  <p className="text-[11px] font-medium text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>default_model</p>
+                  <p className="text-[10px] text-[var(--ink-subtle)]">knowledge queries</p>
+                </div>
+                <div className="relative flex-1">
+                  <select value={model}
+                    onChange={(e) => { setModel(e.target.value); markDirty() }}
+                    disabled={isPending || isFreePlan}
+                    className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer"
+                    style={{ fontFamily: 'var(--font-mono)' }}>
+                    {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--ink-muted)]" />
+                </div>
+              </div>
+              {/* Strong model */}
+              <div className="px-4 py-3 flex items-center gap-3">
+                <div className="w-28 shrink-0">
+                  <p className="text-[11px] font-medium text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>strong_model</p>
+                  <p className="text-[10px] text-[var(--ink-subtle)]">complex reasoning</p>
+                </div>
+                <div className="relative flex-1">
+                  <select value={strongModel}
+                    onChange={(e) => { setStrongModel(e.target.value); markDirty() }}
+                    disabled={isPending}
+                    className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:border-[var(--of-primary)] cursor-pointer"
+                    style={{ fontFamily: 'var(--font-mono)' }}>
+                    {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--ink-muted)]" />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Model (single, shown only when smart routing is off) */}
+        {!smartRouting && (
         <div className="space-y-1.5">
           <Label htmlFor="model" className="text-xs text-[var(--ink-muted)]">
             Model
@@ -173,6 +259,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
           </div>
         </div>
+        )}
 
         {/* Welcome Message */}
         <div className="space-y-1.5">

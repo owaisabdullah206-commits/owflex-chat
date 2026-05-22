@@ -85,7 +85,12 @@ export async function routeMessage(params: {
   botDefaultModel: string
   orgId: string
   baseEstimate: number
+  lightModel?: string | null
+  strongModel?: string | null
 }): Promise<RouteResult> {
+  const lightModelResolved  = params.lightModel  ?? params.botDefaultModel
+  const strongModelResolved = params.strongModel ?? STRONG_MODEL
+
   if (process.env.SMART_ROUTING_FORCE_OFF === 'true') {
     return {
       modelToUse: params.botDefaultModel,
@@ -99,7 +104,19 @@ export async function routeMessage(params: {
 
   const classifyResult = await classifyMessage(params.text)
 
-  if (classifyResult.classification !== 'complex') {
+  // greeting / faq → light model; knowledge → bot default model
+  if (classifyResult.classification === 'greeting' || classifyResult.classification === 'faq') {
+    return {
+      modelToUse: lightModelResolved,
+      fallbackUsed: false,
+      classification: classifyResult.classification,
+      classifierLatencyMs: classifyResult.latencyMs,
+      classifierModel: classifyResult.classifierModel,
+      creditCost: params.baseEstimate,
+    }
+  }
+
+  if (classifyResult.classification === 'knowledge') {
     return {
       modelToUse: params.botDefaultModel,
       fallbackUsed: false,
@@ -110,7 +127,7 @@ export async function routeMessage(params: {
     }
   }
 
-  // Complex: check if org has enough credits for the strong model
+  // complex → try strong model
   const strongEstimate = params.baseEstimate * 5
   const balance = await getBalance(params.orgId)
 
@@ -125,7 +142,6 @@ export async function routeMessage(params: {
     }
   }
 
-  // Debit for strong model upfront (chat route reconciles after actual usage)
   const { ok } = await debit(params.orgId, strongEstimate)
   if (!ok) {
     return {
@@ -138,11 +154,10 @@ export async function routeMessage(params: {
     }
   }
 
-  // Refund the default-model estimate that was already debited by the chat route
   await refund(params.orgId, params.baseEstimate)
 
   return {
-    modelToUse: STRONG_MODEL,
+    modelToUse: strongModelResolved,
     fallbackUsed: false,
     classification: 'complex',
     classifierLatencyMs: classifyResult.latencyMs,
