@@ -48,8 +48,7 @@ var side=isLeft?"left":"right";
 var opp=isLeft?"right":"left";
 var msgBr=Math.max(4,br)+"px";
 var css=
-":host{all:initial}"+
-":root{--ofp:"+pc+"}"+
+":host{all:initial;--ofp:"+pc+"}"+
 
 /* ── Glow ring ── */
 "#obg{position:fixed;bottom:14px;"+side+":14px;"+opp+":auto;width:74px;height:74px;border-radius:50%;background:var(--ofp);z-index:2147483644;opacity:.3;filter:blur(16px);pointer-events:none;animation:ofPulse 2.5s ease-in-out infinite}"+
