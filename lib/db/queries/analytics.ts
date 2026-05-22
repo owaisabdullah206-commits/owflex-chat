@@ -14,11 +14,11 @@ export async function getBotAnalytics(botId: string, days = 30) {
       .from(schema.conversations)
       .where(and(eq(schema.conversations.botId, botId), gte(schema.conversations.startedAt, since))),
 
-    // Escalated (needs_human)
+    // Escalated (needs_human) — safe if column doesn't exist yet
     db
-      .select({ count: count() })
+      .select({ count: sql<number>`count(*) FILTER (WHERE COALESCE(${schema.conversations.needsHuman}, false) = true)` })
       .from(schema.conversations)
-      .where(and(eq(schema.conversations.botId, botId), eq(schema.conversations.needsHuman, true), gte(schema.conversations.startedAt, since))),
+      .where(and(eq(schema.conversations.botId, botId), gte(schema.conversations.startedAt, since))),
 
     // Avg messages per conversation
     db
@@ -44,7 +44,7 @@ export async function getBotAnalytics(botId: string, days = 30) {
         sessionId:    schema.conversations.sessionId,
         startedAt:    schema.conversations.startedAt,
         messageCount: schema.conversations.messageCount,
-        needsHuman:   schema.conversations.needsHuman,
+        needsHuman:   sql<boolean>`COALESCE(${schema.conversations.needsHuman}, false)`,
       })
       .from(schema.conversations)
       .where(and(eq(schema.conversations.botId, botId), gte(schema.conversations.startedAt, since)))

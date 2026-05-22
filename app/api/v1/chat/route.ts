@@ -332,18 +332,24 @@ export async function POST(req: NextRequest) {
 
     // Human handoff: flag conversation when bot signals uncertainty
     const unanswered = flagIfUnanswered(content)
-    const convUpdate: Record<string, unknown> = { messageCount: sql`${schema.conversations.messageCount} + 2` }
-    if (unanswered) {
-      convUpdate.needsHuman = true
-      convUpdate.escalatedAt = new Date()
-    }
 
     // Increment message count + conversation counter for org
     await Promise.all([
-      db
-        .update(schema.conversations)
-        .set(convUpdate)
-        .where(eq(schema.conversations.id, conversation.id)),
+      unanswered
+        ? db
+            .update(schema.conversations)
+            .set({ messageCount: sql`${schema.conversations.messageCount} + 2`, needsHuman: true, escalatedAt: new Date() })
+            .where(eq(schema.conversations.id, conversation.id))
+            .catch(() =>
+              db
+                .update(schema.conversations)
+                .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
+                .where(eq(schema.conversations.id, conversation.id))
+            )
+        : db
+            .update(schema.conversations)
+            .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
+            .where(eq(schema.conversations.id, conversation.id)),
       db
         .update(schema.organizations)
         .set({ conversationsThisMonth: sql`${schema.organizations.conversationsThisMonth} + 1` })

@@ -230,7 +230,7 @@ export async function searchConversations(
       pageUrl:      schema.conversations.pageUrl,
       startedAt:    schema.conversations.startedAt,
       messageCount: schema.conversations.messageCount,
-      needsHuman:   schema.conversations.needsHuman,
+      needsHuman:   sql<boolean>`COALESCE(${schema.conversations.needsHuman}, false)`,
     })
     .from(schema.conversations)
     .where(and(...conditions))

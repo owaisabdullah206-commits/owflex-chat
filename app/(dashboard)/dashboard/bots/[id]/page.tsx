@@ -138,7 +138,11 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       .where(eq(schema.invitations.botId, bot.id))
       .orderBy(desc(schema.invitations.createdAt))
       .limit(1),
-    getBotAnalytics(bot.id, 30),
+    getBotAnalytics(bot.id, 30).catch(() => ({
+      totalConversations: 0, totalMessages: 0, escalatedCount: 0,
+      avgMessagesPerConv: 0, unansweredCount: 0, resolutionRate: 100,
+      recentConversations: [],
+    })),
   ])
 
   const clientUser = clientRows[0] ?? null
