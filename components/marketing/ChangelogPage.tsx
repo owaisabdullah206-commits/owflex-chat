@@ -129,6 +129,7 @@ export default function ChangelogPage() {
             {RELEASES.map(({ version, date, tag, items }, idx) => (
               <div
                 key={version}
+                className="mkt-changelog-row"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '140px 1fr',

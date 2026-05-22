@@ -50,7 +50,7 @@ export default function ContactPage() {
 
       {/* Contact grid */}
       <section style={{ paddingBlock: 72 }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 56 }}>
+        <div className="mkt-grid-2" style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 56 }}>
 
           {/* Left — direct channels */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

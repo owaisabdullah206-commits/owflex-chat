@@ -21,9 +21,9 @@ export default function TermsPage() {
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
       <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 64, alignItems: 'start' }}>
+      <div className="mkt-legal-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 64, alignItems: 'start' }}>
         {/* Sidebar */}
-        <nav style={{ position: 'sticky', top: 88 }}>
+        <nav className="mkt-legal-sidebar" style={{ position: 'sticky', top: 88 }}>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 12 }}>On this page</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {SECTIONS.map(({ id, label }) => (

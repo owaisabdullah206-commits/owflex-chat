@@ -58,7 +58,7 @@ export default function ForFreelancersPage() {
 
       {/* Pain points */}
       <section style={{ paddingBlock: 64, background: 'var(--surface-2)', borderBottom: '1px solid var(--hairline)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div className="mkt-grid-3" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
           {[
             { Icon: Mail, title: 'Client emails you weekly', body: '"What conversations came in this week?" — now they just log in and check.' },
             { Icon: Clock, title: 'Manual lead forwarding', body: 'Copying lead data from logs to emails. Every. Single. Week. That time is yours.' },

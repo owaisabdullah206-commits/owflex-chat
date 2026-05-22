@@ -63,7 +63,7 @@ export function Sidebar() {
           className="text-[var(--ink)] font-semibold text-sm tracking-[-0.02em]"
           style={{ fontFamily: 'var(--font-mono)' }}
         >
-          octively
+          Octively
         </span>
       </div>
 

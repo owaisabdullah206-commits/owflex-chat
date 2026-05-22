@@ -23,7 +23,7 @@ export async function sendUsageWarningEmail({
 
   try {
     await resend.emails.send({
-      from: 'octively <noreply@octively.com>',
+      from: 'Octively <noreply@octively.com>',
       to,
       subject: `You've used ${pctUsed}% of your ${planName} ${metricLabel} limit`,
       html: `

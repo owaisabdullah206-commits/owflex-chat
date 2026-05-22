@@ -48,7 +48,7 @@ export default function DashboardSignupPage() {
             <div className="w-7 h-7 bg-[var(--of-primary)] flex items-center justify-center">
               <span className="text-white text-sm font-bold">O</span>
             </div>
-            <span className="text-[var(--ink)] font-semibold text-lg tracking-tight">octively</span>
+            <span className="text-[var(--ink)] font-semibold text-lg tracking-tight">Octively</span>
           </div>
           <h1 className="text-xl font-semibold text-[var(--ink)]">Create your account</h1>
           <p className="text-sm text-[var(--ink-muted)] mt-1">Start managing your AI chatbots</p>

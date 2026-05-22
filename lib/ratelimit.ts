@@ -18,7 +18,7 @@ export function getChatRatelimit(): Ratelimit | null {
   if (_chatRatelimit === undefined) {
     const redis = makeRedis()
     _chatRatelimit = redis
-      ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(30, '1 m'), prefix: 'octively:chat' })
+      ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(30, '1 m'), prefix: 'Octively:chat' })
       : null
   }
   return _chatRatelimit
@@ -28,7 +28,7 @@ export function getLeadsRatelimit(): Ratelimit | null {
   if (_leadsRatelimit === undefined) {
     const redis = makeRedis()
     _leadsRatelimit = redis
-      ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '1 m'), prefix: 'octively:leads' })
+      ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '1 m'), prefix: 'Octively:leads' })
       : null
   }
   return _leadsRatelimit

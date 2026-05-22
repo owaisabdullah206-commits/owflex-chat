@@ -5,7 +5,7 @@ import { ThemeToggleButton } from '@/components/shared/ThemeToggleButton'
 import { Toaster } from '@/components/ui/sonner'
 
 const themeScript = `(function(){
-  var stored = localStorage.getItem('octively-theme-dashboard');
+  var stored = localStorage.getItem('Octively-theme-dashboard');
   var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   var theme = stored || (systemDark ? 'dark' : 'light');
   document.documentElement.classList.add('dashboard', theme);

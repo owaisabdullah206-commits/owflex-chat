@@ -47,7 +47,7 @@ export default function DashboardLoginPage() {
             <div className="w-7 h-7 bg-[var(--of-primary)] flex items-center justify-center">
               <span className="text-white text-sm font-bold">O</span>
             </div>
-            <span className="text-[var(--ink)] font-semibold text-lg tracking-tight">octively</span>
+            <span className="text-[var(--ink)] font-semibold text-lg tracking-tight">Octively</span>
           </div>
           <h1 className="text-xl font-semibold text-[var(--ink)]">Sign in to your dashboard</h1>
           <p className="text-sm text-[var(--ink-muted)] mt-1">Manage your bots and clients</p>

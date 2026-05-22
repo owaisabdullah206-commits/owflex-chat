@@ -21,7 +21,7 @@ export async function sendClientInvitation({
       html: `
         <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#1e293b">
           <div style="margin-bottom:24px">
-            <span style="font-size:20px;font-weight:700;color:#0EA5E9">octively</span>
+            <span style="font-size:20px;font-weight:700;color:#0EA5E9">Octively</span>
           </div>
           <h2 style="font-size:22px;font-weight:700;margin:0 0 12px">You're invited!</h2>
           <p style="font-size:15px;color:#475569;margin:0 0 24px;line-height:1.6">

@@ -29,7 +29,7 @@ const API_ENDPOINTS = [
   { method: 'GET', path: '/api/v1/usage', desc: 'Get credit usage for the current billing period' },
 ]
 
-export default function DocsPage() {
+export default function GuidePage() {
   const [dark, setDark] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -44,10 +44,10 @@ export default function DocsPage() {
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
       <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px 80px', display: 'grid', gridTemplateColumns: '210px 1fr', gap: 56, alignItems: 'start' }}>
+      <div className="mkt-legal-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px 80px', display: 'grid', gridTemplateColumns: '210px 1fr', gap: 56, alignItems: 'start' }}>
 
         {/* Sidebar */}
-        <nav style={{ position: 'sticky', top: 88 }}>
+        <nav className="mkt-legal-sidebar" style={{ position: 'sticky', top: 88 }}>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 12 }}>Documentation</p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
             {SIDEBAR.map(({ id, label }) => (

@@ -545,7 +545,7 @@ function ProblemStrip() {
             You ship the bot. Then you ship the dashboard. Then the auth. Then the billing.
           </h2>
         </Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {items.map(({ Icon, h, p }, i) => (
             <Reveal key={i} delay={i * 80}>
               <div
@@ -660,7 +660,7 @@ function HowItWorks() {
             Read embed guide <ArrowUpRight size={14} />
           </a>
         </Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative' }}>
+        <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative' }}>
           {steps.map(({ Icon, n, h, p }, i) => (
             <Reveal key={i} delay={i * 100}>
               <div style={{ position: 'relative', padding: '0 24px' }}>
@@ -1160,7 +1160,7 @@ function PricingTeaser() {
             </Link>
           </div>
         </Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
           {plans.map((p) => {
             const price = fmt(p.pkr, p.usd)
             const suffix = p.pkr === 0 ? '' : '/mo'
@@ -1657,6 +1657,7 @@ export default function MarketingHome() {
         <div className="mkt-grid-bg" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative' }}>
           <div
+            className="mkt-hero-grid"
             style={{
               display: 'grid',
               gridTemplateColumns: 'minmax(0, 1.05fr) minmax(0, 1fr)',

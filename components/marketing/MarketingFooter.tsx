@@ -6,15 +6,15 @@ const COLS = [
     items: [
       { label: 'Features', href: '/#features' },
       { label: 'Pricing', href: '/pricing' },
-      { label: 'Embed guide', href: '/docs#embed-guide' },
+      { label: 'Embed guide', href: '/guide#embed-guide' },
       { label: 'WordPress plugin', href: '#' },
     ],
   },
   {
     title: 'Developers',
     items: [
-      { label: 'Docs', href: '/docs' },
-      { label: 'API reference', href: '/docs#api' },
+      { label: 'Guide', href: '/guide' },
+      { label: 'API reference', href: '/guide#api' },
       { label: 'Status', href: '#' },
       { label: 'Changelog', href: '/changelog' },
     ],
@@ -83,6 +83,7 @@ export default function MarketingFooter() {
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
         {/* Grid */}
         <div
+          className="mkt-footer-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: '1.4fr repeat(4, 1fr)',

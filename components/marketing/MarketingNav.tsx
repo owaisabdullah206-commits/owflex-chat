@@ -7,7 +7,7 @@ import { ArrowRight, Moon, Sun } from 'lucide-react'
 const NAV_LINKS = [
   { label: 'Product', href: '/' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Docs', href: '/docs' },
+  { label: 'Guide', href: '/guide' },
   { label: 'Changelog', href: '/changelog' },
 ]
 
@@ -93,31 +93,33 @@ export function MarketingNav({
 
         {/* Links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {NAV_LINKS.map(({ label, href }) => (
-            <Link
-              key={label}
-              href={href}
-              style={{
-                padding: '8px 12px',
-                fontSize: 14,
-                color: 'var(--ink-muted)',
-                textDecoration: 'none',
-                borderRadius: 8,
-                transition: 'color .15s',
-              }}
-            >
-              {label}
-            </Link>
-          ))}
+          <div className="mkt-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {NAV_LINKS.map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                style={{
+                  padding: '8px 12px',
+                  fontSize: 14,
+                  color: 'var(--ink-muted)',
+                  textDecoration: 'none',
+                  borderRadius: 8,
+                  transition: 'color .15s',
+                }}
+              >
+                {label}
+              </Link>
+            ))}
 
-          {slot && (
-            <>
-              <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 4px' }} />
-              {slot}
-            </>
-          )}
+            {slot && (
+              <>
+                <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 4px' }} />
+                {slot}
+              </>
+            )}
 
-          <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 8px' }} />
+            <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 8px' }} />
+          </div>
 
           <button
             onClick={onToggleDark}
@@ -140,6 +142,7 @@ export function MarketingNav({
 
           <Link
             href="/dashboard/login"
+            className="mkt-nav-sign-in"
             style={{
               height: 36,
               padding: '0 12px',

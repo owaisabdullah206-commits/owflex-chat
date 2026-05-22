@@ -377,7 +377,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           tooltipEnabled={tooltipEnabled}
           tooltipMessages={tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean)}
           brandingEnabled={brandingEnabled}
-          brandingText={brandingText.trim() || 'Powered by octively'}
+          brandingText={brandingText.trim() || 'Powered by Octively'}
           theme={previewTheme}
           onToggleTheme={() => setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark')}
         />

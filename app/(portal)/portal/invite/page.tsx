@@ -157,7 +157,7 @@ function InviteContent() {
           <div className="w-7 h-7 rounded-md bg-[var(--of-primary)] flex items-center justify-center">
             <span className="text-white text-sm font-bold">O</span>
           </div>
-          <span className="text-lg font-semibold text-[var(--ink)]">octively</span>
+          <span className="text-lg font-semibold text-[var(--ink)]">Octively</span>
         </div>
 
         {state === 'loading' && (

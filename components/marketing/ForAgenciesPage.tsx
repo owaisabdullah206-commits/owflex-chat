@@ -102,7 +102,7 @@ export default function ForAgenciesPage() {
       <section style={{ paddingBlock: 72 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 48, textAlign: 'center' }}>Everything an agency needs</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
+          <div className="mkt-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 24 }}>
             {FEATURES.map(({ Icon, title, body }) => (
               <div key={title} style={{ padding: '28px 24px', border: '1px solid var(--hairline)', background: 'var(--surface)' }}>
                 <div style={{ width: 38, height: 38, background: 'var(--of-primary-soft)', display: 'grid', placeItems: 'center', marginBottom: 16, color: 'var(--of-primary)' }}>

@@ -31,7 +31,7 @@ export function generatePaymentUrl(
     notify_url:    notifyUrl,
     m_payment_id:  mPaymentId,
     amount:        pack.pkr.toFixed(2),
-    item_name:     `octively ${packId.charAt(0).toUpperCase() + packId.slice(1)} Pack`,
+    item_name:     `Octively ${packId.charAt(0).toUpperCase() + packId.slice(1)} Pack`,
     item_description: `${(pack.tokens / 1000).toFixed(0)}k tokens`,
   }
 
@@ -66,7 +66,7 @@ export function generatePlanPaymentUrl(
     notify_url:       notifyUrl,
     m_payment_id:     mPaymentId,
     amount:           amount.toFixed(2),
-    item_name:        `octively ${planId.charAt(0).toUpperCase() + planId.slice(1)} Plan`,
+    item_name:        `Octively ${planId.charAt(0).toUpperCase() + planId.slice(1)} Plan`,
     item_description: `Monthly subscription — ${planId} tier`,
   }
 
