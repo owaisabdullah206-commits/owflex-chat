@@ -5,9 +5,10 @@ import Link from 'next/link'
 import {
   MessageSquare, Zap, Monitor, Palette, Cpu, Globe,
   Code2, UserPlus, BarChart3, Check, ArrowRight, ArrowUpRight,
-  MessageSquareX, Clock, PackageX, Shield, Sparkles, Sun, Moon,
+  MessageSquareX, Clock, PackageX, Shield, Sparkles,
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
+import { MarketingNav } from './MarketingNav'
 
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
@@ -54,163 +55,6 @@ function Reveal({
   )
 }
 
-// ─── Nav ─────────────────────────────────────────────────────────────────────
-
-function Nav({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }) {
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  return (
-    <nav
-      style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        height: 64,
-        background: scrolled ? 'color-mix(in srgb, var(--bg) 82%, transparent)' : 'var(--bg)',
-        backdropFilter: scrolled ? 'saturate(180%) blur(14px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(14px)' : 'none',
-        borderBottom: scrolled ? '1px solid var(--hairline)' : '1px solid transparent',
-        transition: 'background-color .2s, border-color .2s',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '0 24px',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        {/* Logo */}
-        <a
-          href="/"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 9,
-            textDecoration: 'none',
-            fontWeight: 600,
-            fontSize: 16,
-            letterSpacing: '-0.01em',
-            color: 'var(--ink)',
-          }}
-        >
-          <span
-            style={{
-              width: 9,
-              height: 9,
-              borderRadius: '50%',
-              background: 'var(--of-primary)',
-              display: 'inline-block',
-            }}
-          />
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>octively</span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              color: 'var(--ink-muted)',
-              padding: '2px 6px',
-              border: '1px solid var(--hairline)',
-              borderRadius: 4,
-            }}
-          >
-            BETA
-          </span>
-        </a>
-
-        {/* Links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          {[
-            { label: 'Product', href: '/' },
-            { label: 'Pricing', href: '/pricing' },
-            { label: 'Docs', href: '#' },
-            { label: 'Changelog', href: '#' },
-          ].map(({ label, href }) => (
-            <Link
-              key={label}
-              href={href}
-              style={{
-                padding: '8px 12px',
-                fontSize: 14,
-                color: 'var(--ink-muted)',
-                textDecoration: 'none',
-                borderRadius: 8,
-                transition: 'color .15s',
-              }}
-            >
-              {label}
-            </Link>
-          ))}
-          <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 8px' }} />
-          <button
-            onClick={onToggleDark}
-            aria-label="Toggle theme"
-            style={{
-              width: 34, height: 34, display: 'grid', placeItems: 'center',
-              background: 'transparent',
-              border: '1px solid var(--hairline-strong)',
-              borderRadius: 8,
-              color: 'var(--ink-subtle)',
-              cursor: 'pointer',
-              transition: 'color .15s, background-color .15s',
-            }}
-          >
-            {dark ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
-          <Link
-            href="/dashboard/signin"
-            style={{
-              height: 36,
-              padding: '0 12px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 14,
-              color: 'var(--ink-muted)',
-              border: '1px solid var(--hairline)',
-              borderRadius: 8,
-              textDecoration: 'none',
-              transition: 'color .15s, border-color .15s',
-            }}
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/dashboard/signup"
-            style={{
-              height: 36,
-              padding: '0 14px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 14,
-              fontWeight: 500,
-              color: 'white',
-              background: 'var(--of-primary)',
-              borderRadius: 8,
-              textDecoration: 'none',
-              transition: 'background-color .15s',
-              border: '1px solid transparent',
-            }}
-          >
-            Start free <ArrowRight size={13} />
-          </Link>
-        </div>
-      </div>
-    </nav>
-  )
-}
-
 // ─── Dashboard Chrome Mockup ──────────────────────────────────────────────────
 
 function DashboardSidebar({ small = false }: { small?: boolean }) {
@@ -235,7 +79,7 @@ function DashboardSidebar({ small = false }: { small?: boolean }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: small ? '4px 4px 12px' : '4px 6px 22px' }}>
         <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--of-primary)' }} />
         <span style={{ fontSize: small ? 10 : 13, fontWeight: 600, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
-          octively
+          Octively
         </span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -748,7 +592,7 @@ function HowItWorks() {
       Icon: Code2,
       n: '01',
       h: 'Drop in the embed script',
-      p: 'One <script> tag on any client website — WordPress, Shopify, Wix, or plain HTML. Your octively bot goes live instantly.',
+      p: 'One <script> tag on any client website — WordPress, Shopify, Wix, or plain HTML. Your Octively bot goes live instantly.',
     },
     {
       Icon: UserPlus,
@@ -1177,7 +1021,7 @@ function BentoTile({
 
 function FeatureBento() {
   return (
-    <section style={{ paddingBlock: 80, borderTop: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+    <section id="features" style={{ paddingBlock: 80, borderTop: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
         <Reveal style={{ marginBottom: 36, maxWidth: 720 }}>
           <span
@@ -1214,7 +1058,7 @@ function FeatureBento() {
             <BentoTile span={3} Icon={Zap} title="Lead capture & export" sub="Auto-detect leads in conversations. Export to CSV or push to Zapier (Phase 4).">
               <BentoLeadCount />
             </BentoTile>
-            <BentoTile span={3} Icon={Palette} title="White-label branding" sub="Strip every trace of octively on Agency plan. Custom subdomains. Your widget, your logo, your portal.">
+            <BentoTile span={3} Icon={Palette} title="White-label branding" sub="Strip every trace of Octively on Agency plan. Custom subdomains. Your widget, your logo, your portal.">
               <BentoWhiteLabel />
             </BentoTile>
             <BentoTile span={2} Icon={Cpu} title="Multi-provider AI" sub="Top-tier models from every major provider. Switch per bot, route by complexity, never get locked in.">
@@ -1422,13 +1266,13 @@ function PricingTeaser() {
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
-  { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
+  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. Octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to Octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
   { q: 'The credit system is the killer feature. I let small clients use the included models, and upsell premium clients onto flagship tiers without lifting a finger.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
   { q: 'I onboarded a tea-export client in 12 minutes. They were sending Urdu queries to the bot and getting Urdu replies. Their finance team now exports leads to CSV themselves.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
 ]
 const QUOTES_ROW_2 = [
-  { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
+  { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single Octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
   { q: 'Switched four clients off Botpress in a weekend. Embed key swap, that\'s the whole migration. Conversation history came along via the import endpoint.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
   { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS — now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
   { q: 'I bill in PKR via PayFast, my UK client pays USD via Lemon Squeezy, both land in the same dashboard. No more two-spreadsheet accounting.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
@@ -1561,7 +1405,7 @@ function Testimonials({ dark = true }: { dark?: boolean }) {
             maxWidth: 560,
           }}
         >
-          Real reviews from the developer and agency communities octively was built for.
+          Real reviews from the developer and agency communities Octively was built for.
         </p>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1627,7 +1471,7 @@ function CTABanner() {
               Start in 60 seconds. Bill your first retainer this week.
             </h2>
             <p style={{ position: 'relative', textAlign: 'center', maxWidth: 540, fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.6 }}>
-              Create your first octively bot, add it to your client&apos;s site, invite them to their portal. That&apos;s the whole onboarding.
+              Create your first Octively bot, add it to your client&apos;s site, invite them to their portal. That&apos;s the whole onboarding.
             </p>
             <div
               style={{
@@ -1735,7 +1579,7 @@ function HeroLeadCopy() {
         <span style={{ color: 'var(--of-primary)' }}>chatbot portal.</span>
       </h1>
       <p style={{ fontSize: 17, color: 'var(--ink-muted)', lineHeight: 1.65, margin: 0, maxWidth: '52ch' }}>
-        octively powers your AI chatbots <em>and</em> gives every client a white-label portal — conversations, leads, and analytics all in one place. One embed script. No rebuilding.
+        Octively powers your AI chatbots <em>and</em> gives every client a white-label portal — conversations, leads, and analytics all in one place. One embed script. No rebuilding.
       </p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <Link
@@ -1798,7 +1642,7 @@ export default function MarketingHome() {
       className={`marketing${darkMode ? ' dark' : ''}`}
       style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}
     >
-      <Nav dark={darkMode} onToggleDark={() => setDarkMode((d) => !d)} />
+      <MarketingNav dark={darkMode} onToggleDark={() => setDarkMode((d) => !d)} />
 
       {/* Hero */}
       <section

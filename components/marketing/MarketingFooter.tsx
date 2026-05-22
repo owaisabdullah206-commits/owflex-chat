@@ -6,35 +6,36 @@ const COLS = [
     items: [
       { label: 'Features', href: '/#features' },
       { label: 'Pricing', href: '/pricing' },
-      { label: 'Embed guide', href: '#' },
+      { label: 'Embed guide', href: '/docs#embed-guide' },
       { label: 'WordPress plugin', href: '#' },
     ],
   },
   {
     title: 'Developers',
     items: [
-      { label: 'Docs', href: '#' },
-      { label: 'API reference', href: '#' },
+      { label: 'Docs', href: '/docs' },
+      { label: 'API reference', href: '/docs#api' },
       { label: 'Status', href: '#' },
-      { label: 'Changelog', href: '#' },
+      { label: 'Changelog', href: '/changelog' },
     ],
   },
   {
     title: 'Company',
     items: [
-      { label: 'About', href: '#' },
-      { label: 'Contact', href: '#' },
-      { label: 'Privacy', href: '#' },
-      { label: 'Terms', href: '#' },
+      { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
     ],
   },
   {
     title: 'Resources',
     items: [
       { label: 'Loom demo', href: '#' },
-      { label: 'For agencies', href: '#' },
-      { label: 'For freelancers', href: '#' },
-      { label: 'Compare', href: '#' },
+      { label: 'For agencies', href: '/for-agencies' },
+      { label: 'For freelancers', href: '/for-freelancers' },
+      { label: 'Roadmap', href: '/roadmap' },
+      { label: 'Compare', href: '/pricing#compare' },
     ],
   },
 ]
@@ -109,7 +110,7 @@ export default function MarketingFooter() {
                   color: 'var(--ink)',
                 }}
               >
-                octively
+                Octively
               </span>
             </div>
             <p
@@ -211,7 +212,7 @@ export default function MarketingFooter() {
           }}
         >
           <div style={{ fontFamily: 'var(--font-mono)' }}>
-            © {new Date().getFullYear()} octively — v0.7.0
+            © {new Date().getFullYear()} Octively — v0.7.0
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span

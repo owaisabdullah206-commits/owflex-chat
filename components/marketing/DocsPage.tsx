@@ -1,0 +1,224 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { ArrowRight, Copy, Check as CheckIcon } from 'lucide-react'
+import { MarketingNav } from './MarketingNav'
+import MarketingFooter from './MarketingFooter'
+
+const SIDEBAR = [
+  { id: 'getting-started', label: 'Getting started' },
+  { id: 'embed-guide', label: 'Embed guide' },
+  { id: 'api', label: 'API reference' },
+  { id: 'models', label: 'Supported models' },
+  { id: 'faq', label: 'FAQ' },
+]
+
+const EMBED_SNIPPET = `<script
+  src="https://app.octively.com/embed.js"
+  data-bot-key="bot_XXXXXXXXXXXX"
+  defer
+></script>`
+
+const API_ENDPOINTS = [
+  { method: 'GET', path: '/api/v1/bots', desc: 'List all bots in your workspace' },
+  { method: 'GET', path: '/api/v1/bots/:id', desc: 'Get a single bot by ID' },
+  { method: 'GET', path: '/api/v1/bots/:id/conversations', desc: 'List conversations for a bot' },
+  { method: 'GET', path: '/api/v1/bots/:id/leads', desc: 'List captured leads for a bot' },
+  { method: 'POST', path: '/api/v1/bots/:id/message', desc: 'Send a message via a bot (server-side)' },
+  { method: 'GET', path: '/api/v1/usage', desc: 'Get credit usage for the current billing period' },
+]
+
+export default function DocsPage() {
+  const [dark, setDark] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  function copySnippet() {
+    navigator.clipboard.writeText(EMBED_SNIPPET).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
+      <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
+
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px 80px', display: 'grid', gridTemplateColumns: '210px 1fr', gap: 56, alignItems: 'start' }}>
+
+        {/* Sidebar */}
+        <nav style={{ position: 'sticky', top: 88 }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 12 }}>Documentation</p>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {SIDEBAR.map(({ id, label }) => (
+              <li key={id}>
+                <a
+                  href={`#${id}`}
+                  style={{
+                    display: 'block', padding: '6px 10px', fontSize: 13.5,
+                    color: 'var(--ink-muted)', textDecoration: 'none', borderRadius: 6,
+                  }}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div style={{ marginTop: 32, padding: '16px', border: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+            <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 10 }}>Get started</p>
+            <Link
+              href="/dashboard/signup"
+              style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--of-primary)', textDecoration: 'none', fontWeight: 500 }}
+            >
+              Create free account <ArrowRight size={12} />
+            </Link>
+          </div>
+        </nav>
+
+        {/* Main content */}
+        <div style={{ maxWidth: 720 }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 8 }}>v0.7.0-beta</p>
+          <h1 style={{ fontSize: 38, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>Octively Developer Docs</h1>
+          <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.65, marginBottom: 48 }}>
+            Everything you need to add a client chatbot portal to your project — from embed script to API calls.
+          </p>
+
+          <DocSection id="getting-started" title="Getting started">
+            <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 24 }}>Four steps from zero to a fully working client portal:</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[
+                { n: '01', title: 'Create an account', body: 'Sign up at Octively.com — free plan, no card required. A workspace is created automatically.' },
+                { n: '02', title: 'Create your first bot', body: 'Go to Dashboard → Bots → New bot. Give it a name and choose an AI model. Save to get your embed key.' },
+                { n: '03', title: 'Add the embed script', body: 'Copy the <script> tag from the bot settings page and paste it before the </body> tag on your client\'s site.' },
+                { n: '04', title: 'Invite the client', body: 'Go to Clients → Invite. Enter your client\'s email. They get a link to set a password and access their portal.' },
+              ].map(({ n, title, body }) => (
+                <div key={n} style={{ display: 'flex', gap: 16, padding: '20px', border: '1px solid var(--hairline)', background: 'var(--surface)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--of-primary)', fontWeight: 600, flexShrink: 0 }}>{n}</span>
+                  <div>
+                    <p style={{ fontWeight: 600, fontSize: 15, marginBottom: 6 }}>{title}</p>
+                    <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.6 }}>{body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </DocSection>
+
+          <DocSection id="embed-guide" title="Embed guide">
+            <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 20 }}>
+              Add the following script to any HTML page. Replace <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>bot_XXXX</code> with your bot&apos;s embed key from the Dashboard.
+            </p>
+            <div style={{ position: 'relative', border: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+              <pre style={{ fontFamily: 'var(--font-mono)', fontSize: 13, padding: '20px 24px', margin: 0, overflowX: 'auto', lineHeight: 1.6, color: 'var(--ink)' }}>
+                {EMBED_SNIPPET}
+              </pre>
+              <button
+                onClick={copySnippet}
+                style={{
+                  position: 'absolute', top: 12, right: 12,
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '5px 10px', border: '1px solid var(--hairline)',
+                  background: 'var(--bg)', borderRadius: 5,
+                  fontSize: 11, color: 'var(--ink-muted)', cursor: 'pointer',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                {copied ? <><CheckIcon size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+              </button>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginTop: 12, lineHeight: 1.6 }}>
+              The widget initialises asynchronously and does not block page load. It adds a floating chat button to the bottom-right corner of your page.
+            </p>
+          </DocSection>
+
+          <DocSection id="api" title="API reference">
+            <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 20 }}>
+              All API endpoints require a Bearer token from your workspace settings. Base URL: <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>https://Octively.com/api/v1</code>
+            </p>
+            <div style={{ border: '1px solid var(--hairline)', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--hairline)' }}>
+                    <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 600, fontFamily: 'var(--font-mono)', fontSize: 11 }}>Method</th>
+                    <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 600, fontFamily: 'var(--font-mono)', fontSize: 11 }}>Path</th>
+                    <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 600, fontFamily: 'var(--font-mono)', fontSize: 11 }}>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {API_ENDPOINTS.map(({ method, path, desc }) => (
+                    <tr key={path} style={{ borderBottom: '1px solid var(--hairline)' }}>
+                      <td style={{ padding: '11px 16px' }}>
+                        <span style={{
+                          fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600,
+                          color: method === 'GET' ? 'var(--of-success)' : 'var(--of-primary)',
+                        }}>{method}</span>
+                      </td>
+                      <td style={{ padding: '11px 16px', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink)' }}>{path}</td>
+                      <td style={{ padding: '11px 16px', color: 'var(--ink-muted)' }}>{desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </DocSection>
+
+          <DocSection id="models" title="Supported models">
+            <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 16 }}>
+              Octively routes all AI calls through LiteLLM. You can select a model per bot from the bot settings page. Any model string supported by LiteLLM works.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              {['deepseek/deepseek-v4-flash', 'gpt-4o', 'gpt-4o-mini', 'claude-3-5-sonnet', 'gemini-2.0-flash', 'mistral/mistral-large'].map((m) => (
+                <div key={m} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, padding: '8px 10px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', color: 'var(--ink-muted)' }}>{m}</div>
+              ))}
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginTop: 12 }}>Default model: <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>deepseek/deepseek-v4-flash</code></p>
+          </DocSection>
+
+          <DocSection id="faq" title="FAQ">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {[
+                { q: 'Does the embed widget work on WordPress?', a: 'Yes. Paste the script tag in your theme\'s footer.php or use a custom HTML widget. A dedicated WordPress plugin is on the roadmap.' },
+                { q: 'Can I customise the widget appearance?', a: 'Yes. Bot settings let you change the accent colour, widget position, greeting message, and (on Agency+ plans) upload a custom logo.' },
+                { q: 'How are credits consumed?', a: 'Each LLM token costs credits. Credits are deducted before the API call is made. Your monthly plan includes a credit allowance; additional packs are available on the Billing page.' },
+              ].map(({ q, a }) => (
+                <div key={q}>
+                  <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{q}</p>
+                  <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.65 }}>{a}</p>
+                </div>
+              ))}
+            </div>
+          </DocSection>
+
+          {/* CTA */}
+          <div style={{ marginTop: 56, padding: '32px', border: '1px solid var(--of-primary)', background: 'var(--of-primary-soft)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+            <div>
+              <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>Ready to build?</p>
+              <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>Get your embed key — free plan, no card required.</p>
+            </div>
+            <Link
+              href="/dashboard/signup"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                height: 40, padding: '0 20px', flexShrink: 0,
+                background: 'var(--of-primary)', color: 'white',
+                fontSize: 14, fontWeight: 500, borderRadius: 6, textDecoration: 'none',
+              }}
+            >
+              Start free <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <MarketingFooter />
+    </div>
+  )
+}
+
+function DocSection({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+  return (
+    <section id={id} style={{ marginBottom: 60, scrollMarginTop: 88 }}>
+      <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 20, paddingBottom: 14, borderBottom: '2px solid var(--hairline)' }}>{title}</h2>
+      {children}
+    </section>
+  )
+}

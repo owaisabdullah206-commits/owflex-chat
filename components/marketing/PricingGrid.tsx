@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
   Check, Minus, ArrowRight, ArrowUpRight,
-  Sparkles, Shield, ChevronDown, Sun, Moon,
+  Sparkles, Shield, ChevronDown,
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
+import { MarketingNav } from './MarketingNav'
 
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ const PLANS = [
       '15 leads / month · 5 FAQs per bot',
       '7-day conversation history',
       'Color-only widget customization',
-      'Forced "Powered by octively" badge',
+      'Forced "Powered by Octively" badge',
       'WordPress plugin',
       'Community support',
     ],
@@ -79,7 +80,7 @@ const PLANS = [
       'Unlimited leads / month · 20 FAQs per bot',
       '25 MB document storage · 30-day history',
       'Full widget customization',
-      'Can turn off "Powered by octively" badge',
+      'Can turn off "Powered by Octively" badge',
       'Lead capture on/off · strict mode',
       'Budget-tier AI models',
       'FAQ editor — basic (Phase 2)',
@@ -184,7 +185,7 @@ const COMPARE_ROWS = [
 
   { section: 'Widget & branding' },
   { feat: 'Full widget customization', values: ['Color only', true, true, true, true] },
-  { feat: '"Powered by octively" badge', values: ['Forced ON', 'Can turn off', 'Can turn off', 'Custom / OFF', 'Custom / OFF'] },
+  { feat: '"Powered by Octively" badge', values: ['Forced ON', 'Can turn off', 'Can turn off', 'Custom / OFF', 'Custom / OFF'] },
   { feat: 'Custom branding text + URL', values: [false, false, false, true, true] },
   { feat: 'White-label portal login', values: [false, false, false, true, true] },
   { feat: 'Custom portal subdomain', values: [false, false, false, true, true] },
@@ -233,20 +234,20 @@ const FAQS = [
   { q: 'What happens if I run out of credits mid-month?', a: 'Your bots fall back to your plan\'s included default model silently — your end users never see an error. You get an email and a dashboard banner: top up to restore premium models.' },
   { q: 'Can I switch between PKR and USD billing?', a: 'Yes — PKR is processed via PayFast (Pakistani cards / bank transfer / EasyPaisa). USD via Lemon Squeezy (cards / PayPal). You pick at checkout, switch by contacting support.' },
   { q: 'Is my clients\' conversation data used to train AI models?', a: 'No. We route through providers under zero-data-retention agreements (DeepSeek, OpenRouter, Groq). Messages are processed in transit only and discarded after the response.' },
-  { q: 'Do you charge per seat?', a: 'No. Every plan is org-based, unlimited seats. Charge your clients however you want — octively doesn\'t meter users.' },
-  { q: 'Can my client self-serve and bypass me?', a: 'No. SMB clients only get portal access (app.octively.com). Bot creation, billing, and model settings stay with the developer/agency — by design.' },
+  { q: 'Do you charge per seat?', a: 'No. Every plan is org-based, unlimited seats. Charge your clients however you want — Octively doesn\'t meter users.' },
+  { q: 'Can my client self-serve and bypass me?', a: 'No. SMB clients only get portal access (app.Octively.com). Bot creation, billing, and model settings stay with the developer/agency — by design.' },
 ]
 
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
-  { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
+  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. Octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to Octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
   { q: 'The credit system is the killer feature. I let small clients use the included models, and upsell premium clients onto flagship tiers without lifting a finger.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
   { q: 'I onboarded a tea-export client in 12 minutes. They were sending Urdu queries to the bot and getting Urdu replies. Their finance team now exports leads to CSV themselves.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
 ]
 const QUOTES_ROW_2 = [
-  { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
+  { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single Octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
   { q: 'Switched four clients off Botpress in a weekend. Embed key swap, that\'s the whole migration. Conversation history came along via the import endpoint.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
   { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS — now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
   { q: 'I bill in PKR via PayFast, my UK client pays USD via Lemon Squeezy, both land in the same dashboard. No more two-spreadsheet accounting.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
@@ -254,108 +255,40 @@ const QUOTES_ROW_2 = [
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function Nav({ currency, setCurrency, dark, onToggleDark }: { currency: Currency; setCurrency: (c: Currency) => void; dark: boolean; onToggleDark: () => void }) {
-  const [scrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
+function CurrencyToggle({ currency, setCurrency }: { currency: Currency; setCurrency: (c: Currency) => void }) {
   return (
-    <nav
+    <div
+      role="tablist"
       style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        height: 64,
-        background: scrolled ? 'color-mix(in srgb, var(--bg) 82%, transparent)' : 'var(--bg)',
-        backdropFilter: scrolled ? 'saturate(180%) blur(14px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(14px)' : 'none',
-        borderBottom: scrolled ? '1px solid var(--hairline)' : '1px solid transparent',
-        transition: 'background-color .2s, border-color .2s',
+        display: 'inline-flex',
+        padding: 3,
+        gap: 2,
+        background: 'var(--surface-2)',
+        border: '1px solid var(--hairline)',
+        borderRadius: 999,
       }}
     >
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '0 24px',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Link
-          href="/"
+      {(['PKR', 'USD'] as const).map((k) => (
+        <button
+          key={k}
+          onClick={() => setCurrency(k)}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 9,
-            textDecoration: 'none',
-            color: 'var(--ink)',
+            padding: '5px 12px',
+            borderRadius: 999,
+            border: 0,
+            background: currency === k ? 'var(--surface)' : 'transparent',
+            color: currency === k ? 'var(--ink)' : 'var(--ink-subtle)',
+            fontSize: 12,
+            fontWeight: currency === k ? 500 : 400,
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)',
+            transition: 'all .15s',
           }}
         >
-          <span style={{ width: 9, height: 9, borderRadius: '50%', background: 'var(--of-primary)', display: 'inline-block' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 16 }}>octively</span>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-muted)', padding: '2px 6px', border: '1px solid var(--hairline)', borderRadius: 4 }}>BETA</span>
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* Currency toggle */}
-          <div
-            role="tablist"
-            style={{
-              display: 'inline-flex',
-              padding: 3,
-              gap: 2,
-              background: 'var(--surface-2)',
-              border: '1px solid var(--hairline)',
-              borderRadius: 999,
-            }}
-          >
-            {(['PKR', 'USD'] as const).map((k) => (
-              <button
-                key={k}
-                onClick={() => setCurrency(k)}
-                style={{
-                  padding: '5px 12px',
-                  borderRadius: 999,
-                  border: 0,
-                  background: currency === k ? 'var(--surface)' : 'transparent',
-                  color: currency === k ? 'var(--ink)' : 'var(--ink-subtle)',
-                  fontSize: 12,
-                  fontWeight: currency === k ? 500 : 400,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-mono)',
-                  transition: 'all .15s',
-                }}
-              >
-                {k === 'PKR' ? '₨ PKR' : '$ USD'}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={onToggleDark}
-            aria-label="Toggle theme"
-            style={{
-              width: 34, height: 34, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              border: '1px solid var(--hairline)', borderRadius: 8, background: 'transparent',
-              color: 'var(--ink-subtle)', cursor: 'pointer', flexShrink: 0,
-            }}
-          >
-            {dark ? <Sun size={15} /> : <Moon size={15} />}
-          </button>
-          <Link href="/dashboard/signin" style={{ height: 36, padding: '0 12px', display: 'inline-flex', alignItems: 'center', fontSize: 14, color: 'var(--ink-muted)', border: '1px solid var(--hairline)', borderRadius: 8, textDecoration: 'none' }}>
-            Sign in
-          </Link>
-          <Link href="/dashboard/signup" style={{ height: 36, padding: '0 14px', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 500, color: 'white', background: 'var(--of-primary)', borderRadius: 8, textDecoration: 'none', border: '1px solid transparent' }}>
-            Start free <ArrowRight size={13} />
-          </Link>
-        </div>
-      </div>
-    </nav>
+          {k === 'PKR' ? '₨ PKR' : '$ USD'}
+        </button>
+      ))}
+    </div>
   )
 }
 
@@ -538,7 +471,11 @@ export default function PricingGrid() {
 
   return (
     <div className={`marketing${darkMode ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
-      <Nav currency={currency} setCurrency={setCurrency} dark={darkMode} onToggleDark={() => setDarkMode((d) => !d)} />
+      <MarketingNav
+        dark={darkMode}
+        onToggleDark={() => setDarkMode((d) => !d)}
+        slot={<CurrencyToggle currency={currency} setCurrency={setCurrency} />}
+      />
 
       {/* Pricing Header */}
       <section style={{ paddingTop: 64, paddingBottom: 40, position: 'relative', overflow: 'hidden' }}>
@@ -800,7 +737,7 @@ export default function PricingGrid() {
               Common pricing questions.
             </h2>
             <p style={{ marginTop: 14, marginBottom: 18, color: 'var(--ink-subtle)', fontSize: 15, lineHeight: 1.6 }}>
-              Don&apos;t see yours? Talk to Owais directly — DMs open in the freelancer/agency communities octively was built for.
+              Don&apos;t see yours? Talk to Owais directly — DMs open in the freelancer/agency communities Octively was built for.
             </p>
             <a href="#" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline)', textDecoration: 'none' }}>
               Ask on WhatsApp <ArrowUpRight size={13} />
