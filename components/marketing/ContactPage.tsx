@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowRight, MessageCircle, Mail, Clock } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
+import { useDarkMode } from './useDarkMode'
 
 // Replace with real WhatsApp number before going live
 const WHATSAPP_NUMBER = '+92XXXXXXXXXX'
@@ -30,12 +31,12 @@ const FAQS = [
 ]
 
 export default function ContactPage() {
-  const [dark, setDark] = useState(false)
+  const { dark, toggleDark } = useDarkMode()
   const [submitted, setSubmitted] = useState(false)
 
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
-      <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
+      <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
       {/* Hero */}
       <section style={{ paddingBlock: '72px 0', textAlign: 'center', borderBottom: '1px solid var(--hairline)' }}>

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowRight, Copy, Check as CheckIcon } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
+import { useDarkMode } from './useDarkMode'
 
 const SIDEBAR = [
   { id: 'getting-started', label: 'Getting started' },
@@ -30,7 +31,7 @@ const API_ENDPOINTS = [
 ]
 
 export default function GuidePage() {
-  const [dark, setDark] = useState(false)
+  const { dark, toggleDark } = useDarkMode()
   const [copied, setCopied] = useState(false)
 
   function copySnippet() {
@@ -42,7 +43,7 @@ export default function GuidePage() {
 
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
-      <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
+      <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
       <div className="mkt-legal-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px 80px', display: 'grid', gridTemplateColumns: '210px 1fr', gap: 56, alignItems: 'start' }}>
 
@@ -76,7 +77,7 @@ export default function GuidePage() {
         </nav>
 
         {/* Main content */}
-        <div style={{ maxWidth: 720 }}>
+        <div style={{ maxWidth: 720, minWidth: 0 }}>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 8 }}>v0.7.0-beta</p>
           <h1 style={{ fontSize: 38, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>Octively Developer Docs</h1>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.65, marginBottom: 48 }}>
@@ -107,7 +108,7 @@ export default function GuidePage() {
             <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 20 }}>
               Add the following script to any HTML page. Replace <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>bot_XXXX</code> with your bot&apos;s embed key from the Dashboard.
             </p>
-            <div style={{ position: 'relative', border: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+            <div style={{ position: 'relative', border: '1px solid var(--hairline)', background: 'var(--surface-2)', overflow: 'hidden' }}>
               <pre style={{ fontFamily: 'var(--font-mono)', fontSize: 13, padding: '20px 24px', margin: 0, overflowX: 'auto', lineHeight: 1.6, color: 'var(--ink)' }}>
                 {EMBED_SNIPPET}
               </pre>

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
+import { useDarkMode } from './useDarkMode'
 
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
@@ -461,7 +462,7 @@ export default function PricingGrid() {
   const [currency, setCurrency] = useState<Currency>('PKR')
   const [billing, setBilling] = useState<Billing>('monthly')
   const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [darkMode, setDarkMode] = useState(false)
+  const { dark: darkMode, toggleDark } = useDarkMode()
 
   const freePlan = PLANS[0]
   const starterPlan = PLANS[1]
@@ -473,7 +474,7 @@ export default function PricingGrid() {
     <div className={`marketing${darkMode ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
       <MarketingNav
         dark={darkMode}
-        onToggleDark={() => setDarkMode((d) => !d)}
+        onToggleDark={toggleDark}
         slot={<CurrencyToggle currency={currency} setCurrency={setCurrency} />}
       />
 

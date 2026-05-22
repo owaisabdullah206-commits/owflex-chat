@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
+import { useDarkMode } from './useDarkMode'
 
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
@@ -660,12 +661,13 @@ function HowItWorks() {
             Read embed guide <ArrowUpRight size={14} />
           </a>
         </Reveal>
-        <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative' }}>
+        <div className="mkt-grid-3 mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative' }}>
           {steps.map(({ Icon, n, h, p }, i) => (
             <Reveal key={i} delay={i * 100}>
               <div style={{ position: 'relative', padding: '0 24px' }}>
                 {i > 0 && (
                   <div
+                    className="mkt-step-connector-v"
                     style={{
                       position: 'absolute',
                       left: -1,
@@ -678,6 +680,7 @@ function HowItWorks() {
                 )}
                 {i < steps.length - 1 && (
                   <div
+                    className="mkt-step-connector-h"
                     style={{
                       position: 'absolute',
                       right: -8,
@@ -1111,7 +1114,7 @@ function PricingTeaser() {
               Local pricing for Pakistani agencies. Fair USD for everyone else.
             </h2>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
             {/* Currency pill */}
             <div
               role="tablist"
@@ -1636,14 +1639,14 @@ function HeroLeadCopy() {
 // ─── Root Component ───────────────────────────────────────────────────────────
 
 export default function MarketingHome() {
-  const [darkMode, setDarkMode] = useState(false)
+  const { dark: darkMode, toggleDark } = useDarkMode()
 
   return (
     <div
       className={`marketing${darkMode ? ' dark' : ''}`}
       style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}
     >
-      <MarketingNav dark={darkMode} onToggleDark={() => setDarkMode((d) => !d)} />
+      <MarketingNav dark={darkMode} onToggleDark={toggleDark} />
 
       {/* Hero */}
       <section

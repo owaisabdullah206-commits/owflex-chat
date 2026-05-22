@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Check, Palette, Globe, BarChart3, Users } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
+import { useDarkMode } from './useDarkMode'
 
 const FEATURES = [
   {
@@ -40,11 +40,11 @@ const AGENCY_PLAN = [
 ]
 
 export default function ForAgenciesPage() {
-  const [dark, setDark] = useState(false)
+  const { dark, toggleDark } = useDarkMode()
 
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
-      <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
+      <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
       {/* Hero */}
       <section style={{ paddingBlock: '80px 72px', borderBottom: '1px solid var(--hairline)' }}>

@@ -301,21 +301,25 @@ select option {
 
 /* ─── Marketing responsive breakpoints ─────────────────────── */
 @media (max-width: 767px) {
-  .mkt-nav-links      { display: none !important; }
-  .mkt-nav-sign-in    { display: none !important; }
-  .mkt-nav-start-free { display: none !important; }
-  .mkt-hamburger      { display: grid !important; }
-  .mkt-hero-grid      { grid-template-columns: 1fr !important; }
-  .mkt-hero-mockup    { display: none !important; }
-  .mkt-grid-2         { grid-template-columns: 1fr !important; }
-  .mkt-grid-3         { grid-template-columns: 1fr !important; }
-  .mkt-grid-4         { grid-template-columns: 1fr 1fr !important; }
-  .mkt-footer-grid    { grid-template-columns: 1fr 1fr !important; }
-  .mkt-legal-grid     { grid-template-columns: 1fr !important; }
-  .mkt-legal-sidebar  { display: none !important; }
-  .mkt-changelog-row  { grid-template-columns: 1fr !important; gap: 4px !important; }
-  .mkt-bento          { grid-template-columns: 1fr !important; }
-  .mkt-bento > *      { grid-column: span 1 !important; grid-row: span 1 !important; }
+  .mkt-nav-links           { display: none !important; }
+  .mkt-nav-sign-in         { display: none !important; }
+  .mkt-nav-start-free      { display: none !important; }
+  .mkt-hamburger           { display: grid !important; }
+  .mkt-hero-grid           { grid-template-columns: 1fr !important; }
+  .mkt-hero-mockup         { display: none !important; }
+  .mkt-grid-2              { grid-template-columns: 1fr !important; }
+  .mkt-grid-3              { grid-template-columns: 1fr !important; }
+  .mkt-grid-4              { grid-template-columns: 1fr 1fr !important; }
+  .mkt-footer-grid         { grid-template-columns: 1fr 1fr !important; }
+  .mkt-legal-grid          { grid-template-columns: 1fr !important; padding: 32px 16px 60px !important; gap: 0 !important; }
+  .mkt-legal-sidebar       { display: none !important; }
+  .mkt-changelog-row       { grid-template-columns: 1fr !important; gap: 4px !important; }
+  .mkt-bento               { grid-template-columns: 1fr !important; }
+  .mkt-bento > *           { grid-column: span 1 !important; grid-row: span 1 !important; }
+  .mkt-step-connector-v    { display: none !important; }
+  .mkt-step-connector-h    { display: none !important; }
+  .mkt-steps-grid          { gap: 24px !important; }
+  .mkt-steps-grid > * > div { padding-left: 0 !important; padding-right: 0 !important; }
 }
 
 @media (max-width: 479px) {

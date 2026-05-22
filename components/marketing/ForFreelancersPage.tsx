@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Check, Clock, DollarSign, Code2, Mail } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
+import { useDarkMode } from './useDarkMode'
 
 const STEPS = [
   { n: '01', title: 'Sign up free', body: 'No card. No trial timer. The free plan works indefinitely for a single bot.' },
@@ -24,11 +24,11 @@ const FREE_PLAN = [
 ]
 
 export default function ForFreelancersPage() {
-  const [dark, setDark] = useState(false)
+  const { dark, toggleDark } = useDarkMode()
 
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
-      <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
+      <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
       {/* Hero */}
       <section style={{ paddingBlock: '80px 72px', borderBottom: '1px solid var(--hairline)' }}>
@@ -88,7 +88,7 @@ export default function ForFreelancersPage() {
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexDirection: 'row-reverse' }}>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--of-primary)', flexShrink: 0, marginTop: 1 }}>Bot</span>
-                    <p style={{ fontSize: 12, color: 'var(--ink)', margin: 0, lineHeight: 1.5, background: 'var(--of-primary-soft)', padding: '6px 10px', borderRadius: '6px 0 6px 6px', flex: 1 }}>We deliver within 2–3 business days across Pakistan. Express options available.</p>
+                    <p style={{ fontSize: 12, color: 'white', margin: 0, lineHeight: 1.5, background: 'var(--of-primary)', padding: '6px 10px', borderRadius: '6px 0 6px 6px', flex: 1 }}>We deliver within 2–3 business days across Pakistan. Express options available.</p>
                   </div>
                 </div>
               </div>

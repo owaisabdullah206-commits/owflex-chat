@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
+import { useDarkMode } from './useDarkMode'
 
 const SECTIONS = [
   { id: 'definitions', label: 'Definitions' },
@@ -16,10 +16,10 @@ const SECTIONS = [
 ]
 
 export default function TermsPage() {
-  const [dark, setDark] = useState(false)
+  const { dark, toggleDark } = useDarkMode()
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
-      <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
+      <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
       <div className="mkt-legal-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '56px 24px 80px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: 64, alignItems: 'start' }}>
         {/* Sidebar */}

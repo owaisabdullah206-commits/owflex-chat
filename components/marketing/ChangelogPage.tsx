@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Check } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
+import { useDarkMode } from './useDarkMode'
 
 const RELEASES = [
   {
@@ -101,11 +101,11 @@ const TAG_COLORS: Record<string, string> = {
 }
 
 export default function ChangelogPage() {
-  const [dark, setDark] = useState(false)
+  const { dark, toggleDark } = useDarkMode()
 
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
-      <MarketingNav dark={dark} onToggleDark={() => setDark((d) => !d)} />
+      <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
       {/* Header */}
       <section style={{ paddingBlock: '72px 56px', borderBottom: '1px solid var(--hairline)' }}>
