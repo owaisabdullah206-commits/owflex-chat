@@ -164,22 +164,77 @@ pnl.innerHTML=
   (be?'<div id="oB"><a href="'+esc(burl)+'" target="_blank" rel="noopener">'+esc(bt)+'</a></div>':'');
 document.body.appendChild(pnl);
 
-/* ── Branding protection: inline !important styles + MutationObserver re-apply ──
-   Inline styles with !important have higher cascade weight than any external
-   stylesheet rule. MutationObserver re-applies them if external JS tampers
-   with the style attribute or removes the element. */
+/* ── Branding protection: exhaustive inline !important + MutationObserver ──
+   Covers every CSS technique that can hide an element:
+   display/visibility/opacity/transform/filter/clip/clip-path/
+   height/max-height/font-size/color/text-indent/position offset/z-index/
+   content-visibility + the hidden HTML attribute. */
 if(be){
   var brandEl=document.getElementById("oB");
   if(brandEl){
-    var BS="display:flex!important;align-items:center!important;justify-content:center!important;"+
-           "padding:4px 0!important;font-size:10px!important;border-top:1px solid #f0f0f0!important;"+
-           "background:#fafafa!important;flex-shrink:0!important;opacity:0.5!important;"+
-           "visibility:visible!important;height:auto!important;overflow:visible!important;"+
-           "clip:auto!important;clip-path:none!important;max-height:none!important;"+
-           "position:relative!important;z-index:0!important";
-    brandEl.setAttribute("style",BS);
-    var brandLink=brandEl.querySelector("a");
-    if(brandLink)brandLink.setAttribute("style","color:inherit!important;text-decoration:none!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important");
+    /* Every known CSS hiding vector, locked with !important */
+    var BS=
+      "display:flex!important;"+
+      "visibility:visible!important;"+
+      "opacity:0.5!important;"+
+      "height:auto!important;"+
+      "min-height:0!important;"+
+      "max-height:none!important;"+
+      "width:auto!important;"+
+      "max-width:100%!important;"+
+      "overflow:visible!important;"+
+      "clip:auto!important;"+
+      "clip-path:none!important;"+
+      "transform:none!important;"+
+      "filter:none!important;"+
+      "position:relative!important;"+
+      "top:auto!important;"+
+      "left:auto!important;"+
+      "right:auto!important;"+
+      "bottom:auto!important;"+
+      "z-index:0!important;"+
+      "font-size:10px!important;"+
+      "line-height:1.4!important;"+
+      "letter-spacing:normal!important;"+
+      "text-indent:0!important;"+
+      "color:inherit!important;"+
+      "background:#fafafa!important;"+
+      "border-top:1px solid #f0f0f0!important;"+
+      "padding:4px 0!important;"+
+      "margin:0!important;"+
+      "flex-shrink:0!important;"+
+      "align-items:center!important;"+
+      "justify-content:center!important;"+
+      "pointer-events:auto!important;"+
+      "content-visibility:visible!important";
+    /* Inner link — prevent hiding the text itself */
+    var BLS=
+      "display:inline-flex!important;"+
+      "align-items:center!important;"+
+      "gap:4px!important;"+
+      "visibility:visible!important;"+
+      "opacity:1!important;"+
+      "color:inherit!important;"+
+      "text-decoration:none!important;"+
+      "font-size:inherit!important;"+
+      "line-height:inherit!important;"+
+      "letter-spacing:normal!important;"+
+      "text-indent:0!important;"+
+      "transform:none!important;"+
+      "filter:none!important;"+
+      "clip:auto!important;"+
+      "clip-path:none!important;"+
+      "height:auto!important;"+
+      "overflow:visible!important;"+
+      "pointer-events:auto!important;"+
+      "position:static!important";
+    function applyBS(){
+      if(brandEl.hidden)brandEl.hidden=false;
+      brandEl.setAttribute("style",BS);
+      var lnk=brandEl.querySelector("a");
+      if(lnk)lnk.setAttribute("style",BLS);
+    }
+    applyBS();
     new MutationObserver(function(muts){
       for(var i=0;i<muts.length;i++){
         var m=muts[i];
@@ -187,17 +242,15 @@ if(be){
           for(var j=0;j<m.removedNodes.length;j++){
             if(m.removedNodes[j]===brandEl){
               pnl.appendChild(brandEl);
-              brandEl.setAttribute("style",BS);
+              applyBS();
               break;
             }
           }
         }
-        if(m.type==="attributes"&&m.target===brandEl){
-          /* Re-apply inline styles if external code tampered with style/class/hidden */
-          brandEl.setAttribute("style",BS);
-        }
+        /* style/class/hidden/data-* attribute tampered on branding element */
+        if(m.type==="attributes"&&m.target===brandEl){applyBS();}
       }
-    }).observe(pnl,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class","hidden"]});
+    }).observe(pnl,{childList:true,subtree:false,attributes:true,attributeFilter:["style","class","hidden","data-v"]});
   }
 }
 
