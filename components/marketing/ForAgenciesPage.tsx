@@ -256,10 +256,10 @@ export default function ForAgenciesPage() {
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--of-primary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Most popular</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 40, fontWeight: 700, letterSpacing: '-0.02em' }}>₨9,999</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 40, fontWeight: 700, letterSpacing: '-0.02em' }}>₨20,000</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink-muted)' }}>/month</span>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 24 }}>Or $35/month in USD.</p>
+            <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 24 }}>Or $79/month in USD.</p>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               {AGENCY_PLAN.map((f) => (
                 <li key={f} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 14, lineHeight: 1.5 }}>

@@ -8,6 +8,9 @@ import { useDarkMode } from './useDarkMode'
 
 const SHIPPED = [
   'RAG knowledge base — document & URL ingestion',
+  'PDF upload + website scraping — knowledge base via dashboard UI',
+  'FAQ editor — manage FAQ entries per bot from the dashboard',
+  'Unanswered questions list — see every query the bot could not answer',
   'Multi-bot dashboard — manage every client from one place',
   'White-label client portal — your brand, not ours',
   'PayFast (PKR) + Lemon Squeezy (USD) billing',
@@ -21,17 +24,21 @@ const SHIPPED = [
 
 const IN_PROGRESS = [
   { title: 'WordPress plugin', desc: 'One-click install, no manual script pasting.' },
-  { title: 'Enhanced conversation analytics', desc: 'Sentiment analysis, topic clustering, drop-off detection.' },
-  { title: 'Email digest for clients', desc: 'Weekly summary of conversations and leads delivered to their inbox.' },
+  { title: 'Weekly email digest for clients', desc: 'Summary of conversations and new leads delivered to client inboxes every Monday.' },
+  { title: 'Enhanced conversation analytics', desc: 'Sentiment analysis, topic clustering, and drop-off detection per bot.' },
 ]
 
 const PLANNED = [
-  { title: 'Custom domain for client portal', desc: 'Serve your portal from portal.youragency.com.' },
-  { title: 'Team seats', desc: 'Invite team members to your workspace with role-based access.' },
-  { title: 'Zapier integration', desc: 'Send leads to your CRM, Slack, or Notion automatically.' },
-  { title: 'Voice message support', desc: 'Let clients leave voice notes that the bot transcribes.' },
-  { title: 'Mobile app', desc: 'iOS and Android app for developers and clients.' },
-  { title: 'Self-hosted option', desc: 'Run Octively on your own infrastructure for enterprise clients.' },
+  { title: 'Custom portal subdomain', desc: 'Serve your client portal from portal.youragency.com instead of app.octively.com.' },
+  { title: 'Smart auto-routing', desc: 'Automatically route each query to the best model by complexity and cost without manual config.' },
+  { title: 'Human handoff and escalation', desc: 'Bot detects when it is out of depth and hands the conversation to a human agent.' },
+  { title: 'Sub-tenant management', desc: 'Allocate credits, set limits, and view usage per client from a single agency dashboard.' },
+  { title: 'API access and webhooks', desc: 'Programmatic access to bots, conversations, and leads. Push events to Zapier, n8n, or your own endpoint.' },
+  { title: 'Audit log viewer', desc: 'Searchable log of all actions across your workspace for compliance and debugging.' },
+  { title: 'BYOK — bring your own LLM keys', desc: 'Route inference through your own OpenAI, Anthropic, or Google API keys on Enterprise.' },
+  { title: 'Team seats', desc: 'Invite colleagues to your workspace with role-based access controls.' },
+  { title: 'Mobile app', desc: 'iOS and Android app for managing bots and reviewing leads on the go.' },
+  { title: 'Self-hosted option', desc: 'Run Octively on your own infrastructure for regulated or on-prem Enterprise deployments.' },
 ]
 
 export default function RoadmapPage() {

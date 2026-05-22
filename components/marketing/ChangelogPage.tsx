@@ -184,7 +184,7 @@ export default function ChangelogPage() {
       <section style={{ paddingBlock: 56, borderTop: '1px solid var(--hairline)', background: 'var(--surface-2)', textAlign: 'center' }}>
         <div style={{ maxWidth: 520, margin: '0 auto', padding: '0 24px' }}>
           <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>See what&apos;s coming next</h2>
-          <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 24 }}>WordPress plugin, custom domains, team seats, and more.</p>
+          <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 24 }}>FAQ editor, smart auto-routing, API access, custom portal subdomains, and more.</p>
           <Link
             href="/roadmap"
             style={{

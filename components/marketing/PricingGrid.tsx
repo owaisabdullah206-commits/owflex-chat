@@ -84,7 +84,7 @@ const PLANS = [
       'Can turn off "Powered by Octively" badge',
       'Lead capture on/off · strict mode',
       'Budget-tier AI models',
-      'FAQ editor — basic (Phase 2)',
+      'FAQ editor — basic',
       'WordPress plugin · email support',
     ],
   },
@@ -105,8 +105,9 @@ const PLANS = [
       'Unlimited leads / month · 50 FAQs per bot',
       '100 MB document storage · unlimited history',
       'Mid-range AI models · advanced analytics',
-      'Unanswered questions list · weekly digest (Phase 2)',
-      'PDF upload + website scraping (Phase 3)',
+      'Unanswered questions list',
+      'Weekly email digest (Phase 2)',
+      'PDF upload + website scraping',
       'Smart model routing (Phase 3)',
       'Human handoff & escalation (Phase 3)',
       'WordPress plugin · priority email support',
@@ -197,8 +198,8 @@ const COMPARE_ROWS = [
   { feat: 'Analytics', values: ['Basic', 'Basic', 'Advanced + flagged', 'Full', 'Full'] },
   { feat: 'Smart auto-routing (Phase 3)', values: [false, false, true, true, true] },
   { feat: 'Unanswered questions list', values: [false, false, true, true, true] },
-  { feat: 'Document upload — PDF (Phase 3)', values: [false, false, true, true, true] },
-  { feat: 'Website scraping (Phase 3)', values: [false, false, true, true, true] },
+  { feat: 'Document upload — PDF', values: [false, false, true, true, true] },
+  { feat: 'Website scraping', values: [false, false, true, true, true] },
 
   { section: 'Operations' },
   { feat: 'Lead capture on/off', values: [false, true, true, true, true] },
@@ -206,7 +207,7 @@ const COMPARE_ROWS = [
   { feat: 'Trigger tooltip', values: [true, true, true, true, true] },
   { feat: 'Human handoff / escalation (Phase 3)', values: [false, false, true, true, true] },
   { feat: 'Weekly email digest (Phase 2)', values: [false, false, true, true, true] },
-  { feat: 'Knowledge base — FAQ editor (Phase 2)', values: [false, 'Basic', true, true, true] },
+  { feat: 'Knowledge base — FAQ editor', values: [false, 'Basic', true, true, true] },
   { feat: 'Sub-tenant management (Phase 3)', values: [false, false, false, true, true] },
   { feat: 'Per-bot resource allocation (Phase 3)', values: [false, false, false, true, true] },
   { feat: 'API access (Phase 4)', values: [false, false, false, true, true] },
@@ -324,14 +325,34 @@ function PriceDisplay({ plan, dark, currency, billing = 'monthly' }: { plan: Pla
 function FeatureList({ items, dark, dense }: { items: readonly string[]; dark?: boolean; dense?: boolean }) {
   return (
     <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: dense ? 7 : 9 }}>
-      {items.map((f, i) => (
-        <li key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 13.5, lineHeight: 1.45 }}>
-          <span style={{ marginTop: 2, color: dark ? 'var(--of-primary-text-dark, #38BDF8)' : 'var(--of-primary)', flexShrink: 0 }}>
-            <Check size={14} />
-          </span>
-          <span style={{ color: dark ? 'var(--dark-ink)' : 'var(--ink)' }}>{f}</span>
-        </li>
-      ))}
+      {items.map((f, i) => {
+        const m = f.match(/^(.*?)\s*\(Phase \d+\)(.*)$/)
+        const text = m ? (m[1] + m[2]).trim() : f
+        const soon = !!m
+        return (
+          <li key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 13.5, lineHeight: 1.45 }}>
+            <span style={{ marginTop: 2, color: dark ? 'var(--of-primary-text-dark, #38BDF8)' : 'var(--of-primary)', flexShrink: 0 }}>
+              <Check size={14} />
+            </span>
+            <span style={{ color: dark ? 'var(--dark-ink)' : 'var(--ink)' }}>
+              {text}
+              {soon && (
+                <span style={{
+                  display: 'inline-flex', verticalAlign: 'middle', marginLeft: 6,
+                  fontSize: 9, fontFamily: 'var(--font-mono)', fontWeight: 600,
+                  color: dark ? 'var(--dark-ink-muted)' : 'var(--ink-subtle)',
+                  background: dark ? 'rgba(255,255,255,.07)' : 'var(--surface-2)',
+                  border: `1px solid ${dark ? 'var(--dark-hairline)' : 'var(--hairline)'}`,
+                  borderRadius: 999, padding: '1px 6px',
+                  letterSpacing: '0.04em', textTransform: 'uppercase',
+                }}>
+                  soon
+                </span>
+              )}
+            </span>
+          </li>
+        )
+      })}
     </ul>
   )
 }
@@ -701,7 +722,18 @@ export default function PricingGrid() {
                       </tr>
                     ) : (
                       <tr key={i} style={{ borderTop: '1px solid var(--hairline)' }}>
-                        <td style={{ padding: '13px 20px', color: 'var(--ink)', fontSize: 14 }}>{row.feat}</td>
+                        <td style={{ padding: '13px 20px', color: 'var(--ink)', fontSize: 14 }}>
+                          {row.feat.replace(/\s*\(Phase \d+\)/g, '')}
+                          {/\(Phase \d+\)/.test(row.feat) && (
+                            <span style={{
+                              display: 'inline-flex', verticalAlign: 'middle', marginLeft: 6,
+                              fontSize: 9, fontFamily: 'var(--font-mono)', fontWeight: 600,
+                              color: 'var(--ink-subtle)', background: 'var(--surface-2)',
+                              border: '1px solid var(--hairline)', borderRadius: 999,
+                              padding: '1px 5px', letterSpacing: '0.04em', textTransform: 'uppercase',
+                            }}>soon</span>
+                          )}
+                        </td>
                         {(row.values as unknown as (boolean | string)[]).map((v, j) => (
                           <td
                             key={j}
