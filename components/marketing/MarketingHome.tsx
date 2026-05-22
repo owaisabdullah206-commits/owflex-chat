@@ -1045,6 +1045,7 @@ function FeatureBento() {
         </Reveal>
         <Reveal>
           <div
+            className="mkt-bento"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(6, 1fr)',
@@ -1620,7 +1621,7 @@ function HeroLeadCopy() {
           Watch 60-sec demo
         </a>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: 'var(--ink-muted)', fontSize: 13, marginTop: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 14, color: 'var(--ink-muted)', fontSize: 13, marginTop: 4 }}>
         <span style={{ fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)' }} />
           200+ bots deployed
@@ -1666,7 +1667,7 @@ export default function MarketingHome() {
             }}
           >
             <HeroLeadCopy />
-            <div style={{ position: 'relative' }}>
+            <div className="mkt-hero-mockup" style={{ position: 'relative' }}>
               <PortalMockup />
               <FloatingEmbedChip />
             </div>

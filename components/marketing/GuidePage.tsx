@@ -134,8 +134,8 @@ export default function GuidePage() {
             <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 20 }}>
               All API endpoints require a Bearer token from your workspace settings. Base URL: <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>https://Octively.com/api/v1</code>
             </p>
-            <div style={{ border: '1px solid var(--hairline)', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <div style={{ border: '1px solid var(--hairline)', overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 480 }}>
                 <thead>
                   <tr style={{ background: 'var(--surface-2)', borderBottom: '1px solid var(--hairline)' }}>
                     <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 600, fontFamily: 'var(--font-mono)', fontSize: 11 }}>Method</th>
@@ -190,7 +190,7 @@ export default function GuidePage() {
               {[
                 { q: 'Does the embed widget work on WordPress?', a: 'Yes. Paste the script tag in your theme\'s footer.php or use a custom HTML widget. A dedicated WordPress plugin is on the roadmap.' },
                 { q: 'Can I customise the widget appearance?', a: 'Yes. Bot settings let you change the accent colour, widget position, greeting message, and (on Agency+ plans) upload a custom logo.' },
-                { q: 'How are credits consumed?', a: 'Each LLM token costs credits. Credits are deducted before the API call is made. Your monthly plan includes a credit allowance; additional packs are available on the Billing page.' },
+                { q: 'How are credits consumed?', a: 'Each AI response costs credits proportional to the length of the conversation. Credits are deducted before each call. Your monthly plan includes a credit allowance; additional packs are available on the Billing page.' },
               ].map(({ q, a }) => (
                 <div key={q}>
                   <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{q}</p>
@@ -201,7 +201,7 @@ export default function GuidePage() {
           </DocSection>
 
           {/* CTA */}
-          <div style={{ marginTop: 56, padding: '32px', border: '1px solid var(--of-primary)', background: 'var(--of-primary-soft)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
+          <div style={{ marginTop: 56, padding: '32px', border: '1px solid var(--of-primary)', background: 'var(--of-primary-soft)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 }}>
             <div>
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>Ready to build?</p>
               <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>Get your embed key — free plan, no card required.</p>

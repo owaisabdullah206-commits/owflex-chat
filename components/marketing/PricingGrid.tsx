@@ -536,7 +536,7 @@ export default function PricingGrid() {
       <section style={{ paddingBlock: 24 }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <Reveal>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+            <div className="mkt-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
               {[freePlan, starterPlan, proPlan, agencyPlan].map((plan) => {
                 const isFeat = 'featured' in plan && !!(plan as { featured?: boolean }).featured
                 return isFeat
@@ -595,7 +595,7 @@ export default function PricingGrid() {
               See credit rates <ArrowUpRight size={14} />
             </a>
           </Reveal>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+          <div className="mkt-grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
             {CREDIT_PACKS.map((p, i) => {
               const { display } = fmtPrice(p.pkr, p.usd, currency)
               return (
@@ -728,7 +728,7 @@ export default function PricingGrid() {
 
       {/* FAQ */}
       <section style={{ paddingBlock: 80, background: 'var(--surface-2)', borderTop: '1px solid var(--hairline)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 56 }}>
+        <div className="mkt-grid-2" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: 56 }}>
           <Reveal>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', fontWeight: 500 }}>
               FAQ
