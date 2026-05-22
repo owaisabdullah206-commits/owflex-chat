@@ -48,7 +48,6 @@ var side=isLeft?"left":"right";
 var opp=isLeft?"right":"left";
 var msgBr=Math.max(4,br)+"px";
 var css=
-/* CSS variable for primary color — scoped to document root */
 ":root{--ofp:"+pc+"}"+
 
 /* ── Glow ring ── */
@@ -95,9 +94,9 @@ var css=
 "#oS:hover{transform:scale(1.1)}"+
 "#oS:disabled{opacity:.4!important;cursor:default!important;transform:none!important}"+
 
-/* ── Branding ── inline style + !important in stylesheet provides double protection ── */
-"#oB{display:flex!important;align-items:center!important;justify-content:center!important;padding:4px 0!important;font-size:10px!important;border-top:1px solid #f0f0f0!important;background:#fafafa!important;flex-shrink:0!important;opacity:0.5!important;visibility:visible!important;height:auto!important;overflow:visible!important;clip:auto!important;clip-path:none!important}"+
-"#oB a{color:inherit!important;text-decoration:none!important;pointer-events:auto!important}"+
+/* ── Branding — stylesheet base layer ── */
+"#oB{display:flex!important;align-items:center!important;justify-content:center!important;padding:4px 0!important;font-size:10px!important;border-top:1px solid #f0f0f0!important;background:#fafafa!important;flex-shrink:0!important;opacity:0.5!important;visibility:visible!important;height:auto!important;max-height:none!important;overflow:visible!important;clip:auto!important;clip-path:none!important;transform:none!important;filter:none!important;position:relative!important;z-index:0!important;color:inherit!important;letter-spacing:normal!important;text-indent:0!important;margin:0!important;pointer-events:auto!important;content-visibility:visible!important}"+
+"#oB a{color:inherit!important;text-decoration:none!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important}"+
 
 /* ── Tooltip ── */
 (te?"#oTip{position:fixed;bottom:32px;"+side+":88px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
@@ -110,10 +109,7 @@ var css=
 "@keyframes ofDot{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}"+
 ".od{display:inline-block;width:7px;height:7px;border-radius:50%;background:#94a3b8;animation:ofDot 1.3s infinite ease-in-out}";
 
-/* Inject stylesheet into document head */
-var styleEl=document.createElement("style");
-styleEl.textContent=css;
-document.head.appendChild(styleEl);
+document.head.insertAdjacentHTML("beforeend","<style>"+css+"</style>");
 
 /* Glow ring */
 var glow=document.createElement("div");glow.id="obg";document.body.appendChild(glow);
@@ -166,13 +162,12 @@ document.body.appendChild(pnl);
 
 /* ── Branding protection: exhaustive inline !important + MutationObserver ──
    Covers every CSS technique that can hide an element:
-   display/visibility/opacity/transform/filter/clip/clip-path/
-   height/max-height/font-size/color/text-indent/position offset/z-index/
-   content-visibility + the hidden HTML attribute. */
+   display · visibility · opacity · transform · filter · clip · clip-path ·
+   height · max-height · font-size · color · text-indent · letter-spacing ·
+   position offset · z-index · content-visibility + hidden HTML attribute */
 if(be){
   var brandEl=document.getElementById("oB");
   if(brandEl){
-    /* Every known CSS hiding vector, locked with !important */
     var BS=
       "display:flex!important;"+
       "visibility:visible!important;"+
@@ -207,7 +202,6 @@ if(be){
       "justify-content:center!important;"+
       "pointer-events:auto!important;"+
       "content-visibility:visible!important";
-    /* Inner link — prevent hiding the text itself */
     var BLS=
       "display:inline-flex!important;"+
       "align-items:center!important;"+
@@ -247,7 +241,6 @@ if(be){
             }
           }
         }
-        /* style/class/hidden/data-* attribute tampered on branding element */
         if(m.type==="attributes"&&m.target===brandEl){applyBS();}
       }
     }).observe(pnl,{childList:true,subtree:false,attributes:true,attributeFilter:["style","class","hidden","data-v"]});
