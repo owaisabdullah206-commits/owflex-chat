@@ -8,9 +8,24 @@ import { useDarkMode } from './useDarkMode'
 
 const RELEASES = [
   {
-    version: 'v0.7.0',
+    version: 'v0.8.0',
     date: 'May 2026',
     tag: 'Latest',
+    items: [
+      'Document upload status indicators — live step-by-step progress (Queued → Parsing → Embedding → Finalizing)',
+      'Pre-conversation lead form — collect visitor name, email, and phone before chat opens',
+      'Human handoff detection — bot flags conversations for human review when it expresses uncertainty',
+      'Enhanced conversation analytics — per-bot metrics, resolution rate, and escalation tracking',
+      'Sub-tenant credit management — per-org credit caps configurable from admin panel',
+      'BYOK — bring your own LLM key, encrypted at rest with AES-GCM',
+      'Audit log viewer — searchable workspace action history for admin compliance',
+      'Smart auto-routing updated — "auto" model option routes each query by complexity',
+    ],
+  },
+  {
+    version: 'v0.7.0',
+    date: 'May 2026',
+    tag: 'Routing',
     items: [
       'Routing Intelligence page — per-bot model routing decisions with latency metrics',
       'Redis error logging for chat failures — surfaced in admin panel',
@@ -91,10 +106,11 @@ const RELEASES = [
 ]
 
 const TAG_COLORS: Record<string, string> = {
-  Latest: 'var(--of-primary)',
-  Billing: 'var(--of-success)',
-  RAG: '#8B5CF6',
-  Portal: '#F59E0B',
+  Latest:    'var(--of-primary)',
+  Routing:   '#06B6D4',
+  Billing:   'var(--of-success)',
+  RAG:       '#8B5CF6',
+  Portal:    '#F59E0B',
   'Multi-bot': '#06B6D4',
   Dashboard: 'var(--ink-muted)',
   Foundation: 'var(--ink-subtle)',
@@ -117,7 +133,7 @@ export default function ChangelogPage() {
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 20, padding: '5px 12px', border: '1px solid var(--hairline)', borderRadius: 999, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-muted)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)', display: 'inline-block' }} />
-            Current: v0.7.0-beta
+            Current: v0.8.0-beta
           </div>
         </div>
       </section>
@@ -184,7 +200,7 @@ export default function ChangelogPage() {
       <section style={{ paddingBlock: 56, borderTop: '1px solid var(--hairline)', background: 'var(--surface-2)', textAlign: 'center' }}>
         <div style={{ maxWidth: 520, margin: '0 auto', padding: '0 24px' }}>
           <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>See what&apos;s coming next</h2>
-          <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 24 }}>FAQ editor, smart auto-routing, API access, custom portal subdomains, and more.</p>
+          <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 24 }}>Team seats, WordPress plugin, weekly email digest, API access, custom portal subdomains, and more.</p>
           <Link
             href="/roadmap"
             style={{

@@ -330,11 +330,19 @@ export async function POST(req: NextRequest) {
       }).catch(() => {}) // non-blocking — audit log must not break chat
     }
 
+    // Human handoff: flag conversation when bot signals uncertainty
+    const unanswered = flagIfUnanswered(content)
+    const convUpdate: Record<string, unknown> = { messageCount: sql`${schema.conversations.messageCount} + 2` }
+    if (unanswered) {
+      convUpdate.needsHuman = true
+      convUpdate.escalatedAt = new Date()
+    }
+
     // Increment message count + conversation counter for org
     await Promise.all([
       db
         .update(schema.conversations)
-        .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
+        .set(convUpdate)
         .where(eq(schema.conversations.id, conversation.id)),
       db
         .update(schema.organizations)

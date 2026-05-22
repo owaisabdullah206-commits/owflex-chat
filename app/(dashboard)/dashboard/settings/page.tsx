@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { SignOutButton } from '@/components/dashboard/SignOutButton'
 import { EditableName } from '@/components/dashboard/EditableName'
+import { ByokSettings } from '@/components/dashboard/ByokSettings'
 
 export default async function SettingsPage() {
   const user = await requireDeveloper()
@@ -16,7 +17,7 @@ export default async function SettingsPage() {
       .where(eq(schema.users.id, user.id))
       .limit(1),
     db
-      .select({ id: schema.organizations.id, plan: schema.organizations.plan })
+      .select({ id: schema.organizations.id, plan: schema.organizations.plan, llmApiKey: schema.organizations.llmApiKey })
       .from(schema.organizations)
       .where(eq(schema.organizations.ownerId, user.id))
       .limit(1),
@@ -121,21 +122,34 @@ export default async function SettingsPage() {
             </div>
 
             {/* Right — Session */}
-            <div>
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                session
-              </p>
-              <div className="border border-[var(--hairline)] bg-[var(--surface)] px-5 py-4">
+            <div className="space-y-6">
+              <div>
                 <p
-                  className="text-[11px] text-[var(--ink-muted)] mb-4"
+                  className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
                   style={{ fontFamily: 'var(--font-mono)' }}
                 >
-                  Signed in as {user.email}
+                  session
                 </p>
-                <SignOutButton />
+                <div className="border border-[var(--hairline)] bg-[var(--surface)] px-5 py-4">
+                  <p
+                    className="text-[11px] text-[var(--ink-muted)] mb-4"
+                    style={{ fontFamily: 'var(--font-mono)' }}
+                  >
+                    Signed in as {user.email}
+                  </p>
+                  <SignOutButton />
+                </div>
+              </div>
+
+              {/* BYOK */}
+              <div>
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  advanced
+                </p>
+                <ByokSettings hasKey={!!org?.llmApiKey} />
               </div>
             </div>
           </div>

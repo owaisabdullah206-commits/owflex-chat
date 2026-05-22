@@ -1,12 +1,13 @@
 import Link from 'next/link'
-import { ExternalLink } from 'lucide-react'
+import { AlertTriangle, ExternalLink } from 'lucide-react'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 
 interface Conversation {
-  id: string
-  pageUrl: string | null
-  startedAt: Date
+  id:           string
+  pageUrl:      string | null
+  startedAt:    Date
   messageCount: number
+  needsHuman:   boolean
 }
 
 interface ConversationTableProps {
@@ -62,7 +63,18 @@ export function ConversationTable({ conversations }: ConversationTableProps) {
                 )}
               </td>
               <td className={`${tdClass} text-[var(--ink)]`}>
-                {conv.messageCount}
+                <div className="flex items-center gap-2">
+                  {conv.messageCount}
+                  {conv.needsHuman && (
+                    <span
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px]"
+                      style={{ color: '#F59E0B', background: '#F59E0B0D', border: '1px solid #F59E0B40', borderRadius: 4 }}
+                    >
+                      <AlertTriangle size={10} />
+                      escalated
+                    </span>
+                  )}
+                </div>
               </td>
               <td className={tdClass}>
                 <Link

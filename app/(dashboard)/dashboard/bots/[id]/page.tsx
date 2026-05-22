@@ -25,8 +25,10 @@ import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 import { BotTabSelect } from '@/components/dashboard/BotTabSelect'
 import { ClientStatusCard } from '@/components/dashboard/ClientStatusCard'
+import { BotAnalyticsTab } from '@/components/dashboard/BotAnalyticsTab'
+import { getBotAnalytics } from '@/lib/db/queries/analytics'
 
-const TABS = ['Overview', 'Conversations', 'Leads', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
+const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
@@ -75,7 +77,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     to: toStr ? new Date(toStr) : undefined,
   }
 
-  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, faqs, unansweredMessages, clientRows, inviteRows] = await Promise.all([
+  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, faqs, unansweredMessages, clientRows, inviteRows, analyticsData] = await Promise.all([
     searchConversations(bot.id, convFilters),
     db
       .select({
@@ -136,6 +138,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       .where(eq(schema.invitations.botId, bot.id))
       .orderBy(desc(schema.invitations.createdAt))
       .limit(1),
+    getBotAnalytics(bot.id, 30),
   ])
 
   const clientUser = clientRows[0] ?? null
@@ -297,6 +300,10 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               </div>
               <LeadsTable leads={leads} />
             </div>
+          )}
+
+          {activeTab === 'analytics' && (
+            <BotAnalyticsTab data={analyticsData} botId={bot.id} period={30} />
           )}
 
           {activeTab === 'settings' && (

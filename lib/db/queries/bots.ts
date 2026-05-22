@@ -19,8 +19,9 @@ const updateBotSchema = z.object({
     primaryColor:       z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     position:           z.enum(['bottom-right', 'bottom-left']).optional(),
     welcomeMessage:     z.string().max(200).optional(),
-    leadCaptureEnabled: z.boolean().optional(),
-    strictMode:         z.boolean().optional(),
+    leadCaptureEnabled:  z.boolean().optional(),
+    collectLeadBefore:   z.boolean().optional(),
+    strictMode:          z.boolean().optional(),
     triggerIcon:        z.string().max(50).optional(),
     borderRadius:       z.number().min(0).max(24).optional(),
     tooltipEnabled:     z.boolean().optional(),
@@ -225,10 +226,11 @@ export async function searchConversations(
 
   return db
     .select({
-      id: schema.conversations.id,
-      pageUrl: schema.conversations.pageUrl,
-      startedAt: schema.conversations.startedAt,
+      id:           schema.conversations.id,
+      pageUrl:      schema.conversations.pageUrl,
+      startedAt:    schema.conversations.startedAt,
       messageCount: schema.conversations.messageCount,
+      needsHuman:   schema.conversations.needsHuman,
     })
     .from(schema.conversations)
     .where(and(...conditions))

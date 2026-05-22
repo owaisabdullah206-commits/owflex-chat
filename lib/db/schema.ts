@@ -77,6 +77,10 @@ export const organizations = pgTable('organizations', {
   leadsThisMonth:         integer('leads_this_month').notNull().default(0),
   bannedAt:               tsz('banned_at'),
   banReason:              text('ban_reason'),
+  // Platform-admin-set credit cap (null = unlimited — draws from plan allocation)
+  creditCap:              integer('credit_cap'),
+  // BYOK: AES-GCM encrypted org-level LLM API key, stored as "iv:ciphertext" hex
+  llmApiKey:              text('llm_api_key'),
   createdAt:              tsz('created_at').defaultNow().notNull(),
 })
 
@@ -115,9 +119,13 @@ export const conversations = pgTable('conversations', {
   startedAt:    tsz('started_at').defaultNow().notNull(),
   endedAt:      tsz('ended_at'),
   messageCount: integer('message_count').notNull().default(0),
+  // Human handoff: set when bot signals uncertainty and escalation is triggered
+  needsHuman:   boolean('needs_human').notNull().default(false),
+  escalatedAt:  tsz('escalated_at'),
 }, (t) => [
   index('conversations_bot_id_idx').on(t.botId),
   index('conversations_session_id_idx').on(t.sessionId),
+  index('conversations_needs_human_idx').on(t.needsHuman),
 ])
 
 // ── MESSAGES ─────────────────────────────────────────────────────────────────
@@ -262,6 +270,36 @@ export const modelPrices = pgTable('model_prices', {
 }, (t) => [
   index('model_prices_model_id_idx').on(t.modelId),
   index('model_prices_model_source_idx').on(t.modelId, t.source),
+])
+
+// ── AUDIT LOGS ────────────────────────────────────────────────────────────────
+// Append-only workspace action log. Non-blocking fire-and-forget writes.
+export const auditLogs = pgTable('audit_logs', {
+  id:         text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  orgId:      text('org_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
+  userId:     text('user_id').references(() => users.id, { onDelete: 'set null' }),
+  action:     varchar('action', { length: 100 }).notNull(),
+  entityType: varchar('entity_type', { length: 50 }).notNull(),
+  entityId:   text('entity_id'),
+  meta:       jsonb('meta').notNull().default({}),
+  createdAt:  tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('audit_logs_org_id_idx').on(t.orgId),
+  index('audit_logs_created_at_idx').on(t.createdAt),
+])
+
+// ── ORG MEMBERS (Team Seats) ──────────────────────────────────────────────────
+// Allows colleagues (not clients) to access the developer dashboard.
+export const orgMembers = pgTable('org_members', {
+  id:        text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  orgId:     text('org_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
+  userId:    text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  role:      varchar('role', { length: 20 }).notNull().default('member'),
+  invitedAt: tsz('invited_at').defaultNow().notNull(),
+  joinedAt:  tsz('joined_at'),
+}, (t) => [
+  uniqueIndex('org_members_org_user_idx').on(t.orgId, t.userId),
+  index('org_members_org_id_idx').on(t.orgId),
 ])
 
 // ── ROUTING DECISIONS (Phase 3) ───────────────────────────────────────────────

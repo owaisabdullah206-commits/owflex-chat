@@ -20,23 +20,24 @@ const SHIPPED = [
   'Embed widget — one script tag, live in minutes',
   'Google OAuth + email/password auth',
   'Client invitation flow — email invite to portal access',
+  'Document upload status indicators — step-by-step progress UI',
+  'Pre-conversation lead form — collect visitor info before chat opens',
+  'Human handoff — bot flags conversations when it expresses uncertainty',
+  'Enhanced conversation analytics — per-bot metrics and resolution rate',
+  'Sub-tenant credit management — per-org credit caps from admin panel',
+  'BYOK — bring your own LLM keys, encrypted at rest',
+  'Audit log viewer — searchable workspace action history',
 ]
 
 const IN_PROGRESS = [
   { title: 'WordPress plugin', desc: 'One-click install, no manual script pasting.' },
   { title: 'Weekly email digest for clients', desc: 'Summary of conversations and new leads delivered to client inboxes every Monday.' },
-  { title: 'Enhanced conversation analytics', desc: 'Sentiment analysis, topic clustering, and drop-off detection per bot.' },
+  { title: 'Team seats', desc: 'Invite colleagues to your workspace with role-based access controls.' },
 ]
 
 const PLANNED = [
   { title: 'Custom portal subdomain', desc: 'Serve your client portal from portal.youragency.com instead of app.octively.com.' },
-  { title: 'Smart auto-routing', desc: 'Automatically route each query to the best model by complexity and cost without manual config.' },
-  { title: 'Human handoff and escalation', desc: 'Bot detects when it is out of depth and hands the conversation to a human agent.' },
-  { title: 'Sub-tenant management', desc: 'Allocate credits, set limits, and view usage per client from a single agency dashboard.' },
   { title: 'API access and webhooks', desc: 'Programmatic access to bots, conversations, and leads. Push events to Zapier, n8n, or your own endpoint.' },
-  { title: 'Audit log viewer', desc: 'Searchable log of all actions across your workspace for compliance and debugging.' },
-  { title: 'BYOK — bring your own LLM keys', desc: 'Route inference through your own OpenAI, Anthropic, or Google API keys on Enterprise.' },
-  { title: 'Team seats', desc: 'Invite colleagues to your workspace with role-based access controls.' },
   { title: 'Mobile app', desc: 'iOS and Android app for managing bots and reviewing leads on the go.' },
   { title: 'Self-hosted option', desc: 'Run Octively on your own infrastructure for regulated or on-prem Enterprise deployments.' },
 ]
