@@ -306,7 +306,10 @@ select option {
   .mkt-nav-start-free      { display: none !important; }
   .mkt-hamburger           { display: grid !important; }
   .mkt-hero-grid           { grid-template-columns: 1fr !important; }
-  .mkt-hero-mockup         { display: none !important; }
+  .mkt-hero-mockup         { zoom: 0.72; margin-top: 8px; }
+  .mkt-mockup-sidebar      { display: none !important; }
+  .mkt-mockup-inner        { grid-template-columns: 1fr !important; min-height: 200px !important; }
+  .mkt-embed-chip          { display: none !important; }
   .mkt-grid-2              { grid-template-columns: 1fr !important; }
   .mkt-grid-3              { grid-template-columns: 1fr !important; }
   .mkt-grid-4              { grid-template-columns: 1fr 1fr !important; }

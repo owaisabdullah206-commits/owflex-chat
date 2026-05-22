@@ -429,6 +429,7 @@ function PortalMockup() {
       </div>
       {/* Inner dashboard */}
       <div
+        className="mkt-mockup-inner"
         style={{
           display: 'grid',
           gridTemplateColumns: '168px 1fr',
@@ -436,7 +437,9 @@ function PortalMockup() {
           background: 'var(--surface)',
         }}
       >
-        <DashboardSidebar />
+        <div className="mkt-mockup-sidebar">
+          <DashboardSidebar />
+        </div>
         <DashboardMain />
       </div>
     </div>
@@ -446,44 +449,74 @@ function PortalMockup() {
 // ─── Logo Bar ─────────────────────────────────────────────────────────────────
 
 function LogoBar() {
-  const logos = ['Nasir Electronics', 'Karachi Kurta Co.', 'Pak Travels', 'Lahore Auto', 'Dawn Studio', 'Bolt Couriers']
+  const logos = [
+    'Nasir Electronics', 'Karachi Kurta Co.', 'Pak Travels', 'Lahore Auto',
+    'Dawn Studio', 'Bolt Couriers', 'MediCare Clinic', 'Falcon Freight',
+  ]
+  const track = [...logos, ...logos]
+
   return (
     <section
       style={{
-        paddingBlock: 28,
+        paddingBlock: 32,
         borderTop: '1px solid var(--hairline)',
         borderBottom: '1px solid var(--hairline)',
         background: 'var(--surface-2)',
+        overflow: 'hidden',
       }}
     >
-      <div
+      <p
         style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '0 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 24,
-          flexWrap: 'wrap',
+          textAlign: 'center',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 10,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: 'var(--ink-subtle)',
+          marginBottom: 18,
         }}
       >
+        Trusted by Pakistani developers building for
+      </p>
+
+      <div style={{ position: 'relative', overflow: 'hidden' }}>
+        {/* fade edges */}
+        <div style={{ position: 'absolute', inset: '0 auto 0 0', width: 80, background: 'linear-gradient(to right, var(--surface-2), transparent)', zIndex: 1, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', inset: '0 0 0 auto', width: 80, background: 'linear-gradient(to left, var(--surface-2), transparent)', zIndex: 1, pointerEvents: 'none' }} />
+
         <div
           style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            color: 'var(--ink-muted)',
-            letterSpacing: '0.04em',
-            whiteSpace: 'nowrap',
+            display: 'flex',
+            width: 'max-content',
+            animation: 'marqueeL 24s linear infinite',
           }}
         >
-          Trusted by Pakistani developers building for —
-        </div>
-        <div style={{ display: 'flex', gap: 36, alignItems: 'center', flexWrap: 'wrap', color: 'var(--ink-subtle)' }}>
-          {logos.map((l, i) => (
-            <span key={i} style={{ fontSize: 14, fontWeight: 500, letterSpacing: '-0.01em', opacity: 0.7 }}>
-              {l}
-            </span>
+          {track.map((name, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 18,
+                padding: '0 36px',
+                borderRight: '1px solid var(--hairline)',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  color: 'var(--ink-muted)',
+                  whiteSpace: 'nowrap',
+                  opacity: 0.75,
+                }}
+              >
+                {name}
+              </span>
+            </div>
           ))}
         </div>
       </div>
@@ -1672,7 +1705,7 @@ export default function MarketingHome() {
             <HeroLeadCopy />
             <div className="mkt-hero-mockup" style={{ position: 'relative' }}>
               <PortalMockup />
-              <FloatingEmbedChip />
+              <span className="mkt-embed-chip"><FloatingEmbedChip /></span>
             </div>
           </div>
         </div>
