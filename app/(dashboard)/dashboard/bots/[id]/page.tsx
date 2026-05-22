@@ -321,6 +321,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         position:           ((wc.position as string) === 'bottom-left' ? 'bottom-left' : 'bottom-right') as 'bottom-right' | 'bottom-left',
                         welcomeMessage:     (wc.welcomeMessage as string) ?? 'Hi! How can I help you today?',
                         leadCaptureEnabled: (wc.leadCaptureEnabled as boolean) !== false,
+                        collectLeadBefore:  (wc.collectLeadBefore as boolean) === true,
                         strictMode:         (wc.strictMode as boolean)    === true,
                         triggerIcon:        (wc.triggerIcon as string)    ?? 'message-circle',
                         borderRadius:       typeof wc.borderRadius === 'number' ? wc.borderRadius : 16,

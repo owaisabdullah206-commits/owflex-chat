@@ -193,6 +193,31 @@ npm run build   # must exit 0 — fix all errors before git push
 - If the build fails, fix it before committing. Do not push broken builds hoping Vercel will reveal the error.
 - This rule applies to every change, including single-line fixes.
 
+### Git Remotes (Both must be pushed every time)
+
+```
+origin   https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas.git
+vercel   https://github.com/owaisabdullah206-commits/owflex-chat.git
+```
+
+After every commit, always push both:
+```bash
+git push origin master && git push vercel master
+```
+
+### Changelog + Roadmap Sync Rule
+
+Whenever a feature is **finalized and committed**, prompt the user:
+
+> "Feature X is now in the codebase. Should I add it to `ChangelogPage.tsx` (RELEASES) and move it to SHIPPED in `RoadmapPage.tsx`?"
+
+Before adding to SHIPPED, **verify the feature exists in the codebase** (grep or ls for the relevant component/route). Never add to SHIPPED based on assumption alone.
+
+Files to update:
+- `components/marketing/ChangelogPage.tsx` — add to the latest `RELEASES` entry's `items[]`
+- `components/marketing/RoadmapPage.tsx` — move from `IN_PROGRESS` or `PLANNED` to `SHIPPED[]`
+- `components/marketing/PricingGrid.tsx` — remove `(Phase X)` tag from the matching feature string
+
 ---
 
 ## Task context

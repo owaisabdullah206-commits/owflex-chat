@@ -87,7 +87,10 @@ async function ingestFile(doc: typeof schema.documents.$inferSelect): Promise<vo
     throw new Error('No text content extracted from document')
   }
 
+  await updateDocStatus(doc.id, 'embedding')
   const embeddings = await embedTexts(chunks)
+
+  await updateDocStatus(doc.id, 'finalizing')
   await upsertChunks(doc, chunks, embeddings, 0)
   await updateDocStatus(doc.id, 'ready', { chunkCount: chunks.length })
 }
@@ -105,6 +108,7 @@ async function ingestUrl(
   }
 
   let totalChunks = 0
+  await updateDocStatus(doc.id, 'embedding')
   for (let pageIdx = 0; pageIdx < pages.length; pageIdx++) {
     const page = pages[pageIdx]
     const text = page.markdown ?? ''
@@ -115,6 +119,7 @@ async function ingestUrl(
     await upsertChunks(doc, chunks, embeddings, pageIdx)
     totalChunks += chunks.length
   }
+  await updateDocStatus(doc.id, 'finalizing')
 
   await updateDocStatus(doc.id, 'ready', {
     chunkCount: totalChunks,

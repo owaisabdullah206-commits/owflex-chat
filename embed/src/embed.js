@@ -6,6 +6,7 @@ sessionStorage.setItem("_of",sid);
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
 var ti="message-circle",br=16,te=false,tms=[];
 var be=false,bt="Powered by Octively",burl="https://octively.com";
+var clb=false;
 var op=0,busy=0,started=0,lastMsg="";
 
 /* ── Icon SVG paths (exact Lucide v1.16.0) ── */
@@ -28,7 +29,7 @@ fetch(bu+"/api/v1/widget-config?key="+k)
   .then(function(r){return r.json();})
   .then(function(c){
     bn=c.botName||bn;pc=c.primaryColor||pc;
-    wm=c.welcomeMessage||wm;lc=c.leadCaptureEnabled!==false;
+    wm=c.welcomeMessage||wm;lc=c.leadCaptureEnabled!==false;clb=c.collectLeadBefore===true;
     pos=c.position||pos;
     ti=c.triggerIcon||ti;
     br=typeof c.borderRadius==="number"?c.borderRadius:br;
@@ -260,6 +261,56 @@ function setStatus(text,thinking){
   dotEl.style.background=thinking?"#f59e0b":"#4ade80";
 }
 
+function showLeadForm(){
+  var oFEl=document.getElementById("oF");
+  if(oFEl)oFEl.style.display="none";
+  if(document.getElementById("oLF"))return;
+  var frm=document.createElement("div");frm.id="oLF";
+  frm.style.cssText="padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto";
+  var iSt="border:1.5px solid #e5e7eb;border-radius:8px;height:38px;padding:0 12px;font-size:13px;outline:none;font-family:inherit;color:#111;background:#fff;box-sizing:border-box;width:100%;transition:border-color .15s";
+  frm.innerHTML=
+    '<p style="font-size:13px;color:#374151;font-weight:600;margin:0">Before we start</p>'+
+    '<p style="font-size:12px;color:#6b7280;margin:0">Share your details so we can follow up if needed.</p>'+
+    '<div style="display:flex;flex-direction:column;gap:4px">'+
+      '<label style="font-size:11px;color:#6b7280;font-weight:500">Name <span style="color:#ef4444">*</span></label>'+
+      '<input id="oLFn" type="text" placeholder="Your name" style="'+iSt+'">'+
+    '</div>'+
+    '<div style="display:flex;flex-direction:column;gap:4px">'+
+      '<label style="font-size:11px;color:#6b7280;font-weight:500">Email <span style="color:#ef4444">*</span></label>'+
+      '<input id="oLFe" type="email" placeholder="you@example.com" style="'+iSt+'">'+
+    '</div>'+
+    '<div style="display:flex;flex-direction:column;gap:4px">'+
+      '<label style="font-size:11px;color:#6b7280;font-weight:500">Phone <span style="color:#6b7280;font-size:10px">(optional)</span></label>'+
+      '<input id="oLFp" type="tel" placeholder="+1 (555) 000-0000" style="'+iSt+'">'+
+    '</div>'+
+    '<div id="oLFerr" style="display:none;font-size:11px;color:#ef4444"></div>'+
+    '<button id="oLFs" style="height:40px;background:var(--ofp);color:#fff;border:0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Start chatting →</button>';
+  ms.appendChild(frm);
+  var nI=document.getElementById("oLFn"),eI=document.getElementById("oLFe"),phI=document.getElementById("oLFp");
+  var errEl=document.getElementById("oLFerr"),sb2=document.getElementById("oLFs");
+  sb2.onclick=function(){
+    var nm=nI.value.trim(),em=eI.value.trim(),ph=phI.value.trim();
+    if(!nm){errEl.textContent="Name is required.";errEl.style.display="block";nI.focus();return;}
+    if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){errEl.textContent="A valid email is required.";errEl.style.display="block";eI.focus();return;}
+    errEl.style.display="none";sb2.disabled=true;sb2.style.opacity="0.6";sb2.textContent="Submitting…";
+    var pl={embedKey:k,sessionId:sid,name:nm,email:em};if(ph)pl.phone=ph;
+    fetch(bu+"/api/v1/leads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(pl)})
+    .then(function(r){
+      if(r.ok){
+        sessionStorage.setItem("_ofl","1");
+        frm.remove();
+        var oFEl2=document.getElementById("oF");if(oFEl2)oFEl2.style.display="";
+        if(!started){started=1;addBot(wm);}
+        setTimeout(function(){inp.focus();},60);
+      }else{
+        r.json().then(function(j){errEl.textContent=j.error||"Something went wrong.";errEl.style.display="block";}).catch(function(){errEl.textContent="Something went wrong.";errEl.style.display="block";});
+        sb2.disabled=false;sb2.style.opacity="1";sb2.textContent="Start chatting →";
+      }
+    })
+    .catch(function(){errEl.textContent="Network error. Please try again.";errEl.style.display="block";sb2.disabled=false;sb2.style.opacity="1";sb2.textContent="Start chatting →";});
+  };
+}
+
 function openPanel(){
   op=1;
   pnl.classList.remove("h");
@@ -268,8 +319,12 @@ function openPanel(){
   btn.style.animation="none";
   glow.style.animationPlayState="paused";glow.style.opacity="0";
   if(tipEl)tipEl.style.display="none";
-  if(!started){started=1;addBot(wm);}
-  setTimeout(function(){inp.focus();},60);
+  if(clb&&!sessionStorage.getItem("_ofl")){
+    showLeadForm();
+  }else{
+    if(!started){started=1;addBot(wm);}
+    setTimeout(function(){inp.focus();},60);
+  }
 }
 
 function closePanel(){

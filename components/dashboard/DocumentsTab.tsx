@@ -3,7 +3,7 @@ import { PLAN_LIMITS } from '@/lib/limits'
 import { db, schema } from '@/lib/db'
 import { and, eq, sql } from 'drizzle-orm'
 import { DocumentUploader } from './DocumentUploader'
-import { DocumentRow } from './DocumentRow'
+import { DocumentsTabClient } from './DocumentsTabClient'
 import { FileText } from 'lucide-react'
 
 type Plan = keyof typeof PLAN_LIMITS
@@ -74,9 +74,7 @@ export async function DocumentsTab({ botId, orgId, plan }: Props) {
             <span className="flex-1">Document</span>
             <span>Status</span>
           </div>
-          {docs.map((doc) => (
-            <DocumentRow key={doc.id} doc={doc} />
-          ))}
+          <DocumentsTabClient docs={docs} />
         </div>
       )}
     </div>

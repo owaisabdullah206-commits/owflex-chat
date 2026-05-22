@@ -46,6 +46,7 @@ interface BotSettingsFormProps {
     position: 'bottom-right' | 'bottom-left'
     welcomeMessage: string
     leadCaptureEnabled: boolean
+    collectLeadBefore: boolean
     strictMode: boolean
     triggerIcon: string
     borderRadius: number
@@ -74,6 +75,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [position, setPosition]                 = useState(initial.position)
   const [welcomeMessage, setWelcomeMessage]     = useState(initial.welcomeMessage)
   const [leadCaptureEnabled, setLeadCapture]    = useState(initial.leadCaptureEnabled)
+  const [collectLeadBefore, setCollectLeadBefore] = useState(initial.collectLeadBefore)
   const [strictMode, setStrictMode]             = useState(initial.strictMode)
   const [triggerIcon, setTriggerIcon]           = useState<TriggerIconId>(initial.triggerIcon as TriggerIconId)
   const [borderRadius, setBorderRadius]         = useState(initial.borderRadius)
@@ -112,6 +114,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           position,
           welcomeMessage,
           leadCaptureEnabled,
+          collectLeadBefore,
           strictMode,
           triggerIcon,
           borderRadius,
@@ -353,10 +356,21 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           <div className="flex items-center justify-between py-3">
             <div>
               <p className="text-sm text-[var(--ink)]">Lead Capture</p>
-              <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically</p>
+              <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically during chat</p>
             </div>
             <Switch checked={leadCaptureEnabled}
               onCheckedChange={(v) => { setLeadCapture(v); markDirty() }}
+              disabled={isPending} />
+          </div>
+
+          {/* Collect Lead Before Chat */}
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
+              <p className="text-xs text-[var(--ink-muted)]">Show a name / email / phone form before the chat opens. Stored as a lead automatically.</p>
+            </div>
+            <Switch checked={collectLeadBefore}
+              onCheckedChange={(v) => { setCollectLeadBefore(v); markDirty() }}
               disabled={isPending} />
           </div>
 

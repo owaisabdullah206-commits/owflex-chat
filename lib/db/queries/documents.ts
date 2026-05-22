@@ -6,7 +6,7 @@ import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 import { deleteObject } from '@/lib/storage/r2'
 
-export type DocumentStatus = 'queued' | 'processing' | 'ready' | 'failed'
+export type DocumentStatus = 'queued' | 'processing' | 'embedding' | 'finalizing' | 'ready' | 'failed'
 
 export interface DocRow {
   id: string

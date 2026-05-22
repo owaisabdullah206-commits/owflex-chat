@@ -12,6 +12,7 @@ type WidgetConfig = {
   position?: string
   welcomeMessage?: string
   leadCaptureEnabled?: boolean
+  collectLeadBefore?: boolean
   triggerIcon?: string
   borderRadius?: number
   tooltipEnabled?: boolean
@@ -77,6 +78,7 @@ export async function GET(req: NextRequest) {
       welcomeMessage: config.welcomeMessage ?? 'Hi! How can I help you today?',
       position: config.position ?? 'bottom-right',
       leadCaptureEnabled: config.leadCaptureEnabled !== false,
+      collectLeadBefore: config.collectLeadBefore === true,
       triggerIcon: config.triggerIcon ?? 'message-circle',
       borderRadius: typeof config.borderRadius === 'number' ? config.borderRadius : 16,
       tooltipEnabled: config.tooltipEnabled === true,
