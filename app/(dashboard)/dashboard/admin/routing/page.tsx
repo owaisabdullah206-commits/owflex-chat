@@ -1,10 +1,11 @@
-import { avg, count, desc, eq, sql } from 'drizzle-orm'
+import { avg, count, desc, eq, inArray, sql } from 'drizzle-orm'
 import { Redis } from '@upstash/redis'
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { STRONG_MODEL } from '@/lib/ai/litellm'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { RelativeTime } from '@/components/shared/RelativeTime'
+import { ErrorLogTable } from '@/components/dashboard/ErrorLogTable'
 
 // ── Classification colour palette ───────────────────────────────────────────
 const CLASS_COLOR: Record<string, string> = {
@@ -116,17 +117,49 @@ async function getRoutingStats() {
   return { overall, byClass, byBot, recent }
 }
 
-async function getChatErrors(): Promise<Array<{ t: string; embedKey: string; err: string }>> {
+interface ChatError {
+  t: string
+  embedKey: string
+  err: string
+  botName?: string
+  orgName?: string
+  botId?: string
+}
+
+async function getChatErrors(): Promise<ChatError[]> {
   try {
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL!,
       token: process.env.UPSTASH_REDIS_REST_TOKEN!,
     })
-    const raw = await redis.lrange<string>('chat:errors', 0, 29) // last 30
-    return raw.map((s) => {
-      try { return JSON.parse(typeof s === 'string' ? s : JSON.stringify(s)) as { t: string; embedKey: string; err: string } }
+    const raw = await redis.lrange<string>('chat:errors', 0, 29)
+    const errors: ChatError[] = raw.map((s) => {
+      try { return JSON.parse(typeof s === 'string' ? s : JSON.stringify(s)) as ChatError }
       catch { return { t: '', embedKey: '', err: String(s) } }
     })
+
+    // Resolve unique embed keys → bot name + org name in one query
+    const keys = [...new Set(errors.map(e => e.embedKey).filter(Boolean))]
+    if (keys.length > 0) {
+      const bots = await db
+        .select({
+          embedKey: schema.bots.embedKey,
+          botId:    schema.bots.id,
+          botName:  schema.bots.name,
+          orgName:  schema.organizations.name,
+        })
+        .from(schema.bots)
+        .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+        .where(inArray(schema.bots.embedKey, keys))
+
+      const byKey = Object.fromEntries(bots.map(b => [b.embedKey, b]))
+      for (const e of errors) {
+        const b = byKey[e.embedKey]
+        if (b) { e.botName = b.botName; e.orgName = b.orgName; e.botId = b.botId }
+      }
+    }
+
+    return errors
   } catch {
     return []
   }
@@ -428,32 +461,9 @@ export default async function AdminRoutingPage() {
               </div>
             ) : (
               <div className="border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
-                <div className="h-[2px] w-full" style={{ background: 'var(--of-error, #EF4444)' }} />
+                <div className="h-[2px] w-full" style={{ background: '#EF4444' }} />
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr>
-                        <th className={thCls}>Time</th>
-                        <th className={thCls}>Embed Key</th>
-                        <th className={thCls}>Error</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {chatErrors.map((e, i) => (
-                        <tr key={i} className="hover:bg-[var(--surface-2)] transition-colors">
-                          <td className={`${tdCls} text-[var(--ink-subtle)] whitespace-nowrap`} style={{ fontFamily: 'var(--font-mono)' }}>
-                            {e.t ? new Date(e.t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
-                          </td>
-                          <td className={`${tdCls} text-[var(--ink-muted)]`} style={{ fontFamily: 'var(--font-mono)' }}>
-                            {e.embedKey || '—'}
-                          </td>
-                          <td className={`${tdCls} text-[var(--of-error,#EF4444)] max-w-[480px] truncate`} style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}>
-                            {e.err}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <ErrorLogTable rows={chatErrors} />
                 </div>
               </div>
             )}
