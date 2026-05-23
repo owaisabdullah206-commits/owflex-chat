@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Lightbulb } from 'lucide-react'
+import { Lightbulb, AlertTriangle } from 'lucide-react'
 
 const MAX_CHARS = 3000
 
@@ -26,6 +26,7 @@ interface Props {
 
 export function AdminPlatformEditor({ initialValue }: Props) {
   const [value, setValue] = useState(initialValue)
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const len = value.length
   const pct = len / MAX_CHARS
@@ -35,12 +36,58 @@ export function AdminPlatformEditor({ initialValue }: Props) {
     'text-[var(--ink-subtle)]'
 
   function insertExample() {
-    if (value.trim() && !confirm('This will replace your current platform prompt with the example. Continue?')) return
+    if (value.trim()) { setShowConfirm(true); return }
     setValue(EXAMPLE_PROMPT)
+  }
+
+  function confirmReplace() {
+    setValue(EXAMPLE_PROMPT)
+    setShowConfirm(false)
   }
 
   return (
     <div className="space-y-4">
+      {/* Replace-prompt confirmation dialog */}
+      {showConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(2px)' }}
+          onClick={() => setShowConfirm(false)}
+        >
+          <div
+            className="w-full max-w-sm mx-4 rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-4"
+            style={{ boxShadow: '0 16px 48px rgba(0,0,0,0.5)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3">
+              <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-[var(--ink)]">Replace platform prompt?</p>
+                <p className="text-xs text-[var(--ink-muted)] mt-1 leading-relaxed">
+                  This will overwrite your current prompt with the example template. This cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setShowConfirm(false)}
+                className="h-8 px-4 text-xs font-medium rounded border border-[var(--hairline)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors bg-transparent"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmReplace}
+                className="h-8 px-4 text-xs font-medium rounded bg-[var(--of-primary)] text-white hover:opacity-90 transition-opacity"
+              >
+                Replace
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Guidance card */}
       <div className="rounded-lg border border-[var(--hairline)] bg-[var(--surface-2)] p-4 space-y-3">
         <p className="text-xs font-semibold text-[var(--ink)] uppercase tracking-wide">What to write here</p>
