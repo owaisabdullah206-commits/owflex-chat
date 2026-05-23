@@ -203,7 +203,6 @@ const COMPARE_ROWS = [
   { feat: 'Website scraping', values: [false, false, true, true, true] },
   { feat: 'Selective page crawling — path include/exclude filters', values: [false, false, true, true, true] },
   { feat: 'CSV / Excel product catalog import (Shopify & WooCommerce)', values: [false, false, true, true, true] },
-  { feat: 'Deterministic RAG text cleaning — boilerplate removal', values: [false, false, true, true, true] },
 
   { section: 'Operations' },
   { feat: 'Lead capture on/off', values: [false, true, true, true, true] },
