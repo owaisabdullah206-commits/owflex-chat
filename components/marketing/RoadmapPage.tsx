@@ -27,6 +27,11 @@ const SHIPPED = [
   'Sub-tenant credit management — per-org credit caps from admin panel',
   'BYOK — bring your own LLM keys, encrypted at rest',
   'Audit log viewer — searchable workspace action history',
+  'Deterministic RAG text cleaning — boilerplate removal, noise filtering before embedding',
+  'Selective page crawling — include/exclude URL path glob filters per crawl job',
+  'CSV / Excel product catalog import — Shopify and WooCommerce auto-detection',
+  'Product catalog overwrite — re-upload without duplicates, unique identifier column picker',
+  'Platform prompt editor — guidance card, example template, 3,000-character hard limit',
 ]
 
 const IN_PROGRESS = [

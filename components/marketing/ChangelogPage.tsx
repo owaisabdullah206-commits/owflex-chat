@@ -8,9 +8,22 @@ import { useDarkMode } from './useDarkMode'
 
 const RELEASES = [
   {
-    version: 'v0.8.0',
+    version: 'v0.9.0',
     date: 'May 2026',
     tag: 'Latest',
+    items: [
+      'Deterministic RAG text cleaning — nav menus, cookie banners, and footer boilerplate stripped across all crawled pages before embedding (frequency analysis, zero AI calls)',
+      'Chunk quality filter — structural noise under 40 characters discarded automatically, reducing hallucination-inducing orphan headings and stray bullets',
+      'Selective page crawling — include/exclude URL path glob filters (e.g. /docs/**, skip /blog) passed through to Firecrawl per crawl job',
+      'CSV / Excel product catalog import — auto-detects Shopify and WooCommerce exports, strips HTML from descriptions, includes product image URL and product URL per passage',
+      'Product catalog overwrite — unique identifier column picker (Handle / ID / SKU) prevents duplicate embeddings on re-upload of updated catalogs',
+      'Platform prompt editor — guidance card explaining what belongs in the platform prompt, insert-example button, 3,000-character hard limit with live counter',
+    ],
+  },
+  {
+    version: 'v0.8.0',
+    date: 'May 2026',
+    tag: 'Operations',
     items: [
       'Document upload status indicators — live step-by-step progress (Queued → Parsing → Embedding → Finalizing)',
       'Pre-conversation lead form — collect visitor name, email, and phone before chat opens',
@@ -106,13 +119,14 @@ const RELEASES = [
 ]
 
 const TAG_COLORS: Record<string, string> = {
-  Latest:    'var(--of-primary)',
-  Routing:   '#06B6D4',
-  Billing:   'var(--of-success)',
-  RAG:       '#8B5CF6',
-  Portal:    '#F59E0B',
+  Latest:     'var(--of-primary)',
+  Operations: '#10B981',
+  Routing:    '#06B6D4',
+  Billing:    'var(--of-success)',
+  RAG:        '#8B5CF6',
+  Portal:     '#F59E0B',
   'Multi-bot': '#06B6D4',
-  Dashboard: 'var(--ink-muted)',
+  Dashboard:  'var(--ink-muted)',
   Foundation: 'var(--ink-subtle)',
 }
 
@@ -133,7 +147,7 @@ export default function ChangelogPage() {
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 20, padding: '5px 12px', border: '1px solid var(--hairline)', borderRadius: 999, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-muted)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)', display: 'inline-block' }} />
-            Current: v0.8.0-beta
+            Current: v0.9.0-beta
           </div>
         </div>
       </section>
