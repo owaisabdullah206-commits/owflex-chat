@@ -153,7 +153,7 @@ pnl.innerHTML=
   '</div>'+
   '<div id="oM" role="log" aria-live="polite"></div>'+
   '<div id="oF">'+
-    '<input id="oI" type="text" placeholder="Type a message…" autocomplete="off" aria-label="Message input">'+
+    '<input id="oI" type="text" placeholder="Type a message…" autocomplete="off" aria-label="Message input" maxlength="2000">'+
     '<button id="oS" aria-label="Send message">'+
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'+
     '</button>'+
@@ -499,6 +499,20 @@ function send(){
 }
 sb.onclick=send;
 inp.onkeydown=function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};
+inp.oninput=function(){
+  var rem=2000-inp.value.length;
+  var el=document.getElementById("oIC");
+  if(rem<=200){
+    if(!el){
+      el=document.createElement("span");el.id="oIC";
+      el.style.cssText="position:absolute;right:52px;bottom:50%;transform:translateY(50%);font-size:10px;pointer-events:none;transition:color .15s;font-family:inherit";
+      document.getElementById("oF").style.position="relative";
+      document.getElementById("oF").appendChild(el);
+    }
+    el.textContent=rem;
+    el.style.color=rem<=50?"#ef4444":"#9ca3af";
+  }else if(el){el.remove();}
+};
 }
 
 window.addEventListener("octively:lead",function(e){

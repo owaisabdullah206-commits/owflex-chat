@@ -162,10 +162,19 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
 
         {/* System Prompt */}
         <div className="space-y-1.5">
-          <Label htmlFor="systemPrompt" className="text-xs text-[var(--ink-muted)]">System Prompt</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="systemPrompt" className="text-xs text-[var(--ink-muted)]">System Prompt</Label>
+            <span
+              className={`text-[10px] tabular-nums ${systemPrompt.length > 3500 ? 'text-amber-400' : 'text-[var(--ink-subtle)]'}`}
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              {systemPrompt.length} / 4000
+            </span>
+          </div>
           <Textarea id="systemPrompt" value={systemPrompt}
-            onChange={(e) => { setSystemPrompt(e.target.value); markDirty() }}
+            onChange={(e) => { if (e.target.value.length <= 4000) { setSystemPrompt(e.target.value); markDirty() } }}
             rows={5}
+            maxLength={4000}
             className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none rounded-none"
             disabled={isPending} />
         </div>

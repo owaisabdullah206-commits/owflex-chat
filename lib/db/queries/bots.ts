@@ -10,7 +10,7 @@ import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
 
 const updateBotSchema = z.object({
   name:                z.string().min(1).max(255).optional(),
-  systemPrompt:        z.string().min(1).optional(),
+  systemPrompt:        z.string().min(1).max(4000).optional(),
   model:               z.enum(SUPPORTED_MODELS).optional(),
   smartRoutingEnabled: z.boolean().optional(),
   routingLightModel:   z.enum(SUPPORTED_MODELS).nullable().optional(),
