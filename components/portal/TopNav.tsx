@@ -61,11 +61,16 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
   const userInitials = initials(userName, userEmail)
 
   useEffect(() => {
-    fetch('/api/portal/escalations/count')
-      .then((r) => r.json())
-      .then((data) => setEscalationCount(data.count ?? 0))
-      .catch(() => {})
-  }, [pathname])
+    function poll() {
+      fetch('/api/portal/escalations/count')
+        .then((r) => r.json())
+        .then((data) => setEscalationCount(data.count ?? 0))
+        .catch(() => {})
+    }
+    poll()
+    const id = setInterval(poll, 30_000)
+    return () => clearInterval(id)
+  }, [])
 
   const buildHref = (base: string) =>
     activeBotId ? `${base}?bot=${activeBotId}` : base

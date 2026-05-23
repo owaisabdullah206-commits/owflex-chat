@@ -58,11 +58,16 @@ export function Sidebar() {
   const [escalationCount, setEscalationCount] = useState(0)
 
   useEffect(() => {
-    fetch('/api/dashboard/escalations/count')
-      .then((r) => r.json())
-      .then((data) => setEscalationCount(data.count ?? 0))
-      .catch(() => {})
-  }, [pathname])
+    function poll() {
+      fetch('/api/dashboard/escalations/count')
+        .then((r) => r.json())
+        .then((data) => setEscalationCount(data.count ?? 0))
+        .catch(() => {})
+    }
+    poll()
+    const id = setInterval(poll, 30_000)
+    return () => clearInterval(id)
+  }, [])
 
   async function handleSignOut() {
     await authClient.signOut()

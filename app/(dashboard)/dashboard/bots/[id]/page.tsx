@@ -344,7 +344,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                           : (wc.brandingEnabled as boolean) !== false,
                         brandingText:       (wc.brandingText as string) ?? '',
                         brandingUrl:        (wc.brandingUrl as string) ?? '',
-                        handoffEnabled:     (wc.handoffEnabled as boolean) === true,
+                        handoffEnabled:        (wc.handoffEnabled as boolean) === true,
+                        handoffNotifyTarget:   ((wc.handoffNotifyTarget as string) === 'client' ? 'client' : 'developer') as 'developer' | 'client',
                       }
                     })(),
                   }}

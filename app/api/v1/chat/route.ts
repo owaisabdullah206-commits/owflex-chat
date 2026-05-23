@@ -95,6 +95,9 @@ export async function POST(req: NextRequest) {
         routingStrongModel:  schema.bots.routingStrongModel,
         monthlyConvLimit:    schema.bots.monthlyConvLimit,
         ownerEmail:          schema.users.email,
+        clientEmail: sql<string | null>`(
+          SELECT email FROM users WHERE id = ${schema.bots.clientUserId}
+        )`,
         documentCount: sql<number>`(
           SELECT COUNT(*)::int FROM documents
           WHERE bot_id = ${schema.bots.id} AND status = 'ready'
@@ -177,10 +180,11 @@ export async function POST(req: NextRequest) {
 
     const docContextBlock = renderDocContext(retrievedChunks)
 
-    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; collectLeadBefore?: boolean; strictMode?: boolean; handoffEnabled?: boolean }
+    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; collectLeadBefore?: boolean; strictMode?: boolean; handoffEnabled?: boolean; handoffNotifyTarget?: 'developer' | 'client' }
     // If the pre-chat form already collected contact info, suppress in-chat lead prompting
     const leadEnabled = wc.leadCaptureEnabled !== false && wc.collectLeadBefore !== true
     const handoffEnabled = wc.handoffEnabled === true
+    const handoffNotifyTarget = wc.handoffNotifyTarget ?? 'developer'
     const strictMode = wc.strictMode === true
     const strictInstructions = strictMode
       ? leadEnabled
@@ -367,24 +371,27 @@ export async function POST(req: NextRequest) {
     }
 
     // Non-blocking handoff email notification
-    if (unanswered && bot.ownerEmail) {
-      void (async () => {
-        try {
-          const [lead] = await db
-            .select({ name: schema.leads.name, email: schema.leads.email })
-            .from(schema.leads)
-            .where(eq(schema.leads.conversationId, conversation.id))
-            .limit(1)
-          await sendHandoffNotification({
-            ownerEmail: bot.ownerEmail!,
-            botName: bot.name,
-            conversationId: conversation.id,
-            lastUserMessage: message,
-            visitorName:  lead?.name  ?? undefined,
-            visitorEmail: lead?.email ?? undefined,
-          })
-        } catch { /* non-blocking — never break chat */ }
-      })()
+    if (unanswered) {
+      const notifyEmail = handoffNotifyTarget === 'client' ? bot.clientEmail : bot.ownerEmail
+      if (notifyEmail) {
+        void (async () => {
+          try {
+            const [lead] = await db
+              .select({ name: schema.leads.name, email: schema.leads.email })
+              .from(schema.leads)
+              .where(eq(schema.leads.conversationId, conversation.id))
+              .limit(1)
+            await sendHandoffNotification({
+              ownerEmail: notifyEmail,
+              botName: bot.name,
+              conversationId: conversation.id,
+              lastUserMessage: message,
+              visitorName:  lead?.name  ?? undefined,
+              visitorEmail: lead?.email ?? undefined,
+            })
+          } catch { /* non-blocking — never break chat */ }
+        })()
+      }
     }
 
     return NextResponse.json({ reply: content, conversationId: conversation.id, needsHuman: unanswered })

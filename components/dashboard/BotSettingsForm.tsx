@@ -56,6 +56,7 @@ interface BotSettingsFormProps {
     brandingText: string
     brandingUrl: string
     handoffEnabled: boolean
+    handoffNotifyTarget: 'developer' | 'client'
   }
 }
 
@@ -86,6 +87,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [brandingText, setBrandingText]         = useState(initial.brandingText)
   const [brandingUrl, setBrandingUrl]           = useState(initial.brandingUrl)
   const [handoffEnabled, setHandoffEnabled]     = useState(initial.handoffEnabled)
+  const [handoffNotifyTarget, setHandoffNotifyTarget] = useState<'developer' | 'client'>(initial.handoffNotifyTarget)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>('dark')
 
   const isFreePlan = orgPlan === 'free'
@@ -126,6 +128,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           brandingText: brandingText.trim() || undefined,
           brandingUrl:  brandingUrl.trim()  || undefined,
           handoffEnabled,
+          handoffNotifyTarget,
         },
       })
       if (result.error) {
@@ -391,16 +394,46 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           </div>
 
           {/* Human Handoff */}
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="text-sm text-[var(--ink)]">Human Handoff</p>
-              <p className="text-xs text-[var(--ink-muted)]">
-                When the bot can&apos;t answer, notify you by email and flag the conversation for follow-up
-              </p>
+          <div className="py-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-[var(--ink)]">Human Handoff</p>
+                <p className="text-xs text-[var(--ink-muted)]">
+                  When the bot can&apos;t answer, flag the conversation and send an email notification
+                </p>
+              </div>
+              <Switch checked={handoffEnabled}
+                onCheckedChange={(v) => { setHandoffEnabled(v); markDirty() }}
+                disabled={isPending} />
             </div>
-            <Switch checked={handoffEnabled}
-              onCheckedChange={(v) => { setHandoffEnabled(v); markDirty() }}
-              disabled={isPending} />
+
+            {handoffEnabled && (
+              <div className="ml-0 space-y-1.5">
+                <Label className="text-xs text-[var(--ink-muted)]">Notify by email</Label>
+                <div className="flex gap-2">
+                  {(['developer', 'client'] as const).map((target) => (
+                    <button
+                      key={target}
+                      type="button"
+                      onClick={() => { setHandoffNotifyTarget(target); markDirty() }}
+                      disabled={isPending}
+                      className={`flex-1 py-2 text-xs border transition-colors cursor-pointer capitalize ${
+                        handoffNotifyTarget === target
+                          ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-medium'
+                          : 'border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink-muted)] hover:text-[var(--ink)]'
+                      }`}
+                    >
+                      {target === 'developer' ? 'Developer (you)' : 'Client'}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-[var(--ink-subtle)]">
+                  {handoffNotifyTarget === 'client'
+                    ? 'Notification email goes to the client linked to this bot.'
+                    : 'Notification email goes to the developer account (you).'}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Tooltip Messages */}
