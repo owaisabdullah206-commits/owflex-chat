@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity, GitBranch, ClipboardList } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
+import { OctivelyMark } from '@/components/brand/OctivelyMark'
 
 const navItems = [
   { href: '/dashboard/bots',     label: 'Bots',     icon: Bot },
@@ -78,10 +79,9 @@ export function Sidebar() {
     <aside className="hidden md:flex fixed inset-y-0 left-0 w-56 flex-col bg-[var(--surface)] border-r border-[var(--hairline)] z-20">
       {/* Logo */}
       <div className="flex items-center gap-2.5 h-12 px-4 border-b border-[var(--hairline)]">
-        <div className="w-2 h-2 rounded-full bg-[var(--of-primary)] shrink-0" />
+        <OctivelyMark size={18} color="var(--of-primary)" />
         <span
           className="text-[var(--ink)] font-semibold text-sm tracking-[-0.02em]"
-          style={{ fontFamily: 'var(--font-mono)' }}
         >
           Octively
         </span>

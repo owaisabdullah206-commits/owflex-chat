@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ChevronDown, LogOut, Menu, Settings, X } from 'lucide-react'
+import { OctivelyMark } from '@/components/brand/OctivelyMark'
 
 interface Bot {
   id: string
@@ -92,11 +93,7 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
 
         {/* Logo */}
         <div className="flex items-center gap-2 shrink-0 pr-5">
-          <div className="w-7 h-7 rounded-md bg-[var(--of-primary)] flex items-center justify-center">
-            <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4">
-              <path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 9.6A3.6 3.6 0 1 1 8 4.4a3.6 3.6 0 0 1 0 7.2z" fill="white"/>
-            </svg>
-          </div>
+          <OctivelyMark size={22} color="var(--of-primary)" />
           <span className="text-sm font-semibold text-[var(--ink)] tracking-tight">Octively</span>
         </div>
 

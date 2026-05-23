@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { OctivelyMark } from '@/components/brand/OctivelyMark'
 
 const COLS = [
   {
@@ -94,20 +95,12 @@ export default function MarketingFooter() {
           {/* Brand column */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <OctivelyMark size={20} color="var(--of-primary)" />
               <span
                 style={{
-                  width: 9,
-                  height: 9,
-                  borderRadius: '50%',
-                  background: 'var(--of-primary)',
-                  display: 'inline-block',
-                }}
-              />
-              <span
-                style={{
-                  fontFamily: 'var(--font-mono)',
                   fontWeight: 600,
                   fontSize: 16,
+                  letterSpacing: '-0.02em',
                   color: 'var(--ink)',
                 }}
               >

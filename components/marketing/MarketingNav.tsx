@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Moon, Sun, Menu, X } from 'lucide-react'
+import { OctivelyMark } from '@/components/brand/OctivelyMark'
 
 const NAV_LINKS = [
   { label: 'Product', href: '/' },
@@ -75,16 +76,8 @@ export function MarketingNav({
               color: 'var(--ink)',
             }}
           >
-            <span
-              style={{
-                width: 9,
-                height: 9,
-                borderRadius: '50%',
-                background: 'var(--of-primary)',
-                display: 'inline-block',
-              }}
-            />
-            <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>Octively</span>
+            <OctivelyMark size={20} color="var(--of-primary)" />
+            <span style={{ fontWeight: 600, letterSpacing: '-0.02em' }}>Octively</span>
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
@@ -246,8 +239,8 @@ export function MarketingNav({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--of-primary)', display: 'inline-block' }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>Octively</span>
+                <OctivelyMark size={18} color="var(--of-primary)" />
+                <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Octively</span>
               </div>
               <button
                 onClick={() => setMenuOpen(false)}

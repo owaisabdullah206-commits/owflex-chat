@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   OCTIVELY BRAND — Compass Burst keyframes
+   Referenced by OctivelySpinner, OctivelyPulse, OctivelyStagger,
+   OctivelySuccess, OctivelyProgress, LiveIndicator.
+   ───────────────────────────────────────────────────────────────────────────── */
+@keyframes oct-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes oct-pulse-mark {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+@keyframes oct-halo {
+  0%   { transform: scale(0.4); opacity: 0.6; }
+  80%  { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes oct-stagger-fade {
+  0%, 60% { opacity: 0.18; transform: scale(0.6); }
+  10%     { opacity: 1;    transform: scale(1.05); }
+  30%     { opacity: 0.4;  transform: scale(1); }
+}
+@keyframes oct-check-in {
+  0%   { stroke-dashoffset: 1; opacity: 0; }
+  20%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 1; }
+}
+
 @theme inline {
   --font-sans: "Inter", -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Mono", ui-monospace, monospace;

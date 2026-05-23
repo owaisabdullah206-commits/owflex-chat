@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Octively Compass Burst — Alternating variant (A) -->
+  <!-- Even blades: full opacity, Odd blades: 55% opacity -->
+  <!-- i=0 (up)           full --> <path d="M 46.00,36.00 L 50.00,4.00 L 54.00,36.00 Z" fill="#0EA5E9" fill-opacity="1"/>
+  <!-- i=1 (upper-right)  dim  --> <path d="M 57.07,37.27 L 82.53,17.47 L 62.73,42.93 Z" fill="#0EA5E9" fill-opacity="0.55"/>
+  <!-- i=2 (right)        full --> <path d="M 64.00,46.00 L 96.00,50.00 L 64.00,54.00 Z" fill="#0EA5E9" fill-opacity="1"/>
+  <!-- i=3 (lower-right)  dim  --> <path d="M 62.73,57.07 L 82.53,82.53 L 57.07,62.73 Z" fill="#0EA5E9" fill-opacity="0.55"/>
+  <!-- i=4 (down)         full --> <path d="M 54.00,64.00 L 50.00,96.00 L 46.00,64.00 Z" fill="#0EA5E9" fill-opacity="1"/>
+  <!-- i=5 (lower-left)   dim  --> <path d="M 42.93,62.73 L 17.47,82.53 L 37.27,57.07 Z" fill="#0EA5E9" fill-opacity="0.55"/>
+  <!-- i=6 (left)         full --> <path d="M 36.00,54.00 L 4.00,50.00 L 36.00,46.00 Z" fill="#0EA5E9" fill-opacity="1"/>
+  <!-- i=7 (upper-left)   dim  --> <path d="M 37.27,42.93 L 17.47,17.47 L 42.93,37.27 Z" fill="#0EA5E9" fill-opacity="0.55"/>
+  <!-- hub --> <circle cx="50" cy="50" r="6" fill="#0EA5E9"/>
+</svg>
