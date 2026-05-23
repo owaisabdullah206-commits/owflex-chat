@@ -79,7 +79,7 @@ export function Sidebar() {
     <aside className="hidden md:flex fixed inset-y-0 left-0 w-56 flex-col bg-[var(--surface)] border-r border-[var(--hairline)] z-20">
       {/* Logo */}
       <div className="flex items-center gap-2.5 h-12 px-4 border-b border-[var(--hairline)]">
-        <OctivelyMark size={18} color="var(--of-primary)" />
+        <OctivelyMark size={22} color="var(--of-primary)" />
         <span
           className="text-[var(--ink)] font-semibold text-sm tracking-[-0.02em]"
         >

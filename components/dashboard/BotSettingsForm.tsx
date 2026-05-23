@@ -503,7 +503,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit" disabled={isPending}
             className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white inline-flex items-center gap-1.5">
-            {isPending && <OctivelySpinner size={14} color="white" duration={4} />}
+            {isPending && <OctivelySpinner size={16} color="white" duration={4} />}
             {isPending ? 'Saving…' : 'Save Changes'}
           </Button>
           {saved  && <span className="text-xs text-[var(--success-text)]">Saved — widget updates within 5 minutes</span>}

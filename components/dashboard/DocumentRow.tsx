@@ -84,7 +84,7 @@ function StepProgress({ status, updatedAt, docId }: { status: string; updatedAt:
                 {done ? (
                   <CheckCircle2 className="h-2.5 w-2.5 shrink-0" />
                 ) : active ? (
-                  <OctivelySpinner size={10} color="var(--of-primary)" duration={4} />
+                  <OctivelySpinner size={13} color="var(--of-primary)" duration={4} />
                 ) : (
                   <span className="h-2.5 w-2.5 shrink-0 inline-flex items-center justify-center rounded-full border border-current text-[7px]">
                     {i + 1}

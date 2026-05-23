@@ -33,7 +33,7 @@ export function ReindexButton({ docId }: { docId: string }) {
       disabled={isPending}
       title="Re-index document"
     >
-      {isPending ? <OctivelySpinner size={14} color="var(--of-primary)" duration={4} /> : <RefreshCw className="h-3.5 w-3.5" />}
+      {isPending ? <OctivelySpinner size={16} color="var(--of-primary)" duration={4} /> : <RefreshCw className="h-3.5 w-3.5" />}
     </Button>
   )
 }

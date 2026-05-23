@@ -95,7 +95,7 @@ export default function MarketingFooter() {
           {/* Brand column */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-              <OctivelyMark size={20} color="var(--of-primary)" />
+              <OctivelyMark size={24} color="var(--of-primary)" />
               <span
                 style={{
                   fontWeight: 600,

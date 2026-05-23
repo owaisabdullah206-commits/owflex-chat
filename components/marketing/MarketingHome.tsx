@@ -10,6 +10,67 @@ import {
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
 import { useDarkMode } from './useDarkMode'
+import { OctivelyStagger } from '@/components/brand/OctivelyStagger'
+
+// ─── Shredder preloader ───────────────────────────────────────────────────────
+const STRIP_COUNT = 10
+
+function ShredderPreloader({ dark }: { dark: boolean }) {
+  const [phase, setPhase] = useState<'hold' | 'shred' | 'done'>('hold')
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase('shred'), 1300)
+    const t2 = setTimeout(() => setPhase('done'), 1800)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [])
+
+  if (phase === 'done') return null
+
+  const bg = dark ? '#0C0A09' : '#F5F1EC'
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        pointerEvents: phase === 'shred' ? 'none' : 'auto',
+      }}
+    >
+      {/* OctivelyStagger centered — fades out as strips shred */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'opacity .25s',
+        opacity: phase === 'shred' ? 0 : 1,
+        zIndex: 1,
+      }}>
+        <OctivelyStagger size={72} color="#0EA5E9" />
+      </div>
+
+      {/* Shredder strips */}
+      {Array.from({ length: STRIP_COUNT }, (_, i) => {
+        const goLeft = i % 2 === 0
+        const delay  = i * 28
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: 0, right: 0,
+              top: `${(i / STRIP_COUNT) * 100}%`,
+              height: `${100 / STRIP_COUNT}%`,
+              background: bg,
+              willChange: 'transform',
+              animation: phase === 'shred'
+                ? `${goLeft ? 'oct-shred-left' : 'oct-shred-right'} .42s cubic-bezier(.55,0,1,.45) ${delay}ms forwards`
+                : undefined,
+            }}
+          />
+        )
+      })}
+    </div>
+  )
+}
 
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
@@ -1691,6 +1752,7 @@ export default function MarketingHome() {
       className={`marketing${darkMode ? ' dark' : ''}`}
       style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}
     >
+      <ShredderPreloader dark={darkMode} />
       <MarketingNav dark={darkMode} onToggleDark={toggleDark} />
 
       {/* Hero */}

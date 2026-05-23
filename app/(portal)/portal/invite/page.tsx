@@ -200,7 +200,7 @@ function InviteContent() {
         {state === 'valid' && autoAccepting && (
           <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm p-6">
             <div className="flex items-center justify-center gap-2 text-sm text-[var(--ink-muted)]">
-              <OctivelySpinner size={16} color="var(--of-primary)" duration={4} />
+              <OctivelySpinner size={20} color="var(--of-primary)" duration={4} />
               Setting up your account…
             </div>
             {error && (
@@ -294,7 +294,7 @@ function InviteContent() {
           <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm p-6">
             <h1 className="text-lg font-semibold text-[var(--ink)] mb-3">You&apos;re all set!</h1>
             <div className="flex items-center justify-center gap-2 text-sm text-[var(--ink-muted)]">
-              <OctivelySpinner size={16} color="var(--of-primary)" duration={4} />
+              <OctivelySpinner size={20} color="var(--of-primary)" duration={4} />
               Redirecting to your dashboard…
             </div>
           </div>

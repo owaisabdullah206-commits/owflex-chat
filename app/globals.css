@@ -27,6 +27,25 @@
   20%  { opacity: 1; }
   100% { stroke-dashoffset: 0; opacity: 1; }
 }
+@keyframes oct-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes oct-shred-left  { to { transform: translateX(-110%); } }
+@keyframes oct-shred-right { to { transform: translateX(110%);  } }
+@keyframes oct-preloader-fade { to { opacity: 0; } }
+
+/* Skeleton shimmer utility — used in loading.tsx files */
+.oct-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    color-mix(in srgb, var(--surface-2) 55%, var(--bg)) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: oct-shimmer 1.6s ease-in-out infinite;
+}
 
 @theme inline {
   --font-sans: "Inter", -apple-system, sans-serif;

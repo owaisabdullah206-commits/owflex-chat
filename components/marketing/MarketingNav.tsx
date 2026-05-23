@@ -76,7 +76,7 @@ export function MarketingNav({
               color: 'var(--ink)',
             }}
           >
-            <OctivelyMark size={20} color="var(--of-primary)" />
+            <OctivelyMark size={24} color="var(--of-primary)" />
             <span style={{ fontWeight: 600, letterSpacing: '-0.02em' }}>Octively</span>
             <span
               style={{
@@ -239,7 +239,7 @@ export function MarketingNav({
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <OctivelyMark size={18} color="var(--of-primary)" />
+                <OctivelyMark size={22} color="var(--of-primary)" />
                 <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Octively</span>
               </div>
               <button

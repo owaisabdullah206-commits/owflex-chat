@@ -93,7 +93,7 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
 
         {/* Logo */}
         <div className="flex items-center gap-2 shrink-0 pr-5">
-          <OctivelyMark size={22} color="var(--of-primary)" />
+          <OctivelyMark size={26} color="var(--of-primary)" />
           <span className="text-sm font-semibold text-[var(--ink)] tracking-tight">Octively</span>
         </div>
 
