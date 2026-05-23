@@ -445,6 +445,22 @@ function captureLead(text){
   return cleaned;
 }
 
+function showHandoffCard(){
+  if(document.getElementById("oHC"))return;
+  var card=document.createElement("div");card.id="oHC";
+  card.style.cssText="margin:8px 0;padding:14px 16px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;display:flex;align-items:flex-start;gap:10px;animation:ofIn .22s ease";
+  card.innerHTML=
+    '<div style="width:28px;height:28px;border-radius:50%;background:#e0f2fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">'+
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'+
+    '</div>'+
+    '<div>'+
+      '<p style="margin:0 0 3px;font-size:13px;font-weight:600;color:#1e293b">A team member will follow up</p>'+
+      '<p style="margin:0;font-size:12px;color:#64748b;line-height:1.5">We\'ve been notified and will get back to you shortly.</p>'+
+    '</div>';
+  ms.appendChild(card);
+  ms.scrollTop=ms.scrollHeight;
+}
+
 function showErr(){
   hideTyping();
   var wrap=document.createElement("div");wrap.className="b berr";
@@ -470,6 +486,7 @@ function sendMsg(t){
     if(!d)return;
     hideTyping();
     if(d.reply)addBot(lc?captureLead(d.reply):d.reply);
+    if(d.needsHuman)showHandoffCard();
     lock(0);inp.focus();
   })
   .catch(showErr);

@@ -55,6 +55,7 @@ interface BotSettingsFormProps {
     brandingEnabled: boolean
     brandingText: string
     brandingUrl: string
+    handoffEnabled: boolean
   }
 }
 
@@ -84,6 +85,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [brandingEnabled, setBrandingEnabled]   = useState(initial.brandingEnabled)
   const [brandingText, setBrandingText]         = useState(initial.brandingText)
   const [brandingUrl, setBrandingUrl]           = useState(initial.brandingUrl)
+  const [handoffEnabled, setHandoffEnabled]     = useState(initial.handoffEnabled)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>('dark')
 
   const isFreePlan = orgPlan === 'free'
@@ -123,6 +125,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           brandingEnabled: (orgPlan === 'agency' || orgPlan === 'enterprise') ? brandingEnabled : true,
           brandingText: brandingText.trim() || undefined,
           brandingUrl:  brandingUrl.trim()  || undefined,
+          handoffEnabled,
         },
       })
       if (result.error) {
@@ -387,6 +390,19 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
               disabled={isPending} />
           </div>
 
+          {/* Human Handoff */}
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Human Handoff</p>
+              <p className="text-xs text-[var(--ink-muted)]">
+                When the bot can&apos;t answer, notify you by email and flag the conversation for follow-up
+              </p>
+            </div>
+            <Switch checked={handoffEnabled}
+              onCheckedChange={(v) => { setHandoffEnabled(v); markDirty() }}
+              disabled={isPending} />
+          </div>
+
           {/* Tooltip Messages */}
           <div className="flex items-center justify-between py-3">
             <div>
@@ -398,6 +414,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
               disabled={isPending} />
           </div>
         </div>
+
 
         {tooltipEnabled && (
           <div className="space-y-1.5">

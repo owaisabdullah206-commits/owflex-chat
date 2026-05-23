@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity, GitBranch, ClipboardList } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
@@ -23,8 +24,8 @@ const adminItems = [
   { href: '/dashboard/admin/audit',      label: 'Audit Log',  icon: ClipboardList },
 ]
 
-function NavLink({ href, label, icon: Icon, pathname }: {
-  href: string; label: string; icon: React.ElementType; pathname: string
+function NavLink({ href, label, icon: Icon, pathname, badge }: {
+  href: string; label: string; icon: React.ElementType; pathname: string; badge?: number
 }) {
   const active = pathname.startsWith(href)
   return (
@@ -39,7 +40,12 @@ function NavLink({ href, label, icon: Icon, pathname }: {
       style={{ fontFamily: 'var(--font-mono)' }}
     >
       <Icon className={cn('h-3.5 w-3.5 shrink-0', active ? 'text-[var(--of-primary)]' : 'text-current')} />
-      {label}
+      <span className="flex-1">{label}</span>
+      {badge != null && badge > 0 && (
+        <span className="ml-auto min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold bg-amber-500 text-white rounded-full leading-none">
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
     </Link>
   )
 }
@@ -49,6 +55,14 @@ export function Sidebar() {
   const router = useRouter()
   const { data: session } = authClient.useSession()
   const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_PLATFORM_OWNER_EMAIL
+  const [escalationCount, setEscalationCount] = useState(0)
+
+  useEffect(() => {
+    fetch('/api/dashboard/escalations/count')
+      .then((r) => r.json())
+      .then((data) => setEscalationCount(data.count ?? 0))
+      .catch(() => {})
+  }, [pathname])
 
   async function handleSignOut() {
     await authClient.signOut()
@@ -71,7 +85,14 @@ export function Sidebar() {
       {/* Nav */}
       <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
         {navItems.map(({ href, label, icon }) => (
-          <NavLink key={href} href={href} label={label} icon={icon} pathname={pathname} />
+          <NavLink
+            key={href}
+            href={href}
+            label={label}
+            icon={icon}
+            pathname={pathname}
+            badge={href === '/dashboard/bots' ? escalationCount : undefined}
+          />
         ))}
 
         {isAdmin && (

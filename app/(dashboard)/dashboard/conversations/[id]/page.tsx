@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { eq, and, asc } from 'drizzle-orm'
-import { ArrowLeft, Bot, User } from 'lucide-react'
+import { eq, and, asc, sql } from 'drizzle-orm'
+import { ArrowLeft, Bot, User, AlertTriangle, CheckCircle2, Mail } from 'lucide-react'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { RelativeTime } from '@/components/shared/RelativeTime'
+import { HandoffActions } from '@/components/dashboard/HandoffActions'
 
 export default async function ConversationDetailPage({
   params,
@@ -24,6 +25,9 @@ export default async function ConversationDetailPage({
       pageUrl:      schema.conversations.pageUrl,
       startedAt:    schema.conversations.startedAt,
       messageCount: schema.conversations.messageCount,
+      needsHuman:   sql<boolean>`COALESCE(${schema.conversations.needsHuman}, false)`,
+      escalatedAt:  schema.conversations.escalatedAt,
+      sessionId:    schema.conversations.sessionId,
     })
     .from(schema.conversations)
     .innerJoin(schema.bots, eq(schema.conversations.botId, schema.bots.id))
@@ -37,6 +41,17 @@ export default async function ConversationDetailPage({
     .limit(1)
 
   if (!conv) notFound()
+
+  // Fetch visitor lead info (best-effort join on conversationId)
+  const [lead] = await db
+    .select({
+      name:  schema.leads.name,
+      email: schema.leads.email,
+      phone: schema.leads.phone,
+    })
+    .from(schema.leads)
+    .where(eq(schema.leads.conversationId, id))
+    .limit(1)
 
   const messages = await db
     .select({
@@ -71,6 +86,12 @@ export default async function ConversationDetailPage({
             <h1 className="text-lg font-bold text-[var(--ink)] mt-0.5 leading-none">Conversation</h1>
           </div>
           <div className="ml-auto flex items-center gap-4 text-xs text-[var(--ink-muted)]">
+            {conv.needsHuman && (
+              <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Needs human
+              </span>
+            )}
             {conv.pageUrl && (
               <a
                 href={conv.pageUrl}
@@ -87,7 +108,46 @@ export default async function ConversationDetailPage({
           </div>
         </div>
 
-        <div className="px-8 py-6 max-w-3xl">
+        <div className="px-8 py-6 max-w-3xl space-y-6">
+          {/* Escalation banner */}
+          {conv.needsHuman && (
+            <div className="border border-amber-500/30 bg-amber-500/10 p-4 space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
+                    <p className="text-sm font-semibold text-amber-300">Human handoff requested</p>
+                  </div>
+                  {conv.escalatedAt && (
+                    <p className="text-xs text-amber-400/70 mt-1 ml-6">
+                      Escalated <RelativeTime date={conv.escalatedAt} />
+                    </p>
+                  )}
+                  {(lead?.name || lead?.email || lead?.phone) && (
+                    <div className="mt-2 ml-6 text-xs text-[var(--ink-muted)] space-y-0.5">
+                      {lead.name  && <p>Visitor: <span className="text-[var(--ink)]">{lead.name}</span></p>}
+                      {lead.email && (
+                        <p>
+                          Email:{' '}
+                          <a href={`mailto:${lead.email}`} className="text-[var(--of-primary)] hover:underline">
+                            {lead.email}
+                          </a>
+                        </p>
+                      )}
+                      {lead.phone && <p>Phone: <span className="text-[var(--ink)]">{lead.phone}</span></p>}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <HandoffActions
+                conversationId={conv.id}
+                visitorEmail={lead?.email ?? null}
+                visitorName={lead?.name ?? null}
+              />
+            </div>
+          )}
+
+          {/* Messages */}
           {messages.length === 0 ? (
             <p className="text-sm text-[var(--ink-muted)]">No messages in this conversation.</p>
           ) : (

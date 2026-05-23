@@ -16,6 +16,7 @@ import { retrieveContext } from '@/lib/knowledge/retriever'
 import { renderDocContext, composeSystemPrompt } from '@/lib/knowledge/prompt-builder'
 import { routeMessage } from '@/lib/ai/router'
 import { getCurrentModelPrice } from '@/lib/db/queries/admin'
+import { sendHandoffNotification } from '@/lib/email/handoff'
 
 const LEAD_INSTRUCTIONS = `
 
@@ -176,9 +177,10 @@ export async function POST(req: NextRequest) {
 
     const docContextBlock = renderDocContext(retrievedChunks)
 
-    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; collectLeadBefore?: boolean; strictMode?: boolean }
+    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; collectLeadBefore?: boolean; strictMode?: boolean; handoffEnabled?: boolean }
     // If the pre-chat form already collected contact info, suppress in-chat lead prompting
     const leadEnabled = wc.leadCaptureEnabled !== false && wc.collectLeadBefore !== true
+    const handoffEnabled = wc.handoffEnabled === true
     const strictMode = wc.strictMode === true
     const strictInstructions = strictMode
       ? leadEnabled
@@ -331,8 +333,8 @@ export async function POST(req: NextRequest) {
       }).catch(() => {}) // non-blocking — audit log must not break chat
     }
 
-    // Human handoff: flag conversation when bot signals uncertainty
-    const unanswered = flagIfUnanswered(content)
+    // Human handoff: flag conversation when bot signals uncertainty (only if handoff is enabled)
+    const unanswered = handoffEnabled && flagIfUnanswered(content)
 
     // Increment message count + conversation counter for org
     await Promise.all([
@@ -364,7 +366,28 @@ export async function POST(req: NextRequest) {
       void checkAndWarnUsage(bot.orgId, 'conversations', bot.convCount + 1, convLimit, bot.orgPlan, bot.ownerEmail)
     }
 
-    return NextResponse.json({ reply: content, conversationId: conversation.id })
+    // Non-blocking handoff email notification
+    if (unanswered && bot.ownerEmail) {
+      void (async () => {
+        try {
+          const [lead] = await db
+            .select({ name: schema.leads.name, email: schema.leads.email })
+            .from(schema.leads)
+            .where(eq(schema.leads.conversationId, conversation.id))
+            .limit(1)
+          await sendHandoffNotification({
+            ownerEmail: bot.ownerEmail!,
+            botName: bot.name,
+            conversationId: conversation.id,
+            lastUserMessage: message,
+            visitorName:  lead?.name  ?? undefined,
+            visitorEmail: lead?.email ?? undefined,
+          })
+        } catch { /* non-blocking — never break chat */ }
+      })()
+    }
+
+    return NextResponse.json({ reply: content, conversationId: conversation.id, needsHuman: unanswered })
   } catch (err) {
     console.error('[chat] error:', err)
     // Store error in Redis for admin visibility (non-blocking, capped at 200)

@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { authClient } from '@/lib/auth/client'
 import { ThemeToggleButton } from '@/components/shared/ThemeToggleButton'
@@ -57,7 +57,15 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
   const NAV_BASES = ALL_NAV.filter((n) => isVisible(n.configKey, portalConfig))
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [escalationCount, setEscalationCount] = useState(0)
   const userInitials = initials(userName, userEmail)
+
+  useEffect(() => {
+    fetch('/api/portal/escalations/count')
+      .then((r) => r.json())
+      .then((data) => setEscalationCount(data.count ?? 0))
+      .catch(() => {})
+  }, [pathname])
 
   const buildHref = (base: string) =>
     activeBotId ? `${base}?bot=${activeBotId}` : base
@@ -103,18 +111,24 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
         <nav className="hidden sm:flex items-stretch gap-0">
           {NAV_BASES.map((link) => {
             const active = isActive(link.href)
+            const badge = link.href === '/portal/conversations' ? escalationCount : 0
             return (
               <a
                 key={link.href}
                 href={buildHref(link.href)}
                 className={[
-                  'flex items-center px-3.5 text-sm font-medium border-b-2 -mb-px transition-colors',
+                  'flex items-center gap-1.5 px-3.5 text-sm font-medium border-b-2 -mb-px transition-colors',
                   active
                     ? 'border-[var(--of-primary)] text-[var(--ink)]'
                     : 'border-transparent text-[var(--ink-muted)] hover:text-[var(--ink)]',
                 ].join(' ')}
               >
                 {link.label}
+                {badge > 0 && (
+                  <span className="min-w-[16px] h-4 px-1 flex items-center justify-center text-[9px] font-bold bg-amber-500 text-white rounded-full leading-none">
+                    {badge > 99 ? '99+' : badge}
+                  </span>
+                )}
               </a>
             )
           })}
@@ -194,6 +208,7 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
           <nav className="px-3 py-2 space-y-0.5">
             {NAV_BASES.map((link) => {
               const active = isActive(link.href)
+              const badge = link.href === '/portal/conversations' ? escalationCount : 0
               return (
                 <a
                   key={link.href}
@@ -206,7 +221,12 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
                       : 'text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--bg)]',
                   ].join(' ')}
                 >
-                  {link.label}
+                  <span className="flex-1">{link.label}</span>
+                  {badge > 0 && (
+                    <span className="min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-bold bg-amber-500 text-white rounded-full leading-none">
+                      {badge > 99 ? '99+' : badge}
+                    </span>
+                  )}
                 </a>
               )
             })}

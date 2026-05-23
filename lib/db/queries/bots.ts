@@ -29,6 +29,7 @@ const updateBotSchema = z.object({
     brandingEnabled:    z.boolean().optional(),
     brandingText:       z.string().max(60).optional(),
     brandingUrl:        z.string().url().max(255).optional(),
+    handoffEnabled:     z.boolean().optional(),
   }).optional(),
 })
 
