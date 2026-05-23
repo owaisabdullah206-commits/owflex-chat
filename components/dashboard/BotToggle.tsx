@@ -2,6 +2,7 @@
 
 import { useTransition, useState } from 'react'
 import { toggleBotActive } from '@/lib/db/queries/bots'
+import { LiveIndicator } from '@/components/brand/LiveIndicator'
 
 interface BotToggleProps {
   botId: string
@@ -30,8 +31,10 @@ export function BotToggle({ botId, initialActive }: BotToggleProps) {
           : 'bg-[var(--surface-2)] text-[var(--ink-muted)] border-[var(--hairline)] hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/20'
       } disabled:opacity-50 disabled:cursor-not-allowed`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-400' : 'bg-[var(--ink-subtle)]'}`} />
-      {isPending ? '…' : isActive ? 'Active' : 'Inactive'}
+      {isActive
+        ? <LiveIndicator label={isPending ? '…' : 'Active'} color="#10B981" style={{ fontSize: 11 }} />
+        : <span className="flex items-center gap-1.5">{isPending ? '…' : 'Inactive'}</span>
+      }
     </button>
   )
 }

@@ -5,6 +5,7 @@ import { ArrowRight, Code2, Globe, Shield } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
+import { OctivelyButton } from '@/components/brand/OctivelyButton'
 
 const VALUES = [
   {
@@ -115,17 +116,9 @@ export default function AboutPage() {
         <div style={{ maxWidth: 520, margin: '0 auto', padding: '0 24px' }}>
           <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 14 }}>Start your free workspace</h2>
           <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 28 }}>No card required. One bot, 200 conversations per month, free forever.</p>
-          <Link
-            href="/dashboard/signup"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              height: 44, padding: '0 24px',
-              background: 'var(--of-primary)', color: 'white',
-              fontSize: 15, fontWeight: 500, borderRadius: 8, textDecoration: 'none',
-            }}
-          >
-            Get started free <ArrowRight size={15} />
-          </Link>
+          <OctivelyButton href="/dashboard/signup" size="lg">
+            Get started free
+          </OctivelyButton>
         </div>
       </section>
 

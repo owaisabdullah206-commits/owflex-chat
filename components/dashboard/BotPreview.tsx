@@ -1,3 +1,5 @@
+import { LiveIndicator } from '@/components/brand/LiveIndicator'
+
 export function BotPreview() {
   return (
     <div className="sticky top-8">
@@ -9,7 +11,7 @@ export function BotPreview() {
             <span className="text-white text-xs font-bold">B</span>
           </div>
           <span className="text-white text-sm font-medium">Your Bot</span>
-          <div className="ml-auto w-2 h-2 rounded-full bg-emerald-300" title="Online" />
+          <LiveIndicator label="Online" color="white" style={{ fontSize: 10, opacity: 0.8, marginLeft: 'auto' }} />
         </div>
 
         {/* Sample messages */}

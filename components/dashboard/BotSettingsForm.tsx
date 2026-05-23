@@ -12,6 +12,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { updateBot } from '@/lib/db/queries/bots'
 import { SUPPORTED_MODELS, type SupportedModel } from '@/lib/ai/litellm'
+import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
+import { LiveIndicator } from '@/components/brand/LiveIndicator'
 
 // ─── Trigger icon catalogue ───────────────────────────────────────────────────
 const TRIGGER_ICONS = [
@@ -500,7 +502,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         {/* Submit */}
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit" disabled={isPending}
-            className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white">
+            className="bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white inline-flex items-center gap-1.5">
+            {isPending && <OctivelySpinner size={14} color="white" duration={4} />}
             {isPending ? 'Saving…' : 'Save Changes'}
           </Button>
           {saved  && <span className="text-xs text-[var(--success-text)]">Saved — widget updates within 5 minutes</span>}
@@ -635,7 +638,7 @@ function LiveBotPreview({
             <TriggerIcon className="h-4 w-4 text-white" />
           </div>
           <span className="text-white text-sm font-semibold truncate flex-1">{botName || 'My Bot'}</span>
-          <div className="w-2 h-2 rounded-full bg-emerald-300 shrink-0" title="Online" />
+          <LiveIndicator label="Online" color="white" style={{ fontSize: 10, opacity: 0.85 }} />
         </div>
 
         {/* Messages */}

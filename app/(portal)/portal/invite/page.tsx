@@ -6,7 +6,8 @@ import { authClient } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
+import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
 
 type State = 'loading' | 'valid' | 'invalid' | 'expired' | 'used' | 'success'
 
@@ -199,7 +200,7 @@ function InviteContent() {
         {state === 'valid' && autoAccepting && (
           <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm p-6">
             <div className="flex items-center justify-center gap-2 text-sm text-[var(--ink-muted)]">
-              <Loader2 className="h-4 w-4 animate-spin text-[var(--of-primary)]" />
+              <OctivelySpinner size={16} color="var(--of-primary)" duration={4} />
               Setting up your account…
             </div>
             {error && (
@@ -293,7 +294,7 @@ function InviteContent() {
           <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm p-6">
             <h1 className="text-lg font-semibold text-[var(--ink)] mb-3">You&apos;re all set!</h1>
             <div className="flex items-center justify-center gap-2 text-sm text-[var(--ink-muted)]">
-              <Loader2 className="h-4 w-4 animate-spin text-[var(--of-primary)]" />
+              <OctivelySpinner size={16} color="var(--of-primary)" duration={4} />
               Redirecting to your dashboard…
             </div>
           </div>

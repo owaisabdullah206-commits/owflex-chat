@@ -5,6 +5,7 @@ import { ArrowRight, Check, Clock, DollarSign, Mail, MessageCircle } from 'lucid
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
+import { OctivelyButton } from '@/components/brand/OctivelyButton'
 
 const STEPS = [
   { n: '01', title: 'Sign up free', body: 'No card. No trial timer. The free plan works indefinitely for a single bot.' },
@@ -139,17 +140,9 @@ export default function ForFreelancersPage() {
                 Stop answering &ldquo;what did the bot say?&rdquo; emails. Give your client a portal and move on to the next project.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Link
-                  href="/dashboard/signup"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    height: 46, padding: '0 24px',
-                    background: 'var(--of-primary)', color: 'white',
-                    fontSize: 15, fontWeight: 500, borderRadius: 10, textDecoration: 'none',
-                  }}
-                >
-                  Start free — no card required <ArrowRight size={15} />
-                </Link>
+                <OctivelyButton href="/dashboard/signup" size="lg">
+                  Start free — no card required
+                </OctivelyButton>
                 <Link
                   href="/pricing"
                   style={{
@@ -257,17 +250,11 @@ export default function ForFreelancersPage() {
                 </li>
               ))}
             </ul>
-            <Link
-              href="/dashboard/signup"
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                height: 46, width: '100%',
-                background: 'var(--of-primary)', color: 'white',
-                fontSize: 15, fontWeight: 500, borderRadius: 10, textDecoration: 'none',
-              }}
-            >
-              Get started free <ArrowRight size={15} />
-            </Link>
+            <div style={{ display: 'flex' }}>
+              <OctivelyButton href="/dashboard/signup" size="lg" className="flex-1 justify-center">
+                Get started free
+              </OctivelyButton>
+            </div>
             <p style={{ fontSize: 12, color: 'var(--ink-subtle)', textAlign: 'center', marginTop: 12 }}>
               Need more?{' '}
               <Link href="/pricing" style={{ color: 'var(--of-primary)' }}>See all plans →</Link>
@@ -282,17 +269,9 @@ export default function ForFreelancersPage() {
           <MessageCircle size={28} style={{ color: 'var(--of-primary)', marginBottom: 16 }} />
           <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>Your client has a question — again</h2>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.65, marginBottom: 28 }}>Or you could send them a link and let the portal answer it.</p>
-          <Link
-            href="/dashboard/signup"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              height: 46, padding: '0 28px',
-              background: 'var(--of-primary)', color: 'white',
-              fontSize: 15, fontWeight: 500, borderRadius: 10, textDecoration: 'none',
-            }}
-          >
-            Start free <ArrowRight size={15} />
-          </Link>
+          <OctivelyButton href="/dashboard/signup" size="lg">
+            Start free
+          </OctivelyButton>
         </div>
       </section>
 

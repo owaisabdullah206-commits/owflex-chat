@@ -5,6 +5,7 @@ import { RefreshCw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
 
 export function ReindexButton({ docId }: { docId: string }) {
   const [isPending, startTransition] = useTransition()
@@ -32,7 +33,7 @@ export function ReindexButton({ docId }: { docId: string }) {
       disabled={isPending}
       title="Re-index document"
     >
-      <RefreshCw className={`h-3.5 w-3.5 ${isPending ? 'animate-spin' : ''}`} />
+      {isPending ? <OctivelySpinner size={14} color="var(--of-primary)" duration={4} /> : <RefreshCw className="h-3.5 w-3.5" />}
     </Button>
   )
 }

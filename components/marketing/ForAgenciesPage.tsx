@@ -5,6 +5,7 @@ import { ArrowRight, Check, Palette, Globe, BarChart3, Users, Zap } from 'lucide
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
+import { OctivelyButton } from '@/components/brand/OctivelyButton'
 
 const FEATURES = [
   {
@@ -156,17 +157,9 @@ export default function ForAgenciesPage() {
                 Build chatbots for 10 clients. Each one gets a portal that looks like it was built by you — because it was.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Link
-                  href="/dashboard/signup"
-                  style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 8,
-                    height: 46, padding: '0 24px',
-                    background: 'var(--of-primary)', color: 'white',
-                    fontSize: 15, fontWeight: 500, borderRadius: 10, textDecoration: 'none',
-                  }}
-                >
-                  Start managing clients <ArrowRight size={15} />
-                </Link>
+                <OctivelyButton href="/dashboard/signup" size="lg">
+                  Start managing clients
+                </OctivelyButton>
                 <Link
                   href="/pricing"
                   style={{
@@ -268,17 +261,11 @@ export default function ForAgenciesPage() {
                 </li>
               ))}
             </ul>
-            <Link
-              href="/dashboard/signup"
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                height: 46, width: '100%',
-                background: 'var(--of-primary)', color: 'white',
-                fontSize: 15, fontWeight: 500, borderRadius: 10, textDecoration: 'none',
-              }}
-            >
-              Start 14-day free trial <ArrowRight size={15} />
-            </Link>
+            <div style={{ display: 'flex' }}>
+              <OctivelyButton href="/dashboard/signup" size="lg" className="flex-1 justify-center">
+                Start 14-day free trial
+              </OctivelyButton>
+            </div>
             <p style={{ fontSize: 12, color: 'var(--ink-subtle)', textAlign: 'center', marginTop: 12 }}>No card required · Cancel anytime</p>
           </div>
         </div>

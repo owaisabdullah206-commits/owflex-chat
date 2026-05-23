@@ -6,6 +6,7 @@ import { ArrowRight, Copy, Check as CheckIcon } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
+import { OctivelyButton } from '@/components/brand/OctivelyButton'
 
 const SIDEBAR = [
   { id: 'getting-started', label: 'Getting started' },
@@ -207,17 +208,9 @@ export default function GuidePage() {
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>Ready to build?</p>
               <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>Get your embed key — free plan, no card required.</p>
             </div>
-            <Link
-              href="/dashboard/signup"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                height: 40, padding: '0 20px', flexShrink: 0,
-                background: 'var(--of-primary)', color: 'white',
-                fontSize: 14, fontWeight: 500, borderRadius: 6, textDecoration: 'none',
-              }}
-            >
-              Start free <ArrowRight size={14} />
-            </Link>
+            <OctivelyButton href="/dashboard/signup" size="md">
+              Start free
+            </OctivelyButton>
           </div>
         </div>
       </div>
