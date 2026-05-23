@@ -30,6 +30,7 @@ export interface DocRow {
 }
 
 export async function createDoc(data: {
+  id?: string
   botId: string
   orgId: string
   sourceType: 'file' | 'url'
@@ -42,6 +43,7 @@ export async function createDoc(data: {
   const [doc] = await db
     .insert(schema.documents)
     .values({
+      ...(data.id ? { id: data.id } : {}),
       botId: data.botId,
       orgId: data.orgId,
       sourceType: data.sourceType,
