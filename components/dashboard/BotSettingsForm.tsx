@@ -184,15 +184,20 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         <div className="border border-[var(--hairline)] bg-[var(--surface)]">
           <div className="flex items-start justify-between gap-4 p-4">
             <div>
-              <p className="text-sm font-medium text-[var(--ink)]">Smart routing</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-[var(--ink)]">Smart routing</p>
+                {isStarterOrFree && (
+                  <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Pro+</span>
+                )}
+              </div>
               <p className="text-xs text-[var(--ink-muted)] mt-0.5">
-                {smartRouting
+                {!isStarterOrFree && smartRouting
                   ? 'Classifies each message and routes to the right model tier.'
                   : 'All messages use the single model below. Enable to route by complexity.'}
               </p>
             </div>
             <Switch
-              checked={smartRouting}
+              checked={!isStarterOrFree && smartRouting}
               onCheckedChange={(v) => { setSmartRouting(v); markDirty() }}
               disabled={isPending || isStarterOrFree}
               className="mt-0.5 shrink-0"
@@ -375,11 +380,13 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           {/* Lead Capture */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm text-[var(--ink)]">Lead Capture</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-[var(--ink)]">Lead Capture</p>
+                {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Starter+</span>}
+              </div>
               <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically during chat</p>
-              {isFreePlan && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Starter plan and above.</p>}
             </div>
-            <Switch checked={leadCaptureEnabled}
+            <Switch checked={!isFreePlan && leadCaptureEnabled}
               onCheckedChange={(v) => { setLeadCapture(v); markDirty() }}
               disabled={isPending || isFreePlan} />
           </div>
@@ -387,11 +394,13 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           {/* Collect Lead Before Chat */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
+                {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Starter+</span>}
+              </div>
               <p className="text-xs text-[var(--ink-muted)]">Show a name / email / phone form before the chat opens. Stored as a lead automatically.</p>
-              {isFreePlan && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Starter plan and above.</p>}
             </div>
-            <Switch checked={collectLeadBefore}
+            <Switch checked={!isFreePlan && collectLeadBefore}
               onCheckedChange={(v) => { setCollectLeadBefore(v); markDirty() }}
               disabled={isPending || isFreePlan} />
           </div>
@@ -399,13 +408,15 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           {/* Strict Mode */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <p className="text-sm text-[var(--ink)]">Strict Mode</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-[var(--ink)]">Strict Mode</p>
+                {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Starter+</span>}
+              </div>
               <p className="text-xs text-[var(--ink-muted)]">
                 Bot refuses questions outside its knowledge base and says &ldquo;I don&apos;t know&rdquo;
               </p>
-              {isFreePlan && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Starter plan and above.</p>}
             </div>
-            <Switch checked={strictMode}
+            <Switch checked={!isFreePlan && strictMode}
               onCheckedChange={(v) => { setStrictMode(v); markDirty() }}
               disabled={isPending || isFreePlan} />
           </div>
@@ -414,13 +425,15 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           <div className="py-3 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[var(--ink)]">Human Handoff</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-[var(--ink)]">Human Handoff</p>
+                  {isStarterOrFree && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Pro+</span>}
+                </div>
                 <p className="text-xs text-[var(--ink-muted)]">
                   When the bot can&apos;t answer, flag the conversation and send an email notification
                 </p>
-                {isStarterOrFree && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Pro plan and above.</p>}
               </div>
-              <Switch checked={handoffEnabled}
+              <Switch checked={!isStarterOrFree && handoffEnabled}
                 onCheckedChange={(v) => { setHandoffEnabled(v); markDirty() }}
                 disabled={isPending || isStarterOrFree} />
             </div>
