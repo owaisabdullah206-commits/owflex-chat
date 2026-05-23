@@ -27,6 +27,7 @@ import { BotTabSelect } from '@/components/dashboard/BotTabSelect'
 import { ClientStatusCard } from '@/components/dashboard/ClientStatusCard'
 import { BotAnalyticsTab } from '@/components/dashboard/BotAnalyticsTab'
 import { getBotAnalytics } from '@/lib/db/queries/analytics'
+import { UpgradeCTA } from '@/components/dashboard/UpgradeCTA'
 
 const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
 
@@ -156,6 +157,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     ? { email: latestInvite.email, expiresAt: latestInvite.expiresAt, expired: latestInvite.expiresAt < now }
     : null
 
+  const isStarterOrFree = bot.orgPlan === 'free' || bot.orgPlan === 'starter'
+
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <AutoRefresh intervalMs={30_000} />
@@ -257,7 +260,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                   </div>
                   <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--hairline)]">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>model</span>
-                    <span className="text-[12px] text-[var(--of-primary)]" style={{ fontFamily: 'var(--font-mono)' }}>{bot.model}</span>
+                    <span className="text-[12px] text-[var(--of-primary)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                    {bot.orgPlan === 'free' ? 'Default model' : bot.model}
+                  </span>
                   </div>
                   <div className="px-4 py-3">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-2" style={{ fontFamily: 'var(--font-mono)' }}>system_prompt</p>
@@ -355,6 +360,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'knowledge base' && (
+            bot.orgPlan === 'free' ? (
+              <UpgradeCTA feature="FAQ Editor" requiredPlan="Starter" />
+            ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
               <div className="lg:col-span-2">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>knowledge_base</p>
@@ -382,9 +390,13 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 </div>
               </div>
             </div>
+            )
           )}
 
           {activeTab === 'documents' && (
+            bot.orgPlan === 'free' ? (
+              <UpgradeCTA feature="Document Upload" requiredPlan="Starter" />
+            ) : (
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>documents</p>
               <p className="text-xs text-[var(--ink-muted)] mb-5">
@@ -392,9 +404,13 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               </p>
               <DocumentsTab botId={bot.id} orgId={bot.orgId} plan={bot.orgPlan} />
             </div>
+            )
           )}
 
           {activeTab === 'unanswered' && (
+            isStarterOrFree ? (
+              <UpgradeCTA feature="Unanswered Questions" requiredPlan="Pro" />
+            ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
               <div className="lg:col-span-2">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>unanswered_questions</p>
@@ -415,6 +431,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 </div>
               </div>
             </div>
+            )
           )}
         </div>
       </main>

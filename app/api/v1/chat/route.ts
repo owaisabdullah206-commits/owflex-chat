@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
       }
       // action === 'fallback': use default model, skip smart routing
       resolvedModel = FALLBACK_MODEL
-    } else if (bot.smartRoutingEnabled) {
+    } else if (bot.smartRoutingEnabled && ['pro', 'agency', 'enterprise'].includes(bot.orgPlan)) {
       const routeResult = await routeMessage({
         text: message,
         botDefaultModel: bot.model,

@@ -90,7 +90,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [handoffNotifyTarget, setHandoffNotifyTarget] = useState<'developer' | 'client'>(initial.handoffNotifyTarget)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>('dark')
 
-  const isFreePlan = orgPlan === 'free'
+  const isFreePlan      = orgPlan === 'free'
+  const isStarterOrFree = orgPlan === 'free' || orgPlan === 'starter'
 
   useEffect(() => {
     if (!isDirty) return
@@ -193,7 +194,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             <Switch
               checked={smartRouting}
               onCheckedChange={(v) => { setSmartRouting(v); markDirty() }}
-              disabled={isPending || isFreePlan}
+              disabled={isPending || isStarterOrFree}
               className="mt-0.5 shrink-0"
             />
           </div>
@@ -226,7 +227,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
                 <div className="relative flex-1">
                   <select value={model}
                     onChange={(e) => { setModel(e.target.value); markDirty() }}
-                    disabled={isPending || isFreePlan}
+                    disabled={isPending || isStarterOrFree}
                     className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer"
                     style={{ fontFamily: 'var(--font-mono)' }}>
                     {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -376,10 +377,11 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             <div>
               <p className="text-sm text-[var(--ink)]">Lead Capture</p>
               <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically during chat</p>
+              {isFreePlan && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Starter plan and above.</p>}
             </div>
             <Switch checked={leadCaptureEnabled}
               onCheckedChange={(v) => { setLeadCapture(v); markDirty() }}
-              disabled={isPending} />
+              disabled={isPending || isFreePlan} />
           </div>
 
           {/* Collect Lead Before Chat */}
@@ -387,10 +389,11 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             <div>
               <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
               <p className="text-xs text-[var(--ink-muted)]">Show a name / email / phone form before the chat opens. Stored as a lead automatically.</p>
+              {isFreePlan && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Starter plan and above.</p>}
             </div>
             <Switch checked={collectLeadBefore}
               onCheckedChange={(v) => { setCollectLeadBefore(v); markDirty() }}
-              disabled={isPending} />
+              disabled={isPending || isFreePlan} />
           </div>
 
           {/* Strict Mode */}
@@ -400,10 +403,11 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
               <p className="text-xs text-[var(--ink-muted)]">
                 Bot refuses questions outside its knowledge base and says &ldquo;I don&apos;t know&rdquo;
               </p>
+              {isFreePlan && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Starter plan and above.</p>}
             </div>
             <Switch checked={strictMode}
               onCheckedChange={(v) => { setStrictMode(v); markDirty() }}
-              disabled={isPending} />
+              disabled={isPending || isFreePlan} />
           </div>
 
           {/* Human Handoff */}
@@ -414,10 +418,11 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
                 <p className="text-xs text-[var(--ink-muted)]">
                   When the bot can&apos;t answer, flag the conversation and send an email notification
                 </p>
+                {isStarterOrFree && <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Available on Pro plan and above.</p>}
               </div>
               <Switch checked={handoffEnabled}
                 onCheckedChange={(v) => { setHandoffEnabled(v); markDirty() }}
-                disabled={isPending} />
+                disabled={isPending || isStarterOrFree} />
             </div>
 
             {handoffEnabled && (

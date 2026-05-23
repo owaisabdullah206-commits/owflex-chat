@@ -68,9 +68,14 @@ export async function updateBot(
     update.model = parsed.data.model
   }
 
-  if (parsed.data.smartRoutingEnabled !== undefined) update.smartRoutingEnabled = parsed.data.smartRoutingEnabled
-  if (parsed.data.routingLightModel !== undefined) update.routingLightModel = parsed.data.routingLightModel
-  if (parsed.data.routingStrongModel !== undefined) update.routingStrongModel = parsed.data.routingStrongModel
+  // Smart routing is Pro+ only
+  if (parsed.data.smartRoutingEnabled !== undefined) {
+    if (['pro', 'agency', 'enterprise'].includes(botRow.orgPlan)) {
+      update.smartRoutingEnabled = parsed.data.smartRoutingEnabled
+      if (parsed.data.routingLightModel !== undefined) update.routingLightModel = parsed.data.routingLightModel
+      if (parsed.data.routingStrongModel !== undefined) update.routingStrongModel = parsed.data.routingStrongModel
+    }
+  }
 
   if (parsed.data.widgetConfig !== undefined) {
     const wc = { ...parsed.data.widgetConfig }
@@ -79,6 +84,19 @@ export async function updateBot(
     if (!canCustomBrand) {
       delete wc.brandingText
       delete wc.brandingUrl
+    }
+    // Free plan: strip lead capture, behavior toggles, and handoff
+    if (botRow.orgPlan === 'free') {
+      delete wc.leadCaptureEnabled
+      delete wc.collectLeadBefore
+      delete wc.strictMode
+      delete wc.handoffEnabled
+      delete wc.handoffNotifyTarget
+    }
+    // Starter plan: strip handoff (Pro+ only)
+    if (botRow.orgPlan === 'starter') {
+      delete wc.handoffEnabled
+      delete wc.handoffNotifyTarget
     }
     // Atomic JSONB merge — preserves existing keys not in the patch
     update.widgetConfig = sql`${schema.bots.widgetConfig} || ${JSON.stringify(wc)}::jsonb`
