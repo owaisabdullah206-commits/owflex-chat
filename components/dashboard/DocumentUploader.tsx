@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useTransition } from 'react'
-import { Upload, Link2 } from 'lucide-react'
+import { Upload, Link2, ChevronDown, ChevronUp } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -32,6 +32,9 @@ export function DocumentUploader({
   const [tab, setTab] = useState<Tab>('file')
   const [urlValue, setUrlValue] = useState('')
   const [maxPages, setMaxPages] = useState(1)
+  const [showPathFilters, setShowPathFilters] = useState(false)
+  const [includePathsInput, setIncludePathsInput] = useState('')
+  const [excludePathsInput, setExcludePathsInput] = useState('')
   const [isPending, startTransition] = useTransition()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -80,17 +83,28 @@ export function DocumentUploader({
   function handleUrlSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!urlValue.trim()) return
+    const includePaths = includePathsInput.split(',').map(s => s.trim()).filter(Boolean)
+    const excludePaths = excludePathsInput.split(',').map(s => s.trim()).filter(Boolean)
     startTransition(async () => {
       try {
         const res = await fetch('/api/v1/documents/url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ botId, url: urlValue.trim(), maxPages }),
+          body: JSON.stringify({
+            botId,
+            url: urlValue.trim(),
+            maxPages,
+            ...(includePaths.length ? { includePaths } : {}),
+            ...(excludePaths.length ? { excludePaths } : {}),
+          }),
         })
         const data = await res.json().catch(() => ({}))
         if (res.ok || res.status === 202) {
           toast.success('URL queued for processing')
           setUrlValue('')
+          setIncludePathsInput('')
+          setExcludePathsInput('')
+          setShowPathFilters(false)
           router.refresh()
         } else {
           toast.error(data.error ?? 'Failed to add URL')
@@ -198,6 +212,46 @@ export function DocumentUploader({
                   ? 'Unlimited crawl pages'
                   : `${crawlUsed} / ${crawlMax} pages used`}
               </p>
+
+              {/* Advanced path filters */}
+              <button
+                type="button"
+                onClick={() => setShowPathFilters(v => !v)}
+                className="flex items-center gap-1 text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
+              >
+                {showPathFilters ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                Advanced path filters
+              </button>
+
+              {showPathFilters && (
+                <div className="flex flex-col gap-2 p-3 rounded-lg bg-[var(--surface-2)] border border-[var(--hairline)]">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium text-[var(--ink-muted)]">Include paths</label>
+                    <Input
+                      type="text"
+                      placeholder="/docs, /pricing"
+                      value={includePathsInput}
+                      onChange={e => setIncludePathsInput(e.target.value)}
+                      disabled={isPending}
+                      className="text-xs h-8"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-medium text-[var(--ink-muted)]">Exclude paths</label>
+                    <Input
+                      type="text"
+                      placeholder="/blog, /admin, /login"
+                      value={excludePathsInput}
+                      onChange={e => setExcludePathsInput(e.target.value)}
+                      disabled={isPending}
+                      className="text-xs h-8"
+                    />
+                  </div>
+                  <p className="text-[11px] text-[var(--ink-subtle)]">
+                    Glob patterns, comma-separated. e.g. <code className="font-mono">/docs/**</code> includes all pages under /docs. Leave blank to crawl all discovered pages.
+                  </p>
+                </div>
+              )}
             </form>
           )
         )}

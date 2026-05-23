@@ -35,7 +35,7 @@ export function chunkText(text: string): string[] {
     chunks.push(...splitOversized(current))
   }
 
-  return chunks.filter((c) => c.trim().length > 0)
+  return chunks.filter((c) => c.trim().length >= 40)
 }
 
 function splitIntoSentences(text: string): string[] {

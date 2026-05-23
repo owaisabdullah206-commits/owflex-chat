@@ -7,6 +7,7 @@ import { extractText, ParseError } from '@/lib/knowledge/parser'
 import { chunkText } from '@/lib/knowledge/chunker'
 import { embedTexts, QuotaExhaustedError } from '@/lib/knowledge/embedder'
 import { updateDocStatus, bumpDocVersion } from '@/lib/db/queries/documents'
+import { cleanDocumentText, cleanMarkdown, removeBoilerplate } from '@/lib/knowledge/cleaner'
 
 // Allow up to 60 s on free Vercel plan (increase to 300 on Pro)
 export const maxDuration = 60
@@ -16,6 +17,8 @@ interface IngestJob {
   sourceType: 'file' | 'url'
   url?: string
   maxPages?: number
+  includePaths?: string[]
+  excludePaths?: string[]
   attempt?: number
 }
 
@@ -55,7 +58,7 @@ export async function POST(req: NextRequest) {
     if (job.sourceType === 'file') {
       await ingestFile(doc)
     } else if (job.sourceType === 'url') {
-      await ingestUrl(doc, job.url!, job.maxPages ?? 1)
+      await ingestUrl(doc, job.url!, job.maxPages ?? 1, job.includePaths, job.excludePaths)
     } else {
       throw new Error(`Unknown sourceType: ${job.sourceType}`)
     }
@@ -81,7 +84,8 @@ async function ingestFile(doc: typeof schema.documents.$inferSelect): Promise<vo
 
   const buffer = await getObjectBuffer(doc.storageKey)
   const text = await extractText(buffer, doc.mimeType)
-  const chunks = chunkText(text)
+  const cleaned = cleanDocumentText(text)
+  const chunks = chunkText(cleaned)
 
   if (chunks.length === 0) {
     throw new Error('No text content extracted from document')
@@ -99,9 +103,12 @@ async function ingestUrl(
   doc: typeof schema.documents.$inferSelect,
   url: string,
   maxPages: number,
+  includePaths?: string[],
+  excludePaths?: string[],
 ): Promise<void> {
   const { scrapeUrl } = await import('@/lib/knowledge/firecrawl')
-  const pages = await scrapeUrl(url, { maxPages })
+  let pages = await scrapeUrl(url, { maxPages, includePaths, excludePaths })
+  pages = removeBoilerplate(pages)
 
   if (pages.length === 0) {
     throw new Error('No pages scraped from URL')
@@ -110,8 +117,8 @@ async function ingestUrl(
   let totalChunks = 0
   await updateDocStatus(doc.id, 'embedding')
   for (let pageIdx = 0; pageIdx < pages.length; pageIdx++) {
-    const page = pages[pageIdx]
-    const text = page.markdown ?? ''
+    const raw = pages[pageIdx].markdown ?? ''
+    const text = cleanMarkdown(raw)
     const chunks = chunkText(text)
     if (chunks.length === 0) continue
 

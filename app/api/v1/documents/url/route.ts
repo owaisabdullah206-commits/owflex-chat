@@ -8,9 +8,11 @@ import { createDoc } from '@/lib/db/queries/documents'
 import { checkDocumentLimit, checkCrawlLimit } from '@/lib/limits'
 
 const bodySchema = z.object({
-  botId:    z.string().min(1),
-  url:      z.string().url(),
-  maxPages: z.number().int().min(1).max(50).default(1),
+  botId:        z.string().min(1),
+  url:          z.string().url(),
+  maxPages:     z.number().int().min(1).max(50).default(1),
+  includePaths: z.array(z.string()).max(20).optional(),
+  excludePaths: z.array(z.string()).max(20).optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const { botId, url, maxPages } = parsed.data
+  const { botId, url, maxPages, includePaths, excludePaths } = parsed.data
 
   // Verify bot ownership + get org
   const [botRow] = await db
@@ -93,7 +95,7 @@ export async function POST(req: NextRequest) {
   // Enqueue ingestion job — non-blocking: doc is saved, reindex button covers failures
   try {
     const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
-    await publishJSON(ingestUrl, { docId, sourceType: 'url', url, maxPages })
+    await publishJSON(ingestUrl, { docId, sourceType: 'url', url, maxPages, includePaths, excludePaths })
   } catch (err) {
     console.error('[url-doc] QStash publishJSON failed (doc saved, ingestion not queued):', err)
   }

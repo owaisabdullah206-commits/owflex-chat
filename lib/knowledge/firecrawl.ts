@@ -13,7 +13,7 @@ function getClient(): FirecrawlAppV1 {
 
 export async function scrapeUrl(
   url: string,
-  opts: { maxPages?: number } = {},
+  opts: { maxPages?: number; includePaths?: string[]; excludePaths?: string[] } = {},
 ): Promise<ScrapedPage[]> {
   const client = getClient()
   const maxPages = opts.maxPages ?? 1
@@ -29,6 +29,8 @@ export async function scrapeUrl(
   const crawlResult = await client.crawlUrl(url, {
     limit: maxPages,
     scrapeOptions: { formats: ['markdown'] },
+    includePaths: opts.includePaths,
+    excludePaths: opts.excludePaths,
   })
 
   if (!crawlResult.success) {
