@@ -249,24 +249,28 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
         {/* Model (single, shown only when smart routing is off) */}
         {!smartRouting && (
         <div className="space-y-1.5">
-          <Label htmlFor="model" className="text-xs text-[var(--ink-muted)]">
-            Model
-            {isFreePlan && (
-              <span className="ml-2 text-[10px] text-[var(--ink-muted)] bg-[var(--surface-2)] px-1.5 py-0.5">
+          <Label htmlFor="model" className="text-xs text-[var(--ink-muted)]">Model</Label>
+          {isFreePlan ? (
+            <div className="flex items-center justify-between border border-[var(--hairline)] bg-[var(--surface)] px-3 py-2">
+              <span className="text-sm text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                Default model
+              </span>
+              <span className="text-[10px] text-[var(--ink-subtle)] bg-[var(--surface-2)] px-1.5 py-0.5">
                 Upgrade to change
               </span>
-            )}
-          </Label>
-          <div className="relative">
-            <select id="model" value={model}
-              onChange={(e) => { setModel(e.target.value); markDirty() }}
-              disabled={isPending || isFreePlan}
-              className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              style={{ fontFamily: 'var(--font-mono)' }}>
-              {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
-          </div>
+            </div>
+          ) : (
+            <div className="relative">
+              <select id="model" value={model}
+                onChange={(e) => { setModel(e.target.value); markDirty() }}
+                disabled={isPending}
+                className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer"
+                style={{ fontFamily: 'var(--font-mono)' }}>
+                {SUPPORTED_MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
+            </div>
+          )}
         </div>
         )}
 
