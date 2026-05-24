@@ -1360,7 +1360,7 @@ function PricingTeaser() {
                         : { background: 'transparent', color: 'var(--ink)', border: '1px solid var(--hairline)' }),
                     }}
                   >
-                    {featured ? 'Start Pro trial' : 'Get started'}
+                    Get started
                   </Link>
                 </div>
               </Reveal>
@@ -1671,7 +1671,7 @@ function HeroLeadCopy() {
         }}
       >
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)' }} />
-        v0.7 — Now in beta · 14-day Pro trial
+        v0.9 — Now in beta
       </span>
       <h1
         style={{

@@ -174,7 +174,7 @@ export default function ForAgenciesPage() {
               </div>
               {/* Trust badges */}
               <div style={{ display: 'flex', gap: 20, marginTop: 28, flexWrap: 'wrap' }}>
-                {['Unlimited clients', 'White-label ready', '14-day free trial'].map((t) => (
+                {['Unlimited clients', 'White-label ready', 'No per-seat pricing'].map((t) => (
                   <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--ink-muted)' }}>
                     <Check size={13} style={{ color: 'var(--of-primary)', flexShrink: 0 }} />
                     {t}
@@ -263,7 +263,7 @@ export default function ForAgenciesPage() {
             </ul>
             <div style={{ display: 'flex' }}>
               <OctivelyButton href="/dashboard/signup" size="lg" className="flex-1 justify-center">
-                Start 14-day free trial
+                Get started free
               </OctivelyButton>
             </div>
             <p style={{ fontSize: 12, color: 'var(--ink-subtle)', textAlign: 'center', marginTop: 12 }}>No card required · Cancel anytime</p>

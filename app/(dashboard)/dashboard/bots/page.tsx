@@ -6,7 +6,7 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { BotTable } from '@/components/dashboard/BotTable'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, ArrowUpRight } from 'lucide-react'
 
 export default async function BotsPage() {
   const user = await requireDeveloper()
@@ -76,6 +76,25 @@ export default async function BotsPage() {
             )}
           </div>
         </div>
+
+        {/* Free-plan upgrade nudge — shown right after signup so the billing path is obvious */}
+        {org?.plan === 'free' && (
+          <div className="mx-4 sm:mx-8 mt-4 flex items-center justify-between gap-3 border border-[var(--of-primary)]/20 bg-[var(--of-primary)]/5 px-4 py-2.5">
+            <p className="text-[12px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+              <span className="text-[var(--ink)]">free plan</span>
+              {' — '}1 bot · 200 convos/mo · 15 leads/mo.
+              {' '}Upgrade to remove limits.
+            </p>
+            <a
+              href="/dashboard/billing"
+              className="flex items-center gap-1 text-[12px] font-medium text-[var(--of-primary)] hover:underline whitespace-nowrap shrink-0"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              Upgrade plan
+              <ArrowUpRight className="h-3 w-3" />
+            </a>
+          </div>
+        )}
 
         {userBots.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 sm:px-8">

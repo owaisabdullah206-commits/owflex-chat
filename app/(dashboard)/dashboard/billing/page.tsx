@@ -93,7 +93,7 @@ export default async function BillingPage() {
         </div>
         <div className="px-4 sm:px-8 py-6 space-y-8">
           <CreditStatusBanner graceActive={graceActive} graceDisabled={graceDisabled} plan={org.plan} />
-          <PlanUpgradeSection currentPlan={org.plan} />
+          <PlanUpgradeSection currentPlan={org.plan} userEmail={user.email} />
           <CreditBalance balance={balance} transactions={transactions} appUrl={appUrl} plan={org.plan} />
           {org.plan === 'starter' && (
             <div className="border border-[var(--hairline)] bg-[var(--surface)] px-4 py-3 flex items-center gap-3">
@@ -102,7 +102,7 @@ export default async function BillingPage() {
                 <span className="text-[var(--ink)]">pro+</span>
                 {' · '}
                 <a
-                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''}?text=${encodeURIComponent("Hi, I'd like to upgrade to the Pro plan on Octively.")}`}
+                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''}?text=${encodeURIComponent(`Hi, I'd like to upgrade to the Pro plan on Octively. (Account: ${user.email})`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[var(--accent)] hover:underline"

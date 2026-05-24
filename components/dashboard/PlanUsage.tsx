@@ -118,13 +118,15 @@ export function PlanUsage({
       </div>
       {/* Stat grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-[var(--hairline)] overflow-hidden border border-[var(--hairline)]">
-        <MetricCard
-          label={isFree ? 'credits.monthly' : 'credits.remaining'}
-          value={balance}
-          limitValue={isFree ? freeTierCredits : undefined}
-          suffix="tokens"
-          wide
-        />
+        {/* Credits — hidden on free plan (not actionable; conversations limit covers it) */}
+        {!isFree && (
+          <MetricCard
+            label="credits.remaining"
+            value={balance}
+            suffix="tokens"
+            wide
+          />
+        )}
         <MetricCard label="bots" value={botCount} limitValue={limits.bots} />
         <MetricCard label="clients" value={clientCount} limitValue={Infinity} />
         <MetricCard label="docs" value={docCount} limitValue={limits.docs} />

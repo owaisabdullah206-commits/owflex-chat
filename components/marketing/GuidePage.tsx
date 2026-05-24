@@ -79,7 +79,7 @@ export default function GuidePage() {
 
         {/* Main content */}
         <div style={{ maxWidth: 720, minWidth: 0 }}>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 8 }}>v0.7.0-beta</p>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 8 }}>v0.9.0</p>
           <h1 style={{ fontSize: 38, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>Octively Developer Docs</h1>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.65, marginBottom: 48 }}>
             Everything you need to add a client chatbot portal to your project — from embed script to API calls.

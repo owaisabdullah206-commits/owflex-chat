@@ -55,19 +55,21 @@ const PLAN_META: Record<string, {
   },
 }
 
-/** Build a WhatsApp deep link with a pre-filled message. */
-function waHref(text: string): string {
+/** Build a WhatsApp deep link with a pre-filled message, optionally including user email. */
+function waHref(text: string, userEmail?: string): string {
   const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''
-  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`
+  const fullText = userEmail ? `${text} (Account: ${userEmail})` : text
+  return `https://wa.me/${number}?text=${encodeURIComponent(fullText)}`
 }
 
 interface Props {
   currentPlan: string
+  userEmail?: string
 }
 
-function PlanCard({ plan, featured = false }: { plan: 'starter' | 'pro' | 'agency'; featured?: boolean }) {
+function PlanCard({ plan, featured = false, userEmail }: { plan: 'starter' | 'pro' | 'agency'; featured?: boolean; userEmail?: string }) {
   const meta  = PLAN_META[plan]
-  const href  = waHref(meta.waText)
+  const href  = waHref(meta.waText, userEmail)
 
   if (featured) {
     /* Hero tile — full-width, horizontal layout */
@@ -245,7 +247,7 @@ function PlanCard({ plan, featured = false }: { plan: 'starter' | 'pro' | 'agenc
   )
 }
 
-export function PlanUpgradeSection({ currentPlan }: Props) {
+export function PlanUpgradeSection({ currentPlan, userEmail }: Props) {
   const currentIdx = PLAN_ORDER.indexOf(currentPlan as KnownPlan)
   const upgradablePlans = (['starter', 'pro', 'agency'] as const).filter((p) => {
     return PLAN_ORDER.indexOf(p) > currentIdx
@@ -256,7 +258,7 @@ export function PlanUpgradeSection({ currentPlan }: Props) {
 
   const hasPro      = upgradablePlans.includes('pro')
   const nonProPlans = upgradablePlans.filter((p) => p !== 'pro')
-  const enterpriseWaHref = waHref('Hi, I\'m interested in the Enterprise plan for Octively. Can we discuss?')
+  const enterpriseWaHref = waHref('Hi, I\'m interested in the Enterprise plan for Octively. Can we discuss?', userEmail)
 
   return (
     <section>
@@ -286,10 +288,10 @@ export function PlanUpgradeSection({ currentPlan }: Props) {
       {/* Bento grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        {hasPro && <PlanCard plan="pro" featured />}
+        {hasPro && <PlanCard plan="pro" featured userEmail={userEmail} />}
 
         {nonProPlans.map((plan) => (
-          <PlanCard key={plan} plan={plan} />
+          <PlanCard key={plan} plan={plan} userEmail={userEmail} />
         ))}
 
         {showEnterprise && (
