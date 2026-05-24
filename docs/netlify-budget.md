@@ -7,7 +7,7 @@ Budget resets: **1st of each month**
 
 ## Rules
 
-- ✅ Check this file BEFORE every production push (`git push origin release`)
+- ✅ Check this file BEFORE every production push (`git push vercel release` — Netlify watches the `vercel` remote)
 - ✅ Record the push immediately after: date, build number, brief note
 - ✅ Only push to `release` for user-facing changes — features, bug fixes, content
 - ❌ Do NOT push to `release` for: docs-only changes, CLAUDE.md edits, `.env.example` tweaks,

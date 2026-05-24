@@ -198,20 +198,25 @@ npm run build   # must exit 0 — fix all errors before git push
 ### Git Remotes
 
 ```
-origin   https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas.git  ← Netlify watches release branch
-vercel   https://github.com/owaisabdullah206-commits/owflex-chat.git  ← Vercel dev/preview
+origin   https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas.git  ← GitHub backup / open source
+vercel   https://github.com/owaisabdullah206-commits/owflex-chat.git  ← Vercel dev/preview + Netlify production
 ```
+
+⚠️ **Netlify watches the `vercel` remote** (`owaisabdullah206-commits/owflex-chat`) — confirmed in build logs.
+Pushing to `origin` alone does NOT trigger Netlify.
 
 **Development push (every commit):**
 ```bash
 git push origin master && git push vercel master
-# Does NOT trigger Netlify — Netlify only watches the `release` branch
+# Does NOT trigger Netlify — Netlify only watches the `release` branch on the vercel remote
 ```
 
 **Production release to Netlify (explicit, intentional):**
 ```bash
 # ⚠️ Check docs/netlify-budget.md FIRST — confirm build count < 40 this month
-git checkout release && git merge master && git push origin release
+git checkout release && git merge master
+git push vercel release   # ← triggers Netlify build
+git push origin release   # ← keeps GitHub in sync
 git checkout master
 # Then record the push in docs/netlify-budget.md (date + build # + what changed)
 ```

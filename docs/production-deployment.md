@@ -12,10 +12,12 @@ All three surfaces are one Next.js 16 app, routed by hostname in `app/proxy.ts`:
 
 ## Hosting
 
-| Environment   | Platform | Branch / Trigger                          | URL                        |
-|---------------|----------|-------------------------------------------|----------------------------|
-| **Production**| Netlify  | `origin/release` branch auto-deploy       | https://octively.com       |
-| **Development**| Vercel  | `vercel` remote every push                | https://octively.vercel.app |
+| Environment   | Platform | Remote watched / Branch                               | URL                        |
+|---------------|----------|-------------------------------------------------------|----------------------------|
+| **Production**| Netlify  | `vercel` remote (`owaisabdullah206-commits`) / `release` | https://octively.com    |
+| **Development**| Vercel  | `vercel` remote / every push                          | https://octively.vercel.app |
+
+> ⚠️ Netlify watches the **`vercel` remote**, not `origin`. Pushing to `origin/release` alone will NOT deploy.
 
 ## How to Release to Production
 
@@ -28,7 +30,8 @@ npm run build
 # 2. Merge and push to production branch
 git checkout release
 git merge master
-git push origin release   # triggers Netlify build (~4.5 min)
+git push vercel release   # ← triggers Netlify build (~4.5 min)
+git push origin release   # ← keeps GitHub in sync
 git checkout master
 
 # 3. Record the push in docs/netlify-budget.md
