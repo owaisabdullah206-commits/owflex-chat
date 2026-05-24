@@ -182,6 +182,13 @@ Skills live in `.claude/skills/`. Read the relevant skill's `SKILL.md` BEFORE im
 - **Error format**: `{ error: string, code: string, status: number }` — no other shape allowed.
 - **Loading states**: Skeleton loaders only. No spinners. Empty states always have a CTA.
 
+### Commit Message Rules
+
+- **NEVER add `Co-Authored-By:` trailers to any commit message.**
+  Netlify's free plan treats every Git co-author as a separate contributor and blocks builds on private repos.
+  Even with a public repo, omit the trailer — it adds noise and serves no purpose here.
+- Keep commit messages concise: `type(scope): description` (conventional commits format).
+
 ### Build Gate (Non-Negotiable)
 
 **ALWAYS run `npm run build` locally and confirm it succeeds before pushing to any remote.**
