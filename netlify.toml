@@ -2,3 +2,10 @@
   base    = "."
   command = "npm run build"
   publish = ".next"
+
+[build.environment]
+  # These env var VALUES appear in source code as defaults/fallbacks/public URLs — not real secrets.
+  # NEXT_PUBLIC_* vars are intentionally public. Others are config strings (model name, bucket name, etc.)
+  SECRETS_SCAN_OMIT_KEYS = "LITELLM_DEFAULT_MODEL,NEXT_PUBLIC_APP_URL,NEXT_PUBLIC_PORTAL_URL,NEXT_PUBLIC_WHATSAPP_NUMBER,NEXT_PUBLIC_PLATFORM_OWNER_EMAIL,BETTER_AUTH_URL,RESEND_FROM_EMAIL,R2_BUCKET_NAME"
+  # embed/.netlify is plugin-generated build output (not committed source), lib/db/migrations contains schema strings
+  SECRETS_SCAN_OMIT_PATHS = "embed/.netlify,lib/db/migrations"
