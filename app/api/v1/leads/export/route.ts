@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { desc, eq } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 
@@ -36,7 +36,12 @@ export async function GET(_req: NextRequest) {
     .from(schema.leads)
     .innerJoin(schema.bots, eq(schema.leads.botId, schema.bots.id))
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
-    .where(eq(schema.organizations.ownerId, user.id))
+    .where(
+      and(
+        eq(schema.organizations.ownerId, user.id),
+        eq(schema.leads.hiddenByLimit, false),
+      ),
+    )
     .orderBy(desc(schema.leads.capturedAt))
 
   const header = 'name,email,phone,notes,bot,date\n'

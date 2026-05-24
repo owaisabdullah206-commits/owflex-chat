@@ -8,9 +8,15 @@ export class ParseError extends Error {
   }
 }
 
+export interface ExtractOptions {
+  /** Max product rows for CSV/Excel catalog imports. Undefined = no limit. */
+  maxRows?: number
+}
+
 export async function extractText(
   buffer: Buffer,
   mimeType: string,
+  options?: ExtractOptions,
 ): Promise<string> {
   if (
     mimeType === 'application/pdf' ||
@@ -28,14 +34,14 @@ export async function extractText(
   }
 
   if (mimeType === 'text/csv' || mimeType === 'application/csv') {
-    return extractCsvText(buffer)
+    return extractCsvText(buffer, options?.maxRows)
   }
 
   if (
     mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
     mimeType === 'application/vnd.ms-excel'
   ) {
-    return extractExcelText(buffer)
+    return extractExcelText(buffer, options?.maxRows)
   }
 
   // TXT, MD, plain text — passthrough
@@ -79,20 +85,21 @@ async function extractDocxText(buffer: Buffer): Promise<string> {
   }
 }
 
-async function extractCsvText(buffer: Buffer): Promise<string> {
+async function extractCsvText(buffer: Buffer, maxRows?: number): Promise<string> {
   try {
     const Papa = await import('papaparse')
     const { processCsvRows } = await import('@/lib/knowledge/csv-cleaner')
     const csv = buffer.toString('utf-8')
     const result = Papa.default.parse<Record<string, string>>(csv, { header: true, skipEmptyLines: true })
-    return processCsvRows(result.data)
+    const rows = maxRows != null ? result.data.slice(0, maxRows) : result.data
+    return processCsvRows(rows)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     throw new ParseError('PARSE_FAILED', `CSV parsing failed: ${msg}`)
   }
 }
 
-async function extractExcelText(buffer: Buffer): Promise<string> {
+async function extractExcelText(buffer: Buffer, maxRows?: number): Promise<string> {
   try {
     const XLSX = await import('xlsx')
     const { processCsvRows } = await import('@/lib/knowledge/csv-cleaner')
@@ -100,7 +107,8 @@ async function extractExcelText(buffer: Buffer): Promise<string> {
     const sheetName = workbook.SheetNames[0]
     if (!sheetName) return ''
     const sheet = workbook.Sheets[sheetName]
-    const rows = XLSX.utils.sheet_to_json<Record<string, string>>(sheet, { defval: '' })
+    const allRows = XLSX.utils.sheet_to_json<Record<string, string>>(sheet, { defval: '' })
+    const rows = maxRows != null ? allRows.slice(0, maxRows) : allRows
     return processCsvRows(rows)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)

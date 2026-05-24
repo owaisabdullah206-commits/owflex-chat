@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { and, eq, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { getLeadsRatelimit } from '@/lib/ratelimit'
-import { checkLeadLimit, PLAN_LIMITS } from '@/lib/limits'
+import { PLAN_LIMITS } from '@/lib/limits'
 import { checkAndWarnUsage } from '@/lib/credits/usage-warnings'
 
 const bodySchema = z
@@ -74,14 +74,12 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Check lead limit before inserting
-    const { allowed } = await checkLeadLimit(bot.orgId)
-    if (!allowed) {
-      return NextResponse.json(
-        { error: 'Monthly lead limit reached', code: 'PLAN_LIMIT', status: 402 },
-        { status: 402 },
-      )
-    }
+    // Determine if this lead would exceed the plan limit
+    const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
+    const leadLimit = PLAN_LIMITS[planKey].leads
+    const newLeadCount = bot.leadsThisMonth + 1
+    // Lead is hidden when it pushes the org past the plan ceiling (Infinity = unlimited)
+    const hiddenByLimit = leadLimit !== Infinity && newLeadCount > (leadLimit as number)
 
     // Find conversation by sessionId + botId (nullable)
     const [conversation] = await db
@@ -95,6 +93,7 @@ export async function POST(req: NextRequest) {
       )
       .limit(1)
 
+    // Always save the lead — never block capture. Flag hidden ones for filtering.
     await db.insert(schema.leads).values({
       botId: bot.id,
       conversationId: conversation?.id ?? null,
@@ -102,9 +101,10 @@ export async function POST(req: NextRequest) {
       email: email ?? null,
       phone: phone ?? null,
       notes: notes ?? null,
+      hiddenByLimit,
     })
 
-    // Increment lead counter for org
+    // Increment lead counter for org (always, even for hidden leads)
     await db
       .update(schema.organizations)
       .set({ leadsThisMonth: sql`${schema.organizations.leadsThisMonth} + 1` })
@@ -112,9 +112,7 @@ export async function POST(req: NextRequest) {
 
     // Non-blocking 90% lead usage warning
     if (bot.ownerEmail) {
-      const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
-      const leadLimit = PLAN_LIMITS[planKey].leads
-      void checkAndWarnUsage(bot.orgId, 'leads', bot.leadsThisMonth + 1, leadLimit, bot.orgPlan, bot.ownerEmail)
+      void checkAndWarnUsage(bot.orgId, 'leads', newLeadCount, leadLimit, bot.orgPlan, bot.ownerEmail)
     }
 
     return NextResponse.json({ success: true })

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { requireClient } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { getPortalStats } from '@/lib/db/queries/portal-stats'
@@ -52,7 +52,7 @@ export default async function PortalPage({
         capturedAt: schema.leads.capturedAt,
       })
       .from(schema.leads)
-      .where(eq(schema.leads.botId, bot.id))
+      .where(and(eq(schema.leads.botId, bot.id), eq(schema.leads.hiddenByLimit, false)))
       .orderBy(schema.leads.capturedAt)
       .limit(5),
   ])

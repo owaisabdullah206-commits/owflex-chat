@@ -1,11 +1,11 @@
-import { desc, eq } from 'drizzle-orm'
+import { and, desc, eq, sql } from 'drizzle-orm'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { PLAN_LIMITS } from '@/lib/limits'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { LeadsSearch } from '@/components/dashboard/LeadsSearch'
-import { Download } from 'lucide-react'
+import { Download, AlertTriangle, EyeOff } from 'lucide-react'
 
 export default async function LeadsPage() {
   const user = await requireDeveloper()
@@ -16,26 +16,48 @@ export default async function LeadsPage() {
     .where(eq(schema.organizations.ownerId, user.id))
     .limit(1)
 
-  const leads = org
-    ? await db
-        .select({
-          id: schema.leads.id,
-          name: schema.leads.name,
-          email: schema.leads.email,
-          phone: schema.leads.phone,
-          capturedAt: schema.leads.capturedAt,
-          conversationId: schema.leads.conversationId,
-          botName: schema.bots.name,
-        })
-        .from(schema.leads)
-        .innerJoin(schema.bots, eq(schema.leads.botId, schema.bots.id))
-        .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
-        .where(eq(schema.organizations.ownerId, user.id))
-        .orderBy(desc(schema.leads.capturedAt))
-    : []
+  const [visibleLeads, hiddenCount] = org
+    ? await Promise.all([
+        // Visible leads only
+        db
+          .select({
+            id: schema.leads.id,
+            name: schema.leads.name,
+            email: schema.leads.email,
+            phone: schema.leads.phone,
+            capturedAt: schema.leads.capturedAt,
+            conversationId: schema.leads.conversationId,
+            botName: schema.bots.name,
+          })
+          .from(schema.leads)
+          .innerJoin(schema.bots, eq(schema.leads.botId, schema.bots.id))
+          .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+          .where(
+            and(
+              eq(schema.organizations.ownerId, user.id),
+              eq(schema.leads.hiddenByLimit, false),
+            ),
+          )
+          .orderBy(desc(schema.leads.capturedAt)),
+        // Count of hidden leads
+        db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(schema.leads)
+          .innerJoin(schema.bots, eq(schema.leads.botId, schema.bots.id))
+          .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
+          .where(
+            and(
+              eq(schema.organizations.ownerId, user.id),
+              eq(schema.leads.hiddenByLimit, true),
+            ),
+          )
+          .then((rows) => rows[0]?.count ?? 0),
+      ])
+    : [[], 0]
 
   const planKey = ((org?.plan ?? 'free') in PLAN_LIMITS ? org?.plan ?? 'free' : 'free') as keyof typeof PLAN_LIMITS
   const leadsLimit = PLAN_LIMITS[planKey].leads
+  const hasHidden = hiddenCount > 0
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -57,11 +79,14 @@ export default async function LeadsPage() {
               <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
                 <span className="text-[var(--of-primary)]">{org.leadsThisMonth}</span>
                 <span className="text-[var(--ink-subtle)]">/{leadsLimit === Infinity ? '∞' : leadsLimit}</span>
-                {' '}leads.month · {leads.length} total
+                {' '}leads.month · {visibleLeads.length} visible
+                {hasHidden && (
+                  <span className="text-amber-400"> · {hiddenCount} hidden</span>
+                )}
               </p>
             )}
           </div>
-          {leads.length > 0 && (
+          {visibleLeads.length > 0 && (
             <a
               href="/api/v1/leads/export"
               download
@@ -75,7 +100,62 @@ export default async function LeadsPage() {
         </div>
 
         <div className="px-4 sm:px-8 py-6 overflow-x-auto">
-          {leads.length === 0 ? (
+          {/* Hidden leads banner — shown when over-limit leads exist */}
+          {hasHidden && (
+            <div className="mb-6 flex items-start gap-3 border border-amber-400/30 bg-amber-400/8 px-4 py-3">
+              <EyeOff className="h-4 w-4 text-amber-400 mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p
+                  className="text-[12px] font-semibold text-[var(--ink)]"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  leads.hidden — {hiddenCount} lead{hiddenCount !== 1 ? 's' : ''} not visible
+                </p>
+                <p className="text-[12px] text-[var(--ink-muted)] mt-1">
+                  Your <span className="text-[var(--ink)]">{org?.plan}</span> plan allows{' '}
+                  <span className="text-[var(--ink)]">{leadsLimit === Infinity ? '∞' : leadsLimit}</span> leads/month.
+                  Leads captured past that limit are saved but hidden from your dashboard and your clients.
+                  Upgrade to make them visible.{' '}
+                  <a
+                    href="/dashboard/billing"
+                    className="text-[var(--of-primary)] hover:underline font-medium"
+                    style={{ fontFamily: 'var(--font-mono)' }}
+                  >
+                    Upgrade →
+                  </a>
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Legacy limit-reached banner (no hidden leads yet but ceiling hit) */}
+          {!hasHidden && org && leadsLimit !== Infinity && org.leadsThisMonth >= (leadsLimit as number) && (
+            <div className="mb-6 flex items-start gap-3 border border-amber-400/30 bg-amber-400/8 px-4 py-3">
+              <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p
+                  className="text-[12px] font-semibold text-[var(--ink)]"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  leads.limit_reached — next leads will be hidden
+                </p>
+                <p className="text-[12px] text-[var(--ink-muted)] mt-1">
+                  You have used your <span className="text-[var(--ink)]">{leadsLimit === Infinity ? '∞' : leadsLimit}</span> leads/month on the{' '}
+                  <span className="text-[var(--ink)]">{org.plan}</span> plan.
+                  Any new leads will still be saved but hidden until you upgrade.{' '}
+                  <a
+                    href="/dashboard/billing"
+                    className="text-[var(--of-primary)] hover:underline font-medium"
+                    style={{ fontFamily: 'var(--font-mono)' }}
+                  >
+                    Upgrade to capture unlimited leads →
+                  </a>
+                </p>
+              </div>
+            </div>
+          )}
+
+          {visibleLeads.length === 0 && !hasHidden ? (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
               <div
                 className="text-[32px] font-semibold text-[var(--ink-subtle)] mb-2 leading-none"
@@ -94,7 +174,7 @@ export default async function LeadsPage() {
               </p>
             </div>
           ) : (
-            <LeadsSearch leads={leads} showBot />
+            <LeadsSearch leads={visibleLeads} showBot />
           )}
         </div>
       </main>

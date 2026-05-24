@@ -43,15 +43,20 @@ export default async function ConversationDetailPage({
   if (!conv) notFound()
 
   // Fetch visitor lead info (best-effort join on conversationId)
+  // Do NOT expose hidden leads — they are invisible until the org upgrades
   const [lead] = await db
     .select({
-      name:  schema.leads.name,
-      email: schema.leads.email,
-      phone: schema.leads.phone,
+      name:           schema.leads.name,
+      email:          schema.leads.email,
+      phone:          schema.leads.phone,
+      hiddenByLimit:  schema.leads.hiddenByLimit,
     })
     .from(schema.leads)
     .where(eq(schema.leads.conversationId, id))
     .limit(1)
+
+  // Treat hidden leads as if they don't exist
+  const visibleLead = lead && !lead.hiddenByLimit ? lead : undefined
 
   const messages = await db
     .select({
@@ -123,26 +128,26 @@ export default async function ConversationDetailPage({
                       Escalated <RelativeTime date={conv.escalatedAt} />
                     </p>
                   )}
-                  {(lead?.name || lead?.email || lead?.phone) && (
+                  {(visibleLead?.name || visibleLead?.email || visibleLead?.phone) && (
                     <div className="mt-2 ml-6 text-xs text-[var(--ink-muted)] space-y-0.5">
-                      {lead.name  && <p>Visitor: <span className="text-[var(--ink)]">{lead.name}</span></p>}
-                      {lead.email && (
+                      {visibleLead.name  && <p>Visitor: <span className="text-[var(--ink)]">{visibleLead.name}</span></p>}
+                      {visibleLead.email && (
                         <p>
                           Email:{' '}
-                          <a href={`mailto:${lead.email}`} className="text-[var(--of-primary)] hover:underline">
-                            {lead.email}
+                          <a href={`mailto:${visibleLead.email}`} className="text-[var(--of-primary)] hover:underline">
+                            {visibleLead.email}
                           </a>
                         </p>
                       )}
-                      {lead.phone && <p>Phone: <span className="text-[var(--ink)]">{lead.phone}</span></p>}
+                      {visibleLead.phone && <p>Phone: <span className="text-[var(--ink)]">{visibleLead.phone}</span></p>}
                     </div>
                   )}
                 </div>
               </div>
               <HandoffActions
                 conversationId={conv.id}
-                visitorEmail={lead?.email ?? null}
-                visitorName={lead?.name ?? null}
+                visitorEmail={visibleLead?.email ?? null}
+                visitorName={visibleLead?.name ?? null}
               />
             </div>
           )}

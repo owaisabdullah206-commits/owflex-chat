@@ -155,6 +155,8 @@ export const leads = pgTable('leads', {
   phone:          varchar('phone', { length: 50 }),
   notes:          text('notes'),
   capturedAt:     tsz('captured_at').defaultNow().notNull(),
+  // When the org is over its monthly lead limit, leads are still saved but hidden from all views
+  hiddenByLimit:  boolean('hidden_by_limit').notNull().default(false),
 }, (t) => [
   index('leads_bot_id_idx').on(t.botId),
 ])

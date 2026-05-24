@@ -32,7 +32,7 @@ export async function GET(_req: NextRequest) {
     })
     .from(schema.leads)
     .innerJoin(schema.bots, eq(schema.leads.botId, schema.bots.id))
-    .where(and(eq(schema.bots.clientUserId, user.id), eq(schema.leads.botId, bot.id)))
+    .where(and(eq(schema.bots.clientUserId, user.id), eq(schema.leads.botId, bot.id), eq(schema.leads.hiddenByLimit, false)))
     .orderBy(desc(schema.leads.capturedAt))
 
   const header = 'name,email,phone,notes,date\n'

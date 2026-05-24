@@ -90,7 +90,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         conversationId: schema.leads.conversationId,
       })
       .from(schema.leads)
-      .where(eq(schema.leads.botId, bot.id))
+      .where(and(eq(schema.leads.botId, bot.id), eq(schema.leads.hiddenByLimit, false)))
       .orderBy(desc(schema.leads.capturedAt)),
     db
       .select({ count: count() })
@@ -99,7 +99,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     db
       .select({ count: count() })
       .from(schema.leads)
-      .where(and(eq(schema.leads.botId, bot.id), gte(schema.leads.capturedAt, monthStart))),
+      .where(and(eq(schema.leads.botId, bot.id), gte(schema.leads.capturedAt, monthStart), eq(schema.leads.hiddenByLimit, false))),
     db
       .select({ count: count() })
       .from(schema.conversations)

@@ -1,4 +1,4 @@
-import { asc, desc, eq, inArray } from 'drizzle-orm'
+import { and, asc, desc, eq, inArray } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import { requireClient } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
@@ -51,7 +51,7 @@ export default async function ConversationsPage({
       db
         .selectDistinct({ conversationId: schema.leads.conversationId })
         .from(schema.leads)
-        .where(inArray(schema.leads.conversationId, convIds)),
+        .where(and(inArray(schema.leads.conversationId, convIds), eq(schema.leads.hiddenByLimit, false))),
       db
         .select({
           conversationId: schema.messages.conversationId,

@@ -8,6 +8,14 @@ import { chunkText } from '@/lib/knowledge/chunker'
 import { embedTexts, QuotaExhaustedError } from '@/lib/knowledge/embedder'
 import { updateDocStatus, bumpDocVersion } from '@/lib/db/queries/documents'
 import { cleanDocumentText, cleanMarkdown, removeBoilerplate } from '@/lib/knowledge/cleaner'
+import { PLAN_LIMITS } from '@/lib/limits'
+
+const CATALOG_MIME_TYPES = new Set([
+  'text/csv',
+  'application/csv',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel',
+])
 
 // Allow up to 60 s on free Vercel plan (increase to 300 on Pro)
 export const maxDuration = 60
@@ -82,8 +90,21 @@ async function ingestFile(doc: typeof schema.documents.$inferSelect): Promise<vo
     throw new Error('Document missing storageKey or mimeType')
   }
 
+  // For catalog uploads (CSV/Excel), respect the plan's product row limit.
+  let maxRows: number | undefined
+  if (CATALOG_MIME_TYPES.has(doc.mimeType)) {
+    const [orgRow] = await db
+      .select({ plan: schema.organizations.plan })
+      .from(schema.organizations)
+      .where(eq(schema.organizations.id, doc.orgId))
+      .limit(1)
+    const plan = (orgRow?.plan ?? 'free') as keyof typeof PLAN_LIMITS
+    const limit = PLAN_LIMITS[plan in PLAN_LIMITS ? plan : 'free'].catalogProducts
+    maxRows = limit === Infinity ? undefined : (limit as number)
+  }
+
   const buffer = await getObjectBuffer(doc.storageKey)
-  const text = await extractText(buffer, doc.mimeType)
+  const text = await extractText(buffer, doc.mimeType, { maxRows })
   const cleaned = cleanDocumentText(text)
   const chunks = chunkText(cleaned)
 

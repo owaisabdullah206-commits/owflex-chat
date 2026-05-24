@@ -45,6 +45,7 @@ export default async function LeadsPage({
           and(
             eq(schema.bots.clientUserId, user.id),
             eq(schema.leads.botId, bot.id),
+            eq(schema.leads.hiddenByLimit, false),
           ),
         )
         .orderBy(desc(schema.leads.capturedAt))
