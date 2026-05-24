@@ -36,10 +36,10 @@ export default function AboutPage() {
         <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 16 }}>About Octively</p>
           <h1 style={{ fontSize: 48, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 20 }}>
-            Built in Karachi.<br />Deployed worldwide.
+            Made by a developer.<br />Used by agencies.
           </h1>
           <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.6, maxWidth: 560, margin: '0 auto' }}>
-            We make AI chatbot management invisible to your clients — so you look professional without the overhead.
+            We make AI chatbot management invisible to your clients, so you look professional without the extra work.
           </p>
         </div>
       </section>
@@ -96,7 +96,7 @@ export default function AboutPage() {
       {/* Values */}
       <section style={{ paddingBlock: 72, borderTop: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 48, textAlign: 'center' }}>What we stand for</h2>
+          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 48, textAlign: 'center' }}>How we build</h2>
           <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {VALUES.map(({ Icon, title, body }) => (
               <div key={title} style={{ border: '1px solid var(--hairline)', borderRadius: 14, background: 'var(--bg)', padding: '28px 24px' }}>
@@ -114,7 +114,7 @@ export default function AboutPage() {
       {/* CTA */}
       <section style={{ paddingBlock: 80, textAlign: 'center' }}>
         <div style={{ maxWidth: 520, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 14 }}>Start your free workspace</h2>
+          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 14 }}>Try it free</h2>
           <p style={{ fontSize: 15, color: 'var(--ink-muted)', marginBottom: 28 }}>No card required. One bot, 200 conversations per month, free forever.</p>
           <OctivelyButton href="/dashboard/signup" size="lg">
             Get started free

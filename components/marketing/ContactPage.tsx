@@ -44,7 +44,7 @@ export default function ContactPage() {
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 16 }}>Get in touch</p>
           <h1 style={{ fontSize: 44, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16 }}>Talk to us</h1>
           <p style={{ fontSize: 17, color: 'var(--ink-muted)', lineHeight: 1.6 }}>
-            Questions about the platform, pricing, or a custom plan? We typically reply within 24 hours.
+            Questions about pricing, the platform, or a custom setup? We reply within 24 hours.
           </p>
         </div>
       </section>
@@ -71,7 +71,7 @@ export default function ContactPage() {
               <MessageCircle size={22} />
               <div>
                 <p style={{ fontWeight: 600, fontSize: 15, margin: 0 }}>WhatsApp</p>
-                <p style={{ fontSize: 13, margin: 0, opacity: 0.85 }}>Fastest response — usually within the hour</p>
+                <p style={{ fontSize: 13, margin: 0, opacity: 0.85 }}>Fastest response, usually within the hour</p>
               </div>
               <ArrowRight size={16} style={{ marginLeft: 'auto' }} />
             </a>

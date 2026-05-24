@@ -154,7 +154,7 @@ export default function ForAgenciesPage() {
                 Your clients.<br />Your brand.<br />Their chatbot.
               </h1>
               <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.65, maxWidth: 520, marginBottom: 36 }}>
-                Build chatbots for 10 clients. Each one gets a portal that looks like it was built by you — because it was.
+                Build chatbots for 10 clients. Each one gets a portal that looks like it was built by you. Because it was.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <OctivelyButton href="/dashboard/signup" size="lg">
@@ -198,7 +198,7 @@ export default function ForAgenciesPage() {
             You built a great chatbot.<br />Now each client wants their own window into it.
           </h2>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.7 }}>
-            Spreadsheets. Forwarded emails. Weekly &ldquo;what did the bot say?&rdquo; calls. You&apos;re doing tech support for conversations that should be self-serve. Every extra client multiplies the noise.
+            Spreadsheets. Forwarded emails. Weekly &ldquo;what did the bot say?&rdquo; calls. You&apos;re doing tech support for work that should run itself. Every new client makes it louder.
           </p>
         </div>
       </section>
@@ -206,7 +206,7 @@ export default function ForAgenciesPage() {
       {/* Features */}
       <section style={{ paddingBlock: 72 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
-          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, textAlign: 'center' }}>Everything an agency needs</h2>
+          <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, textAlign: 'center' }}>Built for agencies running bots at scale</h2>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', textAlign: 'center', marginBottom: 48 }}>One platform. Every client. Zero custom builds.</p>
           <div className="mkt-grid-2" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20 }}>
             {FEATURES.map(({ Icon, title, body }) => (
@@ -243,7 +243,7 @@ export default function ForAgenciesPage() {
       <section style={{ paddingBlock: 72 }}>
         <div style={{ maxWidth: 480, margin: '0 auto', padding: '0 24px' }}>
           <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, textAlign: 'center' }}>Agency plan</h2>
-          <p style={{ fontSize: 15, color: 'var(--ink-muted)', textAlign: 'center', marginBottom: 32 }}>Everything you need to run chatbots at scale.</p>
+          <p style={{ fontSize: 15, color: 'var(--ink-muted)', textAlign: 'center', marginBottom: 32 }}>One plan. Unlimited clients. No per-seat nonsense.</p>
           <div style={{ border: '2px solid var(--of-primary)', borderRadius: 16, padding: '32px 28px', background: 'var(--surface)', boxShadow: '0 4px 24px rgba(14,165,233,.12)' }}>
             <div style={{ display: 'inline-flex', padding: '3px 10px', borderRadius: 999, background: 'var(--of-primary-soft)', border: '1px solid rgba(14,165,233,.25)', marginBottom: 16 }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600, color: 'var(--of-primary)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Most popular</span>

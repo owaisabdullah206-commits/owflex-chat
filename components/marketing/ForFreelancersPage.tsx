@@ -137,11 +137,11 @@ export default function ForFreelancersPage() {
                 Look like a pro.<br />Charge like one.
               </h1>
               <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.65, maxWidth: 500, marginBottom: 36 }}>
-                Stop answering &ldquo;what did the bot say?&rdquo; emails. Give your client a portal and move on to the next project.
+                Stop answering &ldquo;what did the bot say?&rdquo; emails. Give your client a portal. Move on.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <OctivelyButton href="/dashboard/signup" size="lg">
-                  Start free — no card required
+                  Start free, no card required
                 </OctivelyButton>
                 <Link
                   href="/pricing"
@@ -199,7 +199,7 @@ export default function ForFreelancersPage() {
       <section style={{ paddingBlock: 72 }}>
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 24px' }}>
           <h2 style={{ fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, textAlign: 'center' }}>Live in under an hour</h2>
-          <p style={{ fontSize: 16, color: 'var(--ink-muted)', textAlign: 'center', marginBottom: 40 }}>Four steps from zero to a client portal your clients will actually use.</p>
+          <p style={{ fontSize: 16, color: 'var(--ink-muted)', textAlign: 'center', marginBottom: 40 }}>Everything your client needs. Set up in under an hour.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {STEPS.map(({ n, title, body }) => (
               <div key={n} style={{ display: 'flex', gap: 20, padding: '22px 22px', border: '1px solid var(--hairline)', borderRadius: 12, background: 'var(--surface)', alignItems: 'flex-start' }}>
@@ -267,7 +267,7 @@ export default function ForFreelancersPage() {
       <section style={{ paddingBlock: 64, background: 'var(--surface-2)', borderTop: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
           <MessageCircle size={28} style={{ color: 'var(--of-primary)', marginBottom: 16 }} />
-          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>Your client has a question — again</h2>
+          <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>Your client has a question. Again.</h2>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.65, marginBottom: 28 }}>Or you could send them a link and let the portal answer it.</p>
           <OctivelyButton href="/dashboard/signup" size="lg">
             Start free

@@ -1148,7 +1148,7 @@ function FeatureBento() {
             Everything an SMB client wants. Nothing you'd have to build.
           </h2>
           <p style={{ marginTop: 14, color: 'var(--ink-subtle)', fontSize: 16, lineHeight: 1.6 }}>
-            Conversations, leads, knowledge base, AI model control, white-label — all production-grade, all wired to your existing bot.
+            Conversations, leads, a knowledge base, AI model control, and white-label branding. All wired to your existing bot.
           </p>
         </Reveal>
         <Reveal>
@@ -1161,22 +1161,22 @@ function FeatureBento() {
               gridAutoRows: 'minmax(180px, auto)',
             }}
           >
-            <BentoTile span={3} rows={2} Icon={MessageSquare} title="Conversation management" sub="Every chat, every channel, fully searchable. Filter by date, lead status, or session length.">
+            <BentoTile span={3} rows={2} Icon={MessageSquare} title="Conversation management" sub="Every conversation, fully searchable. Filter by date, lead status, or how long the chat ran.">
               <BentoConvoList />
             </BentoTile>
-            <BentoTile span={3} Icon={Zap} title="Lead capture & export" sub="Auto-detect leads in conversations. Export to CSV or push to Zapier (Phase 4).">
+            <BentoTile span={3} Icon={Zap} title="Lead capture & export" sub="The bot catches leads automatically. Your client exports them to CSV when they want them.">
               <BentoLeadCount />
             </BentoTile>
             <BentoTile span={3} Icon={Palette} title="White-label branding" sub="Strip every trace of Octively on Agency plan. Custom subdomains. Your widget, your logo, your portal.">
               <BentoWhiteLabel />
             </BentoTile>
-            <BentoTile span={2} Icon={Cpu} title="Multi-provider AI" sub="Top-tier models from every major provider. Switch per bot, route by complexity, never get locked in.">
+            <BentoTile span={2} Icon={Cpu} title="Multi-provider AI" sub="OpenAI, Anthropic, Google, DeepSeek, Mistral & more. Switch per bot. Never locked in.">
               <BentoModels />
             </BentoTile>
             <BentoTile span={2} Icon={Shield} title="Tenant isolation" sub="Every query scoped to bot_id. No cross-leaks. Audited by design.">
               <BentoIsolation />
             </BentoTile>
-            <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One script tag — drop it on WordPress, Shopify, Wix, or any HTML site. Live in minutes.">
+            <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One script tag. Drop it on WordPress, Shopify, Wix, or any HTML site. Live in minutes.">
               <BentoBotStack />
             </BentoTile>
           </div>
@@ -1514,7 +1514,7 @@ function Testimonials({ dark = true }: { dark?: boolean }) {
             maxWidth: 560,
           }}
         >
-          Real reviews from the developer and agency communities Octively was built for.
+          Real reviews from developers and agencies Octively was built for.
         </p>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -1688,7 +1688,7 @@ function HeroLeadCopy() {
         <span style={{ color: 'var(--of-primary)' }}>chatbot portal.</span>
       </h1>
       <p style={{ fontSize: 17, color: 'var(--ink-muted)', lineHeight: 1.65, margin: 0, maxWidth: '52ch' }}>
-        Octively powers your AI chatbots <em>and</em> gives every client a white-label portal — conversations, leads, and analytics all in one place. One embed script. No rebuilding.
+        Octively runs your AI chatbots and gives every client their own portal. Conversations, leads, analytics. One embed script. No rebuilding.
       </p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <Link
