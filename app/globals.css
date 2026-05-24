@@ -31,9 +31,6 @@
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
-@keyframes oct-shred-left  { to { transform: translateX(-110%); } }
-@keyframes oct-shred-right { to { transform: translateX(110%);  } }
-@keyframes oct-preloader-fade { to { opacity: 0; } }
 
 /* Skeleton shimmer utility — used in loading.tsx files */
 .oct-skeleton {

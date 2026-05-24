@@ -10,67 +10,6 @@ import {
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
 import { useDarkMode } from './useDarkMode'
-import { OctivelyStagger } from '@/components/brand/OctivelyStagger'
-
-// ─── Shredder preloader ───────────────────────────────────────────────────────
-const STRIP_COUNT = 10
-const STRIP_H     = 100 / STRIP_COUNT  // 10% per strip
-
-function ShredderPreloader({ dark }: { dark: boolean }) {
-  const [phase, setPhase] = useState<'hold' | 'shred' | 'done'>('hold')
-
-  useEffect(() => {
-    // hold 1.4s → shred → strips done ~700ms later → unmount
-    const t1 = setTimeout(() => setPhase('shred'), 1400)
-    const t2 = setTimeout(() => setPhase('done'),  2200)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [])
-
-  if (phase === 'done') return null
-
-  // Contrasting color — clearly different from page background so strips are visible
-  const stripBg = dark ? '#F0EBE4' : '#18140F'
-
-  return (
-    <div
-      aria-hidden="true"
-      style={{ position: 'fixed', inset: 0, zIndex: 200, pointerEvents: phase === 'shred' ? 'none' : 'auto' }}
-    >
-      {/* Strips rendered first — occupy the base layer */}
-      {Array.from({ length: STRIP_COUNT }, (_, i) => {
-        const goLeft = i % 2 === 0
-        return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: 0, right: 0,
-              // -0.5px top + 1px height = strips overlap each other by 1px → no sub-pixel gaps
-              top:    `calc(${i * STRIP_H}% - 0.5px)`,
-              height: `calc(${STRIP_H}% + 1px)`,
-              background: stripBg,
-              willChange: 'transform',
-              animation: phase === 'shred'
-                ? `${goLeft ? 'oct-shred-left' : 'oct-shred-right'} .46s ease-in ${i * 26}ms forwards`
-                : undefined,
-            }}
-          />
-        )
-      })}
-
-      {/* Spinner sits above strips (zIndex: 1 in this stacking context) */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 1,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        transition: 'opacity .18s',
-        opacity: phase === 'shred' ? 0 : 1,
-      }}>
-        <OctivelyStagger size={72} color="#0EA5E9" />
-      </div>
-    </div>
-  )
-}
-
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
 function Reveal({
@@ -1751,7 +1690,6 @@ export default function MarketingHome() {
       className={`marketing${darkMode ? ' dark' : ''}`}
       style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}
     >
-      <ShredderPreloader dark={darkMode} />
       <MarketingNav dark={darkMode} onToggleDark={toggleDark} />
 
       {/* Hero */}
