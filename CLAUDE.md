@@ -221,13 +221,14 @@ git checkout master
 # Then record the push in docs/netlify-budget.md (date + build # + what changed)
 ```
 
-### Netlify Build Budget — 300 min/month
+### Netlify Build Budget — 300 credits/month
 
-- Budget: 300 min ÷ ~4.5 min/build = max **60 builds/month**. Stay under **40** for safety.
+- Each production deploy costs **15 credits**. Max 20 deploys/month, but traffic also burns credits.
+- **Safe limit: 10 deploys/month** (leaves 150 credits for web requests, bandwidth, compute).
 - Full tracking log: `docs/netlify-budget.md` — READ IT before every production push, UPDATE IT after.
 - Only push to `release` for **user-facing changes** (features, bug fixes, content). Never for:
   docs-only edits, CLAUDE.md changes, `.env.example` tweaks, or anything non-functional.
-- If 40+ builds in a month → delay non-urgent releases to next cycle.
+- If 10+ deploys in a month → batch remaining changes and release together next cycle.
 
 ### Changelog + Roadmap Sync Rule
 
