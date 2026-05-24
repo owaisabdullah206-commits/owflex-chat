@@ -19,10 +19,12 @@ A white-label client dashboard layer for custom AI chatbots. Developers add our 
 Three subdomains. Three surfaces. Three layout components.
 
 ```
-owflex.com        → /app/(marketing)/layout.tsx  — marketing site
-admin.owflex.com  → /app/(dashboard)/layout.tsx  — developer dashboard
-app.owflex.com    → /app/(portal)/layout.tsx     — client portal
+octively.com        → /app/(marketing)/layout.tsx  — marketing site
+admin.octively.com  → /app/(dashboard)/layout.tsx  — developer dashboard
+app.octively.com    → /app/(portal)/layout.tsx     — client portal
 ```
+
+Subdomain routing is handled in `app/proxy.ts` (Next.js 16 — replaces middleware.ts).
 
 Before building ANY UI, confirm which subdomain you are building for. Apply the correct layout and token set. Never mix surfaces.
 
@@ -193,17 +195,34 @@ npm run build   # must exit 0 — fix all errors before git push
 - If the build fails, fix it before committing. Do not push broken builds hoping Vercel will reveal the error.
 - This rule applies to every change, including single-line fixes.
 
-### Git Remotes (Both must be pushed every time)
+### Git Remotes
 
 ```
-origin   https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas.git
-vercel   https://github.com/owaisabdullah206-commits/owflex-chat.git
+origin   https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas.git  ← Netlify watches release branch
+vercel   https://github.com/owaisabdullah206-commits/owflex-chat.git  ← Vercel dev/preview
 ```
 
-After every commit, always push both:
+**Development push (every commit):**
 ```bash
 git push origin master && git push vercel master
+# Does NOT trigger Netlify — Netlify only watches the `release` branch
 ```
+
+**Production release to Netlify (explicit, intentional):**
+```bash
+# ⚠️ Check docs/netlify-budget.md FIRST — confirm build count < 40 this month
+git checkout release && git merge master && git push origin release
+git checkout master
+# Then record the push in docs/netlify-budget.md (date + build # + what changed)
+```
+
+### Netlify Build Budget — 300 min/month
+
+- Budget: 300 min ÷ ~4.5 min/build = max **60 builds/month**. Stay under **40** for safety.
+- Full tracking log: `docs/netlify-budget.md` — READ IT before every production push, UPDATE IT after.
+- Only push to `release` for **user-facing changes** (features, bug fixes, content). Never for:
+  docs-only edits, CLAUDE.md changes, `.env.example` tweaks, or anything non-functional.
+- If 40+ builds in a month → delay non-urgent releases to next cycle.
 
 ### Changelog + Roadmap Sync Rule
 
