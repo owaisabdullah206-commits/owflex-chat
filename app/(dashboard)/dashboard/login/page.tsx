@@ -1,12 +1,25 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth/client'
+
+// Reads ?reason= from the URL so the login page can explain why the user was redirected.
+// Wrapped in Suspense by the parent to satisfy Next.js App Router requirements.
+function SessionExpiredBanner() {
+  const searchParams = useSearchParams()
+  if (searchParams.get('reason') !== 'expired') return null
+  return (
+    <div className="mb-5 flex items-start gap-2.5 rounded px-3 py-2.5 text-sm border border-amber-400/25 bg-amber-400/8 text-amber-400">
+      <span className="mt-0.5 shrink-0 text-base leading-none">⚠</span>
+      <span>Your session expired. Sign in to continue.</span>
+    </div>
+  )
+}
 
 export default function DashboardLoginPage() {
   const router = useRouter()
@@ -55,6 +68,9 @@ export default function DashboardLoginPage() {
 
         {/* Form card */}
         <div className="bg-[var(--surface)] border border-[var(--hairline)] p-6">
+          <Suspense>
+            <SessionExpiredBanner />
+          </Suspense>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>

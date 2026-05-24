@@ -6,7 +6,8 @@ import { redirect } from 'next/navigation'
 
 export async function requireDeveloper() {
   const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) redirect('/dashboard/login')
+  // Pass ?reason=expired so the login page can explain why the user was redirected.
+  if (!session?.user) redirect('/dashboard/login?reason=expired')
   if ((session.user as { role?: string }).role !== 'developer') redirect('/dashboard/login')
   return session.user
 }

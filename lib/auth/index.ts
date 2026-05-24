@@ -74,7 +74,9 @@ export const auth = betterAuth({
   },
 
   session: {
-    cookieCache: { enabled: true, maxAge: 60 * 60 * 24 * 7 },
+    // 5-minute cache: reduces DB load while keeping the stale-session window
+    // short enough that a BETTER_AUTH_SECRET rotation clears sessions quickly.
+    cookieCache: { enabled: true, maxAge: 60 * 5 },
   },
 
   trustedOrigins: [
