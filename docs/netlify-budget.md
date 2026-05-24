@@ -10,8 +10,9 @@
 | Serverless compute    | 10 credits / GB-hr | 30 GB-hours          |
 | Netlify DB            | N/A                | Using Neon instead   |
 
-**Real safe limit: 10 production deploys/month** (leaves 150 credits for traffic/compute).
-At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credits), 10 deploys = 190 credits total.
+**Real per-deploy cost: ~15.1 credits** (15 deploy + ~0.1 compute during build).  
+**Real safe limit: 10 production deploys/month** (leaves ~149 credits for traffic/compute).  
+At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credits), 10 deploys = ~191 credits total.
 
 ## Rules
 
