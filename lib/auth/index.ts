@@ -87,8 +87,10 @@ export const auth = betterAuth({
     // Vercel dev/preview
     'https://octively-chat.vercel.app',
     'https://octively.vercel.app',
+    // Netlify pro/preview 
+    'https://calm-gaufre-2c65d3.netlify.app',
     // Wildcard covers every preview deployment regardless of hash
-    'https://octively-chat-*-owaisabdullah206-1391s-projects.vercel.app',
+    'https://octively-*-owaisabdullah206-1391s-projects.vercel.app',
     // Local dev
     'http://localhost:3000',
   ],
