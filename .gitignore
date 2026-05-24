@@ -40,5 +40,5 @@ CLAUDE.md
 DESIGN.md
 specs/
 history/
-docs/
+# docs/ — tracked (contains production-deployment.md and netlify-budget.md)
 owflex_master_plan_v7.md

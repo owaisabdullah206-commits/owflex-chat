@@ -18,4 +18,5 @@ Budget resets: **1st of each month**
 
 | Date       | Build # | Duration   | Notes                                        |
 |------------|---------|------------|----------------------------------------------|
-| YYYY-MM-DD | 1       | ~4.5 min   | Initial production deploy on Netlify          |
+| 2026-05-24 | 1       | <1 min     | FAILED — embed workspace picked up instead of root |
+| 2026-05-24 | 2       | ~4.5 min   | Fix netlify.toml base=. + initial production deploy |
