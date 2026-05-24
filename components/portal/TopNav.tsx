@@ -12,8 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ChevronDown, LogOut, Menu, Settings, X } from 'lucide-react'
+import { ChevronDown, LogOut, Menu, MessageSquarePlus, Settings, X } from 'lucide-react'
 import { OctivelyMark } from '@/components/brand/OctivelyMark'
+import { ClientFeedbackModal } from '@/components/portal/ClientFeedbackModal'
 
 interface Bot {
   id: string
@@ -59,6 +60,7 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [escalationCount, setEscalationCount] = useState(0)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
   const userInitials = initials(userName, userEmail)
 
   useEffect(() => {
@@ -169,6 +171,14 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
                 </a>
               </DropdownMenuItem>
               <DropdownMenuItem
+                onClick={() => setFeedbackOpen(true)}
+                className="cursor-pointer"
+              >
+                <MessageSquarePlus className="mr-2 h-4 w-4" />
+                Send feedback
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
                 onClick={handleSignOut}
                 className="text-[var(--error-text)] focus:text-[var(--error-text)] cursor-pointer"
               >
@@ -234,8 +244,15 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
             })}
           </nav>
 
-          {/* Sign out */}
-          <div className="px-3 py-2 border-t border-[var(--hairline)]">
+          {/* Feedback + Sign out */}
+          <div className="px-3 py-2 border-t border-[var(--hairline)] space-y-0.5">
+            <button
+              onClick={() => { setMobileOpen(false); setFeedbackOpen(true) }}
+              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-[var(--ink-muted)] hover:text-[var(--ink)] hover:bg-[var(--bg)] min-h-[44px] transition-colors cursor-pointer"
+            >
+              <MessageSquarePlus className="h-4 w-4 shrink-0" />
+              Send feedback
+            </button>
             <button
               onClick={handleSignOut}
               className="flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-sm font-medium text-[var(--error-text)] hover:bg-[var(--of-primary-soft)]/10 min-h-[44px] transition-colors cursor-pointer"
@@ -246,6 +263,8 @@ export function TopNav({ userEmail, userName, bots, activeBotId, portalConfig }:
           </div>
         </div>
       )}
+
+      <ClientFeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </header>
   )
 }
