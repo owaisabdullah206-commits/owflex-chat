@@ -1,12 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="20" fill="#0EA5E9"/>
-  <text
-    x="50"
-    y="75"
-    font-family="Arial, Helvetica, sans-serif"
-    font-size="70"
-    font-weight="bold"
-    text-anchor="middle"
-    fill="white"
-  >O</text>
+  <!-- Teal rounded-square tile (brand monogram format) -->
+  <rect width="100" height="100" rx="22" fill="#0EA5E9"/>
+  <!-- Compass Burst · Alternating variant A · white · ~58% scale, centered -->
+  <!-- Nested SVG centers the 0-0-100-100 compass in a 58×58 box at (21,21) -->
+  <svg x="16" y="16" width="68" height="68" viewBox="0 0 100 100" fill="none">
+    <!-- Cardinal blades (full opacity) -->
+    <path d="M 46,36 L 50,4 L 54,36 Z"           fill="white"/>
+    <path d="M 64,46 L 96,50 L 64,54 Z"           fill="white"/>
+    <path d="M 54,64 L 50,96 L 46,64 Z"           fill="white"/>
+    <path d="M 36,54 L 4,50 L 36,46 Z"            fill="white"/>
+    <!-- Diagonal blades (55 % opacity — alternating rhythm) -->
+    <path d="M 57.07,37.27 L 82.53,17.47 L 62.73,42.93 Z" fill="white" fill-opacity="0.55"/>
+    <path d="M 62.73,57.07 L 82.53,82.53 L 57.07,62.73 Z" fill="white" fill-opacity="0.55"/>
+    <path d="M 42.93,62.73 L 17.47,82.53 L 37.27,57.07 Z" fill="white" fill-opacity="0.55"/>
+    <path d="M 37.27,42.93 L 17.47,17.47 L 42.93,37.27 Z" fill="white" fill-opacity="0.55"/>
+    <!-- Hub circle -->
+    <circle cx="50" cy="50" r="6" fill="white"/>
+  </svg>
 </svg>
