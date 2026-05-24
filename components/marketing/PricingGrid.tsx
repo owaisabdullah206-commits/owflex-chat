@@ -10,6 +10,12 @@ import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
 import { useDarkMode } from './useDarkMode'
 
+// ─── WhatsApp helper ──────────────────────────────────────────────────────────
+function waHref(text: string): string {
+  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''
+  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`
+}
+
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
 function Reveal({ children, style, delay = 0 }: { children: React.ReactNode; style?: React.CSSProperties; delay?: number }) {
@@ -73,7 +79,7 @@ const PLANS = [
     fullPkr: 3500, fullUsd: 19,
     bots: '2 bots',
     convos: '3,000 conversations/mo',
-    cta: 'Start 14-day trial',
+    cta: 'Get started',
     href: '/dashboard/signup',
     features: [
       '2 bots · 3,000 conversations / month',
@@ -96,7 +102,7 @@ const PLANS = [
     fullPkr: 9000, fullUsd: 39,
     bots: '8 bots',
     convos: '15,000 conversations/mo',
-    cta: 'Start 14-day trial',
+    cta: 'Get started',
     href: '/dashboard/signup',
     featured: true,
     features: [
@@ -122,7 +128,7 @@ const PLANS = [
     fullPkr: 22000, fullUsd: 99,
     bots: 'Unlimited bots',
     convos: '75,000 conversations/mo',
-    cta: 'Start Agency trial',
+    cta: 'Get started',
     href: '/dashboard/signup',
     features: [
       'Unlimited bots · 75,000 conversations / month',
@@ -237,7 +243,7 @@ const CREDIT_PACKS = [
 const FAQS = [
   { q: 'What counts as a "conversation"?', a: 'A unique session — one visitor\'s chat with your bot, no matter how many messages. Sessions reset after 30 minutes of inactivity. Easy to forecast.' },
   { q: 'What happens if I run out of credits mid-month?', a: 'Your bots fall back to your plan\'s included default model silently — your end users never see an error. You get an email and a dashboard banner: top up to restore premium models.' },
-  { q: 'Can I switch between PKR and USD billing?', a: 'Yes — PKR is processed via PayFast (Pakistani cards / bank transfer / EasyPaisa). USD via Lemon Squeezy (cards / PayPal). You pick at checkout, switch by contacting support.' },
+  { q: 'How does billing work — PKR vs USD?', a: 'We handle upgrades and top-ups manually for now. Message us on WhatsApp with your preferred currency (PKR or USD) and plan, and we\'ll sort the payment and activate your plan within the hour.' },
   { q: 'Is my clients\' conversation data used to train AI models?', a: 'No. We route through providers under zero-data-retention agreements (DeepSeek, OpenRouter, Groq). Messages are processed in transit only and discarded after the response.' },
   { q: 'Do you charge per seat?', a: 'No. Every plan is org-based, unlimited seats. Charge your clients however you want — Octively doesn\'t meter users.' },
   { q: 'Can my client self-serve and bypass me?', a: 'No. SMB clients only get portal access (app.Octively.com). Bot creation, billing, and model settings stay with the developer/agency — by design.' },
@@ -647,8 +653,13 @@ export default function PricingGrid() {
                         </span>
                       )}
                     </div>
-                    <a href="#" style={{ marginTop: 6, display: 'flex', justifyContent: 'center', padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline)', textDecoration: 'none' }}>
-                      Top up
+                    <a
+                      href={waHref(`Hi, I'd like to buy the ${p.name} on Octively.`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ marginTop: 6, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'white', background: '#25D366', border: '1px solid transparent', textDecoration: 'none' }}
+                    >
+                      Buy via WhatsApp
                     </a>
                   </div>
                 </Reveal>
@@ -775,7 +786,12 @@ export default function PricingGrid() {
             <p style={{ marginTop: 14, marginBottom: 18, color: 'var(--ink-subtle)', fontSize: 15, lineHeight: 1.6 }}>
               Don&apos;t see yours? Talk to Owais directly — DMs open in the freelancer/agency communities Octively was built for.
             </p>
-            <a href="#" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline)', textDecoration: 'none' }}>
+            <a
+              href={waHref('Hi, I have a question about Octively pricing.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline)', textDecoration: 'none' }}
+            >
               Ask on WhatsApp <ArrowUpRight size={13} />
             </a>
           </Reveal>
@@ -852,7 +868,12 @@ export default function PricingGrid() {
                 <Link href="/dashboard/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '13px 22px', borderRadius: 10, fontSize: 15, fontWeight: 600, background: 'var(--of-primary)', color: 'white', textDecoration: 'none', border: '1px solid transparent' }}>
                   Create your first bot portal <ArrowRight size={16} />
                 </Link>
-                <a href="#" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '13px 22px', borderRadius: 10, fontSize: 15, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline-strong)', textDecoration: 'none' }}>
+                <a
+                  href={waHref('Hi Owais, I\'d like to learn more about Octively.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '13px 22px', borderRadius: 10, fontSize: 15, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline-strong)', textDecoration: 'none' }}
+                >
                   Talk to Owais
                 </a>
               </div>
