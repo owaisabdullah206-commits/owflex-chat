@@ -28,7 +28,6 @@ function bladePath(theta: number): string {
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const SESSION_KEY     = 'octively_preloader_shown'
 const COLOR           = '#0EA5E9'
 const STRIP_COUNT     = 8
 const HOLD_MS         = 2000   // ms before triggering exit
@@ -75,21 +74,18 @@ function StaggerMark({ size = 120, hub = true }: { size?: number; hub?: boolean 
 }
 
 // ─── LandingPreloader ─────────────────────────────────────────────────────────
+// Starts in 'visible' so the server-rendered HTML already contains the
+// preloader overlay — no delay, no flash of page content underneath.
+// sessionStorage check removed so it runs on every landing-page visit.
 export function LandingPreloader() {
-  const [phase, setPhase] = useState<'visible' | 'exiting' | 'gone'>('gone')
+  const [phase, setPhase] = useState<'visible' | 'exiting' | 'gone'>('visible')
 
   useEffect(() => {
-    if (typeof sessionStorage === 'undefined') return
-    if (sessionStorage.getItem(SESSION_KEY)) return
-    sessionStorage.setItem(SESSION_KEY, '1')
-    setPhase('visible')
-
     const hold = setTimeout(() => {
       setPhase('exiting')
       const done = setTimeout(() => setPhase('gone'), CONTENT_EXIT_MS + STRIPS_EXIT_MS)
       return () => clearTimeout(done)
     }, HOLD_MS)
-
     return () => clearTimeout(hold)
   }, [])
 
