@@ -102,11 +102,15 @@ export default async function BillingPage() {
                 <span className="text-[var(--ink)]">pro+</span>
                 {' · '}
                 <a
-                  href="/api/billing/payfast-plan-url?plan=pro"
+                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''}?text=${encodeURIComponent("Hi, I'd like to upgrade to the Pro plan on Octively.")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[var(--accent)] hover:underline"
                 >
-                  upgrade →
+                  upgrade via WhatsApp →
                 </a>
+                {/* // ── Direct payment link (re-enable when ready) ────────── */}
+                {/* <a href="/api/billing/payfast-plan-url?plan=pro" className="text-[var(--accent)] hover:underline">upgrade →</a> */}
               </span>
             </div>
           )}

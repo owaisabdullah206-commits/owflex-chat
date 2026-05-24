@@ -1,5 +1,5 @@
 import { PLAN_PRICES_PKR } from '@/lib/billing/payfast'
-import { ArrowUpRight, Zap, BarChart2, Globe, Building2 } from 'lucide-react'
+import { ArrowUpRight, Zap, BarChart2, Globe, Building2, MessageCircle } from 'lucide-react'
 
 const PLAN_ORDER = ['free', 'starter', 'pro', 'agency', 'enterprise'] as const
 type KnownPlan = (typeof PLAN_ORDER)[number]
@@ -15,40 +15,50 @@ const PLAN_META: Record<string, {
   accent: string
   blurb: string
   features: string[]
+  waText: string
 }> = {
   starter: {
-    icon: <Zap className="h-4 w-4" />,
-    accent: 'var(--of-primary)',
-    blurb: '2 bots · 3K convos · 30M credits/mo',
+    icon:    <Zap className="h-4 w-4" />,
+    accent:  'var(--of-primary)',
+    blurb:   '2 bots · 3K convos · 30M credits/mo',
     features: [
       'Unlimited leads · 20 FAQs per bot',
       '25 MB storage · 30-day history',
       'Full widget customization',
       'Email support',
     ],
+    waText: 'Hi, I\'d like to upgrade to the Starter plan on Octively.',
   },
   pro: {
-    icon: <BarChart2 className="h-4 w-4" />,
-    accent: '#8B5CF6',
-    blurb: '8 bots · 15K convos · 150M credits/mo',
+    icon:    <BarChart2 className="h-4 w-4" />,
+    accent:  '#8B5CF6',
+    blurb:   '8 bots · 15K convos · 150M credits/mo',
     features: [
       'Unlimited leads · 50 FAQs · 100 MB storage',
       'Unlimited history · advanced analytics',
       'Unanswered questions · PDF + URL scraping',
       'Credit top-ups · priority support',
     ],
+    waText: 'Hi, I\'d like to upgrade to the Pro plan on Octively.',
   },
   agency: {
-    icon: <Globe className="h-4 w-4" />,
-    accent: '#F59E0B',
-    blurb: 'Unlimited bots · 75K convos · 750M credits/mo',
+    icon:    <Globe className="h-4 w-4" />,
+    accent:  '#F59E0B',
+    blurb:   'Unlimited bots · 75K convos · 750M credits/mo',
     features: [
       'White-label branding · custom "Powered by"',
       '500 MB storage · 500 docs · 1K crawl pages',
       'Better credit rates · advanced analytics',
       'Dedicated support',
     ],
+    waText: 'Hi, I\'d like to upgrade to the Agency plan on Octively.',
   },
+}
+
+/** Build a WhatsApp deep link with a pre-filled message. */
+function waHref(text: string): string {
+  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''
+  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`
 }
 
 interface Props {
@@ -56,7 +66,8 @@ interface Props {
 }
 
 function PlanCard({ plan, featured = false }: { plan: 'starter' | 'pro' | 'agency'; featured?: boolean }) {
-  const meta = PLAN_META[plan]
+  const meta  = PLAN_META[plan]
+  const href  = waHref(meta.waText)
 
   if (featured) {
     /* Hero tile — full-width, horizontal layout */
@@ -71,7 +82,7 @@ function PlanCard({ plan, featured = false }: { plan: 'starter' | 'pro' | 'agenc
           style={{ background: `radial-gradient(ellipse at 20% 50%, ${meta.accent}, transparent 60%)` }}
         />
         <div className="relative flex flex-col sm:flex-row gap-6 p-6">
-          {/* Left — name + price + CTAs */}
+          {/* Left — name + price + CTA */}
           <div className="flex flex-col gap-4 sm:min-w-[200px]">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -105,22 +116,36 @@ function PlanCard({ plan, featured = false }: { plan: 'starter' | 'pro' | 'agenc
                 or {PLAN_USD[plan]}/mo USD · limited time discount
               </p>
             </div>
-            <div className="flex gap-2 mt-auto">
-              <a
-                href={`/api/billing/payfast-plan-url?plan=${plan}`}
-                className="flex-1 text-center py-2 text-white text-[11px] font-semibold hover:opacity-90 transition-opacity"
-                style={{ fontFamily: 'var(--font-mono)', background: meta.accent }}
-              >
-                PayFast
-              </a>
-              <a
-                href={`/api/billing/ls-plan-url?plan=${plan}`}
-                className="flex-1 text-center py-2 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                Lemon Squeezy
-              </a>
-            </div>
+            {/* WhatsApp CTA */}
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 py-2 text-white text-[11px] font-semibold hover:opacity-90 transition-opacity"
+              style={{ fontFamily: 'var(--font-mono)', background: '#25D366' }}
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              Upgrade via WhatsApp
+            </a>
+            {/*
+              // ── Direct payment buttons (re-enable when ready) ──────────────
+              <div className="flex gap-2">
+                <a
+                  href={`/api/billing/payfast-plan-url?plan=${plan}`}
+                  className="flex-1 text-center py-2 text-white text-[11px] font-semibold hover:opacity-90 transition-opacity"
+                  style={{ fontFamily: 'var(--font-mono)', background: meta.accent }}
+                >
+                  PayFast
+                </a>
+                <a
+                  href={`/api/billing/ls-plan-url?plan=${plan}`}
+                  className="flex-1 text-center py-2 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  Lemon Squeezy
+                </a>
+              </div>
+            */}
           </div>
           {/* Divider */}
           <div className="hidden sm:block w-px bg-[var(--hairline)] self-stretch" />
@@ -186,22 +211,36 @@ function PlanCard({ plan, featured = false }: { plan: 'starter' | 'pro' | 'agenc
           </li>
         ))}
       </ul>
-      <div className="flex gap-2 mt-auto">
-        <a
-          href={`/api/billing/payfast-plan-url?plan=${plan}`}
-          className="flex-1 text-center py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
-          style={{ fontFamily: 'var(--font-mono)', background: meta.accent }}
-        >
-          PayFast
-        </a>
-        <a
-          href={`/api/billing/ls-plan-url?plan=${plan}`}
-          className="flex-1 text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
-          style={{ fontFamily: 'var(--font-mono)' }}
-        >
-          Lemon Squeezy
-        </a>
-      </div>
+      {/* WhatsApp CTA */}
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-2 py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity mt-auto"
+        style={{ fontFamily: 'var(--font-mono)', background: '#25D366' }}
+      >
+        <MessageCircle className="h-3.5 w-3.5" />
+        Upgrade via WhatsApp
+      </a>
+      {/*
+        // ── Direct payment buttons (re-enable when ready) ────────────────────
+        <div className="flex gap-2 mt-auto">
+          <a
+            href={`/api/billing/payfast-plan-url?plan=${plan}`}
+            className="flex-1 text-center py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
+            style={{ fontFamily: 'var(--font-mono)', background: meta.accent }}
+          >
+            PayFast
+          </a>
+          <a
+            href={`/api/billing/ls-plan-url?plan=${plan}`}
+            className="flex-1 text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            Lemon Squeezy
+          </a>
+        </div>
+      */}
     </div>
   )
 }
@@ -215,8 +254,9 @@ export function PlanUpgradeSection({ currentPlan }: Props) {
 
   if (upgradablePlans.length === 0 && !showEnterprise) return null
 
-  const hasPro = upgradablePlans.includes('pro')
+  const hasPro      = upgradablePlans.includes('pro')
   const nonProPlans = upgradablePlans.filter((p) => p !== 'pro')
+  const enterpriseWaHref = waHref('Hi, I\'m interested in the Enterprise plan for Octively. Can we discuss?')
 
   return (
     <section>
@@ -243,18 +283,15 @@ export function PlanUpgradeSection({ currentPlan }: Props) {
         </a>
       </div>
 
-      {/* Bento grid — 2 columns, real gap */}
+      {/* Bento grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        {/* Pro card — full-width featured hero tile */}
         {hasPro && <PlanCard plan="pro" featured />}
 
-        {/* Starter and Agency — regular 1-col tiles */}
         {nonProPlans.map((plan) => (
           <PlanCard key={plan} plan={plan} />
         ))}
 
-        {/* Enterprise — full-width at the bottom */}
         {showEnterprise && (
           <div className="relative overflow-hidden flex flex-col sm:flex-row gap-6 p-5 border border-[var(--hairline)] bg-[var(--surface)] sm:col-span-2 sm:items-center">
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-[var(--ink-muted)]" />
@@ -297,12 +334,25 @@ export function PlanUpgradeSection({ currentPlan }: Props) {
                 ))}
               </ul>
               <a
-                href="mailto:hello@octively.com?subject=Enterprise plan inquiry"
-                className="text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
-                style={{ fontFamily: 'var(--font-mono)' }}
+                href={enterpriseWaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
+                style={{ fontFamily: 'var(--font-mono)', background: '#25D366' }}
               >
-                Contact Us →
+                <MessageCircle className="h-3.5 w-3.5" />
+                Contact via WhatsApp
               </a>
+              {/*
+                // ── Direct contact button (re-enable when ready) ─────────────
+                <a
+                  href="mailto:hello@octively.com?subject=Enterprise plan inquiry"
+                  className="text-center py-1.5 border border-[var(--hairline)] text-[var(--ink)] text-[11px] font-medium hover:bg-[var(--surface-2)] transition-colors"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  Contact Us →
+                </a>
+              */}
             </div>
           </div>
         )}
