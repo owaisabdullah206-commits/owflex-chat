@@ -5,7 +5,7 @@ import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 
 const bodySchema = z.object({
-  type:    z.enum(['suggestion', 'bug', 'general']),
+  type:    z.enum(['feature', 'suggestion', 'bug', 'general']),
   message: z.string().min(10).max(2000),
   pageUrl: z.string().url().optional().or(z.literal('')),
 })

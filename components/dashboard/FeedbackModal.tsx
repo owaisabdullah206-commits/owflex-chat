@@ -4,9 +4,10 @@ import { X, MessageSquarePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
-type FeedbackType = 'suggestion' | 'bug' | 'general'
+type FeedbackType = 'feature' | 'suggestion' | 'bug' | 'general'
 
 const TYPES: { value: FeedbackType; label: string; emoji: string }[] = [
+  { value: 'feature',    label: 'Feature',    emoji: '🚀' },
   { value: 'suggestion', label: 'Suggestion', emoji: '💡' },
   { value: 'bug',        label: 'Bug report', emoji: '🐛' },
   { value: 'general',   label: 'General',    emoji: '💬' },
@@ -15,10 +16,11 @@ const TYPES: { value: FeedbackType; label: string; emoji: string }[] = [
 interface FeedbackModalProps {
   open: boolean
   onClose: () => void
+  initialType?: FeedbackType
 }
 
-export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
-  const [type, setType]       = useState<FeedbackType>('suggestion')
+export function FeedbackModal({ open, onClose, initialType = 'general' }: FeedbackModalProps) {
+  const [type, setType]       = useState<FeedbackType>(initialType)
   const [message, setMessage] = useState('')
   const [status, setStatus]   = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
@@ -27,7 +29,7 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
   // Reset state whenever the modal opens
   useEffect(() => {
     if (open) {
-      setType('suggestion')
+      setType(initialType)
       setMessage('')
       setStatus('idle')
       setErrorMsg('')
@@ -118,15 +120,15 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
-            {/* Type selector */}
-            <div className="flex gap-2">
+            {/* Type selector — 2×2 grid to fit 4 types */}
+            <div className="grid grid-cols-2 gap-2">
               {TYPES.map(({ value, label, emoji }) => (
                 <button
                   key={value}
                   type="button"
                   onClick={() => setType(value)}
                   className={[
-                    'flex-1 flex items-center justify-center gap-1.5 px-2 py-2 text-[12px] border transition-colors cursor-pointer',
+                    'flex items-center gap-1.5 px-3 py-2 text-[12px] border transition-colors cursor-pointer',
                     type === value
                       ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-medium'
                       : 'border-[var(--hairline)] text-[var(--ink-muted)] hover:border-[var(--ink-subtle)] hover:text-[var(--ink)]',
@@ -141,10 +143,12 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps) {
             {/* Message */}
             <div className="space-y-1.5">
               <label className="text-[12px] text-[var(--ink-muted)]" htmlFor="feedback-msg">
-                {type === 'bug'
-                  ? 'Describe the bug and how to reproduce it.'
+                {type === 'feature'
+                  ? 'What feature do you want us to build?'
                   : type === 'suggestion'
-                  ? 'What should we build or improve?'
+                  ? 'What should we improve?'
+                  : type === 'bug'
+                  ? 'Describe the bug and how to reproduce it.'
                   : 'What\'s on your mind?'}
               </label>
               <Textarea
