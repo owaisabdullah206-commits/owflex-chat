@@ -2,10 +2,11 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity, GitBranch, ClipboardList } from 'lucide-react'
+import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity, GitBranch, ClipboardList, MessageSquarePlus } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
 import { OctivelyMark } from '@/components/brand/OctivelyMark'
+import { FeedbackModal } from '@/components/dashboard/FeedbackModal'
 
 const navItems = [
   { href: '/dashboard/bots',     label: 'Bots',     icon: Bot },
@@ -57,6 +58,7 @@ export function Sidebar() {
   const { data: session } = authClient.useSession()
   const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_PLATFORM_OWNER_EMAIL
   const [escalationCount, setEscalationCount] = useState(0)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   useEffect(() => {
     function poll() {
@@ -117,8 +119,16 @@ export function Sidebar() {
         )}
       </nav>
 
-      {/* Sign out */}
-      <div className="px-2 pb-3">
+      {/* Feedback + Sign out */}
+      <div className="px-2 pb-3 space-y-0.5">
+        <button
+          onClick={() => setFeedbackOpen(true)}
+          className="flex w-full items-center gap-2 px-3 py-[7px] text-[13px] text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors cursor-pointer"
+          style={{ fontFamily: 'var(--font-mono)' }}
+        >
+          <MessageSquarePlus className="h-3.5 w-3.5" />
+          Feedback
+        </button>
         <button
           onClick={handleSignOut}
           className="flex w-full items-center gap-2 px-3 py-[7px] text-[13px] text-[var(--ink-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)] transition-colors cursor-pointer"
@@ -128,6 +138,8 @@ export function Sidebar() {
           Sign out
         </button>
       </div>
+
+      <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </aside>
   )
 }

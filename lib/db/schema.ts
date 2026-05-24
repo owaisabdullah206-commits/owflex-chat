@@ -321,3 +321,18 @@ export const routingDecisions = pgTable('routing_decisions', {
   index('routing_decisions_bot_id_idx').on(t.botId),
   index('routing_decisions_message_id_idx').on(t.messageId),
 ])
+
+// ── FEEDBACK ──────────────────────────────────────────────────────────────────
+// Developer-submitted feedback, bug reports, and suggestions from the dashboard.
+export const feedback = pgTable('feedback', {
+  id:        text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  orgId:     text('org_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
+  userId:    text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type:      varchar('type', { length: 20 }).notNull(), // 'suggestion' | 'bug' | 'general'
+  message:   text('message').notNull(),
+  pageUrl:   text('page_url'),
+  createdAt: tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('feedback_org_id_idx').on(t.orgId),
+  index('feedback_created_at_idx').on(t.createdAt),
+])

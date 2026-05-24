@@ -5,7 +5,9 @@ import { db, schema } from '@/lib/db'
 
 function csvField(val: string | null | undefined): string {
   if (val === null || val === undefined) return ''
-  const escaped = val.replace(/"/g, '""')
+  let escaped = val.replace(/"/g, '""')
+  // Prevent CSV/spreadsheet formula injection (Excel, Google Sheets)
+  if (/^[=+@\-|%]/.test(escaped)) escaped = "'" + escaped
   return `"${escaped}"`
 }
 
