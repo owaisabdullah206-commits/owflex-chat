@@ -3,8 +3,8 @@
 import { useTransition, useState, useEffect } from 'react'
 import {
   MessageCircle, Bot, HelpCircle, Headphones, Sparkles,
-  Zap, MessageSquare, Smile, ChevronDown, Lightbulb, AlertTriangle,
-  ExternalLink, RefreshCw,
+  Zap, MessageSquare, Smile, Sun, Moon, ChevronDown, Lightbulb, AlertTriangle,
+  ExternalLink,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch'
 import { updateBot } from '@/lib/db/queries/bots'
 import { SUPPORTED_MODELS, type SupportedModel } from '@/lib/ai/litellm'
 import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
+import { LiveIndicator } from '@/components/brand/LiveIndicator'
 
 // ─── Trigger icon catalogue ───────────────────────────────────────────────────
 const TRIGGER_ICONS = [
@@ -739,95 +740,252 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
 
       {/* ── Right: live preview ── */}
       <div className="hidden lg:block">
-        <LiveBotPreview embedKey={embedKey} botName={name} />
+        <LiveBotPreview
+          embedKey={embedKey}
+          botName={name}
+          primaryColor={primaryColor}
+          welcomeMessage={welcomeMessage}
+          triggerIcon={triggerIcon}
+          borderRadius={borderRadius}
+          position={position}
+          tooltipEnabled={tooltipEnabled}
+          tooltipMessages={tooltipMessages.split('\n').map((s) => s.trim()).filter(Boolean)}
+          brandingEnabled={brandingEnabled}
+          brandingText={brandingText.trim() || 'Powered by Octively'}
+          theme={previewTheme}
+          onToggleTheme={() => { setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark'); markDirty() }}
+        />
       </div>
     </div>
   </>
   )
 }
 
-// ─── Live preview — real iframe widget ───────────────────────────────────────
-function LiveBotPreview({ embedKey, botName }: { embedKey: string; botName: string }) {
-  const [srcDoc, setSrcDoc] = useState('')
-  const [iframeKey, setIframeKey] = useState(0)
+// ─── Live preview ─────────────────────────────────────────────────────────────
+function LiveBotPreview({
+  embedKey,
+  botName,
+  primaryColor,
+  welcomeMessage,
+  triggerIcon,
+  borderRadius,
+  position,
+  tooltipEnabled,
+  tooltipMessages,
+  brandingEnabled,
+  brandingText,
+  theme,
+  onToggleTheme,
+}: {
+  embedKey: string
+  botName: string
+  primaryColor: string
+  welcomeMessage: string
+  triggerIcon: string
+  borderRadius: number
+  position: 'bottom-right' | 'bottom-left'
+  tooltipEnabled: boolean
+  tooltipMessages: string[]
+  brandingEnabled: boolean
+  brandingText: string
+  theme: 'dark' | 'light'
+  onToggleTheme: () => void
+}) {
+  const isDark = theme === 'dark'
+  const isLeft = position === 'bottom-left'
+  const c = isDark
+    ? { bg: '#0C0A09', surface: '#171512', hairline: '#2A2622', ink: '#F5F0EB', inkMuted: '#A09890' }
+    : { bg: '#FFFFFF', surface: '#F4F4F5', hairline: '#E4E4E7', ink: '#111111', inkMuted: '#6B7280' }
 
-  function buildSrcDoc(origin: string) {
-    return `<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <style>*{box-sizing:border-box}body{margin:0;background:#f1f5f9;min-height:100vh}</style>
-  </head>
-  <body>
-    <script src="${origin}/embed.js" data-key="${embedKey}" defer><\/script>
-    <script>
-      window.addEventListener('load',function(){
-        var btn=document.getElementById('ob');
-        if(btn)setTimeout(function(){btn.click();},500);
-      });
-    <\/script>
-  </body>
-</html>`
-  }
-
-  useEffect(() => {
-    setSrcDoc(buildSrcDoc(window.location.origin))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [embedKey, iframeKey])
+  const TriggerIcon = getIconComponent(triggerIcon)
+  const displayMsg  = welcomeMessage.trim() || 'Hi! How can I help you today?'
+  const firstTip    = tooltipMessages[0] || 'Need help? Ask me!'
+  const br          = `${borderRadius}px`
+  const innerBr     = `${Math.max(4, borderRadius - 4)}px`
 
   return (
     <div className="sticky top-20">
-      {/* Header */}
+      {/* Header bar */}
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">
-          Live Preview · {botName || 'Bot'}
-        </p>
+        <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">Live Preview</p>
         <div className="flex items-center gap-1.5">
           <button
             type="button"
-            onClick={() => setIframeKey((k) => k + 1)}
-            className="flex items-center gap-1 text-[11px] text-[var(--ink-muted)] hover:text-[var(--ink)] px-2 py-1 border border-[var(--hairline)] transition-colors"
-            title="Reset session"
+            onClick={onToggleTheme}
+            className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] px-2 py-1 rounded border border-[var(--hairline)] transition-colors cursor-pointer"
           >
-            <RefreshCw className="h-3 w-3" />
-            Reset
+            {isDark ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
+            {isDark ? 'Light' : 'Dark'}
           </button>
           <a
             href={`/embed-test?key=${embedKey}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[11px] text-[var(--of-primary)] hover:text-[var(--of-primary)] px-2 py-1 border border-[var(--of-primary)]/30 bg-[var(--of-primary)]/8 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-[var(--of-primary)] px-2 py-1 rounded border border-[var(--of-primary)]/30 bg-[var(--of-primary)]/10 hover:bg-[var(--of-primary)]/15 transition-colors"
           >
             <ExternalLink className="h-3 w-3" />
-            Open in tab
+            Test live
           </a>
         </div>
       </div>
 
-      {/* iframe */}
+      {/* Chat window */}
       <div
-        className="border border-[var(--hairline)] overflow-hidden bg-[var(--surface)]"
-        style={{ width: 300, height: 480 }}
+        style={{ borderRadius: br, backgroundColor: c.bg, border: `1px solid ${c.hairline}`, width: '300px' }}
+        className="overflow-hidden shadow-2xl"
       >
-        {srcDoc ? (
-          <iframe
-            key={iframeKey}
-            srcDoc={srcDoc}
-            title={`Preview: ${botName}`}
-            style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <span className="text-xs text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>loading…</span>
+        {/* Header */}
+        <div className="px-4 py-3 flex items-center gap-2.5" style={{ backgroundColor: primaryColor }}>
+          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+            <TriggerIcon className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-white text-sm font-semibold truncate flex-1">{botName || 'My Bot'}</span>
+          <LiveIndicator label="Online" color="white" style={{ fontSize: 10, opacity: 0.85 }} />
+        </div>
+
+        {/* Messages */}
+        <div className="p-3 space-y-3" style={{ minHeight: '340px', backgroundColor: c.bg }}>
+          {/* Bot bubble */}
+          <div className="flex gap-2 items-end">
+            <div
+              className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
+              style={{ backgroundColor: primaryColor }}
+            >
+              <TriggerIcon className="h-3 w-3 text-white" />
+            </div>
+            <div
+              className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+              style={{
+                backgroundColor: c.surface,
+                color: c.ink,
+                border: `1px solid ${c.hairline}`,
+                borderRadius: innerBr,
+                borderBottomLeftRadius: '4px',
+              }}
+            >
+              {displayMsg}
+            </div>
+          </div>
+
+          {/* User bubble */}
+          <div className="flex justify-end">
+            <div
+              className="text-white text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+              style={{
+                backgroundColor: primaryColor,
+                borderRadius: innerBr,
+                borderBottomRightRadius: '4px',
+              }}
+            >
+              Tell me about your services.
+            </div>
+          </div>
+
+          {/* Second bot bubble */}
+          <div className="flex gap-2 items-end">
+            <div
+              className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
+              style={{ backgroundColor: primaryColor }}
+            >
+              <TriggerIcon className="h-3 w-3 text-white" />
+            </div>
+            <div
+              className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+              style={{
+                backgroundColor: c.surface,
+                color: c.ink,
+                border: `1px solid ${c.hairline}`,
+                borderRadius: innerBr,
+                borderBottomLeftRadius: '4px',
+              }}
+            >
+              Sure! We offer…
+              <span style={{ color: c.inkMuted }}>
+                {' '}(answer will appear here based on your knowledge base)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Input bar */}
+        <div
+          className="px-3 py-2.5 flex items-center gap-2"
+          style={{ borderTop: `1px solid ${c.hairline}`, backgroundColor: c.surface }}
+        >
+          <div
+            className="flex-1 h-8 px-3 flex items-center"
+            style={{ backgroundColor: c.bg, border: `1px solid ${c.hairline}`, borderRadius: `${Math.max(4, borderRadius)}px` }}
+          >
+            <span className="text-xs" style={{ color: c.inkMuted }}>Type a message…</span>
+          </div>
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
+              <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Branding footer */}
+        {brandingEnabled && (
+          <div
+            className="text-center py-1"
+            style={{
+              borderTop: `1px solid ${c.hairline}`,
+              backgroundColor: c.surface,
+              fontSize: '10px',
+              opacity: 0.45,
+              color: c.ink,
+            }}
+          >
+            {brandingText}
           </div>
         )}
       </div>
 
-      <p className="text-[10px] text-[var(--ink-subtle)] mt-2" style={{ fontFamily: 'var(--font-mono)' }}>
-        ⚠ real widget · messages consume credits · reset = new session
-      </p>
+      {/* Trigger area */}
+      <div
+        className="mt-3 flex items-center gap-2"
+        style={{ width: '300px', justifyContent: isLeft ? 'flex-start' : 'flex-end' }}
+      >
+        {isLeft && (
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <TriggerIcon className="h-6 w-6 text-white" />
+          </div>
+        )}
+        {tooltipEnabled && (
+          <div
+            className="text-xs px-3 py-1.5 shadow-sm"
+            style={{
+              borderRadius: '999px',
+              backgroundColor: isDark ? '#171512' : '#FFFFFF',
+              color: isDark ? '#F5F0EB' : '#111111',
+              border: `1px solid ${isDark ? '#2A2622' : '#E4E4E7'}`,
+              maxWidth: '180px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {firstTip}
+          </div>
+        )}
+        {!isLeft && (
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
+            style={{ backgroundColor: primaryColor }}
+          >
+            <TriggerIcon className="h-6 w-6 text-white" />
+          </div>
+        )}
+      </div>
+
+      <p className="text-xs text-[var(--ink-subtle)] mt-2.5">Updates live as you change settings above.</p>
     </div>
   )
 }
