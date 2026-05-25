@@ -7,9 +7,10 @@ import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
 
-// Replace with real WhatsApp number before going live
-const WHATSAPP_NUMBER = '+92XXXXXXXXXX'
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''
+const WHATSAPP_URL = WHATSAPP_NUMBER
+  ? `https://wa.me/${WHATSAPP_NUMBER.replace(/\D/g, '')}`
+  : 'https://wa.me/'
 
 const FAQS = [
   {

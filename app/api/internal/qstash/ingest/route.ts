@@ -106,7 +106,15 @@ async function ingestFile(doc: typeof schema.documents.$inferSelect): Promise<vo
   const buffer = await getObjectBuffer(doc.storageKey)
   const text = await extractText(buffer, doc.mimeType, { maxRows })
   const cleaned = cleanDocumentText(text)
-  const chunks = chunkText(cleaned)
+
+  // CSV/Excel catalogs: each product row is already a delimited passage — split on
+  // the \n\n boundaries that processCsvRows places between products instead of using
+  // the sentence-based chunker (which can't detect product boundaries and silently
+  // splits a single product's fields across two chunks).
+  const isCatalog = CATALOG_MIME_TYPES.has(doc.mimeType)
+  const chunks = isCatalog
+    ? cleaned.split(/\n\n+/).map(c => c.trim()).filter(c => c.length >= 40)
+    : chunkText(cleaned)
 
   if (chunks.length === 0) {
     throw new Error('No text content extracted from document')
