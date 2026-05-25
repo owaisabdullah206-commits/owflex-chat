@@ -13,7 +13,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
-    '/api/embed': ['./embed/src/embed.js'],
+    // Include the built embed widget so the /embed.js route handler can readFileSync it on Vercel
+    '/embed.js': ['./public/embed.js'],
   },
   async headers() {
     return [
