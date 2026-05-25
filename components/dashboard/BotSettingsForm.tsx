@@ -450,29 +450,23 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           {/* Lead Capture */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <div className="flex items-center gap-2">
-                <p className="text-sm text-[var(--ink)]">Lead Capture</p>
-                {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Starter+</span>}
-              </div>
+              <p className="text-sm text-[var(--ink)]">Lead Capture</p>
               <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically during chat</p>
             </div>
-            <Switch checked={!isFreePlan && leadCaptureEnabled}
+            <Switch checked={leadCaptureEnabled}
               onCheckedChange={(v) => { setLeadCapture(v); markDirty() }}
-              disabled={isPending || isFreePlan} />
+              disabled={isPending} />
           </div>
 
           {/* Collect Lead Before Chat */}
           <div className="flex items-center justify-between py-3">
             <div>
-              <div className="flex items-center gap-2">
-                <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
-                {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Starter+</span>}
-              </div>
+              <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
               <p className="text-xs text-[var(--ink-muted)]">Show a name / email / phone form before the chat opens. Stored as a lead automatically.</p>
             </div>
-            <Switch checked={!isFreePlan && collectLeadBefore}
+            <Switch checked={collectLeadBefore}
               onCheckedChange={(v) => { setCollectLeadBefore(v); markDirty() }}
-              disabled={isPending || isFreePlan} />
+              disabled={isPending} />
           </div>
 
           {/* Strict Mode */}

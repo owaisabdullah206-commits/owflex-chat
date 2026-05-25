@@ -394,9 +394,6 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'documents' && (
-            bot.orgPlan === 'free' ? (
-              <UpgradeCTA feature="Document Upload" requiredPlan="Starter" />
-            ) : (
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>documents</p>
               <p className="text-xs text-[var(--ink-muted)] mb-5">
@@ -404,7 +401,6 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               </p>
               <DocumentsTab botId={bot.id} orgId={bot.orgId} plan={bot.orgPlan} />
             </div>
-            )
           )}
 
           {activeTab === 'unanswered' && (
