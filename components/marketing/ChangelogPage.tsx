@@ -8,9 +8,25 @@ import { useDarkMode } from './useDarkMode'
 
 const RELEASES = [
   {
-    version: 'v0.9.0',
+    version: 'v1.0.0',
     date: 'May 2026',
     tag: 'Latest',
+    items: [
+      'Streaming responses — token-by-token SSE output replaces single-shot JSON; typing indicator appears on first token for zero perceived latency',
+      'Message ratings — thumbs up/down SVG icons appear below each bot reply; satisfaction percentage visible in the Analytics tab',
+      'Per-page analytics — "Top pages" table in Analytics shows conversation count, message count, and escalation % per URL',
+      'Lead webhook — configure an outbound URL per bot (Settings → Integrations); payload signed with HMAC-SHA256 for Zapier, Make, n8n, or any custom endpoint',
+      'Chat history persistence — widget switches to localStorage with 24-hour TTL; messages replay automatically when a visitor returns to the page',
+      'Bot preview panel — new "Preview" tab in the bot detail page loads your live widget in a sandboxed iframe for instant testing without leaving the dashboard',
+      'Per-product CSV chunking — each product row is now embedded as its own atomic chunk; cross-row field splits that silently broke retrieval are eliminated',
+      'RAG retrieval threshold lowered 0.40 → 0.20 — generic queries ("what lipsticks do you have?") now reliably surface catalog items',
+      'WhatsApp number now reads from NEXT_PUBLIC_WHATSAPP_NUMBER env var on the contact page — update without a redeploy',
+    ],
+  },
+  {
+    version: 'v0.9.0',
+    date: 'May 2026',
+    tag: 'RAG Quality',
     items: [
       'Deterministic RAG text cleaning — nav menus, cookie banners, and footer boilerplate stripped across all crawled pages before embedding (frequency analysis, zero AI calls)',
       'Chunk quality filter — structural noise under 40 characters discarded automatically, reducing hallucination-inducing orphan headings and stray bullets',
@@ -119,15 +135,16 @@ const RELEASES = [
 ]
 
 const TAG_COLORS: Record<string, string> = {
-  Latest:     'var(--of-primary)',
-  Operations: '#10B981',
-  Routing:    '#06B6D4',
-  Billing:    'var(--of-success)',
-  RAG:        '#8B5CF6',
-  Portal:     '#F59E0B',
-  'Multi-bot': '#06B6D4',
-  Dashboard:  'var(--ink-muted)',
-  Foundation: 'var(--ink-subtle)',
+  Latest:       'var(--of-primary)',
+  'RAG Quality': '#8B5CF6',
+  Operations:   '#10B981',
+  Routing:      '#06B6D4',
+  Billing:      'var(--of-success)',
+  RAG:          '#8B5CF6',
+  Portal:       '#F59E0B',
+  'Multi-bot':  '#06B6D4',
+  Dashboard:    'var(--ink-muted)',
+  Foundation:   'var(--ink-subtle)',
 }
 
 export default function ChangelogPage() {
@@ -147,7 +164,7 @@ export default function ChangelogPage() {
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 20, padding: '5px 12px', border: '1px solid var(--hairline)', borderRadius: 999, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-muted)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)', display: 'inline-block' }} />
-            Current: v0.9.0-beta
+            Current: v1.0.0
           </div>
         </div>
       </section>

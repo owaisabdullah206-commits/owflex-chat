@@ -32,6 +32,14 @@ const SHIPPED = [
   'CSV / Excel product catalog import — Shopify and WooCommerce auto-detection',
   'Product catalog overwrite — re-upload without duplicates, unique identifier column picker',
   'Platform prompt editor — guidance card, example template, 3,000-character hard limit',
+  'Streaming responses — token-by-token SSE output with typing indicator, zero perceived latency',
+  'Message ratings — thumbs up/down SVG icons on each bot reply; satisfaction % in Analytics tab',
+  'Per-page analytics — top-pages breakdown showing conversations, messages, and escalation % per URL',
+  'Lead webhook — outbound POST to Zapier, Make, n8n, or any endpoint with HMAC-SHA256 signing',
+  'Chat history persistence — localStorage with 24-hour TTL; messages replay when visitor returns',
+  'Bot preview panel — sandboxed iframe widget inside the dashboard for zero-context-switch testing',
+  'Per-product CSV chunking — each catalog row embedded as an atomic chunk, no cross-row field splits',
+  'RAG retrieval quality fix — generic product queries now reliably surface catalog items',
 ]
 
 const IN_PROGRESS = [
@@ -41,8 +49,10 @@ const IN_PROGRESS = [
 ]
 
 const PLANNED = [
+  { title: 'Embed key rotation', desc: 'Rotate a compromised embed key with a 24-hour grace window — deployed widgets stay live while you push the updated key to production.' },
+  { title: 'Hybrid RAG — vector + full-text', desc: 'Combine cosine similarity with BM25 (Postgres tsvector) and re-rank the union. Exact product names and SKUs surface reliably even when embedding scores are low.' },
   { title: 'Custom portal subdomain', desc: 'Serve your client portal from portal.youragency.com instead of app.octively.com.' },
-  { title: 'API access and webhooks', desc: 'Programmatic access to bots, conversations, and leads. Push events to Zapier, n8n, or your own endpoint.' },
+  { title: 'Full REST API access', desc: 'Programmatic CRUD for bots, conversations, and leads. Lead webhooks are already live — this adds the full read/write API surface.' },
   { title: 'Mobile app', desc: 'iOS and Android app for managing bots and reviewing leads on the go.' },
   { title: 'Self-hosted option', desc: 'Run Octively on your own infrastructure for regulated or on-prem Enterprise deployments.' },
 ]
