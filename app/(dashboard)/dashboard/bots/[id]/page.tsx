@@ -312,7 +312,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'analytics' && (
-            <BotAnalyticsTab data={analyticsData} botId={bot.id} period={30} />
+            <BotAnalyticsTab data={analyticsData} botId={bot.id} period={30} plan={bot.orgPlan} />
           )}
 
           {activeTab === 'settings' && (

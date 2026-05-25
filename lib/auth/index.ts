@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
 import { sendWelcomeEmail } from '@/lib/email/welcome'
+import { sendResetPasswordEmail } from '@/lib/email/reset-password'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -30,6 +31,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
+      await sendResetPasswordEmail({ email: user.email, url })
+    },
   },
 
   socialProviders: {

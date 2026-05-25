@@ -1,4 +1,5 @@
 import { Activity, AlertTriangle, CheckCircle2, MessageSquare, TrendingUp, Users } from 'lucide-react'
+import { UpgradeCTA } from '@/components/dashboard/UpgradeCTA'
 
 interface BotAnalyticsTabProps {
   data: {
@@ -18,6 +19,7 @@ interface BotAnalyticsTabProps {
   }
   botId:  string
   period: number
+  plan:   string
 }
 
 function MetricCard({
@@ -60,7 +62,7 @@ function MetricCard({
   )
 }
 
-export function BotAnalyticsTab({ data, botId, period }: BotAnalyticsTabProps) {
+export function BotAnalyticsTab({ data, period, plan }: BotAnalyticsTabProps) {
   const {
     totalConversations,
     totalMessages,
@@ -71,6 +73,8 @@ export function BotAnalyticsTab({ data, botId, period }: BotAnalyticsTabProps) {
     recentConversations,
   } = data
 
+  const isAdvanced = plan !== 'free' && plan !== 'starter'
+
   return (
     <div className="space-y-6">
       {/* Period note */}
@@ -80,11 +84,16 @@ export function BotAnalyticsTab({ data, botId, period }: BotAnalyticsTabProps) {
           style={{ fontFamily: 'var(--font-mono)' }}
         >
           analytics · last {period} days
+          {!isAdvanced && (
+            <span className="ml-2 px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10 text-[10px]">
+              basic
+            </span>
+          )}
         </p>
       </div>
 
-      {/* Metric grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {/* Basic metric grid — all plans */}
+      <div className={`grid grid-cols-2 sm:grid-cols-3 gap-3`}>
         <MetricCard
           label="conversations"
           value={totalConversations}
@@ -101,29 +110,44 @@ export function BotAnalyticsTab({ data, botId, period }: BotAnalyticsTabProps) {
           value={avgMessagesPerConv}
           icon={TrendingUp}
         />
-        <MetricCard
-          label="unanswered"
-          value={unansweredCount}
-          icon={AlertTriangle}
-          tone={unansweredCount > 0 ? 'warning' : 'default'}
-        />
-        <MetricCard
-          label="escalated"
-          value={escalatedCount}
-          icon={AlertTriangle}
-          tone={escalatedCount > 0 ? 'warning' : 'default'}
-          sub={escalatedCount > 0 ? 'needs human review' : undefined}
-        />
-        <MetricCard
-          label="resolution_rate"
-          value={`${resolutionRate}%`}
-          icon={CheckCircle2}
-          tone={resolutionRate >= 80 ? 'success' : resolutionRate >= 60 ? 'warning' : 'default'}
-        />
+
+        {/* Advanced metrics — pro+ only */}
+        {isAdvanced && (
+          <>
+            <MetricCard
+              label="unanswered"
+              value={unansweredCount}
+              icon={AlertTriangle}
+              tone={unansweredCount > 0 ? 'warning' : 'default'}
+            />
+            <MetricCard
+              label="escalated"
+              value={escalatedCount}
+              icon={AlertTriangle}
+              tone={escalatedCount > 0 ? 'warning' : 'default'}
+              sub={escalatedCount > 0 ? 'needs human review' : undefined}
+            />
+            <MetricCard
+              label="resolution_rate"
+              value={`${resolutionRate}%`}
+              icon={CheckCircle2}
+              tone={resolutionRate >= 80 ? 'success' : resolutionRate >= 60 ? 'warning' : 'default'}
+            />
+          </>
+        )}
       </div>
 
-      {/* Recent conversations */}
-      {recentConversations.length > 0 && (
+      {/* Upgrade nudge for free/starter */}
+      {!isAdvanced && (
+        <UpgradeCTA
+          feature="Advanced Analytics"
+          requiredPlan="Pro"
+          description="Unlock escalation tracking, resolution rates, unanswered question counts, and flagged conversation history."
+        />
+      )}
+
+      {/* Recent conversations — advanced plans only */}
+      {isAdvanced && recentConversations.length > 0 && (
         <div>
           <p
             className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"

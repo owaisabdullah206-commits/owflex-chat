@@ -141,7 +141,7 @@ export default async function SettingsPage() {
                 </div>
               </div>
 
-              {/* BYOK */}
+              {/* BYOK — Enterprise only */}
               <div>
                 <p
                   className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
@@ -149,7 +149,29 @@ export default async function SettingsPage() {
                 >
                   advanced
                 </p>
-                <ByokSettings hasKey={!!org?.llmApiKey} />
+                {org?.plan === 'enterprise' ? (
+                  <ByokSettings hasKey={!!org.llmApiKey} />
+                ) : (
+                  <div className="border border-[var(--hairline)] bg-[var(--surface)] px-5 py-4 space-y-2">
+                    <p
+                      className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)]"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      llm_api_key (BYOK)
+                    </p>
+                    <p className="text-xs text-[var(--ink-muted)] leading-relaxed">
+                      Bring your own OpenAI, Anthropic, or LiteLLM-compatible API key.
+                      Available on the <span className="text-[var(--ink)]">Enterprise</span> plan.
+                    </p>
+                    <a
+                      href="/pricing"
+                      className="inline-block text-[11px] text-[var(--of-primary)] hover:underline"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      View pricing →
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -85,7 +85,15 @@ export default function DashboardLoginPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  href="/dashboard/forgot-password"
+                  className="text-xs text-[var(--ink-subtle)] hover:text-[var(--of-primary)] transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <Input
                   id="password"

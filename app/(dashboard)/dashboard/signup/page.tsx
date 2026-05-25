@@ -8,6 +8,19 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth/client'
 
+function getStrength(pw: string): { score: number; label: string; color: string } {
+  let score = 0
+  if (pw.length >= 8) score++
+  if (/[A-Z]/.test(pw)) score++
+  if (/[a-z]/.test(pw)) score++
+  if (/[0-9]/.test(pw)) score++
+  if (/[^A-Za-z0-9]/.test(pw)) score++
+  if (score <= 1) return { score, label: 'Weak',   color: '#EF4444' }
+  if (score === 2) return { score, label: 'Fair',   color: '#F59E0B' }
+  if (score === 3) return { score, label: 'Good',   color: '#84CC16' }
+  return            { score, label: 'Strong', color: '#22C55E' }
+}
+
 export default function DashboardSignupPage() {
   const router = useRouter()
   const [name, setName] = useState('')
@@ -16,6 +29,8 @@ export default function DashboardSignupPage() {
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const strength = getStrength(password)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -102,6 +117,26 @@ export default function DashboardSignupPage() {
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+
+              {/* Strength meter */}
+              {password.length > 0 && (
+                <div className="space-y-1 pt-0.5">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((seg) => (
+                      <div
+                        key={seg}
+                        className="h-1 flex-1 rounded-full transition-colors duration-200"
+                        style={{
+                          background: seg <= strength.score ? strength.color : 'var(--surface-2)',
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[11px]" style={{ color: strength.color, fontFamily: 'var(--font-mono)' }}>
+                    {strength.label}
+                  </p>
+                </div>
+              )}
             </div>
 
             {error && (

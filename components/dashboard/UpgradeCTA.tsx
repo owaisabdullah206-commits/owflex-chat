@@ -1,9 +1,17 @@
-export function UpgradeCTA({ feature, requiredPlan }: { feature: string; requiredPlan: string }) {
+export function UpgradeCTA({
+  feature,
+  requiredPlan,
+  description,
+}: {
+  feature: string
+  requiredPlan: string
+  description?: string
+}) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
       <p className="text-sm font-medium text-[var(--ink)]">{feature}</p>
-      <p className="text-xs text-[var(--ink-muted)]">
-        Available on {requiredPlan} plan and above.
+      <p className="text-xs text-[var(--ink-muted)] max-w-xs leading-relaxed">
+        {description ?? `Available on ${requiredPlan} plan and above.`}
       </p>
       <a
         href="/pricing"
