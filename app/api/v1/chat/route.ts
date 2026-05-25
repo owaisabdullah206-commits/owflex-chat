@@ -243,12 +243,18 @@ export async function POST(req: NextRequest) {
             return []
           })
         : Promise.resolve([]),
-      // Total product/chunk count across all ready documents for this bot
+      // Count chunks directly from document_chunks — accurate even for documents
+      // ingested before chunk_count tracking was added (chunk_count may be 0 on those).
       bot.documentCount > 0
-        ? db.select({ total: sql<number>`COALESCE(SUM(${schema.documents.chunkCount}),0)::int` })
-            .from(schema.documents)
-            .where(and(eq(schema.documents.botId, bot.id), eq(schema.documents.status, 'ready')))
-            .then((r) => r[0]?.total ?? 0)
+        ? db.execute<{ total: number }>(sql`
+            SELECT COUNT(*)::int AS total
+            FROM document_chunks
+            WHERE bot_id = ${bot.id}
+              AND version = (
+                SELECT MAX(version) FROM document_chunks dc2
+                WHERE dc2.document_id = document_chunks.document_id
+              )
+          `).then((r) => (r.rows[0] as { total: number })?.total ?? 0)
         : Promise.resolve(0),
     ])
 

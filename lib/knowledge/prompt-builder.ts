@@ -44,7 +44,7 @@ export function renderDocContext(
 
   const footer =
     `\n\nIMPORTANT: Only reference products, categories, prices, and attributes explicitly listed in the context above. Do not describe, infer, or generalise products from your training knowledge. If the information is not in the context, say you don't have that information.` +
-    `\n\nCATALOG SCOPE: ${catalogSizeNote} The ${chunks.length} item(s) shown above are the most relevant matches for this specific query — they may not cover the entire catalog. If the user asks to list ALL products, say you're showing the best matches for their query and invite them to ask about a specific product type or check the website for the full list.`
+    `\n\nCATALOG SCOPE: ${catalogSizeNote} The ${chunks.length} item(s) shown above are the most semantically relevant matches for this specific query — DO NOT assume or state these are ALL the products in the catalog. When asked how many products you carry or to list everything, do not guess based on what you can see here. Instead say: "I can show the most relevant items for your query. For the complete product list please visit our website." Only state a specific total count if you are given one explicitly in the "Your full knowledge base contains X products" line above.`
 
   return header + text + footer
 }
