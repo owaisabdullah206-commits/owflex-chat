@@ -167,7 +167,12 @@ export async function POST(req: NextRequest) {
     // CORS origin guard — only applies when storeUrl is set
     const requestOrigin = req.headers.get('origin')
     const allowedOrigin = storeUrl ? (() => { try { return new URL(storeUrl).origin } catch { return null } })() : null
-    if (allowedOrigin && requestOrigin && requestOrigin !== allowedOrigin) {
+    // Always allow requests from the app itself (dashboard preview / embed-test)
+    const appOrigin = process.env.NEXT_PUBLIC_APP_URL
+      ? (() => { try { return new URL(process.env.NEXT_PUBLIC_APP_URL!).origin } catch { return null } })()
+      : null
+    const fromAppItself = appOrigin && requestOrigin === appOrigin
+    if (allowedOrigin && requestOrigin && requestOrigin !== allowedOrigin && !fromAppItself) {
       return NextResponse.json(
         {
           error: `This bot is only embeddable on ${allowedOrigin}. Update the bot's Store URL in Settings to change this restriction.`,
@@ -219,7 +224,18 @@ export async function POST(req: NextRequest) {
 
     // Compose system prompt: [platform] + [bot] + [doc context] + [FAQ context] + [lead instructions]
     const [platformPrompt, activeFaqs, retrievedChunks] = await Promise.all([
-      getPlatformPrompt().then((p) => { console.log('[chat] platformPrompt chars:', p.length); return p }),
+      getPlatformPrompt().then((p) => {
+        // Replace {{botName}}, {{storeName}}, {{storeUrl}} placeholders with live bot values
+        const storeName = storeUrl
+          ? (() => { try { return new URL(storeUrl).hostname.replace(/^www\./, '') } catch { return bot.name } })()
+          : bot.name
+        const resolved = p
+          .replace(/\{\{botName\}\}/g, bot.name)
+          .replace(/\{\{storeName\}\}/g, storeName)
+          .replace(/\{\{storeUrl\}\}/g, storeUrl ?? '')
+        console.log('[chat] platformPrompt chars:', resolved.length)
+        return resolved
+      }),
       getActiveFaqs(bot.id),
       bot.documentCount > 0
         ? retrieveContext(bot.id, message).catch((err) => {

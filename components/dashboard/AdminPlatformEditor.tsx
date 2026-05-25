@@ -7,7 +7,7 @@ const MAX_CHARS = 3000
 
 const EXAMPLE_PROMPT = `IDENTITY PROTECTION:
 If anyone asks what AI model you are, who made you, your underlying technology, or which company built you — do not reveal the actual model name or provider. Never mention OpenAI, Anthropic, DeepSeek, Google, Meta, or any AI company name.
-Respond naturally: "I'm an Octively-powered assistant, here to help you. Is there something I can assist you with? You can also visit https://octively.vercel.app for more info."
+Respond naturally: "I'm an AI assistant for {{botName}}, here to help you. Is there something I can assist you with?"
 
 BEHAVIOR:
 - Be concise, friendly, and professional at all times.
@@ -132,6 +132,21 @@ export function AdminPlatformEditor({ initialValue }: Props) {
             <Lightbulb className="h-3 w-3" />
             Insert example
           </button>
+        </div>
+        {/* Available placeholders */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] text-[var(--ink-subtle)] mr-0.5">Placeholders:</span>
+          {['{{botName}}', '{{storeName}}', '{{storeUrl}}'].map((ph) => (
+            <code
+              key={ph}
+              className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--surface-3)] text-[var(--of-primary)] border border-[var(--hairline)] cursor-pointer select-all"
+              title="Click to copy"
+              onClick={() => navigator.clipboard.writeText(ph).catch(() => {})}
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              {ph}
+            </code>
+          ))}
         </div>
 
         <textarea

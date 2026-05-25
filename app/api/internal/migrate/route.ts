@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 
+// GET — returns current DB column state for diagnosis (protected)
+export async function GET(req: NextRequest) {
+  const auth = req.headers.get('authorization')
+  if (!auth || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const rows = await db.execute(sql`
+    SELECT table_name, column_name, data_type
+    FROM information_schema.columns
+    WHERE table_name IN ('bots','messages','conversations','organizations')
+    ORDER BY table_name, column_name
+  `)
+  return NextResponse.json({ columns: rows })
+}
+
 // One-shot endpoint to apply pending DDL migrations.
 // Protected by CRON_SECRET so it cannot be called anonymously.
 export async function POST(req: NextRequest) {

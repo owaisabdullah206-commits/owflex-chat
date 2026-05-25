@@ -334,7 +334,7 @@ function showLeadForm(){
         ms.style.removeProperty("display");
         document.getElementById("oF").style.removeProperty("display");
         inp.disabled=false;sb.disabled=false;
-        if(!started){started=1;addBot(wm);}
+        if(!started){started=1;showWelcome(wm);}
         setTimeout(function(){inp.focus();},60);
       }else{
         r.json().then(function(j){errEl.textContent=j.error||"Something went wrong.";errEl.style.display="block";}).catch(function(){errEl.textContent="Something went wrong.";errEl.style.display="block";});
@@ -360,8 +360,9 @@ function openPanel(){
       started=1;
       if(msgs.length){
         for(var i=0;i<msgs.length;i++){var dm=document.createElement("div");dm.className=msgs[i].r?"u":"b";if(msgs[i].r){dm.textContent=msgs[i].t;}else{dm.innerHTML=renderMd(msgs[i].t);}ms.appendChild(dm);}
+        var sep=document.createElement("div");sep.style.cssText="text-align:center;font-size:10px;color:"+(dk?"#4b5563":"#9ca3af")+";margin:8px 4px;letter-spacing:.04em";sep.textContent="── New session ──";ms.appendChild(sep);
         ms.scrollTop=ms.scrollHeight;
-      }else{addBot(wm);}
+      }else{showWelcome(wm);}
     }
     setTimeout(function(){inp.focus();},60);
   }
@@ -420,6 +421,11 @@ function addMsg(t,u){
   return d;
 }
 function addBot(t){return addMsg(t,0);}
+// Display welcome message without saving it to history (avoid replay duplication)
+function showWelcome(t){
+  var d=document.createElement("div");d.className="b";d.innerHTML=renderMd(t);
+  ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+}
 
 function addProducts(products){
   if(!products||!products.length)return;

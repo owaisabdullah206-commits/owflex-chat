@@ -28,6 +28,7 @@ export default async function ConversationDetailPage({
       needsHuman:   sql<boolean>`COALESCE(${schema.conversations.needsHuman}, false)`,
       escalatedAt:  schema.conversations.escalatedAt,
       sessionId:    schema.conversations.sessionId,
+      orgPlan:      schema.organizations.plan,
     })
     .from(schema.conversations)
     .innerJoin(schema.bots, eq(schema.conversations.botId, schema.bots.id))
@@ -178,7 +179,7 @@ export default async function ConversationDetailPage({
                       </div>
                       <div className="flex items-center gap-2 text-[10px] text-[var(--ink-subtle)]">
                         <RelativeTime date={msg.createdAt} />
-                        {!isUser && msg.modelUsed && (
+                        {!isUser && msg.modelUsed && conv.orgPlan !== 'free' && (
                           <span style={{ fontFamily: 'var(--font-mono)' }}>{msg.modelUsed}</span>
                         )}
                       </div>
