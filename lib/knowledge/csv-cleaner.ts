@@ -101,21 +101,36 @@ export function rowToPassage(row: Record<string, string>, format: CsvFormat): st
 
 // ── Batch processing ─────────────────────────────────────────────────────────
 
-export function processCsvRows(rows: Record<string, string>[]): string {
+export function processCsvRows(rows: Record<string, string>[], maxProducts?: number): string {
   if (rows.length === 0) return ''
 
   const headers = Object.keys(rows[0])
   const format = detectCsvFormat(headers)
 
-  const passages = rows
-    .filter(row => {
-      const title = row['Title'] ?? row['Name'] ?? row['name'] ?? row['title'] ?? ''
-      const desc =
-        row['Body (HTML)'] ?? row['Description'] ?? row['post_content'] ?? row['description'] ?? ''
-      return title.trim() || desc.trim()
-    })
-    .map(row => rowToPassage(row, format))
-    .filter(p => p.trim().length > 0)
+  // In Shopify-style CSVs, only the first variant row carries a non-empty Title.
+  // Subsequent variant rows for the same product have an empty Title — they must
+  // still be included but do NOT count as a new product.
+  // We count distinct products (rows that start a new Title) and stop once we hit maxProducts.
+  const passages: string[] = []
+  let productCount = 0
+
+  for (const row of rows) {
+    const title = row['Title'] ?? row['Name'] ?? row['name'] ?? row['title'] ?? ''
+    const desc =
+      row['Body (HTML)'] ?? row['Description'] ?? row['post_content'] ?? row['description'] ?? ''
+
+    if (!title.trim() && !desc.trim()) continue  // fully blank row — skip
+
+    if (title.trim()) {
+      // This row starts a new product
+      if (maxProducts != null && productCount >= maxProducts) break
+      productCount++
+    }
+    // Variant row with empty title: belongs to the current product — always include
+
+    const passage = rowToPassage(row, format)
+    if (passage.trim().length > 0) passages.push(passage)
+  }
 
   return passages.join('\n\n')
 }

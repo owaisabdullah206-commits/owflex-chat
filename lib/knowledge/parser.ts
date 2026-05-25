@@ -91,8 +91,8 @@ async function extractCsvText(buffer: Buffer, maxRows?: number): Promise<string>
     const { processCsvRows } = await import('@/lib/knowledge/csv-cleaner')
     const csv = buffer.toString('utf-8')
     const result = Papa.default.parse<Record<string, string>>(csv, { header: true, skipEmptyLines: true })
-    const rows = maxRows != null ? result.data.slice(0, maxRows) : result.data
-    return processCsvRows(rows)
+    // Pass all rows; processCsvRows counts by distinct products, not raw rows
+    return processCsvRows(result.data, maxRows)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     throw new ParseError('PARSE_FAILED', `CSV parsing failed: ${msg}`)
@@ -108,8 +108,7 @@ async function extractExcelText(buffer: Buffer, maxRows?: number): Promise<strin
     if (!sheetName) return ''
     const sheet = workbook.Sheets[sheetName]
     const allRows = XLSX.utils.sheet_to_json<Record<string, string>>(sheet, { defval: '' })
-    const rows = maxRows != null ? allRows.slice(0, maxRows) : allRows
-    return processCsvRows(rows)
+    return processCsvRows(allRows, maxRows)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     throw new ParseError('PARSE_FAILED', `Excel parsing failed: ${msg}`)
