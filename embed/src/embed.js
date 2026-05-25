@@ -359,7 +359,7 @@ function openPanel(){
     if(!started){
       started=1;
       if(msgs.length){
-        for(var i=0;i<msgs.length;i++){var dm=document.createElement("div");dm.className=msgs[i].r?"u":"b";if(msgs[i].r){dm.textContent=msgs[i].t;}else{dm.innerHTML=renderMd(msgs[i].t);}ms.appendChild(dm);}
+        for(var i=0;i<msgs.length;i++){var dm=document.createElement("div");dm.className=msgs[i].r?"u":"b";if(msgs[i].r){dm.textContent=msgs[i].t;}else{dm.innerHTML=renderMd(stripProducts(msgs[i].t));}ms.appendChild(dm);}
         var sep=document.createElement("div");sep.style.cssText="text-align:center;font-size:10px;color:"+(dk?"#4b5563":"#9ca3af")+";margin:8px 4px;letter-spacing:.04em";sep.textContent="── New session ──";ms.appendChild(sep);
         ms.scrollTop=ms.scrollHeight;
       }else{showWelcome(wm);}
@@ -463,6 +463,13 @@ function hideTyping(){var t=document.getElementById("oT");if(t)t.remove();}
 function lock(v){
   busy=v;sb.disabled=inp.disabled=v;
   setStatus(v?"Thinking…":"Online",v);
+}
+
+// Strip [PRODUCTS:[...]] marker from displayed text — cards are rendered separately via ev.products
+function stripProducts(text){
+  var idx=text.indexOf('\n[PRODUCTS:');
+  if(idx===-1)idx=text.indexOf('[PRODUCTS:');
+  return idx===-1?text:text.slice(0,idx).trim();
 }
 
 function captureLead(text){
@@ -577,9 +584,10 @@ function sendMsg(t){
                 bubble=document.createElement("div");bubble.className="b";ms.appendChild(bubble);
                 setStatus("Typing…",1);
               }
-              full+=ev.delta;bubble.textContent=full;ms.scrollTop=ms.scrollHeight;
+              full+=ev.delta;bubble.textContent=stripProducts(full);ms.scrollTop=ms.scrollHeight;
             }else if(ev.type==="done"){
               var processed=lc?captureLead(full):full;
+              processed=stripProducts(processed);
               if(bubble){bubble.innerHTML=renderMd(processed);}else{addBot(processed);}
               msgs.push({r:0,t:processed});
               if(ev.products&&ev.products.length)addProducts(ev.products);
