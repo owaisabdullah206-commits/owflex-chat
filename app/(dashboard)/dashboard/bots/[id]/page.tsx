@@ -353,6 +353,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         handoffNotifyTarget:   ((wc.handoffNotifyTarget as string) === 'client' ? 'client' : 'developer') as 'developer' | 'client',
                         storeUrl:           (wc.storeUrl as string) ?? '',
                         storeCurrency:      (wc.storeCurrency as string) ?? '',
+                        theme:              ((wc.theme as string) === 'dark' ? 'dark' : 'light') as 'light' | 'dark',
+                        productRecommendationsEnabled: (wc.productRecommendationsEnabled as boolean) === true,
                       }
                     })(),
                   }}

@@ -18,6 +18,20 @@ import { routeMessage } from '@/lib/ai/router'
 import { getCurrentModelPrice } from '@/lib/db/queries/admin'
 import { sendHandoffNotification } from '@/lib/email/handoff'
 
+const PRODUCT_RECOMMENDATION_INSTRUCTIONS = `
+
+---
+PRODUCT CARDS (system — invisible to users):
+When the user asks about specific products, asks for recommendations, or wants to browse/compare items, append this marker on a new line at the very end of your response:
+[PRODUCTS:[{"name":"Exact Product Name","price":"PKR 2,299","image":"https://full-url/image.jpg","url":"https://store.com/products/handle"}]]
+Rules:
+- Include 1–4 products most relevant to the user's query.
+- Only include products explicitly listed in the document context above. Never invent products.
+- Omit the "price" field entirely if no price is available (catalogue-only product).
+- Omit the "image" field entirely if no image URL is available.
+- Use the full absolute URL for both "image" and "url". Never use relative paths.
+- This marker is automatically stripped — users see interactive product cards instead of the marker.`
+
 const LEAD_INSTRUCTIONS = `
 
 ---
@@ -145,6 +159,7 @@ export async function POST(req: NextRequest) {
       handoffNotifyTarget?: 'developer' | 'client'
       storeUrl?: string
       storeCurrency?: string
+      productRecommendationsEnabled?: boolean
     }
     const storeUrl      = (wc.storeUrl      && wc.storeUrl.trim())      ? wc.storeUrl.trim()      : undefined
     const storeCurrency = (wc.storeCurrency && wc.storeCurrency.trim()) ? wc.storeCurrency.trim() : undefined
@@ -220,6 +235,8 @@ export async function POST(req: NextRequest) {
 
     const docContextBlock = renderDocContext(retrievedChunks, storeUrl, storeCurrency)
 
+    const productRecsEnabled = wc.productRecommendationsEnabled === true && bot.documentCount > 0
+
     // If the pre-chat form already collected contact info, suppress in-chat lead prompting
     const leadEnabled = wc.leadCaptureEnabled !== false && wc.collectLeadBefore !== true
     const handoffEnabled = wc.handoffEnabled === true
@@ -236,7 +253,10 @@ export async function POST(req: NextRequest) {
       bot: bot.systemPrompt,
       docs: docContextBlock || undefined,
       faqs: [faqBlock, strictInstructions].filter(Boolean).join('\n\n') || undefined,
-      lead: leadEnabled ? LEAD_INSTRUCTIONS : undefined,
+      lead: [
+        leadEnabled ? LEAD_INSTRUCTIONS : '',
+        productRecsEnabled ? PRODUCT_RECOMMENDATION_INSTRUCTIONS : '',
+      ].filter(Boolean).join('\n') || undefined,
     })
 
     // Check conversation limit before processing
@@ -324,6 +344,22 @@ export async function POST(req: NextRequest) {
       // Full refund on LLM failure (only if credits were actually debited)
       if (creditOk) await creditLib.refund(bot.orgId, estimatedTokens)
       throw llmErr
+    }
+
+    // Extract [PRODUCTS:[...]] marker — strip from saved content, expose in response
+    type ProductCard = { name: string; price?: string; image?: string; url?: string }
+    let products: ProductCard[] = []
+    const productMatch = content.match(/\[PRODUCTS:(\[[\s\S]*?\])\]/)
+    if (productMatch) {
+      try {
+        const raw = JSON.parse(productMatch[1])
+        if (Array.isArray(raw)) {
+          products = (raw as unknown[])
+            .filter((p): p is ProductCard => !!p && typeof (p as ProductCard).name === 'string')
+            .slice(0, 4)
+        }
+      } catch { /* ignore malformed markers */ }
+      content = content.replace(/\n?\[PRODUCTS:\[[\s\S]*?\]\]/g, '').trim()
     }
 
     // Reconcile: refund the overestimate, log actual debit
@@ -434,7 +470,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { reply: content, conversationId: conversation.id, needsHuman: unanswered },
+      { reply: content, conversationId: conversation.id, needsHuman: unanswered, products },
       { headers: corsHeaders(allowedOrigin ?? '*') },
     )
   } catch (err) {

@@ -33,6 +33,8 @@ const updateBotSchema = z.object({
     handoffNotifyTarget:   z.enum(['developer', 'client']).optional(),
     storeUrl:      z.string().url().max(255).or(z.literal('')).optional(),
     storeCurrency: z.enum(['', 'PKR', 'USD', 'AED', 'GBP', 'EUR', 'SAR', 'INR', 'BDT', 'LKR', 'NGN', 'KES', 'ZAR']).optional(),
+    theme:                        z.enum(['light', 'dark']).optional(),
+    productRecommendationsEnabled: z.boolean().optional(),
   }).optional(),
 })
 

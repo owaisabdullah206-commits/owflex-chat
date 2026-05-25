@@ -6,7 +6,7 @@ sessionStorage.setItem("_of",sid);
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
 var ti="message-circle",br=16,te=false,tms=[];
 var be=false,bt="Powered by Octively",burl="https://octively.com";
-var clb=false;
+var clb=false,dk=false;
 var op=0,busy=0,started=0,lastMsg="";
 
 /* ── Icon SVG paths (exact Lucide v1.16.0) ── */
@@ -38,6 +38,7 @@ fetch(bu+"/api/v1/widget-config?key="+k)
     be=c.brandingEnabled===true;
     if(c.brandingText)bt=c.brandingText;
     if(c.brandingUrl)burl=c.brandingUrl;
+    dk=c.theme==="dark";
     go();
   })
   .catch(go);
@@ -111,6 +112,16 @@ var css=
 ".od{display:inline-block;width:7px;height:7px;border-radius:50%;background:#94a3b8;animation:ofDot 1.3s infinite ease-in-out}";
 
 document.head.insertAdjacentHTML("beforeend","<style>"+css+"</style>");
+
+/* Dark theme override */
+if(dk){document.head.insertAdjacentHTML("beforeend","<style>"+
+  "#oP,#oM{background:#111827!important}"+
+  ".b{background:#1e293b!important;color:#e2e8f0!important}"+
+  "#oF{background:#0f172a!important;border-color:#1f2937!important}"+
+  "#oI{background:#1e293b!important;color:#f1f5f9!important;border-color:#374151!important}"+
+  "#oI::placeholder{color:#6b7280!important}"+
+  "#oB{background:#0f172a!important;border-color:#1f2937!important}"+
+"</style>");}
 
 /* Glow ring */
 var glow=document.createElement("div");glow.id="obg";document.body.appendChild(glow);
@@ -276,23 +287,23 @@ function showLeadForm(){
   inp.disabled=true;sb.disabled=true;
   // Build form as direct child of panel (fills space between header and branding)
   var frm=document.createElement("div");frm.id="oLF";
-  frm.style.cssText="flex:1;padding:28px 20px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;background:#fff";
-  var iSt="border:1.5px solid #e5e7eb;border-radius:8px;height:40px;padding:0 12px;font-size:13px;outline:none;font-family:inherit;color:#111;background:#fff;box-sizing:border-box;width:100%;transition:border-color .15s";
+  frm.style.cssText="flex:1;padding:28px 20px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;background:"+(dk?"#111827":"#fff");
+  var iSt="border:1.5px solid "+(dk?"#374151":"#e5e7eb")+";border-radius:8px;height:40px;padding:0 12px;font-size:13px;outline:none;font-family:inherit;color:"+(dk?"#f1f5f9":"#111")+";background:"+(dk?"#1e293b":"#fff")+";box-sizing:border-box;width:100%;transition:border-color .15s";
   frm.innerHTML=
     '<div>'+
-      '<p style="font-size:14px;color:#111827;font-weight:700;margin:0 0 4px">Before we start</p>'+
-      '<p style="font-size:12px;color:#6b7280;margin:0">Share your details so we can follow up if needed.</p>'+
+      '<p style="font-size:14px;color:'+(dk?"#e2e8f0":"#111827")+';font-weight:700;margin:0 0 4px">Before we start</p>'+
+      '<p style="font-size:12px;color:'+(dk?"#94a3b8":"#6b7280")+';margin:0">Share your details so we can follow up if needed.</p>'+
     '</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+
-      '<label style="font-size:11px;color:#6b7280;font-weight:600;letter-spacing:.03em">Name <span style="color:#ef4444">*</span></label>'+
+      '<label style="font-size:11px;color:'+(dk?"#94a3b8":"#6b7280")+';font-weight:600;letter-spacing:.03em">Name <span style="color:#ef4444">*</span></label>'+
       '<input id="oLFn" type="text" placeholder="Your name" style="'+iSt+'">'+
     '</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+
-      '<label style="font-size:11px;color:#6b7280;font-weight:600;letter-spacing:.03em">Email <span style="color:#ef4444">*</span></label>'+
+      '<label style="font-size:11px;color:'+(dk?"#94a3b8":"#6b7280")+';font-weight:600;letter-spacing:.03em">Email <span style="color:#ef4444">*</span></label>'+
       '<input id="oLFe" type="email" placeholder="you@example.com" style="'+iSt+'">'+
     '</div>'+
     '<div style="display:flex;flex-direction:column;gap:4px">'+
-      '<label style="font-size:11px;color:#6b7280;font-weight:600;letter-spacing:.03em">Phone <span style="color:#6b7280;font-weight:400">(optional)</span></label>'+
+      '<label style="font-size:11px;color:'+(dk?"#94a3b8":"#6b7280")+';font-weight:600;letter-spacing:.03em">Phone <span style="color:'+(dk?"#64748b":"#6b7280")+';font-weight:400">(optional)</span></label>'+
       '<input id="oLFp" type="tel" placeholder="+1 (555) 000-0000" style="'+iSt+'">'+
     '</div>'+
     '<div id="oLFerr" style="display:none;font-size:11px;color:#ef4444;padding:6px 10px;background:#fef2f2;border-radius:6px"></div>'+
@@ -396,6 +407,27 @@ function addMsg(t,u){
 }
 function addBot(t){return addMsg(t,0);}
 
+function addProducts(products){
+  if(!products||!products.length)return;
+  var bg=dk?"#1e293b":"#fff",bd=dk?"#334155":"#e2e8f0",clr=dk?"#e2e8f0":"#1e293b",mu=dk?"#94a3b8":"#64748b";
+  var wrap=document.createElement("div");
+  wrap.style.cssText="display:flex;flex-wrap:wrap;gap:8px;max-width:90%;margin:4px 0;animation:ofIn .22s ease;align-self:flex-start";
+  for(var i=0;i<products.length&&i<4;i++){
+    var p=products[i];if(!p||!p.name)continue;
+    var card=document.createElement("div");
+    card.style.cssText="width:148px;border:1px solid "+bd+";border-radius:10px;overflow:hidden;flex-shrink:0;background:"+bg;
+    var h="";
+    if(p.image){h+='<img src="'+esc(p.image)+'" style="width:100%;height:90px;object-fit:cover;display:block" loading="lazy" onerror="this.style.display=\'none\'">';}
+    h+='<div style="padding:8px">';
+    h+='<p style="margin:0 0 2px;font-size:12px;font-weight:600;color:'+clr+';line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+esc(p.name)+'</p>';
+    if(p.price){h+='<p style="margin:0 0 6px;font-size:11px;color:'+mu+'">'+esc(p.price)+'</p>';}
+    if(p.url){h+='<a href="'+esc(p.url)+'" target="_blank" rel="noopener" style="display:inline-block;font-size:11px;color:#fff;background:var(--ofp);padding:3px 10px;border-radius:4px;text-decoration:none;margin-top:'+(p.price?'0':'6px')+'">View →</a>';}
+    h+='</div>';
+    card.innerHTML=h;wrap.appendChild(card);
+  }
+  if(wrap.children.length){ms.appendChild(wrap);ms.scrollTop=ms.scrollHeight;}
+}
+
 function showTyping(){
   var d=document.createElement("div");d.id="oT";d.className="b";
   d.style.padding="11px 14px";
@@ -448,14 +480,14 @@ function captureLead(text){
 function showHandoffCard(){
   if(document.getElementById("oHC"))return;
   var card=document.createElement("div");card.id="oHC";
-  card.style.cssText="margin:8px 0;padding:14px 16px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;display:flex;align-items:flex-start;gap:10px;animation:ofIn .22s ease";
+  card.style.cssText="margin:8px 0;padding:14px 16px;border-radius:10px;border:1px solid "+(dk?"#334155":"#e2e8f0")+";background:"+(dk?"#1e293b":"#f8fafc")+";display:flex;align-items:flex-start;gap:10px;animation:ofIn .22s ease";
   card.innerHTML=
     '<div style="width:28px;height:28px;border-radius:50%;background:#e0f2fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">'+
       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'+
     '</div>'+
     '<div>'+
-      '<p style="margin:0 0 3px;font-size:13px;font-weight:600;color:#1e293b">A team member will follow up</p>'+
-      '<p style="margin:0;font-size:12px;color:#64748b;line-height:1.5">We\'ve been notified and will get back to you shortly.</p>'+
+      '<p style="margin:0 0 3px;font-size:13px;font-weight:600;color:'+(dk?"#e2e8f0":"#1e293b")+'">A team member will follow up</p>'+
+      '<p style="margin:0;font-size:12px;color:'+(dk?"#94a3b8":"#64748b")+';line-height:1.5">We\'ve been notified and will get back to you shortly.</p>'+
     '</div>';
   ms.appendChild(card);
   ms.scrollTop=ms.scrollHeight;
@@ -486,6 +518,7 @@ function sendMsg(t){
     if(!d)return;
     hideTyping();
     if(d.reply)addBot(lc?captureLead(d.reply):d.reply);
+    if(d.products&&d.products.length)addProducts(d.products);
     if(d.needsHuman)showHandoffCard();
     lock(0);inp.focus();
   })

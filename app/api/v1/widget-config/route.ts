@@ -20,6 +20,8 @@ type WidgetConfig = {
   brandingEnabled?: boolean
   brandingText?: string
   brandingUrl?: string
+  theme?: 'light' | 'dark'
+  productRecommendationsEnabled?: boolean
 }
 
 export async function GET(req: NextRequest) {
@@ -86,6 +88,8 @@ export async function GET(req: NextRequest) {
       brandingEnabled,
       brandingText,
       brandingUrl,
+      theme: config.theme ?? 'light',
+      productRecommendationsEnabled: config.productRecommendationsEnabled === true,
     },
     {
       headers: { 'Cache-Control': 'public, max-age=300' },

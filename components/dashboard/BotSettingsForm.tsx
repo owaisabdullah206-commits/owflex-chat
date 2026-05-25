@@ -61,6 +61,8 @@ interface BotSettingsFormProps {
     handoffNotifyTarget: 'developer' | 'client'
     storeUrl: string
     storeCurrency: string
+    theme: 'light' | 'dark'
+    productRecommendationsEnabled: boolean
   }
 }
 
@@ -95,7 +97,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [handoffNotifyTarget, setHandoffNotifyTarget] = useState<'developer' | 'client'>(initial.handoffNotifyTarget)
   const [storeUrl, setStoreUrl]                 = useState(initial.storeUrl)
   const [storeCurrency, setStoreCurrency]       = useState(initial.storeCurrency)
-  const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>('dark')
+  const [productRecsEnabled, setProductRecs]    = useState(initial.productRecommendationsEnabled)
+  const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>(initial.theme)
 
   const isFreePlan      = orgPlan === 'free'
   const isStarterOrFree = orgPlan === 'free' || orgPlan === 'starter'
@@ -139,6 +142,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           handoffNotifyTarget,
           storeUrl:      storeUrl.trim()      || undefined,
           storeCurrency: (storeCurrency || undefined) as '' | 'PKR' | 'USD' | 'AED' | 'GBP' | 'EUR' | 'SAR' | 'INR' | 'BDT' | 'LKR' | 'NGN' | 'KES' | 'ZAR' | undefined,
+          theme: previewTheme,
+          productRecommendationsEnabled: productRecsEnabled,
         },
       })
       if (result.error) {
@@ -438,6 +443,22 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
               Optional — tells the AI which currency to use in product price responses.
             </p>
           </div>
+
+          {/* Product recommendation cards */}
+          <div className="flex items-center justify-between pt-1">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Product Recommendation Cards</p>
+              <p className="text-xs text-[var(--ink-muted)]">
+                Bot surfaces clickable product cards (image, name, price, link) when recommending items from your catalog.
+              </p>
+            </div>
+            <Switch
+              checked={productRecsEnabled}
+              onCheckedChange={(v) => { setProductRecs(v); markDirty() }}
+              disabled={isPending}
+              className="ml-4 shrink-0"
+            />
+          </div>
         </div>
 
         {/* Widget Colour */}
@@ -697,7 +718,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           brandingEnabled={brandingEnabled}
           brandingText={brandingText.trim() || 'Powered by Octively'}
           theme={previewTheme}
-          onToggleTheme={() => setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark')}
+          onToggleTheme={() => { setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark'); markDirty() }}
         />
       </div>
     </div>
