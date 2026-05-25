@@ -2,7 +2,7 @@
 
 ## Architecture
 
-All three surfaces are one Next.js 16 app, routed by hostname in `app/proxy.ts`:
+All three surfaces are one Next.js 16 app, routed by hostname in `proxy.ts` (project root — Next.js 16 replaces `middleware.ts` with `proxy.ts`):
 
 | Subdomain             | Routes to   | Purpose             |
 |-----------------------|-------------|---------------------|

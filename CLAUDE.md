@@ -24,7 +24,10 @@ admin.octively.com  → /app/(dashboard)/layout.tsx  — developer dashboard
 app.octively.com    → /app/(portal)/layout.tsx     — client portal
 ```
 
-Subdomain routing is handled in `app/proxy.ts` (Next.js 16 — replaces middleware.ts).
+Subdomain routing is handled in `proxy.ts` at the **project root** (same level as `package.json`).
+This is the Next.js 16 convention — `proxy.ts` replaced `middleware.ts`. It exports `function proxy(request: NextRequest)`.
+The Netlify Edge runtime converts it to an edge function automatically via `@netlify/plugin-nextjs`.
+`app/proxy.ts` is NOT valid — proxy.ts must be at the project root, not inside the `app/` directory.
 
 Before building ANY UI, confirm which subdomain you are building for. Apply the correct layout and token set. Never mix surfaces.
 
