@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { Redis } from '@upstash/redis'
 import { db, schema } from '@/lib/db'
-import { chatCompletion, FALLBACK_MODEL, type ChatMessage } from '@/lib/ai/litellm'
+import { chatCompletionStreamGen, FALLBACK_MODEL, type ChatMessage } from '@/lib/ai/litellm'
 import { handleCreditExhaustion } from '@/lib/credits/grace'
 import { getChatRatelimit } from '@/lib/ratelimit'
 import { getPlatformPrompt } from '@/lib/db/queries/platform'
@@ -327,168 +327,208 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    let content: string
-    let tokensUsed: number
-    let inputTokens: number
-    let outputTokens: number
-    let modelUsed: string
-
-    try {
-      const result = await chatCompletion({
-        systemPrompt: finalSystemPrompt,
-        messages: contextMessages,
-        model: resolvedModel,
-      })
-      content = result.content
-      tokensUsed = result.tokensUsed
-      inputTokens = result.inputTokens
-      outputTokens = result.outputTokens
-      modelUsed = result.modelUsed
-    } catch (llmErr) {
-      // Full refund on LLM failure (only if credits were actually debited)
-      if (creditOk) await creditLib.refund(bot.orgId, estimatedTokens)
-      throw llmErr
-    }
-
-    // Extract [PRODUCTS:[...]] marker — strip from saved content, expose in response
+    // ── Streaming response ────────────────────────────────────────────────────
+    // All post-LLM work (DB writes, credit reconciliation, handoff) runs inside
+    // the ReadableStream controller so it completes before the stream closes.
     type ProductCard = { name: string; price?: string; image?: string; url?: string }
-    let products: ProductCard[] = []
-    const productMatch = content.match(/\[PRODUCTS:(\[[\s\S]*?\])\]/)
-    if (productMatch) {
-      try {
-        const raw = JSON.parse(productMatch[1])
-        if (Array.isArray(raw)) {
-          products = (raw as unknown[])
-            .filter((p): p is ProductCard => !!p && typeof (p as ProductCard).name === 'string')
-            .slice(0, 4)
-        }
-      } catch { /* ignore malformed markers */ }
-      content = content.replace(/\n?\[PRODUCTS:\[[\s\S]*?\]\]/g, '').trim()
-    }
+    const encoder = new TextEncoder()
 
-    // Reconcile: refund the overestimate, log actual debit
-    const actualDebit = routingDecisionData?.creditCost ?? estimatedTokens
-    const overpay = actualDebit - tokensUsed
-    if (creditOk && overpay > 0) await creditLib.refund(bot.orgId, overpay)
+    const responseStream = new ReadableStream({
+      async start(controller) {
+        const enqueue = (data: object) =>
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`))
 
-    // Compute USD cost using active model price (manual takes priority over API price)
-    let costUsd = '0'
-    try {
-      const price = await getCurrentModelPrice(modelUsed)
-      if (price) {
-        const inputCost  = (inputTokens  / 1_000_000) * parseFloat(price.promptPricePer1M)
-        const outputCost = (outputTokens / 1_000_000) * parseFloat(price.completionPricePer1M)
-        costUsd = (inputCost + outputCost).toFixed(8)
-      }
-    } catch {
-      // Non-blocking — missing price row shouldn't break chat
-    }
+        try {
+          let fullContent  = ''
+          let tokensUsed   = estimatedTokens  // fallback if provider omits usage
+          let inputTokens  = 0
+          let outputTokens = 0
+          let modelUsed    = resolvedModel
 
-    // Insert assistant message (flag if response signals uncertainty)
-    const [insertedMsg] = await db.insert(schema.messages).values({
-      conversationId: conversation.id,
-      role: 'assistant',
-      content,
-      tokensUsed,
-      inputTokens,
-      outputTokens,
-      costUsd,
-      modelUsed,
-      flaggedUnanswered: flagIfUnanswered(content),
-    }).returning({ id: schema.messages.id })
+          for await (const ev of chatCompletionStreamGen({
+            systemPrompt: finalSystemPrompt,
+            messages: contextMessages,
+            model: resolvedModel,
+          })) {
+            if (ev.type === 'token') {
+              enqueue({ type: 'token', delta: ev.delta })
+            } else {
+              // 'done' — accumulate stats; content returned below
+              fullContent  = ev.content
+              if (ev.tokensUsed > 0) {
+                tokensUsed   = ev.tokensUsed
+                inputTokens  = ev.inputTokens
+                outputTokens = ev.outputTokens
+              }
+              modelUsed = ev.modelUsed
+            }
+          }
 
-    // Log credit transaction only when credits were actually debited
-    if (creditOk) {
-      await creditLib.logTransaction(bot.orgId, -tokensUsed, 'chat_debit', insertedMsg.id)
-    }
+          // Extract [PRODUCTS:[...]] marker — strip from stored content
+          let products: ProductCard[] = []
+          const productMatch = fullContent.match(/\[PRODUCTS:(\[[\s\S]*?\])\]/)
+          if (productMatch) {
+            try {
+              const raw = JSON.parse(productMatch[1])
+              if (Array.isArray(raw)) {
+                products = (raw as unknown[])
+                  .filter((p): p is ProductCard => !!p && typeof (p as ProductCard).name === 'string')
+                  .slice(0, 4)
+              }
+            } catch { /* ignore malformed markers */ }
+            fullContent = fullContent.replace(/\n?\[PRODUCTS:\[[\s\S]*?\]\]/g, '').trim()
+          }
 
-    // Record routing decision if smart routing was active
-    if (bot.smartRoutingEnabled && routingDecisionData) {
-      await db.insert(schema.routingDecisions).values({
-        messageId: insertedMsg.id,
-        botId: bot.id,
-        classification: routingDecisionData.classification,
-        classifierModel: routingDecisionData.classifierModel,
-        classifierLatencyMs: routingDecisionData.classifierLatencyMs,
-        chosenModel: routingDecisionData.chosenModel,
-        fallbackUsed: routingDecisionData.fallbackUsed,
-        creditCost: routingDecisionData.creditCost,
-      }).catch(() => {}) // non-blocking — audit log must not break chat
-    }
+          // Reconcile credits: refund over-estimated portion
+          const actualDebit = routingDecisionData?.creditCost ?? estimatedTokens
+          const overpay = actualDebit - tokensUsed
+          if (creditOk && overpay > 0) await creditLib.refund(bot.orgId, overpay)
 
-    // Human handoff: flag conversation when bot signals uncertainty (only if handoff is enabled)
-    const unanswered = handoffEnabled && flagIfUnanswered(content)
-
-    // Increment message count + conversation counter for org
-    await Promise.all([
-      unanswered
-        ? db
-            .update(schema.conversations)
-            .set({ messageCount: sql`${schema.conversations.messageCount} + 2`, needsHuman: true, escalatedAt: new Date() })
-            .where(eq(schema.conversations.id, conversation.id))
-            .catch(() =>
-              db
-                .update(schema.conversations)
-                .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
-                .where(eq(schema.conversations.id, conversation.id))
-            )
-        : db
-            .update(schema.conversations)
-            .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
-            .where(eq(schema.conversations.id, conversation.id)),
-      db
-        .update(schema.organizations)
-        .set({ conversationsThisMonth: sql`${schema.organizations.conversationsThisMonth} + 1` })
-        .where(eq(schema.organizations.id, bot.orgId)),
-    ])
-
-    // Non-blocking 90% usage warning check
-    const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
-    const convLimit = PLAN_LIMITS[planKey].conversations
-    if (bot.ownerEmail) {
-      void checkAndWarnUsage(bot.orgId, 'conversations', bot.convCount + 1, convLimit, bot.orgPlan, bot.ownerEmail)
-    }
-
-    // Non-blocking handoff email notification
-    if (unanswered) {
-      const notifyEmail = handoffNotifyTarget === 'client' ? bot.clientEmail : bot.ownerEmail
-      if (notifyEmail) {
-        void (async () => {
+          // Compute USD cost
+          let costUsd = '0'
           try {
-            const [lead] = await db
-              .select({ name: schema.leads.name, email: schema.leads.email })
-              .from(schema.leads)
-              .where(eq(schema.leads.conversationId, conversation.id))
-              .limit(1)
-            await sendHandoffNotification({
-              ownerEmail: notifyEmail,
-              botName: bot.name,
-              conversationId: conversation.id,
-              lastUserMessage: message,
-              visitorName:  lead?.name  ?? undefined,
-              visitorEmail: lead?.email ?? undefined,
-            })
-          } catch { /* non-blocking — never break chat */ }
-        })()
-      }
-    }
+            const price = await getCurrentModelPrice(modelUsed)
+            if (price) {
+              const inputCost  = (inputTokens  / 1_000_000) * parseFloat(price.promptPricePer1M)
+              const outputCost = (outputTokens / 1_000_000) * parseFloat(price.completionPricePer1M)
+              costUsd = (inputCost + outputCost).toFixed(8)
+            }
+          } catch { /* non-blocking */ }
 
-    return NextResponse.json(
-      { reply: content, conversationId: conversation.id, needsHuman: unanswered, products },
-      { headers: corsHeaders(allowedOrigin ?? '*') },
-    )
+          // Insert assistant message
+          const [insertedMsg] = await db.insert(schema.messages).values({
+            conversationId: conversation.id,
+            role:           'assistant',
+            content:        fullContent,
+            tokensUsed,
+            inputTokens,
+            outputTokens,
+            costUsd,
+            modelUsed,
+            flaggedUnanswered: flagIfUnanswered(fullContent),
+          }).returning({ id: schema.messages.id })
+
+          // Log credit transaction
+          if (creditOk) {
+            await creditLib.logTransaction(bot.orgId, -tokensUsed, 'chat_debit', insertedMsg.id)
+          }
+
+          // Record routing decision
+          if (bot.smartRoutingEnabled && routingDecisionData) {
+            await db.insert(schema.routingDecisions).values({
+              messageId:          insertedMsg.id,
+              botId:              bot.id,
+              classification:     routingDecisionData.classification,
+              classifierModel:    routingDecisionData.classifierModel,
+              classifierLatencyMs: routingDecisionData.classifierLatencyMs,
+              chosenModel:        routingDecisionData.chosenModel,
+              fallbackUsed:       routingDecisionData.fallbackUsed,
+              creditCost:         routingDecisionData.creditCost,
+            }).catch(() => {}) // non-blocking — audit log must not break chat
+          }
+
+          // Human handoff
+          const unanswered = handoffEnabled && flagIfUnanswered(fullContent)
+
+          await Promise.all([
+            unanswered
+              ? db
+                  .update(schema.conversations)
+                  .set({ messageCount: sql`${schema.conversations.messageCount} + 2`, needsHuman: true, escalatedAt: new Date() })
+                  .where(eq(schema.conversations.id, conversation.id))
+                  .catch(() =>
+                    db
+                      .update(schema.conversations)
+                      .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
+                      .where(eq(schema.conversations.id, conversation.id))
+                  )
+              : db
+                  .update(schema.conversations)
+                  .set({ messageCount: sql`${schema.conversations.messageCount} + 2` })
+                  .where(eq(schema.conversations.id, conversation.id)),
+            db
+              .update(schema.organizations)
+              .set({ conversationsThisMonth: sql`${schema.organizations.conversationsThisMonth} + 1` })
+              .where(eq(schema.organizations.id, bot.orgId)),
+          ])
+
+          // Non-blocking usage warning
+          const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
+          const convLimit = PLAN_LIMITS[planKey].conversations
+          if (bot.ownerEmail) {
+            void checkAndWarnUsage(bot.orgId, 'conversations', bot.convCount + 1, convLimit, bot.orgPlan, bot.ownerEmail)
+          }
+
+          // Non-blocking handoff email
+          if (unanswered) {
+            const notifyEmail = handoffNotifyTarget === 'client' ? bot.clientEmail : bot.ownerEmail
+            if (notifyEmail) {
+              void (async () => {
+                try {
+                  const [lead] = await db
+                    .select({ name: schema.leads.name, email: schema.leads.email })
+                    .from(schema.leads)
+                    .where(eq(schema.leads.conversationId, conversation.id))
+                    .limit(1)
+                  await sendHandoffNotification({
+                    ownerEmail:    notifyEmail,
+                    botName:       bot.name,
+                    conversationId: conversation.id,
+                    lastUserMessage: message,
+                    visitorName:   lead?.name  ?? undefined,
+                    visitorEmail:  lead?.email ?? undefined,
+                  })
+                } catch { /* non-blocking — never break chat */ }
+              })()
+            }
+          }
+
+          // Final event: metadata the widget needs to render products / handoff card
+          enqueue({ type: 'done', conversationId: conversation.id, needsHuman: unanswered, products })
+          controller.close()
+        } catch (streamErr) {
+          // Full credit refund on failure
+          if (creditOk) await creditLib.refund(bot.orgId, estimatedTokens).catch(() => {})
+          enqueue({ type: 'error' })
+          controller.close()
+          // Log to Redis (non-blocking)
+          try {
+            const redis = new Redis({
+              url:   process.env.UPSTASH_REDIS_REST_URL!,
+              token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+            })
+            const entry = JSON.stringify({
+              t:        new Date().toISOString(),
+              embedKey: parsed.data.embedKey.slice(0, 16) + '…',
+              err:      streamErr instanceof Error ? streamErr.message : String(streamErr),
+            })
+            await redis.lpush('chat:errors', entry)
+            await redis.ltrim('chat:errors', 0, 199)
+          } catch { /* Redis down */ }
+        }
+      },
+    })
+
+    return new Response(responseStream, {
+      headers: {
+        'Content-Type':      'text/event-stream; charset=utf-8',
+        'Cache-Control':     'no-cache, no-transform',
+        'X-Accel-Buffering': 'no',
+        ...corsHeaders(allowedOrigin ?? '*'),
+      },
+    })
   } catch (err) {
     console.error('[chat] error:', err)
-    // Store error in Redis for admin visibility (non-blocking, capped at 200)
+    // Pre-streaming setup errors (DB, validation) — safe to return JSON
     try {
       const redis = new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL!,
+        url:   process.env.UPSTASH_REDIS_REST_URL!,
         token: process.env.UPSTASH_REDIS_REST_TOKEN!,
       })
       const entry = JSON.stringify({
-        t: new Date().toISOString(),
+        t:        new Date().toISOString(),
         embedKey: parsed.success ? parsed.data.embedKey.slice(0, 16) + '…' : 'parse_err',
-        err: err instanceof Error ? err.message : String(err),
+        err:      err instanceof Error ? err.message : String(err),
       })
       await redis.lpush('chat:errors', entry)
       await redis.ltrim('chat:errors', 0, 199)

@@ -511,16 +511,39 @@ function sendMsg(t){
   fetch(bu+"/api/v1/chat",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({embedKey:k,sessionId:sid,message:t,pageUrl:location.href})})
   .then(function(r){
-    if(!r.ok){showErr();return null;}
-    return r.json();
-  })
-  .then(function(d){
-    if(!d)return;
-    hideTyping();
-    if(d.reply)addBot(lc?captureLead(d.reply):d.reply);
-    if(d.products&&d.products.length)addProducts(d.products);
-    if(d.needsHuman)showHandoffCard();
-    lock(0);inp.focus();
+    if(!r.ok||!r.body){showErr();return;}
+    var reader=r.body.getReader(),dec=new TextDecoder(),buf="",bubble=null,full="";
+    function pump(){
+      reader.read().then(function(chunk){
+        if(chunk.done)return;
+        buf+=dec.decode(chunk.value,{stream:true});
+        var lines=buf.split("\n");buf=lines.pop()||"";
+        for(var i=0;i<lines.length;i++){
+          var line=lines[i];
+          if(line.slice(0,6)!=="data: ")continue;
+          var raw=line.slice(6).trim();if(!raw||raw==="[DONE]")continue;
+          try{
+            var ev=JSON.parse(raw);
+            if(ev.type==="token"&&ev.delta){
+              if(!bubble){
+                hideTyping();
+                bubble=document.createElement("div");bubble.className="b";ms.appendChild(bubble);
+                setStatus("Typing…",1);
+              }
+              full+=ev.delta;bubble.textContent=full;ms.scrollTop=ms.scrollHeight;
+            }else if(ev.type==="done"){
+              var processed=lc?captureLead(full):full;
+              if(bubble){bubble.innerHTML=renderMd(processed);}else{addBot(processed);}
+              if(ev.products&&ev.products.length)addProducts(ev.products);
+              if(ev.needsHuman)showHandoffCard();
+              lock(0);inp.focus();
+            }else if(ev.type==="error"){showErr();}
+          }catch(e){}
+        }
+        pump();
+      }).catch(showErr);
+    }
+    pump();
   })
   .catch(showErr);
 }
