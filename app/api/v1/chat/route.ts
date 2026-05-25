@@ -233,7 +233,11 @@ export async function POST(req: NextRequest) {
       ? '--- Knowledge Base ---\n' + activeFaqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')
       : ''
 
-    const docContextBlock = renderDocContext(retrievedChunks, storeUrl, storeCurrency)
+    const docContextBlock = retrievedChunks.length > 0
+      ? renderDocContext(retrievedChunks, storeUrl, storeCurrency)
+      : bot.documentCount > 0
+        ? `This bot has a product catalog knowledge base. For this message, no specific products were retrieved.\nIMPORTANT: Do NOT describe, infer, list, or guess any product categories, product names, or product types from your training knowledge. Only reference the store's actual products when they appear in retrieved context. For greetings or general messages, respond warmly without volunteering product category descriptions.`
+        : ''
 
     const productRecsEnabled = wc.productRecommendationsEnabled === true && bot.documentCount > 0
 
