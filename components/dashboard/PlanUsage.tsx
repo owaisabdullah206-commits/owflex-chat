@@ -1,4 +1,5 @@
 import { PLAN_LIMITS } from '@/lib/limits'
+import { PLAN_CREDIT_ALLOCATIONS } from '@/lib/credits'
 
 interface PlanUsageProps {
   plan: string
@@ -118,15 +119,14 @@ export function PlanUsage({
       </div>
       {/* Stat grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-[var(--hairline)] overflow-hidden border border-[var(--hairline)]">
-        {/* Credits — hidden on free plan (not actionable; conversations limit covers it) */}
-        {!isFree && (
-          <MetricCard
-            label="credits.remaining"
-            value={balance}
-            suffix="tokens"
-            wide
-          />
-        )}
+        {/* Credits — shown on all plans including free (free tier has 2M tokens) */}
+        <MetricCard
+          label="credits.remaining"
+          value={balance}
+          limitValue={PLAN_CREDIT_ALLOCATIONS[planKey] ?? PLAN_CREDIT_ALLOCATIONS.free}
+          suffix="tokens"
+          wide
+        />
         <MetricCard label="bots" value={botCount} limitValue={limits.bots} />
         <MetricCard label="clients" value={clientCount} limitValue={Infinity} />
         <MetricCard label="docs" value={docCount} limitValue={limits.docs} />
