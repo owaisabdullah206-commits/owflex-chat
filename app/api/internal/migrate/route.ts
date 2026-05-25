@@ -68,5 +68,14 @@ export async function POST(req: NextRequest) {
   await run('org_members_org_user_idx', sql`CREATE UNIQUE INDEX IF NOT EXISTS "org_members_org_user_idx" ON "org_members"("org_id", "user_id")`)
   await run('org_members_org_id_idx',   sql`CREATE INDEX IF NOT EXISTS "org_members_org_id_idx" ON "org_members"("org_id")`)
 
+  // ── 0006 — page_url on conversations ─────────────────────────────────────────
+  await run('conversations.page_url', sql`ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "page_url" text`)
+
+  // ── 0007 — message ratings ────────────────────────────────────────────────────
+  await run('messages.rating', sql`ALTER TABLE "messages" ADD COLUMN IF NOT EXISTS "rating" smallint`)
+
+  // ── 0008 — bot webhook URL ────────────────────────────────────────────────────
+  await run('bots.webhook_url', sql`ALTER TABLE "bots" ADD COLUMN IF NOT EXISTS "webhook_url" text`)
+
   return NextResponse.json({ results })
 }
