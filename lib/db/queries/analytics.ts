@@ -1,4 +1,4 @@
-import { and, avg, count, desc, eq, gte, sql } from 'drizzle-orm'
+import { and, avg, count, desc, eq, gte, isNotNull, ne, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
 export async function getBotAnalytics(botId: string, days = 30) {
@@ -68,5 +68,67 @@ export async function getBotAnalytics(botId: string, days = 30) {
       ? Math.round(((totalConversations - escalatedCount) / totalConversations) * 100)
       : 100,
     recentConversations: recentConvs,
+  }
+}
+
+// ── Per-page breakdown ────────────────────────────────────────────────────────
+
+export async function getPageBreakdown(botId: string, days = 30) {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+
+  const rows = await db
+    .select({
+      pageUrl:      schema.conversations.pageUrl,
+      conversations: count(schema.conversations.id),
+      messages:      sql<number>`COALESCE(SUM(${schema.conversations.messageCount}), 0)::int`,
+      escalated:     sql<number>`COUNT(*) FILTER (WHERE COALESCE(${schema.conversations.needsHuman}, false) = true)::int`,
+    })
+    .from(schema.conversations)
+    .where(
+      and(
+        eq(schema.conversations.botId, botId),
+        gte(schema.conversations.startedAt, since),
+        isNotNull(schema.conversations.pageUrl),
+        ne(schema.conversations.pageUrl, ''),
+      ),
+    )
+    .groupBy(schema.conversations.pageUrl)
+    .orderBy(sql`count(${schema.conversations.id}) DESC`)
+    .limit(20)
+
+  return rows.map((r) => ({
+    pageUrl:       r.pageUrl ?? '',
+    conversations: r.conversations,
+    messages:      Number(r.messages),
+    escalated:     Number(r.escalated),
+    escalationPct: r.conversations > 0
+      ? Math.round((Number(r.escalated) / r.conversations) * 100)
+      : 0,
+  }))
+}
+
+// ── Rating summary ────────────────────────────────────────────────────────────
+
+export async function getBotRatingSummary(botId: string, days = 30) {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+
+  const [result] = await db
+    .select({
+      thumbsUp:   sql<number>`COUNT(*) FILTER (WHERE ${schema.messages.rating} = 1)::int`,
+      thumbsDown: sql<number>`COUNT(*) FILTER (WHERE ${schema.messages.rating} = -1)::int`,
+    })
+    .from(schema.messages)
+    .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
+    .where(
+      and(
+        eq(schema.conversations.botId, botId),
+        gte(schema.messages.createdAt, since),
+        isNotNull(schema.messages.rating),
+      ),
+    )
+
+  return {
+    thumbsUp:   Number(result?.thumbsUp ?? 0),
+    thumbsDown: Number(result?.thumbsDown ?? 0),
   }
 }

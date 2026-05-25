@@ -9,6 +9,7 @@ import {
   jsonb,
   index,
   uniqueIndex,
+  smallint,
 } from 'drizzle-orm/pg-core'
 import { vector } from 'drizzle-orm/pg-core'
 
@@ -140,6 +141,7 @@ export const messages = pgTable('messages', {
   costUsd:          numeric('cost_usd', { precision: 14, scale: 8 }).notNull().default('0'),
   modelUsed:        varchar('model_used', { length: 100 }),
   flaggedUnanswered: boolean('flagged_unanswered').notNull().default(false),
+  rating:           smallint('rating'),   // 1 = thumbs up, -1 = thumbs down, null = no rating
   createdAt:        tsz('created_at').defaultNow().notNull(),
 }, (t) => [
   index('messages_conversation_id_idx').on(t.conversationId),

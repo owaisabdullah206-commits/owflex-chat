@@ -236,7 +236,7 @@ export async function POST(req: NextRequest) {
     const docContextBlock = retrievedChunks.length > 0
       ? renderDocContext(retrievedChunks, storeUrl, storeCurrency)
       : bot.documentCount > 0
-        ? `This bot has a product catalog knowledge base. For this message, no specific products were retrieved.\nIMPORTANT: Do NOT describe, infer, list, or guess any product categories, product names, or product types from your training knowledge. Only reference the store's actual products when they appear in retrieved context. For greetings or general messages, respond warmly without volunteering product category descriptions.`
+        ? `This bot has a product knowledge base, but no specific items matched this query. If the user is asking about products, acknowledge that you may carry what they need and ask them to describe what they are looking for in more detail (e.g. colour, type, use case). Do not invent or guess any product names, brands, prices, or categories from your training knowledge.`
         : ''
 
     const productRecsEnabled = wc.productRecommendationsEnabled === true && bot.documentCount > 0
@@ -484,7 +484,7 @@ export async function POST(req: NextRequest) {
           }
 
           // Final event: metadata the widget needs to render products / handoff card
-          enqueue({ type: 'done', conversationId: conversation.id, needsHuman: unanswered, products })
+          enqueue({ type: 'done', conversationId: conversation.id, messageId: insertedMsg.id, needsHuman: unanswered, products })
           controller.close()
         } catch (streamErr) {
           // Full credit refund on failure

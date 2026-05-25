@@ -50,6 +50,13 @@
       "when": 1779623155989,
       "tag": "0006_messy_union_jack",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1779716818269,
+      "tag": "0007_add_message_rating",
+      "breakpoints": true
     }
   ]
 }

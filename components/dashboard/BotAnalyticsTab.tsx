@@ -1,5 +1,13 @@
-import { Activity, AlertTriangle, CheckCircle2, MessageSquare, TrendingUp, Users } from 'lucide-react'
+import { Activity, AlertTriangle, CheckCircle2, ExternalLink, MessageSquare, ThumbsDown, ThumbsUp, TrendingUp, Users } from 'lucide-react'
 import { UpgradeCTA } from '@/components/dashboard/UpgradeCTA'
+
+interface PageBreakdownRow {
+  pageUrl:       string
+  conversations: number
+  messages:      number
+  escalated:     number
+  escalationPct: number
+}
 
 interface BotAnalyticsTabProps {
   data: {
@@ -17,9 +25,11 @@ interface BotAnalyticsTabProps {
       needsHuman:   boolean
     }[]
   }
-  botId:  string
-  period: number
-  plan:   string
+  botId:         string
+  period:        number
+  plan:          string
+  pageBreakdown: PageBreakdownRow[]
+  ratingSummary: { thumbsUp: number; thumbsDown: number }
 }
 
 function MetricCard({
@@ -62,7 +72,7 @@ function MetricCard({
   )
 }
 
-export function BotAnalyticsTab({ data, period, plan }: BotAnalyticsTabProps) {
+export function BotAnalyticsTab({ data, period, plan, pageBreakdown, ratingSummary }: BotAnalyticsTabProps) {
   const {
     totalConversations,
     totalMessages,
@@ -197,6 +207,119 @@ export function BotAnalyticsTab({ data, period, plan }: BotAnalyticsTabProps) {
                 </div>
               </a>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Rating summary — advanced plans only */}
+      {isAdvanced && (ratingSummary.thumbsUp > 0 || ratingSummary.thumbsDown > 0) && (
+        <div>
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            response_ratings
+          </p>
+          <div className="flex items-center gap-6 border border-[var(--hairline)] bg-[var(--surface)] px-5 py-4">
+            <div className="flex items-center gap-2">
+              <ThumbsUp size={14} style={{ color: 'var(--of-success, #22C55E)' }} />
+              <span className="text-lg font-bold" style={{ fontFamily: 'var(--font-mono)', color: 'var(--of-success, #22C55E)' }}>
+                {ratingSummary.thumbsUp}
+              </span>
+              <span className="text-[11px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>helpful</span>
+            </div>
+            <div className="w-px h-6 bg-[var(--hairline)]" />
+            <div className="flex items-center gap-2">
+              <ThumbsDown size={14} style={{ color: '#F87171' }} />
+              <span className="text-lg font-bold" style={{ fontFamily: 'var(--font-mono)', color: '#F87171' }}>
+                {ratingSummary.thumbsDown}
+              </span>
+              <span className="text-[11px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>not helpful</span>
+            </div>
+            {ratingSummary.thumbsUp + ratingSummary.thumbsDown > 0 && (
+              <>
+                <div className="w-px h-6 bg-[var(--hairline)]" />
+                <span className="text-[11px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                  {Math.round((ratingSummary.thumbsUp / (ratingSummary.thumbsUp + ratingSummary.thumbsDown)) * 100)}% satisfaction
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Top pages breakdown — advanced plans only */}
+      {isAdvanced && pageBreakdown.length > 0 && (
+        <div>
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-3"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            top_pages · last {period} days
+          </p>
+          <div className="border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden overflow-x-auto">
+            <table className="w-full text-[12px]">
+              <thead>
+                <tr className="border-b border-[var(--hairline)]">
+                  {['page_url', 'sessions', 'messages', 'escalation_%'].map((h) => (
+                    <th
+                      key={h}
+                      className="px-4 py-2.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] whitespace-nowrap"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {pageBreakdown.map((row, i) => {
+                  let displayUrl = row.pageUrl
+                  try {
+                    const u = new URL(row.pageUrl)
+                    displayUrl = (u.pathname + u.search).slice(0, 48) || '/'
+                  } catch {
+                    displayUrl = row.pageUrl.slice(0, 48)
+                  }
+                  return (
+                    <tr
+                      key={i}
+                      className="hover:bg-[var(--surface-2)] transition-colors"
+                      style={{ borderBottom: i < pageBreakdown.length - 1 ? '1px solid var(--hairline)' : 'none' }}
+                    >
+                      <td className="px-4 py-3 max-w-[260px]">
+                        <a
+                          href={row.pageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 text-[var(--of-primary)] hover:underline truncate"
+                          style={{ fontFamily: 'var(--font-mono)', fontSize: 11 }}
+                          title={row.pageUrl}
+                        >
+                          <span className="truncate">{displayUrl}</span>
+                          <ExternalLink size={10} className="shrink-0 opacity-60" />
+                        </a>
+                      </td>
+                      <td className="px-4 py-3 text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                        {row.conversations}
+                      </td>
+                      <td className="px-4 py-3 text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>
+                        {row.messages}
+                      </td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'var(--font-mono)' }}>
+                        <span
+                          style={{
+                            color: row.escalationPct >= 30 ? '#F59E0B' : row.escalationPct >= 10 ? 'var(--ink-muted)' : 'var(--ink-subtle)',
+                          }}
+                        >
+                          {row.escalationPct}%
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

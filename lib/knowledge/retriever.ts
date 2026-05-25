@@ -4,7 +4,7 @@ import { embedQuery } from '@/lib/knowledge/embedder'
 import type { RetrievedChunk } from '@/lib/knowledge/prompt-builder'
 
 const DEFAULT_TOP_K = 4
-const DEFAULT_THRESHOLD = 0.40
+const DEFAULT_THRESHOLD = 0.20   // lowered from 0.40 — generic product queries score ~0.25-0.35
 
 export async function retrieveContext(
   botId: string,
