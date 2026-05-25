@@ -105,6 +105,8 @@ export const bots = pgTable('bots', {
   // Per-bot resource caps (null = draws from org pool with no bot-level cap)
   monthlyConvLimit:    integer('monthly_conv_limit'),
   monthlyLeadLimit:    integer('monthly_lead_limit'),
+  // Outbound lead webhook — POST to this URL when a lead is captured (null = disabled)
+  webhookUrl:          text('webhook_url'),
   createdAt:           tsz('created_at').defaultNow().notNull(),
 }, (t) => [
   index('bots_embed_key_idx').on(t.embedKey),

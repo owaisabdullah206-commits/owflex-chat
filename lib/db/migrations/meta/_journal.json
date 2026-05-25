@@ -57,6 +57,13 @@
       "when": 1779716818269,
       "tag": "0007_add_message_rating",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1779720604446,
+      "tag": "0008_add_bot_webhook_url",
+      "breakpoints": true
     }
   ]
 }

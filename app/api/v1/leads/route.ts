@@ -55,11 +55,13 @@ export async function POST(req: NextRequest) {
   try {
     const [bot] = await db
       .select({
-        id: schema.bots.id,
-        orgId: schema.bots.orgId,
-        orgPlan: schema.organizations.plan,
+        id:             schema.bots.id,
+        orgId:          schema.bots.orgId,
+        embedKey:       schema.bots.embedKey,
+        orgPlan:        schema.organizations.plan,
         leadsThisMonth: schema.organizations.leadsThisMonth,
-        ownerEmail: schema.users.email,
+        ownerEmail:     schema.users.email,
+        webhookUrl:     schema.bots.webhookUrl,
       })
       .from(schema.bots)
       .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -113,6 +115,23 @@ export async function POST(req: NextRequest) {
     // Non-blocking 90% lead usage warning
     if (bot.ownerEmail) {
       void checkAndWarnUsage(bot.orgId, 'leads', newLeadCount, leadLimit, bot.orgPlan, bot.ownerEmail)
+    }
+
+    // Non-blocking outbound webhook — fire-and-forget, never delays the response
+    if (bot.webhookUrl && !hiddenByLimit) {
+      const { fireLeadWebhook } = await import('@/lib/webhooks/outbound')
+      void fireLeadWebhook(bot.webhookUrl, {
+        event:     'lead.captured',
+        embedKey:  bot.embedKey,
+        sessionId,
+        lead: {
+          name:  name  ?? null,
+          email: email ?? null,
+          phone: phone ?? null,
+          notes: notes ?? null,
+        },
+        capturedAt: new Date().toISOString(),
+      })
     }
 
     return NextResponse.json({ success: true })

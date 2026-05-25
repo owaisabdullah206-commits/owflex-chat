@@ -58,6 +58,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       smartRoutingEnabled: schema.bots.smartRoutingEnabled,
       routingLightModel:   schema.bots.routingLightModel,
       routingStrongModel:  schema.bots.routingStrongModel,
+      webhookUrl:          schema.bots.webhookUrl,
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -371,6 +372,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         productRecommendationsEnabled: (wc.productRecommendationsEnabled as boolean) === true,
                       }
                     })(),
+                    webhookUrl: bot.webhookUrl ?? '',
                   }}
                 />
               </div>

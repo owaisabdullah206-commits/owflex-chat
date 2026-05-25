@@ -15,6 +15,7 @@ const updateBotSchema = z.object({
   smartRoutingEnabled: z.boolean().optional(),
   routingLightModel:   z.enum(SUPPORTED_MODELS).nullable().optional(),
   routingStrongModel:  z.enum(SUPPORTED_MODELS).nullable().optional(),
+  webhookUrl: z.string().url().max(500).or(z.literal('')).optional(),
   widgetConfig: z.object({
     primaryColor:       z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     position:           z.enum(['bottom-right', 'bottom-left']).optional(),
@@ -79,6 +80,11 @@ export async function updateBot(
       if (parsed.data.routingLightModel !== undefined) update.routingLightModel = parsed.data.routingLightModel
       if (parsed.data.routingStrongModel !== undefined) update.routingStrongModel = parsed.data.routingStrongModel
     }
+  }
+
+  if (parsed.data.webhookUrl !== undefined) {
+    // Empty string → clear the webhook
+    update.webhookUrl = parsed.data.webhookUrl === '' ? null : parsed.data.webhookUrl
   }
 
   if (parsed.data.widgetConfig !== undefined) {

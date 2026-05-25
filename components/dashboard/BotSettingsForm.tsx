@@ -63,6 +63,7 @@ interface BotSettingsFormProps {
     storeCurrency: string
     theme: 'light' | 'dark'
     productRecommendationsEnabled: boolean
+    webhookUrl: string
   }
 }
 
@@ -99,6 +100,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [storeCurrency, setStoreCurrency]       = useState(initial.storeCurrency)
   const [productRecsEnabled, setProductRecs]    = useState(initial.productRecommendationsEnabled)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>(initial.theme)
+  const [webhookUrl, setWebhookUrl]             = useState(initial.webhookUrl)
 
   const isFreePlan      = orgPlan === 'free'
   const isStarterOrFree = orgPlan === 'free' || orgPlan === 'starter'
@@ -145,6 +147,7 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           theme: previewTheme,
           productRecommendationsEnabled: productRecsEnabled,
         },
+        webhookUrl: webhookUrl.trim() || '',
       })
       if (result.error) {
         setError(result.error)
@@ -652,6 +655,35 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             />
           </div>
         )}
+
+        {/* ── Integrations / Webhook ── */}
+        <div className="pt-6 mt-2 border-t border-[var(--hairline)]">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            integrations
+          </p>
+          <p className="text-xs text-[var(--ink-muted)] mb-3">
+            POST new leads to a URL — pipe directly to Zapier, Make, n8n, or your CRM.
+          </p>
+          <div className="space-y-1.5">
+            <Label htmlFor="webhookUrl" className="text-xs text-[var(--ink-muted)]">Lead Webhook URL</Label>
+            <Input
+              id="webhookUrl"
+              type="url"
+              value={webhookUrl}
+              onChange={(e) => { setWebhookUrl(e.target.value); markDirty() }}
+              placeholder="https://hooks.zapier.com/hooks/catch/…"
+              className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+              disabled={isPending}
+            />
+            <p className="text-[11px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
+              Payload: <code className="bg-[var(--surface-2)] px-1">event · embedKey · sessionId · lead · capturedAt</code>
+              {' '}— signed with <code className="bg-[var(--surface-2)] px-1">X-OwFlex-Signature: sha256=…</code>
+            </p>
+          </div>
+        </div>
 
         {/* Submit */}
         <div className="flex items-center gap-3 pt-2">
