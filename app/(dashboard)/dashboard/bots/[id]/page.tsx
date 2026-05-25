@@ -28,9 +28,7 @@ import { ClientStatusCard } from '@/components/dashboard/ClientStatusCard'
 import { BotAnalyticsTab } from '@/components/dashboard/BotAnalyticsTab'
 import { getBotAnalytics, getPageBreakdown, getBotRatingSummary } from '@/lib/db/queries/analytics'
 import { UpgradeCTA } from '@/components/dashboard/UpgradeCTA'
-import { BotPreviewPanel } from '@/components/dashboard/BotPreviewPanel'
-
-const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Preview', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
+const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
@@ -326,16 +324,13 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
             />
           )}
 
-          {activeTab === 'preview' && (
-            <BotPreviewPanel embedKey={bot.embedKey} botName={bot.name} />
-          )}
-
           {activeTab === 'settings' && (
             <div className="space-y-8">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-5" style={{ fontFamily: 'var(--font-mono)' }}>bot_settings</p>
                 <BotSettingsForm
                   botId={bot.id}
+                  embedKey={bot.embedKey}
                   orgPlan={bot.orgPlan}
                   initial={{
                     name: bot.name,
