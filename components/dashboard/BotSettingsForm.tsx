@@ -59,6 +59,8 @@ interface BotSettingsFormProps {
     brandingUrl: string
     handoffEnabled: boolean
     handoffNotifyTarget: 'developer' | 'client'
+    storeUrl: string
+    storeCurrency: string
   }
 }
 
@@ -91,6 +93,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
   const [brandingUrl, setBrandingUrl]           = useState(initial.brandingUrl)
   const [handoffEnabled, setHandoffEnabled]     = useState(initial.handoffEnabled)
   const [handoffNotifyTarget, setHandoffNotifyTarget] = useState<'developer' | 'client'>(initial.handoffNotifyTarget)
+  const [storeUrl, setStoreUrl]                 = useState(initial.storeUrl)
+  const [storeCurrency, setStoreCurrency]       = useState(initial.storeCurrency)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>('dark')
 
   const isFreePlan      = orgPlan === 'free'
@@ -133,6 +137,8 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
           brandingUrl:  brandingUrl.trim()  || undefined,
           handoffEnabled,
           handoffNotifyTarget,
+          storeUrl:      storeUrl.trim()      || undefined,
+          storeCurrency: (storeCurrency || undefined) as '' | 'PKR' | 'USD' | 'AED' | 'GBP' | 'EUR' | 'SAR' | 'INR' | 'BDT' | 'LKR' | 'NGN' | 'KES' | 'ZAR' | undefined,
         },
       })
       if (result.error) {
@@ -367,6 +373,71 @@ export function BotSettingsForm({ botId, orgPlan, initial }: BotSettingsFormProp
             maxLength={200}
             className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
             disabled={isPending} />
+        </div>
+
+        {/* Catalog / Store */}
+        <div className="border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-4">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            catalog_store
+          </p>
+
+          {/* Store URL */}
+          <div className="space-y-1.5">
+            <Label htmlFor="storeUrl" className="text-xs text-[var(--ink-muted)]">Store / Website URL</Label>
+            <Input
+              id="storeUrl"
+              type="url"
+              value={storeUrl}
+              onChange={(e) => { setStoreUrl(e.target.value); markDirty() }}
+              placeholder="https://yourstore.com"
+              className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
+              disabled={isPending}
+            />
+            {!storeUrl.trim() && (
+              <p className="text-[11px] text-amber-400">
+                ⚠ Set a store URL to protect your embed key and enable absolute product links in AI responses.
+              </p>
+            )}
+            <p className="text-[11px] text-[var(--ink-subtle)]">
+              Used to build product links from your catalog and restrict which domain can embed this bot.
+            </p>
+          </div>
+
+          {/* Currency selector */}
+          <div className="space-y-1.5">
+            <Label htmlFor="storeCurrency" className="text-xs text-[var(--ink-muted)]">Store Currency</Label>
+            <div className="relative">
+              <select
+                id="storeCurrency"
+                value={storeCurrency}
+                onChange={(e) => { setStoreCurrency(e.target.value); markDirty() }}
+                disabled={isPending}
+                className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                <option value="">No currency / not a storefront</option>
+                <option value="PKR">PKR — Pakistani Rupee</option>
+                <option value="USD">USD — US Dollar</option>
+                <option value="AED">AED — UAE Dirham</option>
+                <option value="GBP">GBP — British Pound</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="SAR">SAR — Saudi Riyal</option>
+                <option value="INR">INR — Indian Rupee</option>
+                <option value="BDT">BDT — Bangladeshi Taka</option>
+                <option value="LKR">LKR — Sri Lankan Rupee</option>
+                <option value="NGN">NGN — Nigerian Naira</option>
+                <option value="KES">KES — Kenyan Shilling</option>
+                <option value="ZAR">ZAR — South African Rand</option>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
+            </div>
+            <p className="text-[11px] text-[var(--ink-subtle)]">
+              Optional — tells the AI which currency to use in product price responses.
+            </p>
+          </div>
         </div>
 
         {/* Widget Colour */}

@@ -36,6 +36,19 @@ Your goal is to naturally collect the user's name and contact information during
    - Never tell the user you are saving their information.
    - This marker is automatically stripped before the user sees your message.`
 
+function corsHeaders(origin: string): Record<string, string> {
+  return {
+    'Access-Control-Allow-Origin':  origin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Max-Age':       '86400',
+  }
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: corsHeaders('*') })
+}
+
 const bodySchema = z.object({
   embedKey: z.string().min(1),
   sessionId: z.string().min(1),
@@ -123,6 +136,33 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Extract widgetConfig early — needed for CORS check and system prompt composition
+    const wc = (bot.widgetConfig ?? {}) as {
+      leadCaptureEnabled?: boolean
+      collectLeadBefore?: boolean
+      strictMode?: boolean
+      handoffEnabled?: boolean
+      handoffNotifyTarget?: 'developer' | 'client'
+      storeUrl?: string
+      storeCurrency?: string
+    }
+    const storeUrl      = (wc.storeUrl      && wc.storeUrl.trim())      ? wc.storeUrl.trim()      : undefined
+    const storeCurrency = (wc.storeCurrency && wc.storeCurrency.trim()) ? wc.storeCurrency.trim() : undefined
+
+    // CORS origin guard — only applies when storeUrl is set
+    const requestOrigin = req.headers.get('origin')
+    const allowedOrigin = storeUrl ? (() => { try { return new URL(storeUrl).origin } catch { return null } })() : null
+    if (allowedOrigin && requestOrigin && requestOrigin !== allowedOrigin) {
+      return NextResponse.json(
+        {
+          error: `This bot is only embeddable on ${allowedOrigin}. Update the bot's Store URL in Settings to change this restriction.`,
+          code: 'ORIGIN_NOT_ALLOWED',
+          status: 403,
+        },
+        { status: 403, headers: corsHeaders(allowedOrigin) },
+      )
+    }
+
     // Find or create conversation
     let [conversation] = await db
       .select({ id: schema.conversations.id })
@@ -178,9 +218,8 @@ export async function POST(req: NextRequest) {
       ? '--- Knowledge Base ---\n' + activeFaqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')
       : ''
 
-    const docContextBlock = renderDocContext(retrievedChunks)
+    const docContextBlock = renderDocContext(retrievedChunks, storeUrl, storeCurrency)
 
-    const wc = (bot.widgetConfig ?? {}) as { leadCaptureEnabled?: boolean; collectLeadBefore?: boolean; strictMode?: boolean; handoffEnabled?: boolean; handoffNotifyTarget?: 'developer' | 'client' }
     // If the pre-chat form already collected contact info, suppress in-chat lead prompting
     const leadEnabled = wc.leadCaptureEnabled !== false && wc.collectLeadBefore !== true
     const handoffEnabled = wc.handoffEnabled === true
@@ -394,7 +433,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ reply: content, conversationId: conversation.id, needsHuman: unanswered })
+    return NextResponse.json(
+      { reply: content, conversationId: conversation.id, needsHuman: unanswered },
+      { headers: corsHeaders(allowedOrigin ?? '*') },
+    )
   } catch (err) {
     console.error('[chat] error:', err)
     // Store error in Redis for admin visibility (non-blocking, capped at 200)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -89,6 +89,57 @@ export function NewBotForm() {
             className="bg-[var(--surface)] border-[var(--hairline-md)] text-[var(--ink)]
               placeholder:text-[var(--ink-subtle)] focus-visible:ring-[var(--of-primary)]"
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="storeUrl" className="text-sm font-medium text-[var(--ink)]">
+            Store / website URL
+          </Label>
+          <p className="text-xs text-[var(--ink-muted)]">
+            The website where this bot will be embedded. Used to build product links and restrict which domain can use the bot.
+          </p>
+          <Input
+            id="storeUrl"
+            name="storeUrl"
+            type="url"
+            placeholder="https://yourstore.com"
+            required
+            className="bg-[var(--surface)] border-[var(--hairline-md)] text-[var(--ink)]
+              placeholder:text-[var(--ink-subtle)] focus-visible:ring-[var(--of-primary)]"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="storeCurrency" className="text-sm font-medium text-[var(--ink)]">
+            Store Currency <span className="text-[var(--ink-subtle)] font-normal">(optional)</span>
+          </Label>
+          <p className="text-xs text-[var(--ink-muted)]">
+            Select the currency your products are priced in so the AI can reference prices correctly.
+          </p>
+          <div className="relative">
+            <select
+              id="storeCurrency"
+              name="storeCurrency"
+              className="w-full appearance-none rounded-md border border-[var(--hairline-md)] bg-[var(--surface)]
+                pl-3 pr-8 py-2 text-sm text-[var(--ink)] focus:outline-none focus:ring-2 focus:ring-[var(--of-primary)]
+                focus:ring-offset-0 cursor-pointer"
+            >
+              <option value="">No currency / not a storefront</option>
+              <option value="PKR">PKR — Pakistani Rupee</option>
+              <option value="USD">USD — US Dollar</option>
+              <option value="AED">AED — UAE Dirham</option>
+              <option value="GBP">GBP — British Pound</option>
+              <option value="EUR">EUR — Euro</option>
+              <option value="SAR">SAR — Saudi Riyal</option>
+              <option value="INR">INR — Indian Rupee</option>
+              <option value="BDT">BDT — Bangladeshi Taka</option>
+              <option value="LKR">LKR — Sri Lankan Rupee</option>
+              <option value="NGN">NGN — Nigerian Naira</option>
+              <option value="KES">KES — Kenyan Shilling</option>
+              <option value="ZAR">ZAR — South African Rand</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
+          </div>
         </div>
 
         <div className="space-y-2">

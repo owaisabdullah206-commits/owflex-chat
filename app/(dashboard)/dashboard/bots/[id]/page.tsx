@@ -351,6 +351,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         brandingUrl:        (wc.brandingUrl as string) ?? '',
                         handoffEnabled:        (wc.handoffEnabled as boolean) === true,
                         handoffNotifyTarget:   ((wc.handoffNotifyTarget as string) === 'client' ? 'client' : 'developer') as 'developer' | 'client',
+                        storeUrl:           (wc.storeUrl as string) ?? '',
+                        storeCurrency:      (wc.storeCurrency as string) ?? '',
                       }
                     })(),
                   }}
@@ -399,7 +401,12 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               <p className="text-xs text-[var(--ink-muted)] mb-5">
                 Upload files or add a URL. The bot retrieves relevant context from these documents at chat time.
               </p>
-              <DocumentsTab botId={bot.id} orgId={bot.orgId} plan={bot.orgPlan} />
+              <DocumentsTab
+                botId={bot.id}
+                orgId={bot.orgId}
+                plan={bot.orgPlan}
+                storeUrl={((bot.widgetConfig ?? {}) as Record<string, unknown>).storeUrl as string | undefined}
+              />
             </div>
           )}
 

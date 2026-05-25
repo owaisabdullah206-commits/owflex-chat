@@ -41,6 +41,7 @@ interface Props {
   crawlUsed: number
   crawlMax: number
   plan: string
+  storeUrl?: string
 }
 
 type Tab = 'file' | 'url'
@@ -71,6 +72,7 @@ export function DocumentUploader({
   quotaMax,
   crawlUsed,
   crawlMax,
+  storeUrl,
 }: Props) {
   const [tab, setTab] = useState<Tab>('file')
 
@@ -250,7 +252,16 @@ export function DocumentUploader({
       </div>
 
       <div className="p-4">
-        {tab === 'file' ? (
+        {!storeUrl ? (
+          <div className="py-6 text-center space-y-2">
+            <p className="text-sm text-amber-400 font-medium">Store URL required</p>
+            <p className="text-xs text-[var(--ink-muted)]">
+              Set your store URL in{' '}
+              <a href="?tab=settings" className="underline text-[var(--of-primary)]">Settings → Catalog / Store</a>{' '}
+              before uploading documents.
+            </p>
+          </div>
+        ) : tab === 'file' ? (
           atDocLimit && !csvFile ? (
             <p className="text-sm text-[var(--ink-muted)] text-center py-2">
               Document limit reached ({quotaUsed}/{quotaMax}). Upgrade your plan to add more.
@@ -413,9 +424,15 @@ export function DocumentUploader({
             </div>
           )
         ) : (
-          atCrawlLimit ? (
+          crawlMax === 0 ? (
             <p className="text-sm text-[var(--ink-muted)] text-center py-2">
-              Crawl page limit reached ({crawlUsed}/{crawlMax}). Upgrade your plan to crawl more.
+              Website crawling is not available on the Free plan.{' '}
+              <a href="/dashboard/billing" className="underline text-[var(--of-primary)]">Upgrade to Starter or above.</a>
+            </p>
+          ) : atCrawlLimit ? (
+            <p className="text-sm text-[var(--ink-muted)] text-center py-2">
+              Crawl page limit reached ({crawlUsed}/{crawlMax} pages used).{' '}
+              <a href="/dashboard/billing" className="underline text-[var(--of-primary)]">Upgrade your plan for more.</a>
             </p>
           ) : (
             <form onSubmit={handleUrlSubmit} className="flex flex-col gap-3">
@@ -492,7 +509,7 @@ export function DocumentUploader({
           )
         )}
 
-        {tab === 'file' && !atDocLimit && !csvFile && (
+        {storeUrl && tab === 'file' && !atDocLimit && !csvFile && (
           <p className="text-xs text-[var(--ink-muted)] mt-2 text-center">
             {quotaMax === Infinity ? 'Unlimited documents' : `${quotaUsed} / ${quotaMax} documents used`}
           </p>

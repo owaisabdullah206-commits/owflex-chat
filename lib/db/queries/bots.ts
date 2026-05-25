@@ -31,6 +31,8 @@ const updateBotSchema = z.object({
     brandingUrl:        z.string().url().max(255).optional(),
     handoffEnabled:        z.boolean().optional(),
     handoffNotifyTarget:   z.enum(['developer', 'client']).optional(),
+    storeUrl:      z.string().url().max(255).or(z.literal('')).optional(),
+    storeCurrency: z.enum(['', 'PKR', 'USD', 'AED', 'GBP', 'EUR', 'SAR', 'INR', 'BDT', 'LKR', 'NGN', 'KES', 'ZAR']).optional(),
   }).optional(),
 })
 
@@ -173,6 +175,8 @@ export async function updateSmartRouting(
 const createBotSchema = z.object({
   name: z.string().min(1, 'Name is required').max(255),
   systemPrompt: z.string().min(1, 'System prompt is required'),
+  storeUrl: z.string().url('Enter a valid store URL (e.g. https://yourstore.com)').max(255),
+  storeCurrency: z.enum(['', 'PKR', 'USD', 'AED', 'GBP', 'EUR', 'SAR', 'INR', 'BDT', 'LKR', 'NGN', 'KES', 'ZAR']).optional(),
 })
 
 export async function createBot(
@@ -184,6 +188,8 @@ export async function createBot(
   const parsed = createBotSchema.safeParse({
     name: formData.get('name'),
     systemPrompt: formData.get('systemPrompt'),
+    storeUrl: formData.get('storeUrl'),
+    storeCurrency: formData.get('storeCurrency') || undefined,
   })
 
   if (!parsed.success) {
@@ -210,6 +216,10 @@ export async function createBot(
       name: parsed.data.name,
       systemPrompt: parsed.data.systemPrompt,
       embedKey,
+      widgetConfig: {
+        storeUrl: parsed.data.storeUrl,
+        ...(parsed.data.storeCurrency ? { storeCurrency: parsed.data.storeCurrency } : {}),
+      },
     })
     .returning({ id: schema.bots.id })
 

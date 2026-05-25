@@ -13,10 +13,22 @@ interface SystemPromptParts {
   lead?: string
 }
 
-export function renderDocContext(chunks: RetrievedChunk[]): string {
+export function renderDocContext(
+  chunks: RetrievedChunk[],
+  storeUrl?: string,
+  storeCurrency?: string,
+): string {
   if (chunks.length === 0) return ''
-  const lines = chunks.map((c, i) => `[${i + 1}] ${c.text.trim()}`)
-  return `Context from your documents:\n${lines.join('\n\n')}`
+  const base = storeUrl ? storeUrl.replace(/\/$/, '') : ''
+  let text = chunks.map((c, i) => `[${i + 1}] ${c.text.trim()}`).join('\n\n')
+  if (base) {
+    text = text.replace(/URL: \/products\//g, `URL: ${base}/products/`)
+  }
+  const header = storeCurrency
+    ? `Context from your documents (prices are in ${storeCurrency}):\n`
+    : `Context from your documents:\n`
+  const footer = `\n\nIMPORTANT: Only reference products, categories, prices, and attributes explicitly listed in the context above. Do not describe, infer, or generalise products from your training knowledge. If the information is not in the context, say you don't have that information.`
+  return header + text + footer
 }
 
 export function composeSystemPrompt({

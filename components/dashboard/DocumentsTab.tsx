@@ -12,6 +12,7 @@ interface Props {
   botId: string
   orgId: string
   plan: string
+  storeUrl?: string
 }
 
 async function getDocStats(botId: string, orgId: string) {
@@ -42,7 +43,7 @@ async function getDocStats(botId: string, orgId: string) {
   }
 }
 
-export async function DocumentsTab({ botId, orgId, plan }: Props) {
+export async function DocumentsTab({ botId, orgId, plan, storeUrl }: Props) {
   const limits = PLAN_LIMITS[(plan as Plan) in PLAN_LIMITS ? (plan as Plan) : 'free']
   const [docs, stats] = await Promise.all([
     listDocsByBot(botId),
@@ -58,6 +59,7 @@ export async function DocumentsTab({ botId, orgId, plan }: Props) {
         crawlUsed={stats.crawlPages}
         crawlMax={limits.crawlPages === Infinity ? Infinity : limits.crawlPages}
         plan={plan}
+        storeUrl={storeUrl}
       />
 
       {docs.length === 0 ? (
