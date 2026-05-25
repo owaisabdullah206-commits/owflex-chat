@@ -637,7 +637,7 @@ function HowItWorks() {
       Icon: Code2,
       n: '01',
       h: 'Drop in the embed script',
-      p: 'One <script> tag on any client website — WordPress, Shopify, Wix, or plain HTML. Your Octively bot goes live instantly.',
+      p: 'One 25 KB script tag — loads async, no impact on page speed. Drop it on WordPress, Shopify, Wix, or plain HTML. Streaming replies appear token-by-token so visitors see responses instantly.',
     },
     {
       Icon: UserPlus,
@@ -1115,7 +1115,7 @@ function FeatureBento() {
             <BentoTile span={2} Icon={Shield} title="Tenant isolation" sub="Every query scoped to bot_id. No cross-leaks. Audited by design.">
               <BentoIsolation />
             </BentoTile>
-            <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One script tag. Drop it on WordPress, Shopify, Wix, or any HTML site. Live in minutes.">
+            <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One 25 KB script tag, zero dependencies, loads async. Drop it on WordPress, Shopify, or any HTML site — no impact on your client's page speed or Core Web Vitals.">
               <BentoBotStack />
             </BentoTile>
           </div>

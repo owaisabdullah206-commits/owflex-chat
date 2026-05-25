@@ -9,7 +9,7 @@ import { OctivelyButton } from '@/components/brand/OctivelyButton'
 
 const STEPS = [
   { n: '01', title: 'Sign up free', body: 'No card. No trial timer. The free plan works indefinitely for a single bot.' },
-  { n: '02', title: 'Add the embed script', body: 'One script tag. Works on any site — WordPress, Webflow, plain HTML. Two minutes, start to finish.' },
+  { n: '02', title: 'Add the embed script', body: 'One 25 KB script tag — loads async, zero dependencies, zero slowdown to your client\'s site. Works on WordPress, Webflow, Shopify, plain HTML. Two minutes, start to finish.' },
   { n: '03', title: 'Invite your client', body: "Enter their email. They set a password and land on a portal with their bot's conversations and leads. Done." },
   { n: '04', title: 'Bill for the value', body: 'Your client has a professional dashboard. You look like you built it. Charge accordingly.' },
 ]
