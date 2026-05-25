@@ -50,10 +50,12 @@ function ln(label: string, value: string): string {
 
 export function rowToPassage(row: Record<string, string>, format: CsvFormat): string {
   if (format === 'shopify') {
-    const handle = f(row, 'Handle')
+    const title  = f(row, 'Title')
+    // Use the Handle column; fall back to a slugified title so every product gets a URL
+    const handle = f(row, 'Handle') ||
+      title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
     return [
-      ln('Product', f(row, 'Title')),
-      ln('Handle', handle),
+      ln('Product', title),
       ln('Type', f(row, 'Product Type')),
       ln('Vendor', f(row, 'Vendor')),
       ln('Description', stripHtml(f(row, 'Body (HTML)'))),

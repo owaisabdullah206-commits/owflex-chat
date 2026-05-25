@@ -22,15 +22,15 @@ const PRODUCT_RECOMMENDATION_INSTRUCTIONS = `
 
 ---
 PRODUCT CARDS (system — invisible to users):
-When the user asks about specific products, asks for recommendations, or wants to browse/compare items, append this marker on a new line at the very end of your response:
+Whenever you mention, describe, or recommend one or more specific products, you MUST append this marker on a new line at the very end of your response — even if the product has no image or URL:
 [PRODUCTS:[{"name":"Exact Product Name","price":"PKR 2,299","image":"https://full-url/image.jpg","url":"https://store.com/products/handle"}]]
 Rules:
 - Include 1–4 products most relevant to the user's query.
 - Only include products explicitly listed in the document context above. Never invent products.
-- Omit the "price" field entirely if no price is available (catalogue-only product).
-- Omit the "image" field entirely if no image URL is available.
-- Use the full absolute URL for both "image" and "url". Never use relative paths.
-- This marker is automatically stripped — users see interactive product cards instead of the marker.`
+- "name" is always required. "price", "image", and "url" are optional — omit a field only if its value is genuinely not in your context.
+- Use the full absolute URL for "image" and "url". Never use a relative path (e.g. /products/…) — if the URL in the context is relative, skip that field.
+- ALWAYS emit a card for every product you mention — a name-only or name+price card is better than no card.
+- This marker is automatically stripped — users see interactive product cards instead of the raw marker.`
 
 const LEAD_INSTRUCTIONS = `
 
