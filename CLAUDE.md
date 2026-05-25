@@ -205,6 +205,19 @@ npm run build   # must exit 0 — fix all errors before git push
 - If the build fails, fix it before committing. Do not push broken builds hoping Vercel will reveal the error.
 - This rule applies to every change, including single-line fixes.
 
+### Embed Widget Build Rule (Non-Negotiable)
+
+**ALWAYS run `npm run build:embed` after editing `embed/src/embed.js`.**
+
+```bash
+npm run build:embed   # rebuilds embed/dist/embed.min.js (the file actually served)
+```
+
+- The live `/embed.js` route serves `embed/dist/embed.min.js` — NOT the source file.
+- If you edit `embed/src/embed.js` and skip this step, production serves a stale widget.
+- Commit the updated `embed/dist/embed.min.js` along with your source change.
+- Run this BEFORE `npm run build` so the Next.js build picks up the fresh minified file.
+
 ### Git Remotes
 
 ```

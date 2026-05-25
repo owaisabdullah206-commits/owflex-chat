@@ -5,7 +5,7 @@ import { join } from 'path'
 // Serve the embed widget script with cross-origin headers.
 // This route takes precedence over public/embed.js (App Router > public).
 export async function GET() {
-  const content = readFileSync(join(process.cwd(), 'embed', 'src', 'embed.js'), 'utf-8')
+  const content = readFileSync(join(process.cwd(), 'embed', 'dist', 'embed.min.js'), 'utf-8')
   return new NextResponse(content, {
     headers: {
       'Content-Type': 'application/javascript; charset=utf-8',
