@@ -223,7 +223,7 @@ export async function POST(req: NextRequest) {
       .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
 
     // Compose system prompt: [platform] + [bot] + [doc context] + [FAQ context] + [lead instructions]
-    const [platformPrompt, activeFaqs, retrievedChunks] = await Promise.all([
+    const [platformPrompt, activeFaqs, retrievedChunks, totalKbProducts] = await Promise.all([
       getPlatformPrompt().then((p) => {
         // Replace {{botName}}, {{storeName}}, {{storeUrl}} placeholders with live bot values
         const storeName = storeUrl
@@ -243,14 +243,24 @@ export async function POST(req: NextRequest) {
             return []
           })
         : Promise.resolve([]),
+      // Total product/chunk count across all ready documents for this bot
+      bot.documentCount > 0
+        ? db.select({ total: sql<number>`COALESCE(SUM(${schema.documents.chunkCount}),0)::int` })
+            .from(schema.documents)
+            .where(and(eq(schema.documents.botId, bot.id), eq(schema.documents.status, 'ready')))
+            .then((r) => r[0]?.total ?? 0)
+        : Promise.resolve(0),
     ])
 
     const faqBlock = activeFaqs.length > 0
       ? '--- Knowledge Base ---\n' + activeFaqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')
       : ''
 
+    const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
+    const catalogProductLimit = PLAN_LIMITS[planKey].catalogProducts
+
     const docContextBlock = retrievedChunks.length > 0
-      ? renderDocContext(retrievedChunks, storeUrl, storeCurrency)
+      ? renderDocContext(retrievedChunks, storeUrl, storeCurrency, catalogProductLimit, totalKbProducts)
       : bot.documentCount > 0
         ? `This bot has a product knowledge base, but no specific items matched this query. If the user is asking about products, acknowledge that you may carry what they need and ask them to describe what they are looking for in more detail (e.g. colour, type, use case). Do not invent or guess any product names, brands, prices, or categories from your training knowledge.`
         : ''

@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { embedQuery } from '@/lib/knowledge/embedder'
 import type { RetrievedChunk } from '@/lib/knowledge/prompt-builder'
 
-const DEFAULT_TOP_K = 4
+const DEFAULT_TOP_K = 8
 const DEFAULT_THRESHOLD = 0.20   // lowered from 0.40 — generic product queries score ~0.25-0.35
 
 export async function retrieveContext(
@@ -37,7 +37,7 @@ export async function retrieveContext(
         WHERE dc2.document_id = document_chunks.document_id
       )
     ORDER BY embedding <=> ${JSON.stringify(queryVector)}::vector
-    LIMIT 8
+    LIMIT ${topK * 2}
   `)
 
   const filtered = result.rows
