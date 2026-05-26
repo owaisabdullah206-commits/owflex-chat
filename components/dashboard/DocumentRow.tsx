@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { FileText, Globe, CheckCircle2, XCircle, AlertTriangle, RefreshCw } from 'lucide-react'
+import { FileText, Globe, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Clock } from 'lucide-react'
 import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -111,7 +111,16 @@ function StepProgress({ status, updatedAt, docId }: { status: string; updatedAt:
   )
 }
 
-function StatusPill({ status }: { status: string }) {
+function StatusPill({ status, errorCode }: { status: string; errorCode?: string | null }) {
+  // Quota exhaustion is a temporary failure — show a distinct amber badge
+  if (status === 'failed' && errorCode === 'QUOTA_EXHAUSTED') {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-amber-500/10 text-amber-400">
+        <Clock className="h-3 w-3" />
+        Quota exceeded
+      </span>
+    )
+  }
   const map: Record<string, { label: string; className: string; icon: React.ReactNode }> = {
     ready:  { label: 'Ready',  className: 'bg-[var(--of-success)]/10 text-[var(--success-text)]', icon: <CheckCircle2 className="h-3 w-3" /> },
     failed: { label: 'Failed', className: 'bg-[var(--of-error)]/10 text-[var(--error-text)]',     icon: <XCircle className="h-3 w-3" /> },
@@ -144,7 +153,7 @@ export function DocumentRow({ doc }: { doc: DocRow }) {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {!isPending && <StatusPill status={doc.status} />}
+          {!isPending && <StatusPill status={doc.status} errorCode={doc.errorCode} />}
         </div>
       </div>
 
@@ -170,8 +179,15 @@ export function DocumentRow({ doc }: { doc: DocRow }) {
         </div>
       </div>
 
-      {doc.status === 'failed' && doc.errorMsg && (
-        <p className="pl-7 text-xs text-[var(--error-text)] mt-0.5">{doc.errorMsg}</p>
+      {doc.status === 'failed' && (
+        doc.errorCode === 'QUOTA_EXHAUSTED' ? (
+          <p className="pl-7 text-xs text-amber-400 mt-0.5 flex items-center gap-1.5">
+            <Clock className="h-3 w-3 shrink-0" />
+            Embedding quota exceeded — retrying automatically tomorrow.
+          </p>
+        ) : doc.errorMsg ? (
+          <p className="pl-7 text-xs text-[var(--error-text)] mt-0.5">{doc.errorMsg}</p>
+        ) : null
       )}
     </div>
   )

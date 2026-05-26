@@ -136,6 +136,115 @@ function getProviderRouting(model: string) {
   return PROVIDER_ROUTING[model] ?? undefined
 }
 
+// ── Per-model display metadata (labels, speed badges) ─────────────────────────
+export interface ModelMeta {
+  /** Human-friendly display name shown in selects and pills */
+  label: string
+  /** Badge emoji + category text, e.g. "⚡ Ultra Fast" */
+  badge: string
+  /** CSS colour class for the badge pill (Tailwind text-* class) */
+  badgeColor: string
+  /** Short latency/throughput note, e.g. "0.48s · 204 tok/s" */
+  speed: string
+}
+
+export const MODEL_META: Record<string, ModelMeta> = {
+  'meta-llama/llama-3.1-8b-instruct': {
+    label: 'Llama 3.1 8B',
+    badge: '⚡ Ultra Fast',
+    badgeColor: 'text-sky-400',
+    speed: '0.48s · 204 tok/s',
+  },
+  'z-ai/glm-4.7-flash': {
+    label: 'GLM 4.7 Flash',
+    badge: '⚡ Ultra Fast',
+    badgeColor: 'text-sky-400',
+    speed: '0.92s E2E',
+  },
+  'mistralai/mistral-nemo': {
+    label: 'Mistral Nemo',
+    badge: '⚡ Ultra Fast',
+    badgeColor: 'text-sky-400',
+    speed: '0.30s TTFT',
+  },
+  'meta-llama/llama-3.3-70b-instruct': {
+    label: 'Llama 3.3 70B',
+    badge: '⚡ Fast',
+    badgeColor: 'text-sky-400',
+    speed: '0.66s · 150 tok/s',
+  },
+  'deepseek/deepseek-v4-flash': {
+    label: 'DeepSeek V4 Flash',
+    badge: '⚡ Fast',
+    badgeColor: 'text-sky-400',
+    speed: '0.72s TTFT',
+  },
+  'google/gemini-2.5-flash-lite': {
+    label: 'Gemini 2.5 Flash Lite',
+    badge: '⚡ Fast',
+    badgeColor: 'text-sky-400',
+    speed: '0.41s TTFT',
+  },
+  'openai/gpt-4o-mini': {
+    label: 'GPT-4o Mini',
+    badge: '⚡ Fast',
+    badgeColor: 'text-sky-400',
+    speed: '0.62s TTFT',
+  },
+  'google/gemma-4-31b-it': {
+    label: 'Gemma 4 31B',
+    badge: '⚖️ Balanced',
+    badgeColor: 'text-amber-400',
+    speed: '1.04s E2E',
+  },
+  'anthropic/claude-haiku-4-5-20251001': {
+    label: 'Claude Haiku 4.5',
+    badge: '⚖️ Balanced',
+    badgeColor: 'text-amber-400',
+    speed: '0.72s TTFT · 70 tok/s',
+  },
+  'meta-llama/llama-3.1-70b-instruct': {
+    label: 'Llama 3.1 70B',
+    badge: '⚖️ Balanced',
+    badgeColor: 'text-amber-400',
+    speed: '1.07s E2E',
+  },
+  'openai/gpt-oss-120b': {
+    label: 'GPT OSS 120B',
+    badge: '🧠 Smart',
+    badgeColor: 'text-violet-400',
+    speed: '0.48s TTFT · 125 tok/s',
+  },
+  'qwen/qwen3-235b-a22b-2507': {
+    label: 'Qwen3 235B',
+    badge: '🧠 Smart',
+    badgeColor: 'text-violet-400',
+    speed: '1.07s E2E',
+  },
+  'tencent/hy3-preview': {
+    label: 'HunyuanLarge Preview',
+    badge: '🔮 Experimental',
+    badgeColor: 'text-fuchsia-400',
+    speed: 'Preview',
+  },
+  'openrouter/owl-alpha': {
+    label: 'OWL Alpha',
+    badge: '🔮 Experimental',
+    badgeColor: 'text-fuchsia-400',
+    speed: 'Experimental',
+  },
+}
+
+/** Returns display metadata for a model ID, with a sensible fallback. */
+export function getModelMeta(modelId: string): ModelMeta {
+  return MODEL_META[modelId] ?? {
+    label: modelId,
+    badge: '⚖️ Balanced',
+    badgeColor: 'text-amber-400',
+    speed: '',
+  }
+}
+
 export const SUPPORTED_MODELS = [
   'deepseek/deepseek-v4-flash',
   'google/gemini-2.5-flash-lite',
