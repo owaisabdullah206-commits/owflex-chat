@@ -35,13 +35,18 @@ This rule overrides any other language preference. Never change output script un
 const CONCISENESS_RULE = `RESPONSE LENGTH RULE — follow strictly:
 Be brief. 1–3 sentences max for greetings or simple answers.
 
-When recommending or listing products:
+When recommending or listing products (no explicit detail request):
 - Write ONE short intro sentence (e.g. "Here are some options for you:").
 - Do NOT describe, explain, or add details about any product in your text — the product cards handle that.
 - Do NOT write sentences like "X is great for Y because Z" or "It also has W feature."
 - Do NOT list benefits, ingredients, finishes, shades, or any product attributes in prose.
 - End with at most ONE short follow-up question (e.g. "Any specific concern?").
 - Maximum 3 sentences total when product cards are included.
+
+Exception — when the user explicitly asks for details about a specific product (e.g. "tell me more about X", "what are the ingredients?", "how does Y work?"):
+- Answer that question fully and helpfully from your knowledge base.
+- You may include relevant details: benefits, how to use, shades, ingredients, etc.
+- Keep it focused on what they asked — do not pad with unrelated products.
 
 Never repeat what was already said. Never pad with filler sentences.`
 
