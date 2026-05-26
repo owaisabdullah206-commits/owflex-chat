@@ -36,7 +36,10 @@ export async function createAuditLog(entry: {
     entityType: entry.entityType,
     entityId:   entry.entityId,
     meta:       entry.meta ?? {},
-  }).catch(() => {}) // non-blocking — audit must not break primary flows
+  }).catch((err) => {
+    // Non-blocking — audit must never break primary flows, but log so we can debug
+    console.error('[audit] createAuditLog failed:', entry.action, err instanceof Error ? err.message : String(err))
+  })
 }
 
 export async function listAuditLogs(
