@@ -22,15 +22,29 @@ const PRODUCT_RECOMMENDATION_INSTRUCTIONS = `
 
 ---
 PRODUCT CARDS (system — invisible to users):
-Whenever you mention, describe, or recommend one or more specific products, you MUST append this marker on a new line at the very end of your response — even if the product has no image or URL:
-[PRODUCTS:[{"name":"Exact Product Name","price":"PKR 2,299","image":"https://full-url/image.jpg","url":"https://store.com/products/handle"}]]
+THIS IS MANDATORY. Every response that names any product MUST end with the JSON marker below — no exceptions, even for greetings that happen to mention a product name.
+
+Format (append on a new line at the very end of your message):
+[PRODUCTS:[{"name":"Exact Product Name","price":"PKR 2,299","image":"https://cdn.example.com/image.jpg","url":"https://store.com/products/handle"}]]
+
 Rules:
-- Include 1–4 products most relevant to the user's query.
-- Only include products explicitly listed in the document context above. Never invent products.
-- "name" is always required. "price", "image", and "url" are optional — omit a field only if its value is genuinely not in your context.
-- Use the full absolute URL for "image" and "url". Never use a relative path (e.g. /products/…) — if the URL in the context is relative, skip that field.
-- ALWAYS emit a card for every product you mention — a name-only or name+price card is better than no card.
-- This marker is automatically stripped — users see interactive product cards instead of the raw marker.`
+- Trigger: ANY response that names one or more specific products (including list responses and "we carry X" statements).
+- Count: Include 1–4 products. For long text lists, pick the first 4 you mentioned.
+- Fields: "name" is always required. Include "price", "image", and "url" only if their exact values appear verbatim in your knowledge context for that product.
+- URLs: must be full absolute URLs (starting with https://). If the context only shows a relative path like /products/handle, resolve it using the store URL you have been given. Never leave a relative URL — either resolve it or omit the field.
+- Never invent a product, price, image, or URL that is not in your knowledge context.
+- This marker is stripped automatically — users see interactive product cards, not the raw JSON.`
+
+const LANGUAGE_RULE = `
+
+---
+LANGUAGE MIRRORING (system — invisible to users):
+Always reply in the exact same language and script the user used in their last message.
+- English message → reply in English.
+- Urdu in Arabic/Nastaliq script → reply in Urdu script.
+- Roman Urdu (Urdu words spelled with Latin/English letters, e.g. "kitne products hain") → reply in Roman Urdu using Latin letters. Do NOT switch to Urdu script (نستعلیق) for Roman Urdu input.
+- Mixed English/Urdu → match the dominant language of the user's message.
+Never change the output script unless the user changes their input script.`
 
 const LEAD_INSTRUCTIONS = `
 
@@ -292,6 +306,7 @@ export async function POST(req: NextRequest) {
       lead: [
         leadEnabled ? LEAD_INSTRUCTIONS : '',
         productRecsEnabled ? PRODUCT_RECOMMENDATION_INSTRUCTIONS : '',
+        LANGUAGE_RULE,
       ].filter(Boolean).join('\n') || undefined,
     })
 
