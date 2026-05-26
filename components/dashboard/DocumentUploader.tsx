@@ -72,6 +72,7 @@ export function DocumentUploader({
   quotaMax,
   crawlUsed,
   crawlMax,
+  plan,
   storeUrl,
 }: Props) {
   const [tab, setTab] = useState<Tab>('file')
@@ -289,6 +290,24 @@ export function DocumentUploader({
                 </button>
               </div>
 
+              {/* Free-plan catalog limit notice */}
+              {plan === 'free' && !catalogChecking && (
+                <div className="flex items-start gap-2 rounded-md bg-amber-500/10 border border-amber-500/20 px-3 py-2">
+                  <span className="text-[11px] leading-relaxed text-amber-400">
+                    <strong className="font-semibold">Free plan:</strong> Only the first{' '}
+                    <strong className="font-semibold">10 products</strong> will be indexed from this
+                    file.{' '}
+                    <a
+                      href="/dashboard/billing"
+                      className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+                    >
+                      Upgrade
+                    </a>{' '}
+                    to index your full catalog.
+                  </span>
+                </div>
+              )}
+
               {/* Unique identifier column */}
               {!catalogChecking && (
                 <div className="flex flex-col gap-1.5">
@@ -409,6 +428,12 @@ export function DocumentUploader({
                       PDF, DOCX, TXT, Markdown · Max {MAX_MB} MB
                       <br />
                       CSV, Excel (Shopify / WooCommerce) · Max {MAX_CATALOG_MB} MB
+                      {plan === 'free' && (
+                        <>
+                          <br />
+                          <span className="text-amber-400/80">Free plan: CSV/Excel limited to 10 products</span>
+                        </>
+                      )}
                     </span>
                   </>
                 )}

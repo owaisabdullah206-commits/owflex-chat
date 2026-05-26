@@ -431,11 +431,11 @@ function addProducts(products){
   if(!products||!products.length)return;
   var bg=dk?"#1e293b":"#fff",bd=dk?"#334155":"#e2e8f0",clr=dk?"#e2e8f0":"#1e293b",mu=dk?"#94a3b8":"#64748b";
   var wrap=document.createElement("div");
-  wrap.style.cssText="display:flex;flex-wrap:wrap;gap:8px;max-width:90%;margin:4px 0;animation:ofIn .22s ease;align-self:flex-start";
+  wrap.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:90%;max-width:310px;margin:4px 0;animation:ofIn .22s ease;align-self:flex-start";
   for(var i=0;i<products.length&&i<4;i++){
     var p=products[i];if(!p||!p.name)continue;
     var card=document.createElement("div");
-    card.style.cssText="width:148px;border:1px solid "+bd+";border-radius:10px;overflow:hidden;flex-shrink:0;background:"+bg;
+    card.style.cssText="border:1px solid "+bd+";border-radius:10px;overflow:hidden;background:"+bg+";min-width:0";
     var h="";
     if(p.image){h+='<img src="'+esc(p.image)+'" style="width:100%;height:90px;object-fit:cover;display:block" loading="lazy" onerror="this.style.display=\'none\'">';}
     h+='<div style="padding:8px">';
