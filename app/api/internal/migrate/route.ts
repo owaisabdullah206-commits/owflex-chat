@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from 'drizzle-orm'
-import { db } from '@/lib/db'
+import { db, schema } from '@/lib/db'
+import { correctLegacyOrgCredits } from '@/lib/credits'
 
 // GET — returns current DB column state for diagnosis (protected)
 export async function GET(req: NextRequest) {
@@ -104,6 +105,26 @@ export async function POST(req: NextRequest) {
     WHERE id = 'default'
       AND (system_prompt LIKE '%Octively%' OR system_prompt = '' OR system_prompt = 'You are a helpful assistant.')
   `)
+
+  // ── 0010 — correct legacy free-tier Redis balances ───────────────────────────
+  // Orgs created before May 2026 were seeded with 50 K credits instead of 2 M.
+  // For each org whose Redis balance is ≤ 50 000, we add:
+  //   delta = PLAN_CREDIT_ALLOCATIONS[currentPlan] - 50_000
+  // This correctly accounts for any plan upgrade that happened without a Redis bump.
+  try {
+    const orgs = await db
+      .select({ id: schema.organizations.id, plan: schema.organizations.plan })
+      .from(schema.organizations)
+
+    const correctionResults = await Promise.all(
+      orgs.map((org) => correctLegacyOrgCredits(org.id, org.plan))
+    )
+
+    const corrected = correctionResults.filter((r) => r.corrected).length
+    results.push(`legacy_credit_correction: corrected ${corrected} / ${orgs.length} orgs`)
+  } catch (e) {
+    results.push(`legacy_credit_correction: ${String(e)}`)
+  }
 
   return NextResponse.json({ results })
 }

@@ -3,7 +3,6 @@ import { and, count, desc, eq, gte } from 'drizzle-orm'
 import { ChevronLeft } from 'lucide-react'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
-import { listFaqs } from '@/lib/db/queries/faqs'
 import { Suspense } from 'react'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
@@ -18,7 +17,6 @@ import { LeadsTable } from '@/components/dashboard/LeadsTable'
 import { BotSettingsForm } from '@/components/dashboard/BotSettingsForm'
 import { BotToggle } from '@/components/dashboard/BotToggle'
 import { DeleteBotButton } from '@/components/dashboard/DeleteBotButton'
-import { FaqEditor } from '@/components/dashboard/FaqEditor'
 import { UnansweredList } from '@/components/dashboard/UnansweredList'
 import { DocumentsTab } from '@/components/dashboard/DocumentsTab'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
@@ -28,7 +26,7 @@ import { ClientStatusCard } from '@/components/dashboard/ClientStatusCard'
 import { BotAnalyticsTab } from '@/components/dashboard/BotAnalyticsTab'
 import { getBotAnalytics, getPageBreakdown, getBotRatingSummary } from '@/lib/db/queries/analytics'
 import { UpgradeCTA } from '@/components/dashboard/UpgradeCTA'
-const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Settings', 'Knowledge Base', 'Documents', 'Unanswered'] as const
+const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Settings', 'Knowledge Base', 'Unanswered'] as const
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
@@ -78,7 +76,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     to: toStr ? new Date(toStr) : undefined,
   }
 
-  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, faqs, unansweredMessages, clientRows, inviteRows, analyticsData, pageBreakdown, ratingSummary] = await Promise.all([
+  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, unansweredMessages, clientRows, inviteRows, analyticsData, pageBreakdown, ratingSummary] = await Promise.all([
     searchConversations(bot.id, convFilters),
     db
       .select({
@@ -104,7 +102,6 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       .select({ count: count() })
       .from(schema.conversations)
       .where(and(eq(schema.conversations.botId, bot.id), gte(schema.conversations.startedAt, weekStart))),
-    listFaqs(bot.id),
     db
       .select({
         id:             schema.messages.id,
@@ -375,44 +372,10 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           )}
 
           {activeTab === 'knowledge base' && (
-            bot.orgPlan === 'free' ? (
-              <UpgradeCTA feature="FAQ Editor" requiredPlan="Starter" />
-            ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-              <div className="lg:col-span-2">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>knowledge_base</p>
-                <p className="text-xs text-[var(--ink-muted)] mb-5">
-                  Active entries are injected into the system prompt on every chat. Changes apply within 5 minutes.
-                </p>
-                <FaqEditor botId={bot.id} initialFaqs={faqs} />
-              </div>
-              <div className="hidden lg:block">
-                <div className="border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>tips</p>
-                  <p className="text-xs text-[var(--ink-muted)]">Keep FAQ answers concise — they&apos;re injected on every message.</p>
-                  <p className="text-xs text-[var(--ink-muted)]">
-                    For longer docs, use the{' '}
-                    <a href="?tab=documents" className="text-[var(--of-primary)] hover:underline" style={{ fontFamily: 'var(--font-mono)' }}>
-                      documents
-                    </a>{' '}
-                    tab.
-                  </p>
-                  <div className="pt-2 border-t border-[var(--hairline)]">
-                    <p className="text-[11px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                      active={faqs.filter((f) => f.isActive).length} / total={faqs.length}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            )
-          )}
-
-          {activeTab === 'documents' && (
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>documents</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>knowledge_base</p>
               <p className="text-xs text-[var(--ink-muted)] mb-5">
-                Upload files or add a URL. The bot retrieves relevant context from these documents at chat time.
+                Upload files, PDFs, or add a URL. The bot retrieves relevant context from these at chat time.
               </p>
               <DocumentsTab
                 botId={bot.id}
@@ -431,7 +394,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               <div className="lg:col-span-2">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>unanswered_questions</p>
                 <p className="text-xs text-[var(--ink-muted)] mb-5">
-                  Responses where the bot expressed uncertainty. Add FAQ entries to fill these gaps.
+                  Responses where the bot expressed uncertainty. Upload relevant documents to fill these gaps.
                 </p>
                 <UnansweredList messages={unansweredMessages} />
               </div>
@@ -439,7 +402,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 <div className="border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>what_to_do</p>
                   <p className="text-xs text-[var(--ink-muted)]">
-                    Add FAQ entries to fill the gaps so visitors get accurate answers.
+                    Upload documents to the knowledge base so visitors get accurate answers next time.
                   </p>
                   <a href="?tab=knowledge base" className="block text-xs text-[var(--of-primary)] hover:underline" style={{ fontFamily: 'var(--font-mono)' }}>
                     → knowledge_base

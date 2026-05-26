@@ -5,6 +5,7 @@ import { and, count, desc, eq, inArray, sql, sum } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { SUPPORTED_MODELS, getOrCanonicalIds } from '@/lib/ai/litellm'
+import { upgradePlanCredits } from '@/lib/credits'
 
 const PKR_PRICES: Record<string, number> = {
   free:       0,
@@ -222,9 +223,20 @@ export async function changeOrgPlan(
   const validPlans = ['free', 'starter', 'pro', 'agency', 'enterprise']
   if (!validPlans.includes(plan)) return { error: 'Invalid plan' }
 
+  // Read the current plan BEFORE updating so we can compute the credit delta
+  const [current] = await db
+    .select({ plan: schema.organizations.plan })
+    .from(schema.organizations)
+    .where(eq(schema.organizations.id, orgId))
+    .limit(1)
+  const fromPlan = current?.plan ?? 'free'
+
   await db.update(schema.organizations)
     .set({ plan })
     .where(eq(schema.organizations.id, orgId))
+
+  // Top up (or trim) Redis balance by the difference between the two plan allocations
+  await upgradePlanCredits(orgId, fromPlan, plan)
 
   revalidatePath('/dashboard/admin/developers')
   return {}

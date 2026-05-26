@@ -9,7 +9,6 @@ import { useDarkMode } from './useDarkMode'
 const SHIPPED = [
   'RAG knowledge base — document & URL ingestion',
   'PDF upload + website scraping — knowledge base via dashboard UI',
-  'FAQ editor — manage FAQ entries per bot from the dashboard',
   'Unanswered questions list — see every query the bot could not answer',
   'Multi-bot dashboard — manage every client from one place',
   'Routing intelligence — per-bot model selection',

@@ -12,7 +12,6 @@ import { chatCompletionStreamGen, FALLBACK_MODEL, type ChatMessage } from '@/lib
 import { handleCreditExhaustion } from '@/lib/credits/grace'
 import { getChatRatelimit } from '@/lib/ratelimit'
 import { getPlatformPrompt } from '@/lib/db/queries/platform'
-import { getActiveFaqs } from '@/lib/db/queries/faqs'
 import { flagIfUnanswered } from '@/lib/ai/uncertainty'
 import * as creditLib from '@/lib/credits'
 import { checkConversationLimit, PLAN_LIMITS } from '@/lib/limits'
@@ -262,8 +261,8 @@ export async function POST(req: NextRequest) {
       .reverse()
       .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
 
-    // Compose system prompt: [platform] + [bot] + [doc context] + [FAQ context] + [lead instructions]
-    const [platformPrompt, activeFaqs, retrievedChunks, totalKbProducts] = await Promise.all([
+    // Compose system prompt: [platform] + [bot] + [doc context] + [lead instructions]
+    const [platformPrompt, retrievedChunks, totalKbProducts] = await Promise.all([
       getPlatformPrompt().then((p) => {
         // Replace {{botName}}, {{storeName}}, {{storeUrl}} placeholders with live bot values
         const storeName = storeUrl
@@ -276,7 +275,6 @@ export async function POST(req: NextRequest) {
         console.log('[chat] platformPrompt chars:', resolved.length)
         return resolved
       }),
-      getActiveFaqs(bot.id),
       bot.documentCount > 0 && !shouldSkipRag(message)
         ? retrieveContext(bot.id, message).catch((err) => {
             console.error('[chat] retrieveContext failed:', err)
@@ -298,10 +296,6 @@ export async function POST(req: NextRequest) {
           `).then((r) => (r.rows[0] as { total: number })?.total ?? 0)
         : Promise.resolve(0),
     ])
-
-    const faqBlock = activeFaqs.length > 0
-      ? '--- Knowledge Base ---\n' + activeFaqs.map((f) => `Q: ${f.question}\nA: ${f.answer}`).join('\n\n')
-      : ''
 
     const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
     const catalogProductLimit = PLAN_LIMITS[planKey].catalogProducts
@@ -330,7 +324,7 @@ export async function POST(req: NextRequest) {
       platform: [LANGUAGE_RULE, CONCISENESS_RULE, platformPrompt].filter(Boolean).join('\n\n'),
       bot: bot.systemPrompt,
       docs: docContextBlock || undefined,
-      faqs: [faqBlock, strictInstructions].filter(Boolean).join('\n\n') || undefined,
+      faqs: strictInstructions || undefined,
       lead: [
         leadEnabled ? LEAD_INSTRUCTIONS : '',
         productRecsEnabled ? PRODUCT_RECOMMENDATION_INSTRUCTIONS : '',

@@ -63,7 +63,7 @@ const PLANS = [
     features: [
       '1 bot · 200 conversations / month',
       '2M credits included / month',
-      '15 leads / month · 5 FAQs per bot',
+      '15 leads / month',
       '7-day conversation history',
       '3 docs · 5 MB storage · 10-product CSV catalog',
       'Color-only widget customization',
@@ -85,13 +85,12 @@ const PLANS = [
     features: [
       '2 bots · 3,000 conversations / month',
       '30M credits included / month',
-      'Unlimited leads / month · 20 FAQs per bot',
+      'Unlimited leads / month',
       '25 MB document storage · 30-day history',
       'Full widget customization',
       'Can turn off "Powered by Octively" badge',
       'Lead capture on/off · strict mode',
       'Budget-tier AI models',
-      'FAQ editor — basic',
       'WordPress plugin · email support',
     ],
   },
@@ -109,7 +108,7 @@ const PLANS = [
     features: [
       '8 bots · 15,000 conversations / month',
       '150M credits included / month',
-      'Unlimited leads / month · 50 FAQs per bot',
+      'Unlimited leads / month',
       '100 MB document storage · unlimited history',
       'Mid-range AI models · advanced analytics',
       'Per-page analytics — top conversation pages breakdown',
@@ -137,7 +136,7 @@ const PLANS = [
     features: [
       'Unlimited bots · 75,000 conversations / month',
       '750M credits / month · better top-up rate',
-      'Unlimited leads · unlimited FAQs',
+      'Unlimited leads',
       '500 MB document storage · unlimited history',
       'All AI models · full analytics',
       'Full white-label — custom branding text + URL',
@@ -192,7 +191,6 @@ const COMPARE_ROWS = [
   { feat: 'Credits included / month', values: ['2M', '30M', '150M', '750M', 'Custom'] },
   { feat: 'Addon credit top-ups', values: [false, true, true, 'Better rate', 'Best rate'] },
   { feat: 'Leads / month', values: ['15', '∞', '∞', '∞', '∞'] },
-  { feat: 'FAQs per bot', values: ['5', '20', '50', '∞', '∞'] },
   { feat: 'Document storage', values: ['5 MB', '25 MB', '100 MB', '500 MB', 'Custom'] },
   { feat: 'Conversation history', values: ['7 days', '30 days', 'Unlimited', 'Unlimited', 'Unlimited'] },
 
@@ -222,7 +220,6 @@ const COMPARE_ROWS = [
   { feat: 'Trigger tooltip', values: [true, true, true, true, true] },
   { feat: 'Human handoff / escalation', values: [false, false, true, true, true] },
   { feat: 'Weekly email digest', values: [false, false, true, true, true] },
-  { feat: 'Knowledge base — FAQ editor', values: [false, 'Basic', true, true, true] },
   { feat: 'Sub-tenant management', values: [false, false, false, true, true] },
   { feat: 'Per-bot resource allocation', values: [false, false, false, true, true] },
   { feat: 'API access', values: [false, false, false, true, true] },

@@ -1132,9 +1132,9 @@ function FeatureBento() {
 function PricingTeaser() {
   const [currency, setCurrency] = useState<'PKR' | 'USD'>('PKR')
   const plans = [
-    { key: 'free', name: 'Free', pkr: 0, usd: 0, blurb: '1 bot · 200 convos · 2M credits/mo', feats: ['15 leads/month · 5 FAQs per bot', '7-day conversation history', 'Color-only widget customization', 'WordPress plugin · community support'] },
-    { key: 'starter', name: 'Starter', pkr: 2500, usd: 15, blurb: '2 bots · 3K convos · 30M credits/mo', feats: ['Unlimited leads · 20 FAQs per bot', '25 MB storage · 30-day history', 'Full widget · budget AI models', 'Lead capture · strict mode · email support'] },
-    { key: 'pro', name: 'Pro', pkr: 7500, usd: 29, blurb: '8 bots · 15K convos · 150M credits/mo', feats: ['Unlimited leads · 50 FAQs · 100 MB storage', 'Unlimited history · mid-range AI models', 'Advanced analytics · unanswered questions', 'PDF upload · scraping · smart routing (Ph. 3)'], featured: true },
+    { key: 'free', name: 'Free', pkr: 0, usd: 0, blurb: '1 bot · 200 convos · 2M credits/mo', feats: ['15 leads/month · 3 docs · 5 MB storage', '7-day conversation history', 'Color-only widget customization', 'WordPress plugin · community support'] },
+    { key: 'starter', name: 'Starter', pkr: 2500, usd: 15, blurb: '2 bots · 3K convos · 30M credits/mo', feats: ['Unlimited leads · 25 MB storage · 30-day history', 'Full widget · budget AI models', 'Lead capture · strict mode', 'WordPress plugin · email support'] },
+    { key: 'pro', name: 'Pro', pkr: 7500, usd: 29, blurb: '8 bots · 15K convos · 150M credits/mo', feats: ['Unlimited leads · 100 MB storage · unlimited history', 'Mid-range AI models · advanced analytics', 'Unanswered questions · smart routing', 'PDF upload · scraping · per-page analytics'], featured: true },
   ]
   const fmt = (pkr: number, usd: number) =>
     currency === 'PKR' ? (pkr === 0 ? '₨0' : `₨${pkr.toLocaleString()}`) : (usd === 0 ? '$0' : `$${usd}`)

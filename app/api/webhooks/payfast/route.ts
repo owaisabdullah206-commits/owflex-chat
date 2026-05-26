@@ -40,10 +40,21 @@ export async function POST(req: NextRequest) {
       .limit(1)
 
     if (!existing) {
+      // Read the current plan BEFORE updating so we can compute the credit delta
+      const [org] = await db
+        .select({ plan: schema.organizations.plan })
+        .from(schema.organizations)
+        .where(eq(schema.organizations.id, result.orgId))
+        .limit(1)
+      const fromPlan = org?.plan ?? 'free'
+
       await db
         .update(schema.organizations)
         .set({ plan: planId as PlanId })
         .where(eq(schema.organizations.id, result.orgId))
+
+      // Top up Redis balance by the difference between the two plan allocations
+      await creditLib.upgradePlanCredits(result.orgId, fromPlan, planId)
       await creditLib.logTransaction(result.orgId, 0, 'plan_upgrade', result.paymentId)
     }
 

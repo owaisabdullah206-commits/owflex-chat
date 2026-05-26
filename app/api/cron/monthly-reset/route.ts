@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     leadsThisMonth: 0,
   })
 
-  // Restore free-tier credit allocation (SET — overrides to 50k baseline)
+  // Restore free-tier credit allocation (SET — overrides to 2 M baseline)
   const freeOrgIds = await getAllFreeOrgIds()
   await Promise.all(freeOrgIds.map((id) => resetFreeCredits(id)))
 

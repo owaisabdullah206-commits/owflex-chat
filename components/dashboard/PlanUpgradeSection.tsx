@@ -22,7 +22,7 @@ const PLAN_META: Record<string, {
     accent:  'var(--of-primary)',
     blurb:   '2 bots · 3K convos · 30M credits/mo',
     features: [
-      'Unlimited leads · 20 FAQs per bot',
+      'Unlimited leads',
       '25 MB storage · 30-day history',
       'Full widget customization',
       'Email support',
@@ -34,7 +34,7 @@ const PLAN_META: Record<string, {
     accent:  '#8B5CF6',
     blurb:   '8 bots · 15K convos · 150M credits/mo',
     features: [
-      'Unlimited leads · 50 FAQs · 100 MB storage',
+      'Unlimited leads · 100 MB storage',
       'Unlimited history · advanced analytics',
       'Unanswered questions · PDF + URL scraping',
       'Credit top-ups · priority support',

@@ -62,7 +62,7 @@ export function DeleteBotButton({ botId, botName }: DeleteBotButtonProps) {
           <DialogTitle className="text-red-500">Delete this bot?</DialogTitle>
           <DialogDescription className="text-[var(--ink-muted)]">
             This permanently deletes <strong className="text-[var(--ink)]">{botName}</strong> and
-            all of its conversations, messages, leads, FAQs, and pending invites. This cannot be undone.
+            all of its conversations, messages, leads, and pending invites. This cannot be undone.
           </DialogDescription>
         </DialogHeader>
 

@@ -111,7 +111,7 @@ export function AdminPlatformEditor({ initialValue }: Props) {
             <ul className="space-y-1 text-[var(--ink-muted)]">
               <li>Bot-specific personas or tone</li>
               <li>Business-specific product info</li>
-              <li>FAQs or pricing details</li>
+              <li>Pricing or return policy details</li>
               <li>Lead capture instructions</li>
               <li>Anything developer-configurable</li>
             </ul>
