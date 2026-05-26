@@ -577,6 +577,32 @@ function sendMsg(t){
   .then(function(r){
     if(!r.ok||!r.body){showErr();return;}
     var reader=r.body.getReader(),dec=new TextDecoder(),buf="",bubble=null,full="";
+    // ── Render queue: decouples SSE delivery from visual streaming ──────────
+    // Tokens arrive at 200-400 tok/s (Groq) and are batched by browser into
+    // single repaints. This queue drains at ~200 tok/s via rAF so text visibly
+    // flows in regardless of how chunks arrive from the network.
+    var tkQ=[],tkAF=null,tkStamp=0,doneEv=null;
+    function finalize(){
+      var processed=lc?captureLead(full):full;
+      processed=stripProducts(processed);
+      if(bubble){bubble.innerHTML=renderMd(processed);}else{addBot(processed);}
+      msgs.push({r:0,t:processed});
+      if(doneEv.products&&doneEv.products.length)addProducts(doneEv.products);
+      if(doneEv.needsHuman)showHandoffCard();
+      if(doneEv.messageId)addRatingRow(bubble,doneEv.messageId);
+      saveHistory();
+      lock(0);inp.focus();
+    }
+    function flushTk(){
+      tkAF=null;
+      if(!tkQ.length){if(doneEv)finalize();return;}
+      // ~200 tok/s visual cap: 1 tok per 5ms; rAF fires ~every 16ms → ~3 tok/frame
+      var now=Date.now(),n=Math.max(1,Math.round((now-tkStamp)/5));
+      tkStamp=now;n=Math.min(n,tkQ.length);
+      while(n-->0)full+=tkQ.shift();
+      if(bubble){bubble.textContent=stripProducts(full);ms.scrollTop=ms.scrollHeight;}
+      tkAF=requestAnimationFrame(flushTk);
+    }
     function pump(){
       reader.read().then(function(chunk){
         if(chunk.done)return;
@@ -593,18 +619,14 @@ function sendMsg(t){
                 hideTyping();
                 bubble=document.createElement("div");bubble.className="b";ms.appendChild(bubble);
                 setStatus("Typing…",1);
+                tkStamp=Date.now();
               }
-              full+=ev.delta;bubble.textContent=stripProducts(full);ms.scrollTop=ms.scrollHeight;
+              tkQ.push(ev.delta);
+              if(!tkAF)tkAF=requestAnimationFrame(flushTk);
             }else if(ev.type==="done"){
-              var processed=lc?captureLead(full):full;
-              processed=stripProducts(processed);
-              if(bubble){bubble.innerHTML=renderMd(processed);}else{addBot(processed);}
-              msgs.push({r:0,t:processed});
-              if(ev.products&&ev.products.length)addProducts(ev.products);
-              if(ev.needsHuman)showHandoffCard();
-              if(ev.messageId)addRatingRow(bubble,ev.messageId);
-              saveHistory();
-              lock(0);inp.focus();
+              doneEv=ev;
+              if(!tkQ.length)finalize(); // queue already empty — finalize immediately
+              // otherwise flushTk() calls finalize() once queue drains
             }else if(ev.type==="error"){showErr();}
           }catch(e){}
         }

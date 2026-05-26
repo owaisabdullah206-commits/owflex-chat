@@ -1,3 +1,8 @@
+// Force dynamic — never cached; required for SSE streaming
+export const dynamic    = 'force-dynamic'
+// Extend Vercel function timeout to 60s (default 10s would cut off long replies)
+export const maxDuration = 60
+
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { and, desc, eq, sql } from 'drizzle-orm'
@@ -595,8 +600,14 @@ export async function POST(req: NextRequest) {
     return new Response(responseStream, {
       headers: {
         'Content-Type':      'text/event-stream; charset=utf-8',
-        'Cache-Control':     'no-cache, no-transform',
-        'X-Accel-Buffering': 'no',
+        // 'none' tells Next.js / any proxy NOT to gzip this response.
+        // Without this, the browser's Accept-Encoding: gzip causes the entire
+        // SSE stream to be compressed and buffered before delivery — which makes
+        // every reply appear all at once instead of streaming token-by-token.
+        'Content-Encoding': 'none',
+        'Cache-Control':    'no-cache, no-store, no-transform',
+        'Connection':       'keep-alive',
+        'X-Accel-Buffering':'no',   // nginx: disable proxy buffering
         ...corsHeaders(allowedOrigin ?? '*'),
       },
     })
