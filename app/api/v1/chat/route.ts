@@ -32,12 +32,18 @@ Reply in the EXACT same language AND script the user used in their last message.
 - Mixed → match the dominant script of the user's message.
 This rule overrides any other language preference. Never change output script unless the user changes their input script first.`
 
-const CONCISENESS_RULE = `RESPONSE LENGTH RULE:
-Keep replies concise and conversational — aim for 1–3 short paragraphs or a brief list.
-- When listing products: show name + price only. Omit descriptions unless the user asks for details.
-- Never repeat information already given in the conversation.
-- If you must list many items, show the top 4–6 and offer to share more.
-- Maximum ~600 words per reply.`
+const CONCISENESS_RULE = `RESPONSE LENGTH RULE — follow strictly:
+Be brief. 1–3 sentences max for greetings or simple answers.
+
+When recommending or listing products:
+- Write ONE short intro sentence (e.g. "Here are some options for you:").
+- Do NOT describe, explain, or add details about any product in your text — the product cards handle that.
+- Do NOT write sentences like "X is great for Y because Z" or "It also has W feature."
+- Do NOT list benefits, ingredients, finishes, shades, or any product attributes in prose.
+- End with at most ONE short follow-up question (e.g. "Any specific concern?").
+- Maximum 3 sentences total when product cards are included.
+
+Never repeat what was already said. Never pad with filler sentences.`
 
 const PRODUCT_RECOMMENDATION_INSTRUCTIONS = `
 
