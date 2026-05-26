@@ -2,6 +2,81 @@ export const CLASSIFIER_MODEL = 'deepseek/deepseek-v4-flash'
 export const STRONG_MODEL = 'anthropic/claude-haiku-4-5-20251001'
 export const FALLBACK_MODEL = 'deepseek/deepseek-v4-flash'
 
+// ── Per-model provider routing for OpenRouter ─────────────────────────────────
+// Provider names must match OpenRouter's display names exactly.
+// Sources: live tok/s logs + OpenRouter provider stats pages.
+//
+//  order          — preferred providers tried left-to-right
+//  ignore         — never route here regardless of load
+//  allow_fallbacks— true: if all ordered providers fail, fall through to pool
+// ─────────────────────────────────────────────────────────────────────────────
+const PROVIDER_ROUTING: Record<string, {
+  order?:           string[]
+  ignore?:          string[]
+  allow_fallbacks?: boolean
+}> = {
+  // OR stats (2026-05-26): Alibaba TTFT 0.72s/83tps, NovitaAI 1.37s/60tps,
+  // AtlasCloud 1.07s/59tps, SiliconFlow 1.69s/62tps — all solid.
+  // GMICloud TTFT 7.34s → instant disqualify (moved to ignore).
+  // StreamLake 92.9% uptime, Morph 74.1% uptime → both ignored.
+  // Venice capped at 32.8K output → ignore.
+  // Parasail live log: 6.9 tok/s run (17s reply). DeepInfra/AkashML/Baidu too slow.
+  'deepseek/deepseek-v4-flash': {
+    order:  ['Alibaba Cloud', 'NovitaAI', 'AtlasCloud', 'SiliconFlow'],
+    ignore: ['Parasail', 'DeepInfra', 'AkashML', 'Baidu Qianfan', 'GMICloud', 'Morph', 'Venice', 'StreamLake'],
+    allow_fallbacks: true,
+  },
+
+  // EU vertex: TTFT 0.41s, E2E 1.21s, 127 tok/s — nearly 2× faster E2E than AI Studio.
+  'google/gemini-2.5-flash-lite': {
+    order:  ['Google Vertex (EU)', 'Google AI Studio', 'Google Vertex'],
+    allow_fallbacks: true,
+  },
+
+  // NovitaAI cheapest + fast (125 tps, $0.25/M out). Groq fastest TTFT (0.21s, 330 tps).
+  // Cerebras going away 2026-05-27. SiliconFlow/Bedrock/DekaLLM too slow or unreliable.
+  'openai/gpt-oss-120b': {
+    order:  ['NovitaAI', 'Groq', 'Google Vertex', 'Weights & Biases', 'Nebius Token Factory', 'DeepInfra Turbo'],
+    ignore: ['SiliconFlow', 'DekaLLM', 'Amazon Bedrock', 'Cerebras', 'SambaNova Dedicated'],
+    allow_fallbacks: true,
+  },
+
+  // Cloudflare E2E 1.04s (best). Google Vertex E2E 1.11s + 99.9% uptime.
+  // Venice caps at 8.2K output — too small. NovitaAI/SiliconFlow 2s+ latency.
+  'google/gemma-4-31b-it': {
+    order:  ['Cloudflare', 'Google Vertex'],
+    ignore: ['SiliconFlow', 'NovitaAI', 'Venice', 'NextBit', 'DekaLLM'],
+    allow_fallbacks: true,
+  },
+
+  // Mistral's own infra is by far the best: 0.30s TTFT, 81 tok/s, 99.9% uptime.
+  'mistralai/mistral-nemo': {
+    order:  ['Mistral'],
+    ignore: ['NovitaAI', 'DekaLLM'],
+    allow_fallbacks: true,
+  },
+
+  // Weights & Biases: E2E 1.07s, 78 tok/s, 100% uptime.
+  // Together: 26.39s latency — instant disqualify. Cerebras going away 2026-05-27.
+  'qwen/qwen3-235b-a22b-2507': {
+    order:  ['Weights & Biases', 'Alibaba Cloud', 'AtlasCloud', 'Google Vertex'],
+    ignore: ['Together', 'StreamLake', 'Cerebras'],
+    allow_fallbacks: true,
+  },
+
+  // Cloudflare only sane choice: E2E 0.92s. Others: Venice/Z.ai/NovitaAI all <75% uptime.
+  'z-ai/glm-4.7-flash': {
+    order:  ['Cloudflare'],
+    ignore: ['Venice', 'Z.ai', 'NovitaAI', 'DeepInfra'],
+    allow_fallbacks: true,
+  },
+}
+
+/** Returns the OpenRouter `provider` routing object for a given model, or undefined. */
+function getProviderRouting(model: string) {
+  return PROVIDER_ROUTING[model] ?? undefined
+}
+
 export const SUPPORTED_MODELS = [
   'deepseek/deepseek-v4-flash',
   'google/gemini-2.5-flash-lite',
@@ -51,11 +126,12 @@ export async function chatCompletion({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: resolvedModel,
+      model:    resolvedModel,
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages,
       ],
+      ...(getProviderRouting(resolvedModel) ? { provider: getProviderRouting(resolvedModel) } : {}),
     }),
   })
 
@@ -113,6 +189,7 @@ export async function* chatCompletionStreamGen({
         { role: 'system', content: systemPrompt },
         ...messages,
       ],
+      ...(getProviderRouting(resolvedModel) ? { provider: getProviderRouting(resolvedModel) } : {}),
     }),
   })
 
