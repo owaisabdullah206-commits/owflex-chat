@@ -2,6 +2,7 @@
 
 import { useTheme } from '@/hooks/useTheme'
 import { ThemeToggleButton } from '@/components/shared/ThemeToggleButton'
+import { HeaderCreditPill } from '@/components/dashboard/HeaderCreditPill'
 import { Toaster } from '@/components/ui/sonner'
 
 const themeScript = `(function(){
@@ -20,7 +21,8 @@ export function DashboardShell({ children, banner }: { children: React.ReactNode
       <div className="flex min-h-screen bg-[var(--bg)]">
         <div className="flex-1 flex flex-col">
           {banner}
-          <header className="flex items-center justify-end px-4 py-2 border-b border-[var(--hairline)]">
+          <header className="flex items-center justify-end gap-3 px-4 py-2 border-b border-[var(--hairline)]">
+            <HeaderCreditPill />
             <ThemeToggleButton theme={theme} onToggle={toggle} />
           </header>
           <main className="flex-1">{children}</main>
