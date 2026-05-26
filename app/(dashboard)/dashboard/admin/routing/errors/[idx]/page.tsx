@@ -6,6 +6,7 @@ import { requirePlatformOwner } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { CopyButton } from '@/components/shared/CopyButton'
+import { ClientDate } from '@/components/shared/ClientDate'
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -141,7 +142,7 @@ export default async function ErrorDetailPage({ params }: { params: Promise<{ id
             <div>
               <h1 className="text-lg font-bold text-[var(--ink)]">Chat Error Detail</h1>
               <p className="text-[11px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
-                {error.t ? new Date(error.t).toLocaleString() : 'unknown time'}
+                {error.t ? <ClientDate iso={error.t} /> : 'unknown time'}
               </p>
             </div>
             <CopyButton text={copyText} label="Copy all details" />
@@ -152,7 +153,7 @@ export default async function ErrorDetailPage({ params }: { params: Promise<{ id
 
           {/* Error */}
           <Section title="error">
-            <Field label="time" value={error.t ? new Date(error.t).toLocaleString() : '—'} mono />
+            <Field label="time" value={error.t ? <ClientDate iso={error.t} /> : '—'} mono />
             <div className="py-2.5">
               <span className="text-[11px] text-[var(--ink-subtle)] block mb-2" style={{ fontFamily: 'var(--font-mono)' }}>
                 message

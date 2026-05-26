@@ -3,6 +3,7 @@ import { requirePlatformOwner } from '@/lib/auth/session'
 import { listAllAuditLogs } from '@/lib/db/queries/audit'
 import { getModelLatencyStats } from '@/lib/db/queries/admin'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { ClientDate } from '@/components/shared/ClientDate'
 
 function latencyBadge(ms: number): string {
   if (ms < 1000) return 'text-[var(--success-text)]'
@@ -150,7 +151,7 @@ export default async function AdminAuditPage() {
                       {log.userEmail?.split('@')[0] ?? '—'}
                     </span>
                     <span className="text-[11px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
-                      {new Date(log.createdAt).toLocaleString()}
+                      <ClientDate iso={log.createdAt} />
                     </span>
                   </div>
                 ))}

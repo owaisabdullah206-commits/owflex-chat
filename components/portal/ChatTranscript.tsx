@@ -1,3 +1,6 @@
+import { MarkdownContent } from '@/components/shared/MarkdownContent'
+import { ClientDate } from '@/components/shared/ClientDate'
+
 interface Message {
   id: string
   role: string
@@ -30,19 +33,20 @@ export function ChatTranscript({ messages, botName }: ChatTranscriptProps) {
           >
             <div className="max-w-[75%]">
               <div
-                className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+                className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                   isUser
-                    ? 'bg-[var(--of-primary)] text-white rounded-br-sm'
+                    ? 'bg-[var(--of-primary)] text-white rounded-br-sm whitespace-pre-wrap'
                     : 'bg-[var(--surface)] border border-[var(--hairline)] text-[var(--ink)] rounded-bl-sm'
                 }`}
               >
-                {msg.content}
+                {isUser
+                  ? msg.content
+                  : <MarkdownContent content={msg.content} />
+                }
               </div>
               <p className={`text-[10px] text-[var(--ink-subtle)] mt-1 ${isUser ? 'text-right' : 'text-left'}`}>
                 {isUser ? 'Visitor' : botName} ·{' '}
-                {new Date(msg.createdAt).toLocaleTimeString('en-US', {
-                  hour: 'numeric', minute: '2-digit',
-                })}
+                <ClientDate iso={msg.createdAt} opts={{ hour: 'numeric', minute: '2-digit', hour12: true }} />
               </p>
             </div>
           </div>

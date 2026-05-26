@@ -7,6 +7,7 @@ import { db, schema } from '@/lib/db'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 import { HandoffActions } from '@/components/dashboard/HandoffActions'
+import { MarkdownContent } from '@/components/shared/MarkdownContent'
 
 export default async function ConversationDetailPage({
   params,
@@ -169,13 +170,16 @@ export default async function ConversationDetailPage({
                     )}
                     <div className={`max-w-[75%] flex flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
                       <div
-                        className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
+                        className={`px-4 py-2.5 text-sm leading-relaxed ${
                           isUser
-                            ? 'bg-[var(--of-primary)] text-white'
+                            ? 'bg-[var(--of-primary)] text-white whitespace-pre-wrap'
                             : 'bg-[var(--surface-2)] text-[var(--ink)] border border-[var(--hairline)]'
                         }`}
                       >
-                        {msg.content}
+                        {isUser
+                          ? msg.content
+                          : <MarkdownContent content={msg.content} />
+                        }
                       </div>
                       <div className="flex items-center gap-2 text-[10px] text-[var(--ink-subtle)]">
                         <RelativeTime date={msg.createdAt} />

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { getModelMessageLatency } from '@/lib/db/queries/admin'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { ClientDate } from '@/components/shared/ClientDate'
 
 // ── formatting helpers ────────────────────────────────────────────────────────
 
@@ -17,15 +18,6 @@ function fmtDelta(d: number | null): string {
   const prefix = d > 0 ? '+' : ''
   if (Math.abs(d) >= 1000) return `${prefix}${(d / 1000).toFixed(2)}s`
   return `${prefix}${d}ms`
-}
-
-function fmtDate(iso: string): string {
-  const d = new Date(iso)
-  return (
-    d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
-    ' ' +
-    d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-  )
 }
 
 function latencyColor(ms: number): string {
@@ -178,7 +170,7 @@ export default async function ModelLatencyPage({
                 style={{ gridTemplateColumns: '170px 100px 110px 75px 90px 90px 1fr' }}
               >
                 {[
-                  { key: 'time',    tip: 'UTC timestamp of the response' },
+                  { key: 'time',    tip: 'Timestamp in your local timezone' },
                   { key: 'latency', tip: 'Wall-clock time from first token sent to last token received' },
                   { key: 'delta',   tip: 'Change in latency vs. the chronologically previous message for this model. + = slower, − = faster.' },
                   { key: 'tokens',  tip: 'Total tokens used (input + output)' },
@@ -218,7 +210,7 @@ export default async function ModelLatencyPage({
                       className="text-[11px] text-[var(--ink-subtle)] tabular-nums"
                       style={{ fontFamily: 'var(--font-mono)' }}
                     >
-                      {fmtDate(row.created_at)}
+                      <ClientDate iso={row.created_at} />
                     </span>
 
                     {/* latency */}

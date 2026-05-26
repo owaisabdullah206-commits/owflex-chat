@@ -5,6 +5,7 @@ import { db, schema } from '@/lib/db'
 import { TopNav } from '@/components/portal/TopNav'
 import type { PortalConfig } from '@/components/portal/TopNav'
 import { ChatTranscript } from '@/components/portal/ChatTranscript'
+import { ClientDate } from '@/components/shared/ClientDate'
 
 interface ConversationDetailPageProps {
   params: Promise<{ id: string }>
@@ -62,9 +63,7 @@ export default async function ConversationDetailPage({ params }: ConversationDet
           </a>
           <div className="mt-3">
             <h1 className="text-lg font-bold text-[var(--ink)]">
-              {new Date(conversation.startedAt).toLocaleDateString('en-US', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-              })}
+              <ClientDate iso={conversation.startedAt} opts={{ weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }} />
             </h1>
             {conversation.pageUrl && (
               <p className="text-xs text-[var(--ink-muted)] mt-0.5 truncate">
