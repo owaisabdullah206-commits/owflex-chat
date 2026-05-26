@@ -165,7 +165,7 @@ export async function toggleBotActive(botId: string): Promise<{ error?: string; 
   const user = await requireDeveloper()
 
   const [botRow] = await db
-    .select({ isActive: schema.bots.isActive })
+    .select({ isActive: schema.bots.isActive, orgId: schema.organizations.id })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
     .where(and(eq(schema.bots.id, botId), eq(schema.organizations.ownerId, user.id)))
@@ -175,6 +175,15 @@ export async function toggleBotActive(botId: string): Promise<{ error?: string; 
 
   const newActive = !botRow.isActive
   await db.update(schema.bots).set({ isActive: newActive }).where(eq(schema.bots.id, botId))
+
+  void createAuditLog({
+    orgId:      botRow.orgId,
+    userId:     user.id,
+    action:     'bot.toggled',
+    entityType: 'bot',
+    entityId:   botId,
+    meta:       { isActive: newActive },
+  })
 
   revalidatePath(`/dashboard/bots/${botId}`)
   revalidatePath('/dashboard/bots')

@@ -4,6 +4,7 @@ import { and, eq, isNull } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 import { sendClientInvitation } from '@/lib/email/invitations'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 const bodySchema = z.object({ email: z.string().email() })
 
@@ -30,7 +31,7 @@ export async function POST(
   const { email } = parsed.data
 
   const [bot] = await db
-    .select({ id: schema.bots.id, name: schema.bots.name })
+    .select({ id: schema.bots.id, name: schema.bots.name, orgId: schema.bots.orgId })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
     .where(and(eq(schema.bots.id, id), eq(schema.organizations.ownerId, user.id)))
@@ -71,6 +72,15 @@ export async function POST(
   } catch (err) {
     console.error('Resend invite email failed (non-blocking):', err)
   }
+
+  void createAuditLog({
+    orgId:      bot.orgId,
+    userId:     user.id,
+    action:     'client.invited',
+    entityType: 'bot',
+    entityId:   id,
+    meta:       { email, emailSent, resent: true },
+  })
 
   return NextResponse.json({
     success: true,

@@ -4,6 +4,7 @@ import { and, eq, gt, isNull } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 import { sendClientInvitation } from '@/lib/email/invitations'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 const bodySchema = z.object({
   botId: z.string().uuid(),
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   // Verify bot ownership
   const [bot] = await db
-    .select({ id: schema.bots.id, name: schema.bots.name })
+    .select({ id: schema.bots.id, name: schema.bots.name, orgId: schema.bots.orgId })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
     .where(and(eq(schema.bots.id, botId), eq(schema.organizations.ownerId, user.id)))
@@ -86,6 +87,15 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('Invitation email failed (non-blocking):', err)
   }
+
+  void createAuditLog({
+    orgId:      bot.orgId,
+    userId:     user.id,
+    action:     'client.invited',
+    entityType: 'bot',
+    entityId:   botId,
+    meta:       { clientEmail, emailSent },
+  })
 
   return NextResponse.json({
     success: true,

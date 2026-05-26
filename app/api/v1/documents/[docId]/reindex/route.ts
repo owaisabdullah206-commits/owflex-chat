@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireDeveloper } from '@/lib/auth/session'
 import { getDocById, bumpDocVersion } from '@/lib/db/queries/documents'
 import { publishJSON } from '@/lib/queue/qstash'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ docId: string }> },
 ) {
+  let user: Awaited<ReturnType<typeof requireDeveloper>>
   try {
-    await requireDeveloper()
+    user = await requireDeveloper()
   } catch {
     return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED', status: 401 }, { status: 401 })
   }
@@ -38,6 +40,15 @@ export async function POST(
 
   const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
   await publishJSON(ingestUrl, { docId, sourceType: 'file' })
+
+  void createAuditLog({
+    orgId:      doc.orgId,
+    userId:     user.id,
+    action:     'document.reindexed',
+    entityType: 'document',
+    entityId:   docId,
+    meta:       { fileName: doc.displayName, botId: doc.botId },
+  })
 
   return NextResponse.json({ docId, status: 'queued' }, { status: 202 })
 }

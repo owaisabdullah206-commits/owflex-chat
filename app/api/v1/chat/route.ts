@@ -17,6 +17,7 @@ import { renderDocContext, composeSystemPrompt } from '@/lib/knowledge/prompt-bu
 import { routeMessage } from '@/lib/ai/router'
 import { getCurrentModelPrice } from '@/lib/db/queries/admin'
 import { sendHandoffNotification } from '@/lib/email/handoff'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 const LANGUAGE_RULE = `LANGUAGE RULE (highest priority — always obey):
 Reply in the EXACT same language AND script the user used in their last message.
@@ -317,6 +318,13 @@ export async function POST(req: NextRequest) {
       { botId: bot.id, monthlyConvLimit: bot.monthlyConvLimit },
     )
     if (!convAllowed) {
+      void createAuditLog({
+        orgId:      bot.orgId,
+        action:     'conversation.limit_reached',
+        entityType: 'bot',
+        entityId:   bot.id,
+        meta:       { plan: bot.orgPlan, convCount: bot.convCount },
+      })
       return NextResponse.json(
         { error: 'Monthly conversation limit reached. Upgrade your plan to continue.', code: 'PLAN_LIMIT', status: 402 },
         { status: 402 },
@@ -348,6 +356,13 @@ export async function POST(req: NextRequest) {
       // Credits exhausted — enter grace period logic (no 402 to widget users)
       const { action } = await handleCreditExhaustion(bot.orgId, bot.orgPlan, bot.name)
       if (action === 'disable') {
+        void createAuditLog({
+          orgId:      bot.orgId,
+          action:     'error.credit_exhausted',
+          entityType: 'bot',
+          entityId:   bot.id,
+          meta:       { plan: bot.orgPlan, gracePeriodAction: 'disable' },
+        })
         return NextResponse.json(
           { message: 'This chatbot is temporarily unavailable. Please try again later.' },
           { status: 200 },
@@ -507,8 +522,15 @@ export async function POST(req: NextRequest) {
             void checkAndWarnUsage(bot.orgId, 'conversations', bot.convCount + 1, convLimit, bot.orgPlan, bot.ownerEmail)
           }
 
-          // Non-blocking handoff email
+          // Non-blocking handoff email + audit
           if (unanswered) {
+            void createAuditLog({
+              orgId:      bot.orgId,
+              action:     'conversation.handoff',
+              entityType: 'conversation',
+              entityId:   conversation.id,
+              meta:       { botId: bot.id, botName: bot.name, notifyTarget: handoffNotifyTarget },
+            })
             const notifyEmail = handoffNotifyTarget === 'client' ? bot.clientEmail : bot.ownerEmail
             if (notifyEmail) {
               void (async () => {

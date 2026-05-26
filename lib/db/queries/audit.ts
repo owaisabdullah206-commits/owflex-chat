@@ -2,12 +2,24 @@ import { and, desc, eq, gte } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
 export type AuditAction =
-  | 'bot.created' | 'bot.updated' | 'bot.deleted'
-  | 'document.uploaded' | 'document.deleted'
+  // Bot lifecycle
+  | 'bot.created' | 'bot.updated' | 'bot.deleted' | 'bot.toggled'
+  // Documents / knowledge base
+  | 'document.uploaded' | 'document.deleted' | 'document.url_added' | 'document.reindexed'
+  // Client management
   | 'client.invited' | 'client.removed'
-  | 'billing.plan_changed' | 'billing.credits_purchased'
-  | 'settings.updated'
+  // Members
   | 'org_member.invited' | 'org_member.removed'
+  // Billing
+  | 'billing.plan_changed' | 'billing.credits_purchased'
+  // Settings
+  | 'settings.updated'
+  // Conversations / chat
+  | 'conversation.handoff'       // human handoff triggered
+  | 'conversation.limit_reached' // monthly limit hit
+  // Errors & system events (userId = null for system)
+  | 'error.credit_exhausted'     // org ran out of credits
+  | 'error.ingestion_failed'     // document ingestion failure
 
 export async function createAuditLog(entry: {
   orgId:      string

@@ -6,6 +6,7 @@ import { requireDeveloper } from '@/lib/auth/session'
 import { publishJSON } from '@/lib/queue/qstash'
 import { createDoc } from '@/lib/db/queries/documents'
 import { checkDocumentLimit, checkCrawlLimit } from '@/lib/limits'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 const bodySchema = z.object({
   botId:        z.string().min(1),
@@ -99,6 +100,15 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[url-doc] QStash publishJSON failed (doc saved, ingestion not queued):', err)
   }
+
+  void createAuditLog({
+    orgId:      botRow.orgId,
+    userId:     user.id,
+    action:     'document.url_added',
+    entityType: 'document',
+    entityId:   docId,
+    meta:       { url, maxPages, botId },
+  })
 
   return NextResponse.json({ docId, status: 'queued' }, { status: 202 })
 }
