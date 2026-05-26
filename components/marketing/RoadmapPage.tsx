@@ -12,8 +12,6 @@ const SHIPPED = [
   'FAQ editor — manage FAQ entries per bot from the dashboard',
   'Unanswered questions list — see every query the bot could not answer',
   'Multi-bot dashboard — manage every client from one place',
-  'White-label client portal — your brand, not ours',
-  'PayFast (PKR) + Lemon Squeezy (USD) billing',
   'Routing intelligence — per-bot model selection',
   'Admin analytics — platform-wide usage visibility',
   'Credit packs — buy more without upgrading',
@@ -31,10 +29,9 @@ const SHIPPED = [
   'Selective page crawling — include/exclude URL path glob filters per crawl job',
   'CSV / Excel product catalog import — Shopify and WooCommerce auto-detection',
   'Product catalog overwrite — re-upload without duplicates, unique identifier column picker',
-  'Platform prompt editor — guidance card, example template, 3,000-character hard limit',
   'Streaming responses — token-by-token SSE output with typing indicator, zero perceived latency',
-  'Message ratings — thumbs up/down SVG icons on each bot reply; satisfaction % in Analytics tab',
-  'Per-page analytics — top-pages breakdown showing conversations, messages, and escalation % per URL',
+  'Message ratings — thumbs up/down on each bot reply; satisfaction % in Analytics tab',
+  'Per-page analytics — top-pages breakdown: conversations, messages, and escalation % per URL',
   'Lead webhook — outbound POST to Zapier, Make, n8n, or any endpoint with HMAC-SHA256 signing',
   'Chat history persistence — localStorage with 24-hour TTL; messages replay when visitor returns',
   'Bot preview panel — sandboxed iframe widget inside the dashboard for zero-context-switch testing',
@@ -49,6 +46,7 @@ const IN_PROGRESS = [
 ]
 
 const PLANNED = [
+  { title: 'PayFast (PKR) + Lemon Squeezy (USD) billing', desc: 'Self-serve plan upgrades and credit top-ups via PayFast for Pakistani developers and Lemon Squeezy for international payments — no WhatsApp message required.' },
   { title: 'Embed key rotation', desc: 'Rotate a compromised embed key with a 24-hour grace window — deployed widgets stay live while you push the updated key to production.' },
   { title: 'Hybrid RAG — vector + full-text', desc: 'Combine cosine similarity with BM25 (Postgres tsvector) and re-rank the union. Exact product names and SKUs surface reliably even when embedding scores are low.' },
   { title: 'Custom portal subdomain', desc: 'Serve your client portal from portal.youragency.com instead of app.octively.com.' },

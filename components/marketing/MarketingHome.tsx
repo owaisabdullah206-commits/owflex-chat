@@ -902,14 +902,16 @@ function BentoWhiteLabel() {
 
 function BentoModels() {
   const providers = [
-    { name: 'Anthropic', model: 'claude-3.5-sonnet', active: true },
-    { name: 'OpenAI', model: 'gpt-4o', active: false },
-    { name: 'Google', model: 'gemini-2.0-flash', active: false },
-    { name: 'Mistral', model: 'mistral-large', active: false },
+    { name: 'Anthropic', desc: 'Advanced reasoning', active: true },
+    { name: 'OpenAI',    desc: 'Vision + chat',       active: false },
+    { name: 'Google',    desc: 'Multimodal',           active: false },
+    { name: 'Mistral',   desc: 'Multilingual',         active: false },
+    { name: 'Meta',      desc: 'Open-weight fast',     active: false },
+    { name: 'DeepSeek',  desc: 'Cost-efficient',       active: false },
   ]
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 5 }}>
-      {providers.map(({ name, model, active }, i) => (
+      {providers.map(({ name, desc, active }, i) => (
         <div
           key={i}
           style={{
@@ -926,7 +928,7 @@ function BentoModels() {
           <span style={{ color: active ? 'var(--of-primary-deep)' : 'var(--ink)', fontSize: 12, fontWeight: active ? 500 : 400 }}>
             {name}
           </span>
-          <span style={{ color: 'var(--ink-muted)', fontSize: 10.5 }}>{model}</span>
+          <span style={{ color: 'var(--ink-muted)', fontSize: 10.5 }}>{desc}</span>
         </div>
       ))}
     </div>
