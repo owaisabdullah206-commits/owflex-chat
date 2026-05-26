@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { listAllAuditLogs } from '@/lib/db/queries/audit'
 import { getModelLatencyStats } from '@/lib/db/queries/admin'
@@ -69,9 +70,14 @@ export default async function AdminAuditPage() {
                     className="grid px-4 py-2.5 border-b border-[var(--hairline)] last:border-0 hover:bg-[var(--surface-2)] transition-colors items-center"
                     style={{ gridTemplateColumns: '2fr 80px 100px 100px 100px 90px 90px' }}
                   >
-                    <span className="text-[11px] text-[var(--ink)] truncate" style={{ fontFamily: 'var(--font-mono)' }}>
+                    <Link
+                      href={`/dashboard/admin/audit/model?m=${encodeURIComponent(row.model)}`}
+                      className="text-[11px] text-[var(--of-primary)] hover:underline truncate"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                      title="View per-message breakdown"
+                    >
                       {row.model}
-                    </span>
+                    </Link>
                     <span className="text-[11px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
                       {row.message_count.toLocaleString()}
                     </span>

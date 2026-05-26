@@ -400,6 +400,53 @@ export async function clearManualModelPrice(modelId: string): Promise<{ error?: 
   return {}
 }
 
+// ── Per-message latency for one model (last 30 days, with delta) ─────────────
+export async function getModelMessageLatency(model: string, days = 30) {
+  await requirePlatformOwner()
+
+  const rows = await db.execute<{
+    id:           string
+    latency_ms:   number
+    delta_ms:     number | null  // null for the very first row
+    tokens_used:  number
+    input_tokens: number
+    output_tokens: number
+    ms_per_token: number | null
+    cost_usd:     string
+    bot_name:     string
+    bot_id:       string
+    created_at:   string
+  }>(sql`
+    SELECT
+      m.id,
+      m.latency_ms,
+      (m.latency_ms - LAG(m.latency_ms) OVER (ORDER BY m.created_at ASC)) AS delta_ms,
+      m.tokens_used,
+      m.input_tokens,
+      m.output_tokens,
+      m.cost_usd,
+      b.name   AS bot_name,
+      b.id     AS bot_id,
+      m.created_at,
+      -- ms-per-output-token: proxy for generation speed (lower = faster GPU)
+      CASE WHEN m.output_tokens > 0
+           THEN ROUND(m.latency_ms::numeric / m.output_tokens, 1)
+           ELSE NULL
+      END AS ms_per_token
+    FROM messages m
+    JOIN conversations c ON c.id = m.conversation_id
+    JOIN bots          b ON b.id = c.bot_id
+    WHERE m.role       = 'assistant'
+      AND m.model_used = ${model}
+      AND m.latency_ms IS NOT NULL
+      AND m.created_at > NOW() - INTERVAL '1 day' * ${days}
+    ORDER BY m.created_at DESC
+    LIMIT 500
+  `)
+
+  return rows.rows
+}
+
 // ── Model latency stats (last 30 days) ────────────────────────────────────────
 export async function getModelLatencyStats() {
   await requirePlatformOwner()
