@@ -144,6 +144,7 @@ export const messages = pgTable('messages', {
   modelUsed:        varchar('model_used', { length: 100 }),
   flaggedUnanswered: boolean('flagged_unanswered').notNull().default(false),
   rating:           smallint('rating'),   // 1 = thumbs up, -1 = thumbs down, null = no rating
+  latencyMs:        integer('latency_ms'), // ms from LLM call start to final token (null for pre-feature rows)
   createdAt:        tsz('created_at').defaultNow().notNull(),
 }, (t) => [
   index('messages_conversation_id_idx').on(t.conversationId),

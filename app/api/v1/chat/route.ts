@@ -408,6 +408,7 @@ export async function POST(req: NextRequest) {
           let outputTokens = 0
           let modelUsed    = resolvedModel
 
+          const llmStart = Date.now()
           for await (const ev of chatCompletionStreamGen({
             systemPrompt: finalSystemPrompt,
             messages: contextMessages,
@@ -426,6 +427,7 @@ export async function POST(req: NextRequest) {
               modelUsed = ev.modelUsed
             }
           }
+          const latencyMs = Date.now() - llmStart
 
           // Extract [PRODUCTS:[...]] marker — strip from stored content
           let products: ProductCard[] = []
@@ -468,6 +470,7 @@ export async function POST(req: NextRequest) {
             outputTokens,
             costUsd,
             modelUsed,
+            latencyMs,
             flaggedUnanswered: flagIfUnanswered(fullContent),
           }).returning({ id: schema.messages.id })
 

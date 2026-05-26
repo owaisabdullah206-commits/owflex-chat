@@ -92,6 +92,9 @@ export async function POST(req: NextRequest) {
   // ── 0008 — bot webhook URL ────────────────────────────────────────────────────
   await run('bots.webhook_url', sql`ALTER TABLE "bots" ADD COLUMN IF NOT EXISTS "webhook_url" text`)
 
+  // ── 0009 — message latency tracking ──────────────────────────────────────────
+  await run('messages.latency_ms', sql`ALTER TABLE "messages" ADD COLUMN IF NOT EXISTS "latency_ms" integer`)
+
   // ── 0009 — platform prompt: replace hardcoded "Octively" with bot-agnostic template ──
   // Only overwrites if the prompt still references "Octively" (old default) or is empty.
   // Admins who have already customised their prompt (no "Octively") are NOT affected.

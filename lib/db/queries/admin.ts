@@ -399,3 +399,36 @@ export async function clearManualModelPrice(modelId: string): Promise<{ error?: 
   revalidatePath('/dashboard/admin/models')
   return {}
 }
+
+// ── Model latency stats (last 30 days) ────────────────────────────────────────
+export async function getModelLatencyStats() {
+  await requirePlatformOwner()
+
+  const rows = await db.execute<{
+    model:         string
+    message_count: number
+    avg_ms:        number
+    p50_ms:        number
+    p95_ms:        number
+    min_ms:        number
+    max_ms:        number
+  }>(sql`
+    SELECT
+      model_used                                                           AS model,
+      COUNT(*)::int                                                        AS message_count,
+      ROUND(AVG(latency_ms))::int                                         AS avg_ms,
+      PERCENTILE_CONT(0.5)  WITHIN GROUP (ORDER BY latency_ms)::int      AS p50_ms,
+      PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY latency_ms)::int      AS p95_ms,
+      MIN(latency_ms)::int                                                AS min_ms,
+      MAX(latency_ms)::int                                                AS max_ms
+    FROM messages
+    WHERE role       = 'assistant'
+      AND latency_ms IS NOT NULL
+      AND model_used IS NOT NULL
+      AND created_at > NOW() - INTERVAL '30 days'
+    GROUP BY model_used
+    ORDER BY message_count DESC
+  `)
+
+  return rows.rows
+}
