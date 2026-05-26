@@ -64,6 +64,13 @@
       "when": 1779720604446,
       "tag": "0008_add_bot_webhook_url",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1779814870314,
+      "tag": "0009_change_default_bot_model_to_llama",
+      "breakpoints": true
     }
   ]
 }

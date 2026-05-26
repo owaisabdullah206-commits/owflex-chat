@@ -92,7 +92,7 @@ export const bots = pgTable('bots', {
   clientUserId: text('client_user_id').references(() => users.id, { onDelete: 'set null' }),
   name:         varchar('name', { length: 255 }).notNull(),
   systemPrompt: text('system_prompt').notNull().default('You are a helpful assistant.'),
-  model:        varchar('model', { length: 100 }).notNull().default('deepseek/deepseek-v4-flash'),
+  model:        varchar('model', { length: 100 }).notNull().default('meta-llama/llama-3.3-70b-instruct'),
   // pk_ + 29 hex chars = 32 chars. NEVER expose internal id publicly.
   embedKey:     varchar('embed_key', { length: 64 }).notNull().unique(),
   widgetConfig: jsonb('widget_config').notNull().default({}),
