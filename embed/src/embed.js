@@ -427,6 +427,16 @@ function showWelcome(t){
   ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
 }
 
+// Append Shopify CDN width param so cards download a 300px thumbnail
+// instead of the full-resolution image — dramatically speeds up load time.
+function imgSrc(url){
+  if(!url)return url;
+  if(url.indexOf('cdn.shopify.com')!==-1&&url.indexOf('width=')===-1){
+    return url+(url.indexOf('?')!==-1?'&':'?')+'width=300';
+  }
+  return url;
+}
+
 function addProducts(products){
   if(!products||!products.length)return;
   var bg=dk?"#1e293b":"#fff",bd=dk?"#334155":"#e2e8f0",clr=dk?"#e2e8f0":"#1e293b",mu=dk?"#94a3b8":"#64748b";
@@ -437,7 +447,7 @@ function addProducts(products){
     var card=document.createElement("div");
     card.style.cssText="border:1px solid "+bd+";border-radius:10px;overflow:hidden;background:"+bg+";min-width:0";
     var h="";
-    if(p.image){h+='<img src="'+esc(p.image)+'" width="300" height="160" style="width:100%;height:110px;object-fit:cover;display:block;background:#f1f5f9" loading="eager" decoding="async" onerror="this.style.display=\'none\'">';}
+    if(p.image){h+='<img src="'+esc(imgSrc(p.image))+'" width="300" height="200" style="width:100%;height:110px;object-fit:cover;display:block;background:#f1f5f9" loading="eager" decoding="async" onerror="this.style.display=\'none\'">';}
     h+='<div style="padding:8px">';
     h+='<p style="margin:0 0 2px;font-size:12px;font-weight:600;color:'+clr+';line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+esc(p.name)+'</p>';
     if(p.price){h+='<p style="margin:0 0 6px;font-size:11px;color:'+mu+'">'+esc(p.price)+'</p>';}

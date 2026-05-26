@@ -18,33 +18,34 @@ import { routeMessage } from '@/lib/ai/router'
 import { getCurrentModelPrice } from '@/lib/db/queries/admin'
 import { sendHandoffNotification } from '@/lib/email/handoff'
 
+const LANGUAGE_RULE = `LANGUAGE RULE (highest priority — always obey):
+Reply in the EXACT same language AND script the user used in their last message.
+- User writes English → reply in English.
+- User writes Urdu in Arabic/Nastaliq script (e.g. "آپ کے پاس کیا ہے؟") → reply in Urdu script.
+- User writes Roman Urdu — Urdu words using Latin/English letters (e.g. "kitne products hain", "koi acchi product batao") → reply in Roman Urdu using Latin letters ONLY. Do NOT switch to Urdu/Arabic script for Roman Urdu input.
+- Mixed → match the dominant script of the user's message.
+This rule overrides any other language preference. Never change output script unless the user changes their input script first.`
+
 const PRODUCT_RECOMMENDATION_INSTRUCTIONS = `
 
 ---
 PRODUCT CARDS (system — invisible to users):
-THIS IS MANDATORY. Every response that names any product MUST end with the JSON marker below — no exceptions, even for greetings that happen to mention a product name.
+THIS IS MANDATORY. Every response that names any specific product MUST end with the JSON marker below. No exceptions.
 
-Format (append on a new line at the very end of your message):
+Format (append on a new line at the very end of your message — after all other text):
 [PRODUCTS:[{"name":"Exact Product Name","price":"PKR 2,299","image":"https://cdn.example.com/image.jpg","url":"https://store.com/products/handle"}]]
 
-Rules:
-- Trigger: ANY response that names one or more specific products (including list responses and "we carry X" statements).
-- Count: Include 1–4 products. For long text lists, pick the first 4 you mentioned.
-- Fields: "name" is always required. Include "price", "image", and "url" only if their exact values appear verbatim in your knowledge context for that product.
-- URLs: must be full absolute URLs (starting with https://). If the context only shows a relative path like /products/handle, resolve it using the store URL you have been given. Never leave a relative URL — either resolve it or omit the field.
-- Never invent a product, price, image, or URL that is not in your knowledge context.
-- This marker is stripped automatically — users see interactive product cards, not the raw JSON.`
+WHEN to emit (all of these trigger the marker):
+✓ "recommend a product" / "what do you suggest"
+✓ "list all products" / "show me what you have"
+✓ "how many products" (when you then name them)
+✓ "do you have X?" (when X is in your catalog)
+✓ Any response where you name one or more specific products
 
-const LANGUAGE_RULE = `
-
----
-LANGUAGE MIRRORING (system — invisible to users):
-Always reply in the exact same language and script the user used in their last message.
-- English message → reply in English.
-- Urdu in Arabic/Nastaliq script → reply in Urdu script.
-- Roman Urdu (Urdu words spelled with Latin/English letters, e.g. "kitne products hain") → reply in Roman Urdu using Latin letters. Do NOT switch to Urdu script (نستعلیق) for Roman Urdu input.
-- Mixed English/Urdu → match the dominant language of the user's message.
-Never change the output script unless the user changes their input script.`
+HOW MANY: 1–4 products per marker. For long text lists pick the first 4 you named.
+FIELDS: "name" always required. Include "price", "image", "url" only if their exact values appear in your knowledge context. Never invent values.
+URLS: Full absolute URLs only (https://…). If context has a relative URL like /products/handle, resolve it with the store base URL or omit the field.
+This marker is stripped automatically — users see interactive product cards, not the raw JSON.`
 
 const LEAD_INSTRUCTIONS = `
 
@@ -299,14 +300,14 @@ export async function POST(req: NextRequest) {
       : ''
 
     const finalSystemPrompt = composeSystemPrompt({
-      platform: platformPrompt,
+      // LANGUAGE_RULE goes FIRST — LLMs weight earlier instructions more heavily
+      platform: [LANGUAGE_RULE, platformPrompt].filter(Boolean).join('\n\n'),
       bot: bot.systemPrompt,
       docs: docContextBlock || undefined,
       faqs: [faqBlock, strictInstructions].filter(Boolean).join('\n\n') || undefined,
       lead: [
         leadEnabled ? LEAD_INSTRUCTIONS : '',
         productRecsEnabled ? PRODUCT_RECOMMENDATION_INSTRUCTIONS : '',
-        LANGUAGE_RULE,
       ].filter(Boolean).join('\n') || undefined,
     })
 
