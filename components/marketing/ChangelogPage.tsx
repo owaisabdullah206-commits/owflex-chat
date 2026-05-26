@@ -8,9 +8,22 @@ import { useDarkMode } from './useDarkMode'
 
 const RELEASES = [
   {
-    version: 'v1.0.0',
+    version: 'v1.1.0',
     date: 'May 2026',
     tag: 'Latest',
+    items: [
+      'Streaming SSE fix — Content-Encoding: none header prevents Next.js from gzip-buffering the stream; responses now appear token-by-token on all providers and connection types',
+      'Response conciseness rule — bot replies in 1–3 sentences for greetings and simple queries; product cards carry the detail so the text stays clean; explicit detail requests ("tell me more about X") still get a full answer',
+      'Model speed badges — all four model selectors in bot settings now show a tier pill (⚡ Ultra Fast / ⚡ Fast / ⚖️ Balanced / 🧠 Smart / 🔮 Experimental) and a latency note beneath each dropdown so you can compare before saving',
+      'Quota exceeded document status — when the Jina embedding quota is hit the document row shows an amber clock badge "Quota exceeded" and a note that it will retry automatically the next day instead of a permanent red failure',
+      'Live credit balance in dashboard header — compact balance/limit pill (e.g. 1.2M / 2M) sits beside the theme toggle on every dashboard page; auto-refreshes every 60 s; turns amber below 20% and red below 5%; click to go to the Usage page',
+      'Admin audit auto-refresh — both audit log pages refresh every 30 seconds automatically; manual refresh button with timestamp shows when data was last fetched',
+    ],
+  },
+  {
+    version: 'v1.0.0',
+    date: 'May 2026',
+    tag: 'Streaming',
     items: [
       'Streaming responses — token-by-token SSE output replaces single-shot JSON; typing indicator appears on first token for zero perceived latency',
       'Message ratings — thumbs up/down SVG icons appear below each bot reply; satisfaction percentage visible in the Analytics tab',
@@ -136,6 +149,7 @@ const RELEASES = [
 
 const TAG_COLORS: Record<string, string> = {
   Latest:       'var(--of-primary)',
+  Streaming:    '#06B6D4',
   'RAG Quality': '#8B5CF6',
   Operations:   '#10B981',
   Routing:      '#06B6D4',
@@ -164,7 +178,7 @@ export default function ChangelogPage() {
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 20, padding: '5px 12px', border: '1px solid var(--hairline)', borderRadius: 999, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-muted)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)', display: 'inline-block' }} />
-            Current: v1.0.0
+            Current: v1.1.0
           </div>
         </div>
       </section>
