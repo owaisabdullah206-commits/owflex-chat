@@ -4,7 +4,10 @@ import { embedQuery } from '@/lib/knowledge/embedder'
 import type { RetrievedChunk } from '@/lib/knowledge/prompt-builder'
 
 const DEFAULT_TOP_K = 20
-const DEFAULT_THRESHOLD = 0.20   // lowered from 0.40 — generic product queries score ~0.25-0.35
+// No minimum threshold — cosine ordering + TOP_K already ensures best matches.
+// Generic "list all products" queries score 0.05–0.15 against specific product
+// passages, which is too low for any useful floor. We trust TOP_K to cap results.
+const DEFAULT_THRESHOLD = 0
 
 export async function retrieveContext(
   botId: string,
