@@ -12,7 +12,7 @@ import { flagIfUnanswered } from '@/lib/ai/uncertainty'
 import * as creditLib from '@/lib/credits'
 import { checkConversationLimit, PLAN_LIMITS } from '@/lib/limits'
 import { checkAndWarnUsage } from '@/lib/credits/usage-warnings'
-import { retrieveContext } from '@/lib/knowledge/retriever'
+import { retrieveContext, shouldSkipRag } from '@/lib/knowledge/retriever'
 import { renderDocContext, composeSystemPrompt } from '@/lib/knowledge/prompt-builder'
 import { routeMessage } from '@/lib/ai/router'
 import { getCurrentModelPrice } from '@/lib/db/queries/admin'
@@ -226,13 +226,14 @@ export async function POST(req: NextRequest) {
       content: message,
     })
 
-    // Get last 10 messages for context
+    // Get last 6 messages for context (3 turns).
+    // Was 10 — the extra turns added ~600 input tokens with marginal coherence gain.
     const recentMessages = await db
       .select({ role: schema.messages.role, content: schema.messages.content })
       .from(schema.messages)
       .where(eq(schema.messages.conversationId, conversation.id))
       .orderBy(desc(schema.messages.createdAt))
-      .limit(10)
+      .limit(6)
 
     const contextMessages: ChatMessage[] = recentMessages
       .reverse()
@@ -253,7 +254,7 @@ export async function POST(req: NextRequest) {
         return resolved
       }),
       getActiveFaqs(bot.id),
-      bot.documentCount > 0
+      bot.documentCount > 0 && !shouldSkipRag(message)
         ? retrieveContext(bot.id, message).catch((err) => {
             console.error('[chat] retrieveContext failed:', err)
             return []
@@ -261,7 +262,8 @@ export async function POST(req: NextRequest) {
         : Promise.resolve([]),
       // Count chunks directly from document_chunks — accurate even for documents
       // ingested before chunk_count tracking was added (chunk_count may be 0 on those).
-      bot.documentCount > 0
+      // Skip for greetings/short messages where RAG is also skipped.
+      bot.documentCount > 0 && !shouldSkipRag(message)
         ? db.execute<{ total: number }>(sql`
             SELECT COUNT(*)::int AS total
             FROM document_chunks
