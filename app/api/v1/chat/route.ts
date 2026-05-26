@@ -27,6 +27,13 @@ Reply in the EXACT same language AND script the user used in their last message.
 - Mixed → match the dominant script of the user's message.
 This rule overrides any other language preference. Never change output script unless the user changes their input script first.`
 
+const CONCISENESS_RULE = `RESPONSE LENGTH RULE:
+Keep replies concise and conversational — aim for 1–3 short paragraphs or a brief list.
+- When listing products: show name + price only. Omit descriptions unless the user asks for details.
+- Never repeat information already given in the conversation.
+- If you must list many items, show the top 4–6 and offer to share more.
+- Maximum ~600 words per reply.`
+
 const PRODUCT_RECOMMENDATION_INSTRUCTIONS = `
 
 ---
@@ -303,8 +310,8 @@ export async function POST(req: NextRequest) {
       : ''
 
     const finalSystemPrompt = composeSystemPrompt({
-      // LANGUAGE_RULE goes FIRST — LLMs weight earlier instructions more heavily
-      platform: [LANGUAGE_RULE, platformPrompt].filter(Boolean).join('\n\n'),
+      // LANGUAGE_RULE + CONCISENESS_RULE go FIRST — LLMs weight earlier instructions more heavily
+      platform: [LANGUAGE_RULE, CONCISENESS_RULE, platformPrompt].filter(Boolean).join('\n\n'),
       bot: bot.systemPrompt,
       docs: docContextBlock || undefined,
       faqs: [faqBlock, strictInstructions].filter(Boolean).join('\n\n') || undefined,
@@ -415,6 +422,7 @@ export async function POST(req: NextRequest) {
             systemPrompt: finalSystemPrompt,
             messages: contextMessages,
             model: resolvedModel,
+            maxTokens: 800,
           })) {
             if (ev.type === 'token') {
               enqueue({ type: 'token', delta: ev.delta })

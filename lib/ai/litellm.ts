@@ -1,6 +1,7 @@
 export const CLASSIFIER_MODEL = 'deepseek/deepseek-v4-flash'
 export const STRONG_MODEL = 'anthropic/claude-haiku-4-5-20251001'
-export const FALLBACK_MODEL = 'deepseek/deepseek-v4-flash'
+// Default for normal chat messages — fast 70B via Groq (0.66s E2E, 150 tps)
+export const FALLBACK_MODEL = 'meta-llama/llama-3.3-70b-instruct'
 
 // ── Per-model provider routing for OpenRouter ─────────────────────────────────
 // ⚠️  VALUES MUST BE PROVIDER SLUGS — not display names.
@@ -177,6 +178,7 @@ interface ChatCompletionParams {
   systemPrompt: string
   messages: ChatMessage[]
   model?: string
+  maxTokens?: number
 }
 
 interface ChatCompletionResult {
@@ -191,9 +193,10 @@ export async function chatCompletion({
   systemPrompt,
   messages,
   model,
+  maxTokens,
 }: ChatCompletionParams): Promise<ChatCompletionResult> {
   const resolvedModel =
-    model ?? process.env.LITELLM_DEFAULT_MODEL ?? 'deepseek/deepseek-v4-flash'
+    model ?? process.env.LITELLM_DEFAULT_MODEL ?? FALLBACK_MODEL
 
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
@@ -208,6 +211,7 @@ export async function chatCompletion({
         { role: 'system', content: systemPrompt },
         ...messages,
       ],
+      ...(maxTokens ? { max_tokens: maxTokens } : {}),
       ...(getProviderRouting(resolvedModel) ? { provider: getProviderRouting(resolvedModel) } : {}),
     }),
   })
@@ -242,14 +246,16 @@ interface StreamingChatParams {
   systemPrompt: string
   messages: ChatMessage[]
   model?: string
+  maxTokens?: number
 }
 
 export async function* chatCompletionStreamGen({
   systemPrompt,
   messages,
   model,
+  maxTokens,
 }: StreamingChatParams): AsyncGenerator<StreamEvent> {
-  const resolvedModel = model ?? process.env.LITELLM_DEFAULT_MODEL ?? 'deepseek/deepseek-v4-flash'
+  const resolvedModel = model ?? process.env.LITELLM_DEFAULT_MODEL ?? FALLBACK_MODEL
 
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
@@ -266,6 +272,7 @@ export async function* chatCompletionStreamGen({
         { role: 'system', content: systemPrompt },
         ...messages,
       ],
+      ...(maxTokens ? { max_tokens: maxTokens } : {}),
       ...(getProviderRouting(resolvedModel) ? { provider: getProviderRouting(resolvedModel) } : {}),
     }),
   })

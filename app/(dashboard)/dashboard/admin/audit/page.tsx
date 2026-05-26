@@ -4,6 +4,7 @@ import { listAllAuditLogs } from '@/lib/db/queries/audit'
 import { getModelLatencyStats } from '@/lib/db/queries/admin'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ClientDate } from '@/components/shared/ClientDate'
+import { RefreshButton } from '@/components/dashboard/RefreshButton'
 
 function latencyBadge(ms: number): string {
   if (ms < 1000) return 'text-[var(--success-text)]'
@@ -31,12 +32,17 @@ export default async function AdminAuditPage() {
     <div className="flex min-h-screen bg-[var(--bg)]">
       <Sidebar />
       <main className="flex-1 ml-56">
-        <div className="px-8 py-5 border-b border-[var(--hairline)]">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>Admin</p>
-          <h1 className="text-lg font-bold text-[var(--ink)] mt-0.5">Audit Log</h1>
-          <p className="text-xs text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
-            Last 30 days · {logs.length} events
-          </p>
+        <div className="px-8 py-5 border-b border-[var(--hairline)] flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>Admin</p>
+            <h1 className="text-lg font-bold text-[var(--ink)] mt-0.5">Audit Log</h1>
+            <p className="text-xs text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+              Last 30 days · {logs.length} events
+            </p>
+          </div>
+          <div className="mt-1">
+            <RefreshButton />
+          </div>
         </div>
 
         <div className="px-8 py-6 space-y-8">

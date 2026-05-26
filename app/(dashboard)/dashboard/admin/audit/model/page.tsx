@@ -4,6 +4,7 @@ import { requirePlatformOwner } from '@/lib/auth/session'
 import { getModelMessageLatency } from '@/lib/db/queries/admin'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ClientDate } from '@/components/shared/ClientDate'
+import { RefreshButton } from '@/components/dashboard/RefreshButton'
 
 // ── formatting helpers ────────────────────────────────────────────────────────
 
@@ -111,18 +112,23 @@ export default async function ModelLatencyPage({
       <main className="flex-1 ml-56">
 
         {/* ── Header ─────────────────────────────────────────────────────── */}
-        <div className="px-8 py-5 border-b border-[var(--hairline)]">
-          <Link
-            href="/dashboard/admin/audit"
-            className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)] hover:text-[var(--of-primary)] transition-colors mb-2"
-            style={{ fontFamily: 'var(--font-mono)' }}
-          >
-            ← Audit Log
-          </Link>
-          <h1 className="text-lg font-bold text-[var(--ink)] truncate">{model}</h1>
-          <p className="text-xs text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
-            Per-message · last 30 days · {rows.length} messages
-          </p>
+        <div className="px-8 py-5 border-b border-[var(--hairline)] flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <Link
+              href="/dashboard/admin/audit"
+              className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)] hover:text-[var(--of-primary)] transition-colors mb-2"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              ← Audit Log
+            </Link>
+            <h1 className="text-lg font-bold text-[var(--ink)] truncate">{model}</h1>
+            <p className="text-xs text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
+              Per-message · last 30 days · {rows.length} messages
+            </p>
+          </div>
+          <div className="mt-1 shrink-0">
+            <RefreshButton />
+          </div>
         </div>
 
         <div className="px-8 py-6 space-y-6">
