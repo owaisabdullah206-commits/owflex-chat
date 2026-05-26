@@ -7,6 +7,7 @@ import { and, desc, eq, exists, gte, lte, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 const updateBotSchema = z.object({
   name:                z.string().min(1).max(255).optional(),
@@ -55,6 +56,8 @@ export async function updateBot(
     .select({
       embedKey: schema.bots.embedKey,
       orgPlan: schema.organizations.plan,
+      orgId:   schema.organizations.id,
+      botName: schema.bots.name,
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -116,6 +119,15 @@ export async function updateBot(
 
   await db.update(schema.bots).set(update).where(eq(schema.bots.id, botId))
 
+  void createAuditLog({
+    orgId:      botRow.orgId,
+    userId:     user.id,
+    action:     'bot.updated',
+    entityType: 'bot',
+    entityId:   botId,
+    meta:       { botName: botRow.botName, updatedFields: Object.keys(update) },
+  })
+
   updateTag(`widget-config-${botRow.embedKey}`)
   revalidatePath(`/dashboard/bots/${botId}`)
   return {}
@@ -125,7 +137,7 @@ export async function deleteBot(botId: string): Promise<{ error?: string; ok?: b
   const user = await requireDeveloper()
 
   const [botRow] = await db
-    .select({ id: schema.bots.id })
+    .select({ id: schema.bots.id, orgId: schema.organizations.id, botName: schema.bots.name })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
     .where(and(eq(schema.bots.id, botId), eq(schema.organizations.ownerId, user.id)))
@@ -135,6 +147,15 @@ export async function deleteBot(botId: string): Promise<{ error?: string; ok?: b
 
   // Cascade deletes: conversations, messages, leads, bot_faqs, invitations
   await db.delete(schema.bots).where(eq(schema.bots.id, botId))
+
+  void createAuditLog({
+    orgId:      botRow.orgId,
+    userId:     user.id,
+    action:     'bot.deleted',
+    entityType: 'bot',
+    entityId:   botId,
+    meta:       { botName: botRow.botName },
+  })
 
   revalidatePath('/dashboard/bots')
   return { ok: true }
@@ -230,6 +251,15 @@ export async function createBot(
       },
     })
     .returning({ id: schema.bots.id })
+
+  void createAuditLog({
+    orgId:      org.id,
+    userId:     user.id,
+    action:     'bot.created',
+    entityType: 'bot',
+    entityId:   newBot.id,
+    meta:       { name: parsed.data.name },
+  })
 
   revalidatePath('/dashboard/bots')
   redirect(`/dashboard/bots/${newBot.id}?onboarding=1`)

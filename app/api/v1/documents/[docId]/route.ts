@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireDeveloper } from '@/lib/auth/session'
 import { getDocById, deleteDocWithCleanup } from '@/lib/db/queries/documents'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 export async function GET(
   _req: NextRequest,
@@ -25,8 +26,9 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ docId: string }> },
 ) {
+  let user: Awaited<ReturnType<typeof requireDeveloper>>
   try {
-    await requireDeveloper()
+    user = await requireDeveloper()
   } catch {
     return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED', status: 401 }, { status: 401 })
   }
@@ -38,5 +40,15 @@ export async function DELETE(
   }
 
   await deleteDocWithCleanup(docId, doc.botId)
+
+  void createAuditLog({
+    orgId:      doc.orgId,
+    userId:     user.id,
+    action:     'document.deleted',
+    entityType: 'document',
+    entityId:   docId,
+    meta:       { fileName: doc.displayName, botId: doc.botId },
+  })
+
   return new NextResponse(null, { status: 204 })
 }

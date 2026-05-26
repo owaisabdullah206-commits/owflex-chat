@@ -6,6 +6,7 @@ import { putObject } from '@/lib/storage/r2'
 import { publishJSON } from '@/lib/queue/qstash'
 import { createDoc, deleteDocWithCleanup } from '@/lib/db/queries/documents'
 import { checkDocumentLimit, checkStorageLimit } from '@/lib/limits'
+import { createAuditLog } from '@/lib/db/queries/audit'
 
 const MAX_FILE_BYTES    = 10 * 1024 * 1024 // 10 MB for standard docs
 const MAX_CATALOG_BYTES = 25 * 1024 * 1024 // 25 MB for CSV / Excel
@@ -158,6 +159,15 @@ export async function POST(req: NextRequest) {
       console.error('[upload] replaceDocId cleanup failed:', err)
     }
   }
+
+  void createAuditLog({
+    orgId:      botRow.orgId,
+    userId:     user.id,
+    action:     'document.uploaded',
+    entityType: 'document',
+    entityId:   docId,
+    meta:       { fileName: file.name, mimeType, botId, replaced: replaceDocId ?? null },
+  })
 
   return NextResponse.json({ docId, status: 'queued' }, { status: 202 })
 }
