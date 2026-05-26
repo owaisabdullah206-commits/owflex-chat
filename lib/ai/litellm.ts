@@ -70,6 +70,52 @@ const PROVIDER_ROUTING: Record<string, {
     ignore: ['Venice', 'Z.ai', 'NovitaAI', 'DeepInfra'],
     allow_fallbacks: true,
   },
+
+  // Google Vertex (US): TTFT 0.43s avg, E2E 1.85s avg (best). Vertex EU: 100% uptime
+  // but E2E 2.62s. Anthropic direct: TTFT 0.72s, 70tps, 99.9% uptime — solid third.
+  // Bedrock (Global): only 41tps, E2E 3.13s → skip.
+  'anthropic/claude-haiku-4-5-20251001': {
+    order:  ['Google Vertex', 'Google Vertex (Europe)', 'Anthropic'],
+    ignore: ['Amazon Bedrock (Global)'],
+    allow_fallbacks: true,
+  },
+
+  // OpenAI direct: TTFT 0.62s avg, 31tps avg, E2E 2.20s, 99.6% uptime.
+  // Azure: TTFT 2.64–3.66s, 8tps, 94–95.5% uptime → instant disqualify.
+  'openai/gpt-4o-mini': {
+    order:  ['OpenAI'],
+    ignore: ['Azure'],
+    allow_fallbacks: true,
+  },
+
+  // W&B: E2E 0.65s (best), 32tps avg, 100% uptime, 128K max output.
+  // DeepInfra Turbo: TTFT 0.16s listed, 17tps avg, 99.9%.
+  // Bedrock: $0.72/M (2× price), max output 8.2K only → ignore.
+  'meta-llama/llama-3.1-70b-instruct': {
+    order:  ['Weights & Biases', 'DeepInfra Turbo', 'DeepInfra'],
+    ignore: ['Amazon Bedrock'],
+    allow_fallbacks: true,
+  },
+
+  // Groq: 150tps avg, E2E 0.66s (best), 99.6% uptime — cheapest fast option.
+  // W&B: 38tps avg, E2E 0.85s, 99.3% uptime. AkashML: 37tps, 99.6%.
+  // SambaNova/SambaNova Turbo: max output 3.1K only → unusable.
+  // Cloudflare: context capped at 24K. Together: max output 2K + TTFT 1.21s.
+  'meta-llama/llama-3.3-70b-instruct': {
+    order:  ['Groq', 'Weights & Biases', 'AkashML', 'NovitaAI'],
+    ignore: ['SambaNova', 'SambaNova Turbo', 'Cloudflare', 'Together'],
+    allow_fallbacks: true,
+  },
+
+  // Groq: 204tps avg, E2E 0.48s, 100% uptime — fastest small model on the market.
+  // W&B: TTFT 0.15s avg, 124tps avg, E2E 0.55s, 100% uptime — excellent backup.
+  // Cerebras: going away 2026-05-27 → ignore. NovitaAI: 75.1% uptime → ignore.
+  // Cloudflare: only 9tps, 92% uptime → ignore.
+  'meta-llama/llama-3.1-8b-instruct': {
+    order:  ['Groq', 'Weights & Biases', 'DeepInfra'],
+    ignore: ['Cerebras', 'NovitaAI', 'Cloudflare'],
+    allow_fallbacks: true,
+  },
 }
 
 /** Returns the OpenRouter `provider` routing object for a given model, or undefined. */
@@ -85,11 +131,30 @@ export const SUPPORTED_MODELS = [
   'anthropic/claude-haiku-4-5-20251001',
   'openrouter/owl-alpha',
   'google/gemma-4-31b-it',
+  'mistralai/mistral-nemo',
+  'qwen/qwen3-235b-a22b-2507',
+  'z-ai/glm-4.7-flash',
   'meta-llama/llama-3.1-70b-instruct',
+  'meta-llama/llama-3.3-70b-instruct',
+  'meta-llama/llama-3.1-8b-instruct',
   'tencent/hy3-preview',
 ] as const
 
 export type SupportedModel = (typeof SUPPORTED_MODELS)[number]
+
+// ── OpenRouter canonical ID overrides ────────────────────────────────────────
+// Most model IDs match exactly. Only entries here where OR's /api/v1/models
+// returns a different ID than what we pass to the chat endpoint.
+// Used by admin.ts refreshModelPrices — add new overrides here, nowhere else.
+export const OR_CANONICAL_IDS: Partial<Record<SupportedModel, string[]>> = {
+  // OR uses dots + strips date suffix on the /models list
+  'anthropic/claude-haiku-4-5-20251001': ['anthropic/claude-haiku-4.5'],
+}
+
+/** Returns the OpenRouter canonical IDs for a model (falls back to [modelId]). */
+export function getOrCanonicalIds(model: SupportedModel): string[] {
+  return OR_CANONICAL_IDS[model] ?? [model]
+}
 
 export type ChatMessage = {
   role: 'user' | 'assistant'

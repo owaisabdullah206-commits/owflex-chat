@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { and, count, desc, eq, inArray, sql, sum } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requirePlatformOwner } from '@/lib/auth/session'
-import { SUPPORTED_MODELS } from '@/lib/ai/litellm'
+import { SUPPORTED_MODELS, getOrCanonicalIds } from '@/lib/ai/litellm'
 
 const PKR_PRICES: Record<string, number> = {
   free:       0,
@@ -272,21 +272,11 @@ export async function sendPasswordReset(email: string): Promise<{ error?: string
   return {}
 }
 
-// Maps our model IDs → OpenRouter canonical model list IDs.
-// Chat/completions accepts aliases; /api/v1/models uses canonical IDs.
-// Verified against openrouter.ai/models as of May 2026.
-const OPENROUTER_ID_CANDIDATES: Record<string, string[]> = {
-  'deepseek/deepseek-v4-flash':          ['deepseek/deepseek-v4-flash'],
-  'google/gemini-2.5-flash-lite':        ['google/gemini-2.5-flash-lite'],
-  'openai/gpt-4o-mini':                  ['openai/gpt-4o-mini'],
-  'openai/gpt-oss-120b':                 ['openai/gpt-oss-120b'],
-  // OpenRouter uses dots + no date suffix: claude-haiku-4.5 not claude-haiku-4-5-20251001
-  'anthropic/claude-haiku-4-5-20251001': ['anthropic/claude-haiku-4.5'],
-  'openrouter/owl-alpha':                ['openrouter/owl-alpha'],
-  'google/gemma-4-31b-it':               ['google/gemma-4-31b-it'],
-  'meta-llama/llama-3.1-70b-instruct':  ['meta-llama/llama-3.1-70b-instruct'],
-  'tencent/hy3-preview':                 ['tencent/hy3-preview'],
-}
+// Auto-derived from SUPPORTED_MODELS + OR_CANONICAL_IDS in lib/ai/litellm.ts.
+// To add a new model or fix an OR alias, edit litellm.ts — not here.
+const OPENROUTER_ID_CANDIDATES: Record<string, string[]> = Object.fromEntries(
+  SUPPORTED_MODELS.map((m) => [m, getOrCanonicalIds(m)]),
+)
 
 export async function refreshModelPrices(): Promise<{ error?: string; count?: number }> {
   await requirePlatformOwner()
