@@ -44,7 +44,9 @@ export function renderDocContext(
 
   const footer =
     `\n\nIMPORTANT: Only reference products, categories, prices, and attributes explicitly listed in the context above. Do not describe, infer, or generalise products from your training knowledge. If the information is not in the context, say you don't have that information.` +
-    `\n\nCATALOG SCOPE: ${catalogSizeNote} The ${chunks.length} item(s) shown above are the most semantically relevant matches for this specific query — DO NOT assume or state these are ALL the products in the catalog. When asked how many products you carry or to list everything, do not guess based on what you can see here. Instead say: "I can show the most relevant items for your query. For the complete product list please visit our website." Only state a specific total count if you are given one explicitly in the "Your full knowledge base contains X products" line above.`
+    `\n\nCATALOG SCOPE: ${catalogSizeNote} The ${chunks.length} item(s) shown above are the most semantically relevant matches for this specific query.` +
+    `\n\nVARIANT RULE: A product entry that contains a "Variants (N):" section lists N variants of the SAME product (e.g. different shades, sizes). Count and list it as ONE product — never list each variant as a separate product. When a user asks for "all products", group variants under their product name.` +
+    `\n\nLISTING RULE: When the user asks to list all products or asks how many products there are, list only the distinct product names visible in the context above (counting each Variants block as one product). If the total you can see is less than the stated catalog size, say "Here are the products I have details for — visit our website for the complete catalog." Do not retract or apologise for products you have listed; correct grouping instead if a user says variants are not separate products. Only state a specific total count if explicitly provided in the "Your full knowledge base contains X products" line above.`
 
   return header + text + footer
 }

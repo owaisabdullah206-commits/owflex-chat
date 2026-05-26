@@ -48,23 +48,69 @@ function ln(label: string, value: string): string {
   return v ? `${label}: ${v}` : ''
 }
 
+/**
+ * Build one passage for a Shopify product group (1 or more variant rows).
+ * The first row in the group must have a non-empty Title.
+ *
+ * For single-variant products: price + SKU are listed inline.
+ * For multi-variant products: all variants are collapsed into a compact
+ * "Variants (N):" block so the LLM treats the entire group as ONE product —
+ * not as N separate products.
+ */
+function shopifyGroupToPassage(rows: Record<string, string>[]): string {
+  const first = rows[0]
+  const title = f(first, 'Title')
+  // Synthesise a URL handle from the title when the Handle column is absent
+  const handle =
+    f(first, 'Handle') ||
+    title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+
+  // Option dimension names (e.g. "Color", "Shade", "Size")
+  const opt1Name = f(first, 'Option1 Name') || 'Variant'
+  const opt2Name = f(first, 'Option2 Name')
+  const opt3Name = f(first, 'Option3 Name')
+
+  const lines: string[] = [
+    ln('Product', title),
+    ln('Type', f(first, 'Product Type')),
+    ln('Vendor', f(first, 'Vendor')),
+    ln('Description', stripHtml(f(first, 'Body (HTML)'))),
+    ln('Tags', f(first, 'Tags')),
+    ln('Image', f(first, 'Image Src')),
+    handle ? `URL: /products/${handle}` : '',
+  ]
+
+  if (rows.length === 1) {
+    // Single variant — keep price and SKU inline (no variants block needed)
+    lines.push(ln('Price', f(first, 'Variant Price')))
+    lines.push(ln('SKU', f(first, 'Variant SKU')))
+  } else {
+    // Multiple variants — emit a compact variant table
+    lines.push(`Variants (${rows.length}):`)
+    for (const row of rows) {
+      const parts: string[] = []
+      const o1 = f(row, 'Option1 Value')
+      const o2 = f(row, 'Option2 Value')
+      const o3 = f(row, 'Option3 Value')
+      if (o1) parts.push(`${opt1Name}: ${o1}`)
+      if (o2 && opt2Name) parts.push(`${opt2Name}: ${o2}`)
+      if (o3 && opt3Name) parts.push(`${opt3Name}: ${o3}`)
+      const sku = f(row, 'Variant SKU')
+      const price = f(row, 'Variant Price')
+      if (sku) parts.push(`SKU: ${sku}`)
+      if (price) parts.push(`Price: ${price}`)
+      if (parts.length > 0) lines.push(`  - ${parts.join(', ')}`)
+    }
+  }
+
+  return lines.filter(Boolean).join('\n')
+}
+
 export function rowToPassage(row: Record<string, string>, format: CsvFormat): string {
   if (format === 'shopify') {
-    const title  = f(row, 'Title')
-    // Use the Handle column; fall back to a slugified title so every product gets a URL
-    const handle = f(row, 'Handle') ||
-      title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-    return [
-      ln('Product', title),
-      ln('Type', f(row, 'Product Type')),
-      ln('Vendor', f(row, 'Vendor')),
-      ln('Description', stripHtml(f(row, 'Body (HTML)'))),
-      ln('Price', f(row, 'Variant Price')),
-      ln('SKU', f(row, 'Variant SKU')),
-      ln('Tags', f(row, 'Tags')),
-      ln('Image', f(row, 'Image Src')),
-      handle ? `URL: /products/${handle}` : '',
-    ].filter(Boolean).join('\n')
+    // Convenience wrapper for single-row callers (e.g. tests, external utilities).
+    // processCsvRows always uses shopifyGroupToPassage directly.
+    return shopifyGroupToPassage([row])
   }
 
   if (format === 'woocommerce') {
@@ -109,26 +155,63 @@ export function processCsvRows(rows: Record<string, string>[], maxProducts?: num
   const headers = Object.keys(rows[0])
   const format = detectCsvFormat(headers)
 
-  // In Shopify-style CSVs, only the first variant row carries a non-empty Title.
-  // Subsequent variant rows for the same product have an empty Title — they must
-  // still be included but do NOT count as a new product.
-  // We count distinct products (rows that start a new Title) and stop once we hit maxProducts.
+  // ── Shopify: group variant rows under their parent product ──────────────────
+  // In Shopify exports, only the FIRST row for a product has a non-empty Title.
+  // All subsequent rows for the same product have an empty Title and represent
+  // additional variants (different shades, sizes, etc.).
+  // We group them into ONE passage so the LLM sees ONE product, not N variants.
+  if (format === 'shopify') {
+    const groups: Record<string, string>[][] = []
+    let current: Record<string, string>[] = []
+
+    for (const row of rows) {
+      const title = (row['Title'] ?? '').trim()
+
+      if (title) {
+        // New product starts here
+        if (current.length > 0) groups.push(current)
+        current = [row]
+      } else if (current.length > 0) {
+        // Variant row — only include if it carries meaningful variant data
+        const hasVariantData =
+          (row['Variant SKU'] ?? '').trim() ||
+          (row['Variant Price'] ?? '').trim() ||
+          (row['Option1 Value'] ?? '').trim()
+        if (hasVariantData) current.push(row)
+      }
+      // Rows before the first Title (orphaned variants) are silently skipped
+    }
+    if (current.length > 0) groups.push(current)
+
+    // Apply plan limit (counted by distinct products, not raw rows)
+    const limited = maxProducts != null ? groups.slice(0, maxProducts) : groups
+
+    return limited
+      .map((group) => shopifyGroupToPassage(group))
+      .filter((s) => s.trim().length > 0)
+      .join('\n\n')
+  }
+
+  // ── WooCommerce / Generic: one product per row ──────────────────────────────
   const passages: string[] = []
   let productCount = 0
 
   for (const row of rows) {
-    const title = row['Title'] ?? row['Name'] ?? row['name'] ?? row['title'] ?? ''
-    const desc =
-      row['Body (HTML)'] ?? row['Description'] ?? row['post_content'] ?? row['description'] ?? ''
+    const title = (
+      row['Title'] ?? row['Name'] ?? row['name'] ?? row['title'] ?? ''
+    ).trim()
+    const desc = (
+      row['Body (HTML)'] ??
+      row['Description'] ??
+      row['post_content'] ??
+      row['description'] ??
+      ''
+    ).trim()
 
-    if (!title.trim() && !desc.trim()) continue  // fully blank row — skip
+    if (!title && !desc) continue // fully blank row — skip
 
-    if (title.trim()) {
-      // This row starts a new product
-      if (maxProducts != null && productCount >= maxProducts) break
-      productCount++
-    }
-    // Variant row with empty title: belongs to the current product — always include
+    if (maxProducts != null && productCount >= maxProducts) break
+    productCount++
 
     const passage = rowToPassage(row, format)
     if (passage.trim().length > 0) passages.push(passage)
