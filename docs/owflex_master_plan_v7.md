@@ -84,7 +84,6 @@ requires nothing — just one embed script.
 | **Credits included/mo** | 2M | 30M | 150M | 750M | Custom |
 | **Addon credit top-ups** | ❌ | ✅ | ✅ | ✅ better rate | ✅ best rate |
 | **Leads/mo** | 15 | ∞ | ∞ | ∞ | ∞ |
-| **FAQs per bot** | 5 | 20 | 50 | Unlimited | Unlimited |
 | **Storage (docs only)** | None | 25 MB | 100 MB | 500 MB | Custom |
 | **Conversation history** | 7 days | 30 days | Unlimited | Unlimited | Unlimited |
 | **AI model selection** | Flash only (hidden) | Budget tier | Mid-range | All tiers | All tiers |
@@ -99,7 +98,6 @@ requires nothing — just one embed script.
 | **Trigger tooltip** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Unanswered questions list** | ❌ | ❌ | ✅ | ✅ | ✅ |
 | **Weekly email digest (Phase 2)** | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **Knowledge base — FAQ editor (Phase 2)** | ❌ | ✅ basic | ✅ | ✅ | ✅ |
 | **Document upload — PDF (Phase 3)** | ❌ | ❌ | ✅ | ✅ | ✅ |
 | **Website scraping — Firecrawl (Phase 3)** | ❌ | ❌ | ✅ | ✅ | ✅ |
 | **Smart model routing (Phase 3)** | ❌ | ❌ | ✅ | ✅ | ✅ |
@@ -131,7 +129,7 @@ requires nothing — just one embed script.
 | ORM | Drizzle ORM | Prisma (heavy migrations) |
 | Database | Neon PostgreSQL (free) → Hetzner Postgres | Supabase (tier limits) |
 | Vector Search | pgvector on Neon/Postgres | Pinecone ($70/mo) |
-| Embeddings P1–2 | Gemini text-embedding-004 (free 1M/day) | OpenAI (costs immediately) |
+| Embeddings P1–2 | Jina AI jina-embeddings-v5-text-small (1M tokens/day free) | OpenAI (costs immediately) |
 | Embeddings P3+ | Local BGE-M3 ONNX on Hetzner | Keep API (cost scales) |
 | LLM Gateway | LiteLLM (all models, one interface) | Direct API calls (no portability) |
 | Cache + Credits | Upstash Redis (free) → Self-hosted Redis | Railway (15-min timeout) |
@@ -140,7 +138,7 @@ requires nothing — just one embed script.
 | Payments USD | Lemon Squeezy | Paddle (expensive) |
 | Frontend Host | Netlify (free, commercial OK) | Vercel (no commercial free) |
 | Backend Host | Hugging Face Spaces (free) → Hetzner | Render/Railway (sleeps fast) |
-| VPS | Hetzner CX22 @ €3.79/mo | DigitalOcean ($12), AWS (complex) |
+| VPS | Hetzner CX33 @ $8.59/mo | DigitalOcean ($12), AWS (complex) |
 | Orchestration | Dokploy on Hetzner | Coolify (less stable) |
 | Object Storage | Cloudflare R2 (free 10GB) | AWS S3 (egress costs) |
 | Backups | Backblaze B2 @ €0.20/mo | AWS Glacier (complex) |
@@ -408,21 +406,21 @@ Model credit cost rates are set per-model in the admin model prices table (Phase
 | Upstash Redis | 500K commands/mo, 256MB | Credits + rate limiting |
 | Cloudflare R2 | 10GB storage | File uploads |
 | Resend | 3,000 emails/mo | Transactional email |
-| Gemini Embeddings API | 1M tokens/day | Document embeddings |
+| Jina AI Embeddings API | 1M tokens/day (~40 docs) | Document embeddings |
 | Sentry | 5K errors/mo | Error tracking |
 | UptimeRobot | 50 monitors | Uptime alerts |
 
 ### Phase 3–4: Hetzner Migration (€4/month)
 
-Triggered when: Neon storage > 400MB OR > 80 active users.
+Triggered when: Redis overage > $3/month OR > 15 active paying developers OR Jina quota hit multiple times/week.
 
 | Service | Cost | Notes |
 |---------|------|-------|
-| Hetzner CX22 | €3.79/mo | 2 vCPU, 4GB RAM, 40GB SSD |
-| Backblaze B2 | €0.20/mo | 10GB automated backups |
-| Cloudflare R2 | €0 | Stays on free tier |
-| Resend | €0–$20 | Upgrade only if >3K emails/mo |
-| **Total** | **€4/mo** | ~₨1,300/month |
+| Hetzner CX33 | $8.59/mo | 4 vCPU, 8GB RAM, 80GB SSD |
+| Backblaze B2 | $0.20/mo | 10GB automated backups |
+| Cloudflare R2 | $0 | Stays on free tier |
+| Resend | $0–$20 | Upgrade only if >3K emails/mo |
+| **Total** | **~$9/mo** | ~₨2,500/month |
 
 **Migration steps (automated):**
 ```bash
@@ -905,7 +903,7 @@ Task 1.9 — Deploy
 **Spec file:** `/specs/phase-2-billing-credits.md`
 
 ```
-Task 2.1 — Knowledge base FAQ editor
+Task 2.1 — Knowledge base (Documents tab — PDF upload + URL scraping + RAG)
 Task 2.2 — Unanswered questions detection + list
 Task 2.3 — Weekly email digest (Resend cron)
 Task 2.4 — Bot widget customization UI (color, name, position)
@@ -928,7 +926,7 @@ Task 2.14 — Analytics improvements (conversion rate, avg session)
 **Spec file:** `/specs/phase-3-agency.md`
 
 ```
-Task 3.1 — Hetzner CX22 provision + Dokploy install
+Task 3.1 — Hetzner CX33 provision + Dokploy install
 Task 3.2 — Self-hosted Postgres setup + pg_dump migration
 Task 3.3 — FastAPI backend setup (replace Next.js API routes for AI)
 Task 3.4 — BGE-M3 ONNX embeddings (replace Gemini embeddings API)
@@ -1106,7 +1104,7 @@ Do not make changes — just report.
 |--|----|----|
 | Phase 1 blockers | 6+ components before Hello World | 1 working page in Day 3 |
 | Infrastructure | Over-engineered from day 1 | Free stack, migrate when needed |
-| Embeddings | ONNX from the start | Gemini API free tier first |
+| Embeddings | ONNX from the start | Jina AI free tier first |
 | Credits | Not planned | Built into schema from Phase 2 |
 | Model strategy | Gemini Flash only | Full model tier + routing + credits |
 | Stopped at | Planning | Ships Phase 1 in 2 weeks |
@@ -1138,31 +1136,16 @@ exceeds 50KB of text. Users never see this distinction — it just works.
 
 ### Three Data Input Methods
 
-**Method 1 — Text/FAQ Editor (Phase 2, default for small bots)**
+**Method 1 — Document Upload + RAG (Phase 2, default for all bots)**
 
-The bot owner pastes or types their company info, FAQs, services, and policies
-into a structured editor. OwFlex formats it into a clean system prompt.
-No uploads, no processing, no embeddings. Instant.
+Users upload PDFs or add URLs to the Knowledge Base tab. OwFlex extracts text,
+chunks it (1,000 chars / ~250 tokens per chunk), embeds via Jina AI
+(`jina-embeddings-v5-text-small`), and stores vectors in pgvector.
 
-The AI assistant in the dashboard helps structure raw pasted text:
+At chat time, the top-k most relevant chunks are retrieved and injected into the
+system prompt automatically. The user never configures this — it just works.
 
-```
-User pastes: "we sell kurtas from karachi price range 500 to 5000 we deliver
-all over pakistan open monday to saturday 10am to 9pm"
-
-OwFlex formats to:
-## About
-We sell traditional kurtas from Karachi.
-
-## Products
-- Price range: ₨500 – ₨5,000
-
-## Delivery
-Nationwide delivery across Pakistan.
-
-## Hours
-Monday – Saturday: 10:00 AM – 9:00 PM
-```
+Rule: context stuffing for < 50 KB of extracted text; vector RAG for > 50 KB.
 
 **Method 2 — PDF/Document Upload (Phase 3)**
 
@@ -1660,7 +1643,7 @@ Task 4.12 — Webflow / Framer embed integrations
 | Backend API | Next.js API Routes | FastAPI on Hetzner |
 | Database | Neon PostgreSQL (free) | Self-hosted Postgres on Hetzner |
 | Vector search | pgvector on Neon | pgvector on Hetzner Postgres |
-| Embeddings | Gemini text-embedding-004 (free) | BGE-M3 ONNX local |
+| Embeddings | Jina AI jina-embeddings-v5-text-small (free 1M/day) | BGE-M3 ONNX local |
 | LLM gateway | LiteLLM → DeepSeek V4 Flash | LiteLLM → multi-model |
 | LLM fallback | Groq (llama-3.3-70b) | Same + OpenRouter routing |
 | Cache / credits | Upstash Redis (free) | Self-hosted Redis |
@@ -1678,7 +1661,7 @@ Task 4.12 — Webflow / Framer embed integrations
 | Web search | Tavily API (pay per call) | Same |
 | Product search | PostgreSQL full-text | Same |
 | Orchestration | — | Dokploy |
-| **Total infra cost** | **€0/mo** | **€4/mo** |
+| **Total infra cost** | **$0/mo** | **~$9/mo** |
 
 ---
 
