@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { LOGO_LIGHT } from './shared'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -19,7 +20,7 @@ export async function sendHandoffNotification({
   visitorName,
   visitorEmail,
 }: HandoffNotificationParams): Promise<void> {
-  const convUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://octively.vercel.app'}/dashboard/conversations/${conversationId}`
+  const convUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'}/dashboard/conversations/${conversationId}`
   const visitorLabel = visitorName ?? visitorEmail ?? 'Anonymous visitor'
 
   await resend.emails.send({
@@ -28,9 +29,7 @@ export async function sendHandoffNotification({
     subject: `Human handoff requested — ${botName}`,
     html: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1e293b">
-        <div style="margin-bottom:20px">
-          <span style="font-size:18px;font-weight:700;color:#0EA5E9">Octively</span>
-        </div>
+        ${LOGO_LIGHT}
         <h2 style="font-size:20px;font-weight:700;margin:0 0 8px">A visitor needs a human</h2>
         <p style="font-size:14px;color:#475569;margin:0 0 20px;line-height:1.6">
           <strong>${visitorLabel}</strong> asked a question your bot <strong>${botName}</strong> couldn't confidently answer.

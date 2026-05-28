@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import type { WeeklyStats } from '@/lib/db/queries/digest'
+import { LOGO_DARK } from './shared'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -31,10 +32,14 @@ function generateDigestHtml(params: {
     <head><meta charset="utf-8"><title>Your Octively Week</title></head>
     <body style="background:#0C0A09;color:#e5e5e5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:40px 20px;margin:0">
       <div style="max-width:560px;margin:0 auto">
-        <div style="margin-bottom:32px">
-          <span style="color:#0EA5E9;font-size:18px;font-weight:700">Octively</span>
-          <span style="color:#555;font-size:12px;margin-left:12px">${weekRange}</span>
-        </div>
+        <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;width:100%;">
+          <tr>
+            <td>${LOGO_DARK}</td>
+            <td style="text-align:right;vertical-align:bottom;padding-bottom:4px;">
+              <span style="color:#555;font-size:12px;">${weekRange}</span>
+            </td>
+          </tr>
+        </table>
 
         <h2 style="font-size:20px;font-weight:600;margin:0 0 6px">Hi ${developerName},</h2>
         <p style="color:#999;font-size:14px;margin:0 0 28px">Here's your weekly summary.</p>

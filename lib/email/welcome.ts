@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { LOGO_LIGHT } from './shared'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -19,6 +20,7 @@ export async function sendWelcomeEmail({
       subject: 'Welcome to Octively — your first bot is one step away',
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#111;">
+          ${LOGO_LIGHT}
           <h2 style="font-size:22px;margin-bottom:6px;">Welcome, ${name}!</h2>
           <p style="margin:0 0 20px;color:#444;">Your Octively account is ready. Here's what you get on the free plan:</p>
 

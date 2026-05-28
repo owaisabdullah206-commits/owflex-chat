@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { LOGO_LIGHT } from './shared'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -28,6 +29,7 @@ export async function sendUsageWarningEmail({
       subject: `You've used ${pctUsed}% of your ${planName} ${metricLabel} limit`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#111;">
+          ${LOGO_LIGHT}
           <h2 style="font-size:20px;margin-bottom:8px;">Approaching your ${metricLabel} limit</h2>
           <p style="margin:0 0 16px;color:#444;">
             You've used <strong>${pctUsed}%</strong> of your <strong>${planName}</strong> ${metricLabel} allocation this month.
