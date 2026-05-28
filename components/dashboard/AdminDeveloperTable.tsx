@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Users, CreditCard, ShieldOff, Shield, KeyRound, ChevronDown } from 'lucide-react'
+import { Users, CreditCard, ShieldOff, Shield, KeyRound, ChevronDown, RefreshCw, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
   giveCredits,
@@ -9,6 +9,7 @@ import {
   banOrg,
   unbanOrg,
   sendPasswordReset,
+  syncOrgCredits,
 } from '@/lib/db/queries/admin'
 
 type Developer = {
@@ -160,7 +161,16 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
   const [planFilter, setPlanFilter]     = useState('all')
   const [creditsModal, setCreditsModal] = useState<string | null>(null)
   const [banModal, setBanModal]         = useState<string | null>(null)
+  const [syncedOrgs, setSyncedOrgs]     = useState<Set<string>>(new Set())
   const [pending, startTransition]      = useTransition()
+
+  function handleSync(orgId: string) {
+    startTransition(async () => {
+      await syncOrgCredits(orgId)
+      setSyncedOrgs((prev) => new Set(prev).add(orgId))
+      setTimeout(() => setSyncedOrgs((prev) => { const s = new Set(prev); s.delete(orgId); return s }), 2000)
+    })
+  }
 
   const filtered = developers.filter((d) => {
     const matchSearch = !search ||
@@ -282,6 +292,21 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
                       className="p-1.5 hover:bg-[var(--surface-3)] text-[var(--ink-muted)] hover:text-[var(--ink)] transition-colors"
                     >
                       <CreditCard className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      title="Sync credits to plan allocation (resets balance to full plan quota)"
+                      onClick={() => handleSync(dev.orgId)}
+                      disabled={pending}
+                      className={cn(
+                        'p-1.5 hover:bg-[var(--surface-3)] transition-colors disabled:opacity-40',
+                        syncedOrgs.has(dev.orgId)
+                          ? 'text-[var(--success-text)]'
+                          : 'text-[var(--ink-muted)] hover:text-[var(--of-primary)]',
+                      )}
+                    >
+                      {syncedOrgs.has(dev.orgId)
+                        ? <Check className="h-3.5 w-3.5" />
+                        : <RefreshCw className="h-3.5 w-3.5" />}
                     </button>
                     <button
                       title="Send password reset"

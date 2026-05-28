@@ -155,6 +155,18 @@ export async function correctLegacyOrgCredits(
   return { corrected: true, delta, newBalance }
 }
 
+/**
+ * Force-set an org's Redis balance to their current plan's full allocation.
+ * Used by the admin "Sync Credits" action to repair mismatched balances without
+ * running the full migration sweep.
+ */
+export async function resetToPlantAllocation(orgId: string, plan: string): Promise<number> {
+  const allocation = PLAN_CREDIT_ALLOCATIONS[plan] ?? FREE_TIER_CREDITS
+  const redis = getRedis()
+  await redis.set(creditKey(orgId), allocation)
+  return allocation
+}
+
 export async function getAllFreeOrgIds(): Promise<string[]> {
   const rows = await db
     .select({ id: schema.organizations.id })

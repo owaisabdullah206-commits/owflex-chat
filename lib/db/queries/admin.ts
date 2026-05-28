@@ -5,7 +5,7 @@ import { and, count, desc, eq, inArray, sql, sum } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { SUPPORTED_MODELS, getOrCanonicalIds } from '@/lib/ai/litellm'
-import { upgradePlanCredits } from '@/lib/credits'
+import { upgradePlanCredits, resetToPlantAllocation } from '@/lib/credits'
 
 const PKR_PRICES: Record<string, number> = {
   free:       0,
@@ -240,6 +240,30 @@ export async function changeOrgPlan(
 
   revalidatePath('/dashboard/admin/developers')
   return {}
+}
+
+/**
+ * Force-reset an org's Redis credit balance to their current plan's full allocation.
+ * Use this when a plan was changed outside the normal payment flow (manual DB edit,
+ * legacy migration, etc.) and the Redis balance is out of sync.
+ */
+export async function syncOrgCredits(
+  orgId: string,
+): Promise<{ newBalance: number; plan: string; error?: string }> {
+  await requirePlatformOwner()
+
+  const [org] = await db
+    .select({ plan: schema.organizations.plan })
+    .from(schema.organizations)
+    .where(eq(schema.organizations.id, orgId))
+    .limit(1)
+
+  if (!org) return { newBalance: 0, plan: '', error: 'Org not found' }
+
+  const newBalance = await resetToPlantAllocation(orgId, org.plan)
+
+  revalidatePath('/dashboard/admin/developers')
+  return { newBalance, plan: org.plan }
 }
 
 export async function banOrg(
