@@ -83,6 +83,15 @@ export const auth = betterAuth({
     cookieCache: { enabled: true, maxAge: 60 * 5 },
   },
 
+  // Share the session cookie across all three Octively subdomains in production.
+  // On Vercel previews (octively.vercel.app), NEXT_PUBLIC_APP_URL doesn't contain
+  // 'admin.octively.com', so we skip this to avoid breaking preview auth.
+  ...((process.env.NEXT_PUBLIC_APP_URL ?? '').includes('admin.octively.com') ? {
+    advanced: {
+      crossSubDomainCookies: { enabled: true, domain: 'octively.com' },
+    },
+  } : {}),
+
   trustedOrigins: [
     // Production domains
     'https://octively.com',

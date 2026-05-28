@@ -67,7 +67,7 @@ function LoginContent() {
         {notClient && (
           <div className="mb-4 rounded-lg bg-amber-500/10 border border-amber-500/20 px-4 py-3 text-sm text-amber-400">
             This portal is for clients only.{' '}
-            <a href="/dashboard/login" className="underline font-medium">
+            <a href={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'}/dashboard/login`} className="underline font-medium">
               Developer dashboard →
             </a>
           </div>

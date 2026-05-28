@@ -1,6 +1,10 @@
 // proxy.ts — Next.js 16 root-level routing proxy (converted to Netlify Edge Function by @netlify/plugin-nextjs)
 // Subdomain routing: admin.octively.com → /dashboard, app.octively.com → /portal
+// Main domain redirect: octively.com/dashboard/* → admin.octively.com/*, octively.com/portal/* → app.octively.com/*
 import { NextRequest, NextResponse } from 'next/server'
+
+const ADMIN_ORIGIN = 'https://admin.octively.com'
+const PORTAL_ORIGIN = 'https://app.octively.com'
 
 export function proxy(request: NextRequest) {
   const host = request.headers.get('host') ?? ''
@@ -28,9 +32,22 @@ export function proxy(request: NextRequest) {
       url.pathname = `/portal${url.pathname === '/' ? '' : url.pathname}`
       return NextResponse.rewrite(url)
     }
+  } else if (host === 'octively.com') {
+    // Main production domain: redirect /dashboard/* and /portal/* to their canonical subdomains.
+    // Preserves query strings. Skips /api/* (OAuth callbacks) and /_next/* (assets).
+    if (!url.pathname.startsWith('/api') && !url.pathname.startsWith('/_next')) {
+      if (url.pathname.startsWith('/dashboard')) {
+        const cleanPath = url.pathname.slice('/dashboard'.length) || '/'
+        return NextResponse.redirect(new URL(cleanPath + url.search, ADMIN_ORIGIN))
+      }
+      if (url.pathname.startsWith('/portal')) {
+        const cleanPath = url.pathname.slice('/portal'.length) || '/'
+        return NextResponse.redirect(new URL(cleanPath + url.search, PORTAL_ORIGIN))
+      }
+    }
   }
 
-  // octively.com → marketing (no rewrite)
+  // octively.com (non-dashboard/portal paths) → marketing site
   return NextResponse.next()
 }
 
