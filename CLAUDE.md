@@ -42,7 +42,7 @@ Phase 1: MVP Dashboard
 - Auth: BetterAuth (email/password + Google, two roles: developer / client)
 - ORM: Drizzle ORM (never write raw SQL in application code)
 - DB: Neon PostgreSQL (pgvector extension enabled)
-- LLM Gateway: LiteLLM — default model: `deepseek/deepseek-v4-flash`
+- LLM Gateway: LiteLLM — default model: `meta-llama/llama-3.3-70b-instruct:free` (free via OpenRouter)
 - Cache / Credits: Upstash Redis
 - Email: Resend (transactional) + Brevo (marketing digests)
 - Validation: Zod on ALL API routes, no exceptions
@@ -110,7 +110,7 @@ Read `DESIGN.md` before building any UI component. Read it fresh — do not rely
 
 ### Default LLM Model
 
-`deepseek/deepseek-v4-flash` via LiteLLM. Change `LITELLM_DEFAULT_MODEL` env var to switch globally. All model calls go through `/lib/ai/litellm.ts` — never call provider APIs directly.
+`meta-llama/llama-3.3-70b-instruct:free` via LiteLLM (free on OpenRouter). Change `LITELLM_DEFAULT_MODEL` env var to switch globally. All model calls go through `/lib/ai/litellm.ts` — never call provider APIs directly.
 
 ### MCP Tools Available — Use These, Don't Guess
 
