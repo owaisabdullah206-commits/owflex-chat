@@ -10,7 +10,7 @@
  *  - Renders once per browser session (sessionStorage flag).
  *  - 120px Compass Burst with spotlight-sweep animation (premium oct-sweep).
  *  - Wordmark · tagline · shimmer status line · indeterminate progress bar.
- *  - Top-left brand stamp (16px mark + "OCTIVELY") · bottom-right v0.9.
+ *  - Top-left brand stamp (16px mark + "OCTIVELY") · bottom-right v1.1.0.
  *  - Exit: content fades + scales in 250ms, then 8 horizontal bands shutter
  *    alternating left/right — centre bands first, edges last (~850ms).
  */
@@ -288,7 +288,7 @@ export function LandingPreloader() {
             opacity:       0.45,
             animation:     'oct-lp-in .8s cubic-bezier(.22,.61,.36,1) .4s both',
           }}>
-            v0.9
+            v1.1.0
           </div>
         </div>
       </div>

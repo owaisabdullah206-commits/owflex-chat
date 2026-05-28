@@ -206,7 +206,7 @@ export default function MarketingFooter() {
           }}
         >
           <div style={{ fontFamily: 'var(--font-mono)' }}>
-            © {new Date().getFullYear()} Octively — v0.9.0
+            © {new Date().getFullYear()} Octively — v1.1.0
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span

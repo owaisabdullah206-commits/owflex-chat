@@ -1612,7 +1612,7 @@ function HeroLeadCopy() {
         }}
       >
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)' }} />
-        v0.9 — Now in beta
+        v1.1.0 — Now in beta
       </span>
       <h1
         style={{
