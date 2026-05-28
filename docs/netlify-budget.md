@@ -33,3 +33,4 @@ At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credi
 | 2026-05-24 | 3        | 0 (failed)   | FAILED — secrets scanner blocked non-sensitive vars |
 | 2026-05-24 | 4        | 15           | Fix secrets scanner omit keys — SUCCEEDED           |
 | 2026-05-25 | 5        | ~15          | fix: proxy.ts double-prefix bug → /dashboard/login 404 |
+| 2026-05-28 | 6        | ~15          | fix: canonical subdomain routing + crossSubDomainCookies |
