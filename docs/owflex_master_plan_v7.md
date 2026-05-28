@@ -116,6 +116,8 @@ requires nothing — just one embed script.
 
 **Permanently out of scope:** Visual flow builder, social media channels, voice/audio, built-in CRM, prompt A/B testing.
 
+> **Phase 4 addition:** Each bot will have a creation mode — **Chatbot** (current default) or **AI Agent** (tool-calling mode). See Section 26 for the full agentic AI roadmap.
+
 ---
 
 ## 5. Tech Stack (Final — No More Debates)
@@ -154,12 +156,22 @@ requires nothing — just one embed script.
 All calls go through **LiteLLM**. One interface, all providers. Swap models in one
 config line. Users select model from dashboard dropdown.
 
-### Tier 1 — Ultra Budget (Starter plan default)
+### Tier 0 — Free (MVP actual default — $0/month)
+
+| Model | Input / Output per 1M | Context | Notes |
+|-------|----------------------|---------|-------|
+| **LLaMA 3.3 70B** | **$0 / $0** | **131K** | **Current OwFlex default — free via OpenRouter** |
+
+`meta-llama/llama-3.3-70b-instruct:free` on OpenRouter. 70B parameters, multilingual,
+outperforms many paid models on benchmarks. Free tier has rate limits (suitable for MVP
+scale). When free quota is exhausted per-request, falls back to Tier 1 automatically.
+
+### Tier 1 — Ultra Budget (Starter plan default, paid)
 
 | Model | Input / Output per 1M | Context | Notes |
 |-------|----------------------|---------|-------|
 | Gemini 2.5 Flash-Lite | $0.10 / $0.40 | 1M | Cheapest capable model |
-| **DeepSeek V4 Flash** | $0.14 / $0.28 | 1M | **OwFlex default** |
+| **DeepSeek V4 Flash** | $0.14 / $0.28 | 1M | **Paid fallback default** |
 | GPT-5 nano | $0.05 / $0.40 | 128K | Simple routing/classification only |
 
 DeepSeek V4 Flash cache-hit pricing: $0.0028/M input. Repeated system prompts
@@ -768,7 +780,7 @@ Phase 1: MVP Dashboard
 - Auth: BetterAuth (email/password + Google, two roles: developer / client)
 - ORM: Drizzle ORM (never write raw SQL in application code)
 - DB: Neon PostgreSQL (pgvector extension enabled)
-- LLM Gateway: LiteLLM — default model: deepseek/deepseek-v4-flash
+- LLM Gateway: LiteLLM — default model: meta-llama/llama-3.3-70b-instruct:free (free via OpenRouter)
 - Cache / Credits: Upstash Redis
 - Email: Resend (transactional) + Brevo (marketing digests)
 - Validation: Zod on ALL API routes, no exceptions
@@ -1644,8 +1656,8 @@ Task 4.12 — Webflow / Framer embed integrations
 | Database | Neon PostgreSQL (free) | Self-hosted Postgres on Hetzner |
 | Vector search | pgvector on Neon | pgvector on Hetzner Postgres |
 | Embeddings | Jina AI jina-embeddings-v5-text-small (free 1M/day) | BGE-M3 ONNX local |
-| LLM gateway | LiteLLM → DeepSeek V4 Flash | LiteLLM → multi-model |
-| LLM fallback | Groq (llama-3.3-70b) | Same + OpenRouter routing |
+| LLM gateway | LiteLLM → LLaMA 3.3 70B (free via OpenRouter) | LiteLLM → multi-model |
+| LLM fallback | DeepSeek V4 Flash (paid, when free quota hits) | Same + OpenRouter routing |
 | Cache / credits | Upstash Redis (free) | Self-hosted Redis |
 | Auth | BetterAuth | BetterAuth |
 | ORM | Drizzle + Zod | Drizzle + Zod |
@@ -1747,6 +1759,127 @@ Agency plan white-label means SMB clients never discover OwFlex pricing:
 - Client portal login shows agency branding (Phase 3)
 - SMBs cannot create bots — only view conversations and leads via `app.owflex.com`
 - Bot creation requires developer role → agencies are the intermediary, not a competitor
+
+---
+
+---
+
+## 26. Agentic AI Strategy (Phase 4)
+
+### Why This Matters Now
+
+2026 is the production year for AI agents. Tavily research (May 2026):
+- AI agents handle **40–60% of initial customer interactions** globally (SaaStr)
+- SaaS products that add agents to existing features without rethinking the UX **will lose** to natively agentic products
+- The shift: chatbots *respond*. Agents *act*.
+
+**OwFlex is already partially agentic.** Current bots:
+- Capture leads autonomously (action — writes to DB, triggers webhook)
+- Display product cards and recommendations (retrieval + structured output)
+- Escalate to human on uncertainty (decision + handoff)
+- Run web search per message when enabled (Tavily integration)
+
+These are agent behaviors. The missing piece is a **formal agent mode** with a configurable tool registry that bot owners control without writing code.
+
+---
+
+### The Two Bot Modes (Phase 4)
+
+When creating a bot, the developer chooses:
+
+```
+┌─────────────────────────────────────────────┐
+│  Bot Type                                   │
+│                                             │
+│  ◉ Chatbot (default)                        │
+│    Responds to questions using your         │
+│    knowledge base. No external actions.     │
+│                                             │
+│  ○ AI Agent                                 │
+│    Answers AND takes actions. Configure     │
+│    which tools the agent can use below.     │
+└─────────────────────────────────────────────┘
+```
+
+In **Chatbot mode** (current): LiteLLM call → RAG context → response. No tool loop.
+
+In **AI Agent mode**: OpenAI Agents SDK loop → tool selection → execution → response.
+The agent decides which tools to call based on the user's message.
+
+---
+
+### Agent Tool Registry (Bot Owner Configures)
+
+Bot owners toggle tools on/off per bot from the dashboard. No code required.
+
+| Tool | What it does | Config needed |
+|------|-------------|--------------|
+| **Web search** | Searches Tavily for real-time answers (prices, news, availability) | Toggle on/off |
+| **Lead capture** | Captures visitor info mid-conversation (already exists) | Already in all bots |
+| **Appointment booking** | Redirects to Calendly/Cal.com link at the right moment | Paste booking URL |
+| **Product lookup** | Searches product catalog and returns cards (already exists) | Already in all bots |
+| **Custom webhook** | POSTs structured data to any URL when triggered | Paste endpoint URL |
+| **Form submission** | Fills and submits a form on behalf of the visitor | Form URL + field map |
+| **Human handoff** | Escalates conversation when confidence is low (already exists) | Already in all bots |
+
+**Phase 4 adds:** web search toggle, appointment booking, custom webhook trigger (form + endpoint). The rest already exists in chatbot mode and carries over automatically.
+
+---
+
+### Technical Implementation
+
+**SDK:** OpenAI Agents SDK (open-source, MIT, Python-first — March 2025). Already covered in `.claude/skills/openai-agents-sdk-gemini/skills.md`.
+
+Key SDK primitives used:
+- **Agents** — LiteLLM-backed agent with instructions + tool list
+- **Handoffs** — Transfer to human-support agent on escalation
+- **Guardrails** — Input/output validation (no harmful content, no off-topic actions)
+- **Tracing** — Every tool call logged in Postgres for the developer's audit view
+
+```typescript
+// lib/ai/agent.ts — agent mode chat handler
+import { Agent, Runner } from 'openai-agents'  // or equivalent JS port
+
+const botAgent = new Agent({
+  name: bot.name,
+  instructions: buildSystemPrompt(bot, retrievedChunks),
+  tools: buildToolList(bot.agentConfig),  // only enabled tools
+  model: bot.model,  // routes through LiteLLM
+})
+
+const result = await Runner.run(botAgent, userMessage, { context: session })
+```
+
+The chat API route detects `bot.mode === 'agent'` and switches from the simple LiteLLM call to the agent runner. **Zero breaking changes to chatbot mode.**
+
+---
+
+### What "Agent" Means for OwFlex Positioning
+
+| | Chatbot | AI Agent |
+|--|---------|---------|
+| Use case | FAQ, support, lead gen | Bookings, lookups, actions |
+| Response type | Text answers | Text + actions + confirmations |
+| Knowledge base | RAG retrieval | RAG + live tools |
+| Pricing | Included in plan credits | Higher credit cost per turn (more tokens) |
+| Plan availability | All plans | Pro+ (tool-calling requires higher credit budget) |
+
+**Go-to-market angle:** "Your chatbot answers questions. Your AI agent books appointments, checks inventory, and submits forms — without you lifting a finger." This positions OwFlex ahead of every competitor still shipping chatbot-only products in 2026.
+
+---
+
+### Phase 4 Agent Tasks (additions to existing task list)
+
+```
+Task 4.13 — Agent mode toggle on bot creation (Chatbot / AI Agent)
+Task 4.14 — Tool registry UI — per-bot tool enable/disable dashboard
+Task 4.15 — Web search tool (Tavily) — toggle + credits debit per search
+Task 4.16 — Appointment booking tool — Calendly/Cal.com URL config
+Task 4.17 — Custom webhook tool — endpoint URL + trigger phrase config
+Task 4.18 — Agent runner in chat API (OpenAI Agents SDK loop)
+Task 4.19 — Agent trace viewer — developer can see every tool call per conversation
+Task 4.20 — Agent mode analytics — tool usage counts, action completion rate
+```
 
 ---
 
