@@ -41,7 +41,7 @@ fetch(bu+"/api/v1/widget-config?key="+k)
     tms=Array.isArray(c.tooltipMessages)&&c.tooltipMessages.length?c.tooltipMessages:tms;
     be=c.brandingEnabled===true;
     if(c.brandingText)bt=c.brandingText;
-    if(c.brandingUrl)burl=c.brandingUrl;
+    if(c.brandingUrl&&safeUrl(c.brandingUrl))burl=safeUrl(c.brandingUrl);
     dk=c.theme==="dark";
     go();
   })
@@ -444,14 +444,15 @@ function addProducts(products){
   wrap.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:90%;max-width:310px;margin:4px 0;animation:ofIn .22s ease;align-self:flex-start";
   for(var i=0;i<products.length&&i<4;i++){
     var p=products[i];if(!p||!p.name)continue;
+    var pImg=safeUrl(p.image),pUrl=safeUrl(p.url);
     var card=document.createElement("div");
     card.style.cssText="border:1px solid "+bd+";border-radius:10px;overflow:hidden;background:"+bg+";min-width:0";
     var h="";
-    if(p.image){h+='<img src="'+esc(imgSrc(p.image))+'" width="300" height="200" style="width:100%;height:110px;object-fit:cover;display:block;background:#f1f5f9" loading="eager" decoding="async" onerror="this.style.display=\'none\'">';}
+    if(pImg){h+='<img src="'+esc(imgSrc(pImg))+'" width="300" height="200" style="width:100%;height:110px;object-fit:cover;display:block;background:#f1f5f9" loading="eager" decoding="async" onerror="this.style.display=\'none\'">';}
     h+='<div style="padding:8px">';
     h+='<p style="margin:0 0 2px;font-size:12px;font-weight:600;color:'+clr+';line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">'+esc(p.name)+'</p>';
     if(p.price){h+='<p style="margin:0 0 6px;font-size:11px;color:'+mu+'">'+esc(p.price)+'</p>';}
-    if(p.url){h+='<a href="'+esc(p.url)+'" target="_blank" rel="noopener" style="display:inline-block;font-size:11px;color:#fff;background:var(--ofp);padding:3px 10px;border-radius:4px;text-decoration:none;margin-top:'+(p.price?'0':'6px')+'">View →</a>';}
+    if(pUrl){h+='<a href="'+esc(pUrl)+'" target="_blank" rel="noopener" style="display:inline-block;font-size:11px;color:#fff;background:var(--ofp);padding:3px 10px;border-radius:4px;text-decoration:none;margin-top:'+(p.price?'0':'6px')+'">View →</a>';}
     h+='</div>';
     card.innerHTML=h;wrap.appendChild(card);
   }
@@ -665,5 +666,7 @@ window.addEventListener("octively:lead",function(e){
   try{fetch(bu+"/api/v1/leads",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify(Object.assign({embedKey:k,sessionId:sid},e.detail||{}))});}catch(e){}
 });
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+// Only allow http(s) URLs into href/src — blocks javascript:, data:, etc.
+function safeUrl(u){if(!u)return"";var s=String(u).trim();return /^https?:\/\//i.test(s)?s:"";}
 }catch(e){}})();

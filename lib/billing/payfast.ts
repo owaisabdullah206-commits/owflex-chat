@@ -1,4 +1,5 @@
 import { createHash } from 'crypto'
+import { safeEqual } from '@/lib/security'
 
 export const CREDIT_PACKS = {
   starter: { tokens: 100_000,   pkr: 500,  usd: 2  },
@@ -78,34 +79,79 @@ export function generatePlanPaymentUrl(
 }
 
 export interface ItnVerifyResult {
+  /** Signature + passphrase + payment_status all checked out. */
   valid: boolean
   paymentId: string
   status: string
   orgId: string
+  /** Set only for credit-pack payments (`{orgId}:{packId}:{ts}`). */
   packId: PackId | null
+  /** Set only for plan-upgrade payments (`plan:{orgId}:{planId}:{ts}`). */
+  planId: PlanId | null
+  /** Gross amount PayFast reports actually paid. */
+  amountGross: number
+  /** True only when amountGross matches the expected price for the pack/plan. */
+  amountValid: boolean
 }
 
 export function verifyItn(
   formData: Record<string, string>,
 ): ItnVerifyResult {
-  const signature = formData.signature ?? ''
+  const paymentId = formData.m_payment_id ?? ''
+  const status = formData.payment_status ?? ''
+  const amountGross = Number.parseFloat(formData.amount_gross ?? '') || 0
+
+  // Parse m_payment_id for BOTH layouts:
+  //   credit pack  → {orgId}:{packId}:{timestamp}
+  //   plan upgrade → plan:{orgId}:{planId}:{timestamp}
+  const parts = paymentId.split(':')
+  let orgId = ''
+  let packId: PackId | null = null
+  let planId: PlanId | null = null
+  let expectedAmount: number | null = null
+
+  if (parts[0] === 'plan') {
+    orgId = parts[1] ?? ''
+    const rawPlan = parts[2] ?? ''
+    if (rawPlan in PLAN_PRICES_PKR) {
+      planId = rawPlan as PlanId
+      expectedAmount = PLAN_PRICES_PKR[planId]
+    }
+  } else {
+    orgId = parts[0] ?? ''
+    const rawPack = parts[1] ?? ''
+    if (rawPack in CREDIT_PACKS) {
+      packId = rawPack as PackId
+      expectedAmount = CREDIT_PACKS[packId].pkr
+    }
+  }
+
+  // Amount integrity: the outgoing checkout request is unsigned, so a user can
+  // tamper with `amount` before paying. Never trust m_payment_id alone — require
+  // the gross paid to match the server-side price for that pack/plan.
+  const amountValid = expectedAmount !== null && Math.abs(amountGross - expectedAmount) < 0.01
+
+  // Fail closed: a passphrase is mandatory. Without it the MD5 signature is
+  // computable from semi-public merchant fields, making ITNs forgeable.
+  const passphrase = process.env.PAYFAST_PASSPHRASE
+  if (!passphrase) {
+    console.error('[payfast] PAYFAST_PASSPHRASE not configured — rejecting ITN as unverifiable')
+    return { valid: false, paymentId, status, orgId, packId, planId, amountGross, amountValid }
+  }
+
+  // PayFast spec: concatenate the posted variables in the ORDER RECEIVED
+  // (not sorted), URL-encode values, then append the passphrase.
   const params = { ...formData }
   delete params.signature
-
-  const sortedKeys = Object.keys(params).sort()
-  let queryString = sortedKeys.map((k) => `${k}=${encodeURIComponent(params[k]).replace(/%20/g, '+')}`).join('&')
-
-  const passphrase = process.env.PAYFAST_PASSPHRASE
-  if (passphrase) queryString += `&passphrase=${encodeURIComponent(passphrase).replace(/%20/g, '+')}`
+  const queryString =
+    Object.keys(params)
+      .map((k) => `${k}=${encodeURIComponent(params[k]).replace(/%20/g, '+')}`)
+      .join('&') +
+    `&passphrase=${encodeURIComponent(passphrase).replace(/%20/g, '+')}`
 
   const hash = createHash('md5').update(queryString).digest('hex')
-  const valid = hash === signature && formData.payment_status === 'COMPLETE'
+  const signature = formData.signature ?? ''
+  const valid = safeEqual(hash, signature) && status === 'COMPLETE'
 
-  // Parse m_payment_id: {orgId}:{packId}:{timestamp}
-  const parts = (formData.m_payment_id ?? '').split(':')
-  const orgId  = parts[0] ?? ''
-  const rawPack = parts[1] ?? ''
-  const packId = rawPack in CREDIT_PACKS ? (rawPack as PackId) : null
-
-  return { valid, paymentId: formData.m_payment_id ?? '', status: formData.payment_status ?? '', orgId, packId }
+  return { valid, paymentId, status, orgId, packId, planId, amountGross, amountValid }
 }

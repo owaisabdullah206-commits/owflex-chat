@@ -2,11 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { correctLegacyOrgCredits } from '@/lib/credits'
+import { verifyBearer } from '@/lib/security'
+
+// Default-off kill switch: this endpoint can execute DDL and read schema, so it
+// stays disabled unless MIGRATIONS_ENABLED=true is explicitly set for a one-shot
+// run, then unset again. Even a leaked CRON_SECRET can't reach it while disabled.
+function migrationsEnabled(): boolean {
+  return process.env.MIGRATIONS_ENABLED === 'true'
+}
 
 // GET — returns current DB column state for diagnosis (protected)
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get('authorization')
-  if (!auth || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!migrationsEnabled()) {
+    return NextResponse.json({ error: 'Disabled' }, { status: 404 })
+  }
+  if (!verifyBearer(req.headers.get('authorization'), process.env.CRON_SECRET)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   const rows = await db.execute(sql`
@@ -21,8 +31,10 @@ export async function GET(req: NextRequest) {
 // One-shot endpoint to apply pending DDL migrations.
 // Protected by CRON_SECRET so it cannot be called anonymously.
 export async function POST(req: NextRequest) {
-  const auth = req.headers.get('authorization')
-  if (!auth || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!migrationsEnabled()) {
+    return NextResponse.json({ error: 'Disabled' }, { status: 404 })
+  }
+  if (!verifyBearer(req.headers.get('authorization'), process.env.CRON_SECRET)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

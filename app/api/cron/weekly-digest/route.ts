@@ -3,10 +3,10 @@ import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { getWeeklyStats } from '@/lib/db/queries/digest'
 import { sendDigestEmail } from '@/lib/email/digest'
+import { verifyBearer } from '@/lib/security'
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!verifyBearer(req.headers.get('authorization'), process.env.CRON_SECRET)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
