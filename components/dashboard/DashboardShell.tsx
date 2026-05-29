@@ -12,7 +12,7 @@ const themeScript = `(function(){
   document.documentElement.classList.add('dashboard', theme);
 })()`
 
-export function DashboardShell({ children, banner }: { children: React.ReactNode; banner?: React.ReactNode }) {
+export function DashboardShell({ children, banner, isPlatformOwner = false }: { children: React.ReactNode; banner?: React.ReactNode; isPlatformOwner?: boolean }) {
   const { theme, toggle } = useTheme('dashboard')
 
   return (

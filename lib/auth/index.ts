@@ -6,6 +6,41 @@ import * as schema from '@/lib/db/schema'
 import { sendWelcomeEmail } from '@/lib/email/welcome'
 import { sendResetPasswordEmail } from '@/lib/email/reset-password'
 
+// Upstash-backed SecondaryStorage adapter for BetterAuth.
+// Stores sessions and rate-limit counters in Redis so they survive across
+// serverless function instances (Netlify/Vercel edge workers share nothing).
+function makeSecondaryStorage() {
+  const url   = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) return undefined
+
+  return {
+    async get(key: string) {
+      const res = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const json = await res.json() as { result: string | null }
+      return json.result ?? null
+    },
+    async set(key: string, value: string, ttl?: number) {
+      const path = ttl
+        ? `/set/${encodeURIComponent(key)}?ex=${ttl}`
+        : `/set/${encodeURIComponent(key)}`
+      await fetch(`${url}${path}`, {
+        method:  'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body:    JSON.stringify(value),
+      })
+    },
+    async delete(key: string) {
+      await fetch(`${url}/del/${encodeURIComponent(key)}`, {
+        method:  'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    },
+  }
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -74,6 +109,25 @@ export const auth = betterAuth({
           }
         },
       },
+    },
+  },
+
+  // Upstash Redis-backed storage so rate-limit counters and sessions are shared
+  // across all serverless instances (Netlify/Vercel workers share no in-process memory).
+  secondaryStorage: makeSecondaryStorage(),
+
+  rateLimit: {
+    enabled:  true,
+    storage:  'secondary-storage',
+    window:   60,   // 1-minute window
+    max:      10,   // 10 requests per window per IP (default for all auth routes)
+    customRules: {
+      // Login: tighter — 5 attempts per minute per IP before lockout
+      '/sign-in/email':    { window: 60, max: 5 },
+      // Password reset: 3 requests per minute (limits reset-email spam)
+      '/forget-password':  { window: 60, max: 3 },
+      // Signup: 3 per minute (limits account-creation abuse)
+      '/sign-up/email':    { window: 60, max: 3 },
     },
   },
 

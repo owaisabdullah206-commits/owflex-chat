@@ -55,16 +55,24 @@ function NavLink({ href, label, icon: Icon, pathname, badge }: {
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { data: session } = authClient.useSession()
-  const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_PLATFORM_OWNER_EMAIL
+  const [isAdmin, setIsAdmin] = useState(false)
   const [escalationCount, setEscalationCount] = useState(0)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
+
+  useEffect(() => {
+    // Fetch admin status from the server — keeps PLATFORM_OWNER_EMAIL out of the
+    // client bundle entirely (never exposed as NEXT_PUBLIC_*).
+    fetch('/api/dashboard/is-admin')
+      .then((r) => r.json())
+      .then((d: { isAdmin?: boolean }) => setIsAdmin(d.isAdmin === true))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     function poll() {
       fetch('/api/dashboard/escalations/count')
         .then((r) => r.json())
-        .then((data) => setEscalationCount(data.count ?? 0))
+        .then((data: { count?: number }) => setEscalationCount(data.count ?? 0))
         .catch(() => {})
     }
     poll()

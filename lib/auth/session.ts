@@ -43,7 +43,10 @@ export async function requireClient() {
 
 export async function requirePlatformOwner() {
   const user = await requireDeveloper()
-  if (user.email !== process.env.NEXT_PUBLIC_PLATFORM_OWNER_EMAIL) redirect('/dashboard')
+  // Prefer server-only var; fall back to legacy NEXT_PUBLIC_ so existing
+  // deployments keep working until the env is updated.
+  const ownerEmail = process.env.PLATFORM_OWNER_EMAIL ?? process.env.NEXT_PUBLIC_PLATFORM_OWNER_EMAIL
+  if (!ownerEmail || user.email !== ownerEmail) redirect('/dashboard')
   return user
 }
 
