@@ -1,6 +1,9 @@
 import imageUrlBuilder from '@sanity/image-url'
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
 import { dataset, projectId } from '../env'
+
+// Derive the source type from the builder rather than importing a deep path
+// that doesn't exist in all versions of @sanity/image-url.
+type SanityImageSource = Parameters<ReturnType<typeof imageUrlBuilder>['image']>[0]
 
 const builder = projectId ? imageUrlBuilder({ projectId, dataset }) : null
 
