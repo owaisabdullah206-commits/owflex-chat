@@ -35,3 +35,4 @@ At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credi
 | 2026-05-25 | 5        | ~15          | fix: proxy.ts double-prefix bug → /dashboard/login 404 |
 | 2026-05-28 | 6        | ~15          | fix: canonical subdomain routing + crossSubDomainCookies |
 | 2026-05-28 | 7        | ~15          | feat: sync credits button + email logos + v1.1.0 badges  |
+| 2026-05-29 | 8        | ~15          | feat: GTM + GA4 + GSC verification + security fixes (PayFast, SSRF, CSP, CORS, auth rate limit) |
