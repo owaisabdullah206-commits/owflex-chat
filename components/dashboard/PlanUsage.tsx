@@ -119,10 +119,10 @@ export function PlanUsage({
       </div>
       {/* Stat grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-[var(--hairline)] overflow-hidden border border-[var(--hairline)]">
-        {/* Credits — shown on all plans including free (free tier has 2M tokens) */}
+        {/* Credits — shows consumed tokens, consistent with all other used/limit metrics */}
         <MetricCard
-          label="credits.remaining"
-          value={balance}
+          label="credits.used"
+          value={(PLAN_CREDIT_ALLOCATIONS[planKey] ?? PLAN_CREDIT_ALLOCATIONS.free) - balance}
           limitValue={PLAN_CREDIT_ALLOCATIONS[planKey] ?? PLAN_CREDIT_ALLOCATIONS.free}
           suffix="tokens"
           wide
