@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Bad request', { status: 400 })
     }
 
-    revalidateTag(tag)
+    revalidateTag(tag, {})
     return NextResponse.json({ revalidated: true, type: body._type, now: Date.now() })
   } catch (err) {
     console.error('[revalidate] error:', err)
