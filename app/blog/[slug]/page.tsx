@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import BlogPostView from '@/components/marketing/BlogPostView'
 import { JsonLd, articleSchema, breadcrumbSchema, faqSchema } from '@/components/shared/JsonLd'
 import { getPost, getPosts, getPostSlugs } from '@/sanity/lib/queries'
+import { urlForImage } from '@/sanity/lib/image'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -26,6 +27,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: post.description,
       url: `/blog/${post.slug}`,
       publishedTime: post.publishedAt,
+      ...(post.coverImage && {
+        images: [{ url: urlForImage(post.coverImage, 1200) ?? '', width: 1200, alt: post.title }],
+      }),
     },
   }
 }

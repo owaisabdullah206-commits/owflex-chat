@@ -29,8 +29,31 @@ const POSTS = [
     description:
       'Stammer.ai is a solid agency chatbot platform, but it is not cheap. Here is a fair look at where it shines, where it does not, and when Octively is the better fit.',
     keyword: 'stammer.ai alternative',
+    tags: ['Comparison', 'Agency'],
     publishedAt: '2026-05-29T09:00:00.000Z',
     readingMinutes: 6,
+    faq: [
+      {
+        question: 'Is Octively a good Stammer.ai alternative for agencies?',
+        answer:
+          'Yes, if your agency focuses on website chatbots for SMB clients and does not need voice agents. Octively offers the same white-label client portal concept at a fraction of the cost — paid plans start at ₨2,500/month in Pakistan or $15 internationally, versus Stammer\'s ~$197/month entry price.',
+      },
+      {
+        question: 'Does Octively support voice agents like Stammer.ai?',
+        answer:
+          'No. Octively is focused entirely on website chat — building bots, deploying them via an embed script, and giving each client a branded portal to view conversations and leads. If voice agents are a core part of your offering, Stammer.ai is the better fit.',
+      },
+      {
+        question: 'How much cheaper is Octively compared to Stammer.ai?',
+        answer:
+          'Significantly. Stammer\'s agency plan starts around $197/month. Octively\'s Agency plan with unlimited client portals is ₨20,000/month in Pakistan (about $79) or $79 internationally. For a freelancer or small agency, that difference is meaningful from day one.',
+      },
+      {
+        question: 'Can my clients log in to see their own chatbot conversations?',
+        answer:
+          'Yes. Each client gets their own branded portal login where they can read conversation history, view captured leads, and pull exports — without contacting you. This is a core feature on all Octively plans, not an add-on.',
+      },
+    ],
     body: `Stammer.ai built a real product, and a lot of agencies run on it happily. So this is not a hit piece. If you are searching for an alternative, you usually have one of two reasons: the price stopped making sense, or you are paying for voice and channels you never switched on. Both are fair.
 
 Here is how I would actually think about the decision.
@@ -78,8 +101,31 @@ The honest version: pick the cheapest tool that covers what you sell. For most f
     description:
       'A plain breakdown of white-label AI chatbot pricing in 2026, the hidden per-seat and per-message costs, and how to keep margin when you resell to clients.',
     keyword: 'affordable white label chatbot',
+    tags: ['Pricing', 'Agency'],
     publishedAt: '2026-05-29T09:30:00.000Z',
     readingMinutes: 7,
+    faq: [
+      {
+        question: 'What is the cheapest white-label AI chatbot platform for agencies?',
+        answer:
+          'Octively is one of the most affordable options available. Paid plans start at ₨2,500/month in Pakistan or $15 internationally, with an Agency plan at ₨20,000 ($79) covering unlimited client portals. Most comparable platforms (Stammer, ConvoCore, ChatLab) start at $197–$360/month.',
+      },
+      {
+        question: 'What hidden costs should I watch out for in white-label chatbot platforms?',
+        answer:
+          'Two are most common: per-seat fees (charged per client sub-account — can double your bill quickly) and per-message or credit-based usage fees (AI responses cost money; check the included allowance and overage rate before signing up). Look for flat plans with predictable pricing.',
+      },
+      {
+        question: 'How do I calculate my margin when reselling an AI chatbot?',
+        answer:
+          'Start with what you can charge your client (e.g. ₨15,000/$99/month for a managed chatbot with portal). Subtract your platform cost. Aim to keep the tool under 25% of what you charge. With a ₨2,500 base plan, even the first client is profitable. With a $197 plan, you need several clients before the math works.',
+      },
+      {
+        question: 'Is there a free white-label AI chatbot plan?',
+        answer:
+          'Octively has a free plan that lets you build and deploy one bot. It is a genuine free tier — not a trial with an expiry date — so you can test it with a real client before committing to a paid plan.',
+      },
+    ],
     body: `Most "white-label chatbot pricing" pages bury the number you actually want. So let me put it up front: the well-known agency platforms start somewhere between $197 and $360 a month. Stammer.ai is around $197, ConvoCore around $220, ChatLab around $360. Those are entry prices, before you add clients or usage.
 
 That range is fine if you are already running a busy agency. It is rough if you are not. Here is what to watch for so you do not overpay.
@@ -121,8 +167,31 @@ Run that through the $197 plans and you need several clients before it breathes.
     description:
       'A practical guide for freelancers on adding an AI chatbot to client websites, giving the client their own portal, and turning a one-off build into a monthly retainer.',
     keyword: 'AI chatbot for freelancers',
+    tags: ['Freelancers', 'Getting Started'],
     publishedAt: '2026-05-29T10:00:00.000Z',
     readingMinutes: 6,
+    faq: [
+      {
+        question: 'Do I need to know how to code to add an AI chatbot to a client site?',
+        answer:
+          'No. You build and configure the bot in a visual dashboard — no code required. The only technical step is adding a single script tag to the client\'s website, and guides cover that for WordPress, Webflow, Shopify, Wix, and plain HTML. Most freelancers complete a full setup in under an hour.',
+      },
+      {
+        question: 'How do I add an AI chatbot to a WordPress or Webflow site?',
+        answer:
+          'After building the bot in Octively\'s dashboard, you get a one-line embed script. On WordPress, paste it into the footer area via your theme settings or a header/footer plugin. On Webflow, drop it into the Site Settings → Custom Code → Footer Code section. The bot appears on the site immediately.',
+      },
+      {
+        question: 'How much should I charge clients for an AI chatbot service?',
+        answer:
+          'For a managed chatbot with a branded client portal, ₨10,000 to ₨20,000 per month in Pakistan or $79 to $149 internationally is a realistic range for SMB clients. The key is keeping your platform cost low (Octively starts at ₨2,500/$15) so the retainer is mostly margin.',
+      },
+      {
+        question: 'How do clients view their chatbot conversations and leads?',
+        answer:
+          'Each client gets their own branded portal login. They can read every conversation, see captured leads, and export the data — without calling you. You set up the portal once when you onboard the client; after that they are self-service.',
+      },
+    ],
     body: `If you build websites for clients, an AI chatbot is one of the easier upsells you can make right now. The client gets something that captures leads around the clock, and you get a reason to bill monthly instead of once. The trick is setting it up so it runs without you babysitting it.
 
 Here is how I would approach it.
@@ -170,9 +239,16 @@ async function run() {
       slug: { _type: 'slug', current: p.slug },
       description: p.description,
       keyword: p.keyword,
+      tags: p.tags ?? [],
       publishedAt: p.publishedAt,
       readingMinutes: p.readingMinutes,
       body: p.body,
+      faq: (p.faq ?? []).map((item, i) => ({
+        _key: `faq-${i}`,
+        _type: 'faqItem',
+        question: item.question,
+        answer: item.answer,
+      })),
     }
     await client.createOrReplace(doc)
     console.log(`✓ seeded: ${p.slug}`)

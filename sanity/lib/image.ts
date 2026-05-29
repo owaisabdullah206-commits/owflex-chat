@@ -7,7 +7,8 @@ type SanityImageSource = Parameters<ReturnType<typeof imageUrlBuilder>['image']>
 
 const builder = projectId ? imageUrlBuilder({ projectId, dataset }) : null
 
-export function urlForImage(source: SanityImageSource): string | null {
+export function urlForImage(source: SanityImageSource, width?: number): string | null {
   if (!builder || !source) return null
-  return builder.image(source).auto('format').fit('max').url()
+  const img = builder.image(source).auto('format').fit('max')
+  return (width ? img.width(width) : img).url()
 }

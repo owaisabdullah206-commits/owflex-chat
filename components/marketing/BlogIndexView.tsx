@@ -6,6 +6,7 @@ import { ArrowRight, BookOpen, Clock } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
+import { urlForImage } from '@/sanity/lib/image'
 import type { SanityPost } from '@/sanity/lib/queries'
 
 function formatDate(iso: string): string {
@@ -13,21 +14,36 @@ function formatDate(iso: string): string {
 }
 
 function PostCard({ post }: { post: SanityPost }) {
+  const coverUrl = post.coverImage ? urlForImage(post.coverImage, 600) : null
   return (
     <Link
       href={`/blog/${post.slug}`}
       style={{
         display: 'flex',
         flexDirection: 'column',
-        padding: '22px 24px',
         border: '1px solid var(--hairline)',
         borderRadius: 14,
         background: 'var(--surface)',
         textDecoration: 'none',
         color: 'inherit',
+        overflow: 'hidden',
         transition: 'border-color 0.15s, box-shadow 0.15s',
       }}
     >
+      {/* Cover image thumbnail */}
+      {coverUrl && (
+        <div style={{ borderBottom: '1px solid var(--hairline)', overflow: 'hidden', flexShrink: 0 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={coverUrl}
+            alt={post.title}
+            style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }}
+            loading="lazy"
+          />
+        </div>
+      )}
+
+      <div style={{ padding: '20px 22px', display: 'flex', flexDirection: 'column', flex: 1 }}>
       {/* Tags */}
       {(post.tags && post.tags.length > 0) ? (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
@@ -89,6 +105,7 @@ function PostCard({ post }: { post: SanityPost }) {
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'var(--of-primary)', fontWeight: 500 }}>
           Read <ArrowRight size={13} />
         </span>
+      </div>
       </div>
     </Link>
   )
@@ -166,20 +183,35 @@ export default function BlogIndexView({ posts }: { posts: SanityPost[] }) {
         ) : (
           <>
             {/* Featured post (first in filtered list) */}
-            {featured && (
+            {featured && (() => {
+              const featuredCoverUrl = featured.coverImage ? urlForImage(featured.coverImage, 900) : null
+              return (
               <Link
                 href={`/blog/${featured.slug}`}
                 style={{
                   display: 'block',
-                  padding: '32px 36px',
                   border: '1px solid var(--hairline)',
                   borderRadius: 18,
                   background: 'var(--surface)',
                   textDecoration: 'none',
                   color: 'inherit',
                   marginBottom: 24,
+                  overflow: 'hidden',
                 }}
               >
+                {/* Cover image */}
+                {featuredCoverUrl && (
+                  <div style={{ borderBottom: '1px solid var(--hairline)' }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={featuredCoverUrl}
+                      alt={featured.title}
+                      style={{ width: '100%', display: 'block', aspectRatio: '21 / 9', objectFit: 'cover' }}
+                      loading="eager"
+                    />
+                  </div>
+                )}
+                <div style={{ padding: '28px 32px' }}>
                 {/* Featured badge + tags */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 9px', border: '1px solid var(--hairline)', borderRadius: 5, color: 'var(--ink-subtle)' }}>
@@ -242,8 +274,10 @@ export default function BlogIndexView({ posts }: { posts: SanityPost[] }) {
                     Read article <ArrowRight size={14} />
                   </span>
                 </div>
+                </div>{/* end padding div */}
               </Link>
-            )}
+              )
+            })()}
 
             {/* Remaining posts grid */}
             {rest.length > 0 && (

@@ -25,6 +25,7 @@ import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
 import { OctivelyButton } from '@/components/brand/OctivelyButton'
+import { urlForImage } from '@/sanity/lib/image'
 import type { SanityPost } from '@/sanity/lib/queries'
 
 function formatDate(iso: string): string {
@@ -243,6 +244,19 @@ export default function BlogPostView({
             )}
           </div>
         </header>
+
+        {/* Cover image — full width, shown above the two-column body */}
+        {post.coverImage && urlForImage(post.coverImage, 1400) && (
+          <div style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--hairline)' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={urlForImage(post.coverImage, 1400)!}
+              alt={post.title}
+              style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }}
+              loading="eager"
+            />
+          </div>
+        )}
 
         {/* Two-column layout: article + sticky sidebar */}
         <div className={hasSidebar ? 'grid lg:grid-cols-[1fr_260px] lg:gap-x-14' : undefined} style={{ alignItems: 'start' }}>
