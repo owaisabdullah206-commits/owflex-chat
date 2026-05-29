@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import PricingGrid from '@/components/marketing/PricingGrid'
-import { JsonLd, softwareApplicationSchema } from '@/components/shared/JsonLd'
+import { JsonLd, softwareApplicationSchema, breadcrumbSchema } from '@/components/shared/JsonLd'
 
 export const metadata: Metadata = {
   title: 'Affordable White Label Chatbot Pricing',
@@ -19,6 +19,7 @@ export default function PricingPage() {
   return (
     <>
       <JsonLd schema={softwareApplicationSchema} />
+      <JsonLd schema={breadcrumbSchema('Pricing', '/pricing')} />
       <PricingGrid />
     </>
   )

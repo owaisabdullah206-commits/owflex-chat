@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import AboutPage from '@/components/marketing/AboutPage'
+import { JsonLd, breadcrumbSchema } from '@/components/shared/JsonLd'
 
 export const metadata: Metadata = {
   title: { absolute: 'About Octively — AI Chatbot Platform for Agencies & Freelancers' },
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <AboutPage />
+  return (
+    <>
+      <JsonLd schema={breadcrumbSchema('About', '/about')} />
+      <AboutPage />
+    </>
+  )
 }

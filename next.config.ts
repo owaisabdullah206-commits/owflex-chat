@@ -22,8 +22,23 @@ const CSP = [
   "form-action 'self'",
 ].join('; ')
 
-const securityHeaders = [
-  { key: "X-Frame-Options",           value: "DENY" },
+// Sanity Studio (/content-studio) needs a looser policy than the marketing site:
+// 'unsafe-eval' + blob: workers for the editor runtime, wss: for live updates,
+// and frame-src for the document preview pane.
+const STUDIO_CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:",
+  "worker-src 'self' blob:",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data: https:",
+  "connect-src 'self' https: wss:",
+  "frame-src 'self' https:",
+  "object-src 'none'",
+  "base-uri 'self'",
+].join('; ')
+
+const baseSecurityHeaders = [
   { key: "X-Content-Type-Options",    value: "nosniff" },
   { key: "Referrer-Policy",           value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy",        value: "camera=(), microphone=(), geolocation=()" },
@@ -31,7 +46,17 @@ const securityHeaders = [
     key:   "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   },
-  { key: "Content-Security-Policy",   value: CSP },
+]
+
+const securityHeaders = [
+  ...baseSecurityHeaders,
+  { key: "X-Frame-Options",         value: "DENY" },
+  { key: "Content-Security-Policy", value: CSP },
+]
+
+const studioHeaders = [
+  ...baseSecurityHeaders,
+  { key: "Content-Security-Policy", value: STUDIO_CSP },
 ]
 
 const nextConfig: NextConfig = {
@@ -41,10 +66,19 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      // Security headers on all routes
+      // Security headers on all routes EXCEPT the Sanity Studio (which needs a looser CSP)
       {
-        source: "/(.*)",
+        source: "/((?!content-studio).*)",
         headers: securityHeaders,
+      },
+      // Relaxed CSP for the embedded Sanity Studio
+      {
+        source: "/content-studio/:path*",
+        headers: studioHeaders,
+      },
+      {
+        source: "/content-studio",
+        headers: studioHeaders,
       },
       // CORS for embed widget public endpoints — these must be reachable from any
       // third-party site that embeds the widget, so we allow all origins.

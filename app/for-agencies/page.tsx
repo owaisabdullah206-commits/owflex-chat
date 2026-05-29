@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import ForAgenciesPage from '@/components/marketing/ForAgenciesPage'
+import { JsonLd, breadcrumbSchema } from '@/components/shared/JsonLd'
 
 export const metadata: Metadata = {
   title: 'White Label Chatbot for Agencies',
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <ForAgenciesPage />
+  return (
+    <>
+      <JsonLd schema={breadcrumbSchema('For Agencies', '/for-agencies')} />
+      <ForAgenciesPage />
+    </>
+  )
 }

@@ -3,5 +3,6 @@ Allow: /
 Disallow: /dashboard/
 Disallow: /portal/
 Disallow: /api/
+Disallow: /content-studio/
 
 Sitemap: https://octively.com/sitemap.xml

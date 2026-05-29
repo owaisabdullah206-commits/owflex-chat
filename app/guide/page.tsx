@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import GuidePage from '@/components/marketing/GuidePage'
+import { JsonLd, breadcrumbSchema } from '@/components/shared/JsonLd'
 
 export const metadata: Metadata = {
   title: 'How to Embed an AI Chatbot on Any Website',
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <GuidePage />
+  return (
+    <>
+      <JsonLd schema={breadcrumbSchema('Guide', '/guide')} />
+      <GuidePage />
+    </>
+  )
 }

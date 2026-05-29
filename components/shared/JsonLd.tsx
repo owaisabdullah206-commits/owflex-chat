@@ -44,6 +44,40 @@ export const organizationSchema = {
   ],
 }
 
+// BreadcrumbList builder — pass the page label + path; Home is prepended automatically.
+export function breadcrumbSchema(label: string, path: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+      { '@type': 'ListItem', position: 2, name: label, item: `${SITE_URL}${path}` },
+    ],
+  }
+}
+
+// Article schema — rendered on each blog post.
+export function articleSchema(opts: {
+  title: string
+  description: string
+  slug: string
+  datePublished: string
+  dateModified?: string
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: opts.title,
+    description: opts.description,
+    url: `${SITE_URL}/blog/${opts.slug}`,
+    datePublished: opts.datePublished,
+    dateModified: opts.dateModified ?? opts.datePublished,
+    author: { '@type': 'Organization', name: 'Octively', url: SITE_URL },
+    publisher: { '@id': `${SITE_URL}#organization` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/blog/${opts.slug}` },
+  }
+}
+
 // SoftwareApplication schema — rendered on the pricing page.
 export const softwareApplicationSchema = {
   '@context': 'https://schema.org',

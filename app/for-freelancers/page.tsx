@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import ForFreelancersPage from '@/components/marketing/ForFreelancersPage'
+import { JsonLd, breadcrumbSchema } from '@/components/shared/JsonLd'
 
 export const metadata: Metadata = {
   title: 'AI Chatbot Platform for Freelancers',
@@ -15,5 +16,10 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <ForFreelancersPage />
+  return (
+    <>
+      <JsonLd schema={breadcrumbSchema('For Freelancers', '/for-freelancers')} />
+      <ForFreelancersPage />
+    </>
+  )
 }
