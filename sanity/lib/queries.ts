@@ -1,17 +1,24 @@
 import { cache } from 'react'
 import { sanityFetch } from './client'
 
+export interface FaqItem {
+  question: string
+  answer: string
+}
+
 export interface SanityPost {
   _id: string
   title: string
   slug: string
   description: string
   keyword?: string
+  tags?: string[]
   publishedAt: string
   _updatedAt?: string
   readingMinutes?: number
   body: string
   coverImage?: { asset?: { _ref?: string } }
+  faq?: FaqItem[]
 }
 
 const POST_FIELDS = `
@@ -20,11 +27,13 @@ const POST_FIELDS = `
   "slug": slug.current,
   description,
   keyword,
+  tags,
   publishedAt,
   _updatedAt,
   readingMinutes,
   body,
-  coverImage
+  coverImage,
+  faq[]{ question, answer }
 `
 
 // List for the blog index — newest first.

@@ -52,12 +52,37 @@ export const postType = defineType({
       options: { hotspot: true },
     }),
     defineField({
+      name: 'tags',
+      title: 'Tags',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: { layout: 'tags' },
+      description: 'Category tags shown on the blog index and used for filtering.',
+    }),
+    defineField({
       name: 'body',
       title: 'Body (Markdown)',
       type: 'text',
       rows: 30,
       description: 'Write the article in Markdown. Supports headings (##), lists, tables, links, and bold.',
       validation: (r) => r.required(),
+    }),
+    defineField({
+      name: 'faq',
+      title: 'FAQ',
+      type: 'array',
+      description: 'Optional FAQ section. Renders as an accordion at the end of the article and generates FAQPage schema for Google.',
+      of: [
+        {
+          type: 'object',
+          name: 'faqItem',
+          fields: [
+            defineField({ name: 'question', type: 'string', title: 'Question', validation: (r) => r.required() }),
+            defineField({ name: 'answer', type: 'text', title: 'Answer', rows: 4, validation: (r) => r.required() }),
+          ],
+          preview: { select: { title: 'question' } },
+        },
+      ],
     }),
   ],
   orderings: [

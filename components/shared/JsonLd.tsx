@@ -78,6 +78,19 @@ export function articleSchema(opts: {
   }
 }
 
+// FAQPage schema — rendered on blog posts and guide page when FAQ items are present.
+export function faqSchema(faqs: Array<{ question: string; answer: string }>) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  }
+}
+
 // SoftwareApplication schema — rendered on the pricing page.
 export const softwareApplicationSchema = {
   '@context': 'https://schema.org',

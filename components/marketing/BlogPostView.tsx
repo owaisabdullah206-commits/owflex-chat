@@ -1,9 +1,26 @@
 'use client'
 
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Link2, ChevronDown, ChevronUp, BookOpen, Clock } from 'lucide-react'
+
+function XIcon({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+    </svg>
+  )
+}
+
+function LinkedInIcon({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  )
+}
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
@@ -14,65 +31,547 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-export default function BlogPostView({ post }: { post: SanityPost }) {
+function slugify(text: string): string {
+  return String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+function extractHeadings(markdown: string): { id: string; text: string; level: 2 | 3 }[] {
+  return markdown
+    .split('\n')
+    .filter((line) => /^#{2,3}\s/.test(line))
+    .map((line) => {
+      const level = line.startsWith('### ') ? 3 : 2
+      const text = line.replace(/^#{2,3}\s+/, '').trim()
+      return { id: slugify(text), text, level }
+    })
+}
+
+function FaqAccordion({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {
+  const [openIdx, setOpenIdx] = useState<number | null>(null)
+
+  return (
+    <section style={{ marginTop: 52 }}>
+      <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 20, lineHeight: 1.25, color: 'var(--ink)' }}>
+        Frequently Asked Questions
+      </h2>
+      <div style={{ border: '1px solid var(--hairline)', borderRadius: 14, overflow: 'hidden' }}>
+        {faqs.map((faq, i) => (
+          <div key={i} style={{ borderBottom: i < faqs.length - 1 ? '1px solid var(--hairline)' : undefined }}>
+            <button
+              onClick={() => setOpenIdx(openIdx === i ? null : i)}
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                padding: '18px 22px',
+                background: openIdx === i ? 'var(--surface-2)' : 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left',
+                gap: 12,
+                transition: 'background 0.12s',
+              }}
+            >
+              <span style={{ fontSize: 15.5, fontWeight: 600, color: 'var(--ink)', lineHeight: 1.45 }}>
+                {faq.question}
+              </span>
+              {openIdx === i
+                ? <ChevronUp size={16} style={{ flexShrink: 0, marginTop: 2, color: 'var(--of-primary)' }} />
+                : <ChevronDown size={16} style={{ flexShrink: 0, marginTop: 2, color: 'var(--ink-subtle)' }} />
+              }
+            </button>
+            {openIdx === i && (
+              <div style={{ padding: '0 22px 20px', fontSize: 15, color: 'var(--ink-muted)', lineHeight: 1.75 }}>
+                {faq.answer}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+export default function BlogPostView({
+  post,
+  relatedPosts = [],
+}: {
+  post: SanityPost
+  relatedPosts?: SanityPost[]
+}) {
   const { dark, toggleDark } = useDarkMode()
+  const [progress, setProgress] = useState(0)
+  const [activeId, setActiveId] = useState('')
+  const [copied, setCopied] = useState(false)
+
+  const headings = useMemo(() => extractHeadings(post.body), [post.body])
+  const hasSidebar = headings.length > 1
+
+  // Reading progress bar tracks article element scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = document.getElementById('article-body')
+      if (!el) return
+      const { top, height } = el.getBoundingClientRect()
+      const scrollable = height - window.innerHeight
+      if (scrollable <= 0) { setProgress(100); return }
+      setProgress(Math.min(100, Math.max(0, (-top / scrollable) * 100)))
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // TOC active section via IntersectionObserver
+  useEffect(() => {
+    if (!headings.length) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting)
+        if (visible.length > 0) setActiveId(visible[0].target.id)
+      },
+      { rootMargin: '-10% 0px -75% 0px' },
+    )
+    headings.forEach(({ id }) => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+    return () => observer.disconnect()
+  }, [headings])
+
+  const handleCopy = useCallback(() => {
+    if (typeof window === 'undefined') return
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }, [])
+
+  const postUrl = `https://octively.com/blog/${post.slug}`
+  const shareTwitter = `https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`
+  const shareLinkedIn = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(postUrl)}&title=${encodeURIComponent(post.title)}`
 
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
+      {/* Sticky reading progress */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 200, background: 'var(--hairline)' }}>
+        <div
+          style={{
+            height: '100%',
+            width: `${progress}%`,
+            background: 'var(--of-primary)',
+            transition: 'width 0.08s linear',
+          }}
+        />
+      </div>
+
       <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
-      <article style={{ maxWidth: 720, margin: '0 auto', padding: '48px 24px 72px' }}>
-        <Link
-          href="/blog"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--ink-muted)', textDecoration: 'none', marginBottom: 28 }}
-        >
-          <ArrowLeft size={14} /> All articles
-        </Link>
+      <div style={{ maxWidth: 1140, margin: '0 auto', padding: '48px 24px 80px' }}>
+        {/* Breadcrumb */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 32, fontSize: 13, color: 'var(--ink-muted)' }}>
+          <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, color: 'var(--ink-muted)', textDecoration: 'none' }}>
+            <ArrowLeft size={13} /> All articles
+          </Link>
+          <span style={{ color: 'var(--hairline-strong)' }}>/</span>
+          <span style={{ color: 'var(--ink-subtle)', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {post.title}
+          </span>
+        </nav>
 
-        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 12 }}>
-          {formatDate(post.publishedAt)}{post.readingMinutes ? ` · ${post.readingMinutes} min read` : ''}
-        </p>
-        <h1 style={{ fontSize: 'clamp(30px, 4vw, 42px)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.12, marginBottom: 16 }}>
-          {post.title}
-        </h1>
-        <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.6, marginBottom: 40 }}>
-          {post.description}
-        </p>
+        {/* Post header */}
+        <header style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44 }}>
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 ? (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    padding: '4px 10px',
+                    background: 'var(--of-primary-soft)',
+                    color: 'var(--of-primary)',
+                    borderRadius: 6,
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          ) : post.keyword ? (
+            <div style={{ marginBottom: 16 }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  padding: '4px 10px',
+                  background: 'var(--of-primary-soft)',
+                  color: 'var(--of-primary)',
+                  borderRadius: 6,
+                }}
+              >
+                {post.keyword}
+              </span>
+            </div>
+          ) : null}
 
-        <div className="mkt-article">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              h2: ({ children }) => <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.01em', marginTop: 40, marginBottom: 14, lineHeight: 1.25 }}>{children}</h2>,
-              h3: ({ children }) => <h3 style={{ fontSize: 19, fontWeight: 600, marginTop: 28, marginBottom: 10 }}>{children}</h3>,
-              p: ({ children }) => <p style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.75, marginBottom: 18 }}>{children}</p>,
-              ul: ({ children }) => <ul style={{ margin: '0 0 18px', paddingLeft: 22, display: 'flex', flexDirection: 'column', gap: 8 }}>{children}</ul>,
-              ol: ({ children }) => <ol style={{ margin: '0 0 18px', paddingLeft: 22, display: 'flex', flexDirection: 'column', gap: 8 }}>{children}</ol>,
-              li: ({ children }) => <li style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.7 }}>{children}</li>,
-              strong: ({ children }) => <strong style={{ color: 'var(--ink)', fontWeight: 600 }}>{children}</strong>,
-              a: ({ href, children }) => <Link href={href ?? '#'} style={{ color: 'var(--of-primary)', textDecoration: 'underline', textUnderlineOffset: 2 }}>{children}</Link>,
-              table: ({ children }) => (
-                <div style={{ overflowX: 'auto', border: '1px solid var(--hairline)', borderRadius: 12, margin: '0 0 24px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14.5, minWidth: 440 }}>{children}</table>
-                </div>
-              ),
-              th: ({ children }) => <th style={{ textAlign: 'left', padding: '11px 16px', fontWeight: 600, fontSize: 13, borderBottom: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>{children}</th>,
-              td: ({ children }) => <td style={{ padding: '11px 16px', color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline)' }}>{children}</td>,
-            }}
-          >
-            {post.body}
-          </ReactMarkdown>
-        </div>
+          <h1 style={{ fontSize: 'clamp(30px, 4vw, 44px)', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.1, marginBottom: 18, color: 'var(--ink)' }}>
+            {post.title}
+          </h1>
+          <p style={{ fontSize: 18, color: 'var(--ink-muted)', lineHeight: 1.65, marginBottom: 24 }}>
+            {post.description}
+          </p>
 
-        {/* CTA */}
-        <div style={{ marginTop: 48, padding: '28px', border: '1px solid var(--of-primary)', borderRadius: 14, background: 'var(--of-primary-soft)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 }}>
-          <div>
-            <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 4 }}>Try it on your next client project</p>
-            <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>Free plan, no card required.</p>
+          {/* Meta: date + reading time */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18, fontSize: 13, color: 'var(--ink-subtle)', paddingBottom: 24, borderBottom: '1px solid var(--hairline)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <BookOpen size={13} /> {formatDate(post.publishedAt)}
+            </span>
+            {post.readingMinutes && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <Clock size={13} /> {post.readingMinutes} min read
+              </span>
+            )}
           </div>
-          <OctivelyButton href="/dashboard/signup" size="md">Start free</OctivelyButton>
+        </header>
+
+        {/* Two-column layout: article + sticky sidebar */}
+        <div className={hasSidebar ? 'grid lg:grid-cols-[1fr_260px] lg:gap-x-14' : undefined} style={{ alignItems: 'start' }}>
+
+          {/* Article body */}
+          <div id="article-body">
+            <div>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h2: ({ children }) => {
+                    const id = slugify(String(children))
+                    return (
+                      <h2
+                        id={id}
+                        style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.01em', marginTop: 44, marginBottom: 14, lineHeight: 1.25, color: 'var(--ink)' }}
+                      >
+                        {children}
+                      </h2>
+                    )
+                  },
+                  h3: ({ children }) => {
+                    const id = slugify(String(children))
+                    return (
+                      <h3
+                        id={id}
+                        style={{ fontSize: 19, fontWeight: 600, marginTop: 32, marginBottom: 10, color: 'var(--ink)' }}
+                      >
+                        {children}
+                      </h3>
+                    )
+                  },
+                  p: ({ children }) => (
+                    <p style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.8, marginBottom: 20 }}>
+                      {children}
+                    </p>
+                  ),
+                  ul: ({ children }) => (
+                    <ul style={{ margin: '0 0 20px', paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {children}
+                    </ul>
+                  ),
+                  ol: ({ children }) => (
+                    <ol style={{ margin: '0 0 20px', paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {children}
+                    </ol>
+                  ),
+                  li: ({ children }) => (
+                    <li style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.75 }}>{children}</li>
+                  ),
+                  strong: ({ children }) => (
+                    <strong style={{ color: 'var(--ink)', fontWeight: 600 }}>{children}</strong>
+                  ),
+                  a: ({ href, children }) => (
+                    <Link href={href ?? '#'} style={{ color: 'var(--of-primary)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                      {children}
+                    </Link>
+                  ),
+                  blockquote: ({ children }) => (
+                    <blockquote
+                      style={{
+                        borderLeft: '3px solid var(--of-primary)',
+                        paddingLeft: 20,
+                        margin: '24px 0',
+                        color: 'var(--ink-muted)',
+                        fontStyle: 'italic',
+                        fontSize: 17,
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      {children}
+                    </blockquote>
+                  ),
+                  code: ({ children }) => (
+                    <code
+                      style={{
+                        fontSize: 14,
+                        fontFamily: 'var(--font-mono)',
+                        background: 'var(--surface-2)',
+                        padding: '2px 6px',
+                        borderRadius: 4,
+                        color: 'var(--ink)',
+                        border: '1px solid var(--hairline)',
+                      }}
+                    >
+                      {children}
+                    </code>
+                  ),
+                  pre: ({ children }) => (
+                    <pre
+                      style={{
+                        fontSize: 13.5,
+                        fontFamily: 'var(--font-mono)',
+                        background: 'var(--surface-2)',
+                        padding: '18px 20px',
+                        borderRadius: 12,
+                        margin: '0 0 24px',
+                        overflowX: 'auto',
+                        border: '1px solid var(--hairline)',
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {children}
+                    </pre>
+                  ),
+                  table: ({ children }) => (
+                    <div style={{ overflowX: 'auto', border: '1px solid var(--hairline)', borderRadius: 12, margin: '0 0 24px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14.5, minWidth: 440 }}>
+                        {children}
+                      </table>
+                    </div>
+                  ),
+                  th: ({ children }) => (
+                    <th
+                      style={{
+                        textAlign: 'left',
+                        padding: '11px 16px',
+                        fontWeight: 600,
+                        fontSize: 13,
+                        borderBottom: '1px solid var(--hairline)',
+                        background: 'var(--surface-2)',
+                        color: 'var(--ink)',
+                      }}
+                    >
+                      {children}
+                    </th>
+                  ),
+                  td: ({ children }) => (
+                    <td style={{ padding: '11px 16px', color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline)' }}>
+                      {children}
+                    </td>
+                  ),
+                  hr: () => (
+                    <hr style={{ border: 'none', borderTop: '1px solid var(--hairline)', margin: '40px 0' }} />
+                  ),
+                }}
+              >
+                {post.body}
+              </ReactMarkdown>
+            </div>
+
+            {/* FAQ accordion */}
+            {post.faq && post.faq.length > 0 && <FaqAccordion faqs={post.faq} />}
+
+            {/* End CTA */}
+            <div
+              style={{
+                marginTop: 56,
+                padding: '28px 32px',
+                border: '1px solid var(--of-primary)',
+                borderRadius: 16,
+                background: 'var(--of-primary-soft)',
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                gap: 16,
+              }}
+            >
+              <div>
+                <p style={{ fontWeight: 700, fontSize: 17, marginBottom: 5, color: 'var(--ink)' }}>
+                  Try it on your next client project
+                </p>
+                <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0 }}>
+                  Free plan — no credit card required.
+                </p>
+              </div>
+              <OctivelyButton href="/dashboard/signup" size="md">Start free</OctivelyButton>
+            </div>
+          </div>
+
+          {/* Sticky sidebar — TOC + share (desktop only) */}
+          {hasSidebar && (
+            <aside className="hidden lg:block" style={{ position: 'sticky', top: 96, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+              {/* Table of contents */}
+              <div style={{ marginBottom: 28 }}>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--ink-subtle)',
+                    marginBottom: 14,
+                  }}
+                >
+                  In this article
+                </p>
+                <nav>
+                  {headings.map(({ id, text, level }) => (
+                    <a
+                      key={id}
+                      href={`#${id}`}
+                      style={{
+                        display: 'block',
+                        fontSize: 13,
+                        lineHeight: 1.5,
+                        padding: '5px 0',
+                        paddingLeft: level === 3 ? 14 : 0,
+                        borderLeft: level === 3 ? '1px solid var(--hairline)' : 'none',
+                        color: activeId === id ? 'var(--of-primary)' : 'var(--ink-subtle)',
+                        fontWeight: activeId === id ? 500 : 400,
+                        textDecoration: 'none',
+                        transition: 'color 0.12s',
+                      }}
+                    >
+                      {text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+
+              <div style={{ height: 1, background: 'var(--hairline)', marginBottom: 24 }} />
+
+              {/* Share */}
+              <div>
+                <p
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--ink-subtle)',
+                    marginBottom: 14,
+                  }}
+                >
+                  Share
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <button
+                    onClick={handleCopy}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      fontSize: 13,
+                      color: copied ? 'var(--of-primary)' : 'var(--ink-muted)',
+                      background: 'none',
+                      border: '1px solid var(--hairline)',
+                      borderRadius: 8,
+                      padding: '8px 12px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'color 0.15s, border-color 0.15s',
+                    }}
+                  >
+                    <Link2 size={13} />
+                    {copied ? 'Copied!' : 'Copy link'}
+                  </button>
+                  <a
+                    href={shareTwitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      fontSize: 13,
+                      color: 'var(--ink-muted)',
+                      border: '1px solid var(--hairline)',
+                      borderRadius: 8,
+                      padding: '8px 12px',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <XIcon size={13} />
+                    Share on X
+                  </a>
+                  <a
+                    href={shareLinkedIn}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      fontSize: 13,
+                      color: 'var(--ink-muted)',
+                      border: '1px solid var(--hairline)',
+                      borderRadius: 8,
+                      padding: '8px 12px',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <LinkedInIcon size={13} />
+                    Share on LinkedIn
+                  </a>
+                </div>
+              </div>
+            </aside>
+          )}
         </div>
-      </article>
+
+        {/* Related posts */}
+        {relatedPosts.length > 0 && (
+          <section style={{ marginTop: 64, paddingTop: 48, borderTop: '1px solid var(--hairline)' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 20, color: 'var(--ink)' }}>
+              More articles
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {relatedPosts.map((rp) => (
+                <Link
+                  key={rp.slug}
+                  href={`/blog/${rp.slug}`}
+                  style={{
+                    display: 'block',
+                    padding: '20px 22px',
+                    border: '1px solid var(--hairline)',
+                    borderRadius: 12,
+                    background: 'var(--surface)',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                >
+                  <p style={{ fontSize: 11, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 8 }}>
+                    {formatDate(rp.publishedAt)}
+                  </p>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em', marginBottom: 8, lineHeight: 1.35, color: 'var(--ink)' }}>
+                    {rp.title}
+                  </h3>
+                  <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.65, margin: 0 }}>
+                    {rp.description}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
 
       <MarketingFooter />
     </div>

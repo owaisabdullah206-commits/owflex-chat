@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import BlogPostView from '@/components/marketing/BlogPostView'
-import { JsonLd, articleSchema, breadcrumbSchema } from '@/components/shared/JsonLd'
-import { getPost, getPostSlugs } from '@/sanity/lib/queries'
+import { JsonLd, articleSchema, breadcrumbSchema, faqSchema } from '@/components/shared/JsonLd'
+import { getPost, getPosts, getPostSlugs } from '@/sanity/lib/queries'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -32,8 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const post = await getPost(slug)
+  const [post, allPosts] = await Promise.all([getPost(slug), getPosts()])
   if (!post) notFound()
+
+  const relatedPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 2)
 
   return (
     <>
@@ -47,7 +49,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         })}
       />
       <JsonLd schema={breadcrumbSchema(post.title, `/blog/${post.slug}`)} />
-      <BlogPostView post={post} />
+      {post.faq && post.faq.length > 0 && <JsonLd schema={faqSchema(post.faq)} />}
+      <BlogPostView post={post} relatedPosts={relatedPosts} />
     </>
   )
 }
