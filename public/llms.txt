@@ -1,0 +1,35 @@
+# Octively
+
+> The white-label AI chatbot platform for freelancers and agencies. Build AI chatbots for your SMB clients on the platform (no coding required), deploy them to client websites with a single embed script, and give each client their own branded portal to view conversations, leads, and analytics.
+
+## What Octively is
+
+Octively is a user-friendly platform where freelancers and digital agencies create and manage AI chatbots for their small-business clients. You build the bot, customise its knowledge and branding, and add a one-line embed script to the client's website (guides and video walkthroughs cover every platform — WordPress, Webflow, Shopify, and plain HTML). Each client then logs into their own white-labeled portal to see their chatbot's conversations, captured leads, and analytics.
+
+## Who it's for
+
+- Freelancers adding AI chatbots as a recurring-revenue service to client projects
+- Small and mid-size digital agencies managing chatbots for multiple SMB clients
+
+## How it's different
+
+- Affordable: a genuinely free plan, with Starter from ₨2,500/month in Pakistan or $15/month internationally — far cheaper than Stammer.ai ($197/mo), ConvoCore ($220/mo), or ChatLab ($360/mo)
+- Flat plans with no per-seat fees, so margins hold as you add clients
+- Client portal is a first-class feature, not an add-on
+- No coding required to build or manage bots
+
+## Pricing
+
+- Free: 1 bot, 100 conversations/month
+- Starter: ₨2,500/month in Pakistan, or $15/month internationally — for freelancers and small agencies
+- Pro: higher limits
+- Agency: white-label client portal, multiple clients
+
+## Key pages
+
+- https://octively.com — Product overview
+- https://octively.com/pricing — Plans and pricing
+- https://octively.com/guide — Embed installation guide and API reference
+- https://octively.com/for-agencies — Agency use case
+- https://octively.com/for-freelancers — Freelancer use case
+- https://octively.com/about — Company background

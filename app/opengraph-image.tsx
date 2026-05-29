@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 // Route segment config
 export const runtime = 'edge'
-export const alt = 'Octively — The client dashboard layer for AI products'
+export const alt = 'Octively — White-label AI chatbot platform for agencies & freelancers'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -97,17 +97,17 @@ export default function OGImage() {
             fontWeight:    600,
             letterSpacing: '-0.03em',
             lineHeight:    1.08,
-            maxWidth:      720,
+            maxWidth:      760,
             color:         INK,
           }}>
-            The client dashboard layer for AI products
+            White-label AI chatbots for agencies & freelancers
           </div>
           <div style={{
             fontSize:  20,
             color:     SUBTLE,
             marginTop: 4,
           }}>
-            Drop one embed script. Your clients get a portal.
+            Build bots for your clients. They get their own branded portal.
           </div>
         </div>
       </div>

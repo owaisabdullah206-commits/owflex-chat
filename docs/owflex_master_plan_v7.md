@@ -427,7 +427,7 @@ Model credit cost rates are set per-model in the admin model prices table (Phase
 **Our SEO angles where we can win:**
 1. **Affordable** — only platform with a genuinely free tier and PKR pricing
 2. **Client portal first-class** — each SMB client gets their own branded login; competitors treat this as an add-on
-3. **No per-message LLM cost** — OpenRouter free tier; competitors all charge per message
+3. **Flat, affordable plans** — no per-seat fees; predictable cost as agencies add clients
 4. **Freelancer-specific** — no competitor targets freelancers adding chatbots to client projects; this SERP is wide open
 
 ### Primary Keywords (one per page)
@@ -453,7 +453,7 @@ free tier AI chatbot agency platform
 chatbot conversation history for clients
 multi-client chatbot management platform
 AI chatbot knowledge base
-chatbot platform without per-message fees
+affordable chatbot platform for agencies
 ```
 
 ### High-Intent Long-Tail Keywords

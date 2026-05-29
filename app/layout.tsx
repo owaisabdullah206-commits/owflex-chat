@@ -1,10 +1,29 @@
 import type { Metadata } from 'next'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
+import { JsonLd, organizationSchema, SITE_URL } from '@/components/shared/JsonLd'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Octively',
-  description: 'Client dashboard for AI chatbots',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'White Label AI Chatbot Platform for Agencies & Freelancers — Octively',
+    template: '%s — Octively',
+  },
+  description:
+    'The easiest white-label AI chatbot platform for freelancers and agencies. Build AI chatbots for your SMB clients in minutes. Each client gets their own branded portal to view conversations, leads, and analytics. Free plan available.',
+  applicationName: 'Octively',
+  openGraph: {
+    siteName: 'Octively',
+    type: 'website',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@octively',
+  },
+  alternates: {
+    canonical: '/',
+  },
   verification: {
     google: 'nGDKGrJoZ6o0uJhb1Q9qXy-WH57whMuNkcXHaUalR_E',
   },
@@ -26,6 +45,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <JsonLd schema={organizationSchema} />
         {children}
         {process.env.NEXT_PUBLIC_GTM_ID && (
           <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />

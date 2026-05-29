@@ -7,6 +7,45 @@ import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
 import { OctivelyButton } from '@/components/brand/OctivelyButton'
+import { JsonLd } from '@/components/shared/JsonLd'
+
+// FAQ content — also used to build the FAQPage JSON-LD below.
+const FAQ_ITEMS = [
+  {
+    q: 'Do I need to know how to code to use Octively?',
+    a: 'No. You build, train, and manage AI chatbots entirely through a visual dashboard — no coding required. The only technical step is adding a one-line embed script to your client\'s website, and step-by-step guides plus video walkthroughs cover every platform.',
+  },
+  {
+    q: 'Which website platforms does the embed work on?',
+    a: 'The embed script works on any website — WordPress, Webflow, Shopify, Wix, Squarespace, and plain HTML sites. You paste one script tag before the closing body tag, or use the platform\'s custom-code / footer section.',
+  },
+  {
+    q: 'How long does setup take?',
+    a: 'Under five minutes. Create an account, build a bot and pick an AI model, copy the embed script onto your client\'s site, and invite the client to their portal. No servers or infrastructure to configure.',
+  },
+  {
+    q: 'How do my clients log in to their portal?',
+    a: 'You invite each client by email from the Clients page. They receive a link to set a password, then log into their own branded portal where they can view their chatbot\'s conversations, captured leads, and analytics.',
+  },
+  {
+    q: 'Can I customise the widget appearance?',
+    a: 'Yes. Bot settings let you change the accent colour, widget position, and greeting message. On Agency and higher plans you can upload a custom logo and fully white-label the client portal.',
+  },
+  {
+    q: 'How are credits consumed?',
+    a: 'Each AI response costs credits proportional to the length of the conversation. Credits are deducted before each call. Your monthly plan includes a credit allowance, and additional packs are available on the Billing page.',
+  },
+]
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_ITEMS.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+}
 
 const SIDEBAR = [
   { id: 'getting-started', label: 'Getting started' },
@@ -44,6 +83,7 @@ export default function GuidePage() {
 
   return (
     <div className={`marketing${dark ? ' dark' : ''}`} style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--ink)' }}>
+      <JsonLd schema={faqSchema} />
       <MarketingNav dark={dark} onToggleDark={toggleDark} />
 
       <div className="mkt-legal-grid" style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px 80px', display: 'grid', gridTemplateColumns: '210px 1fr', gap: 56, alignItems: 'start' }}>
@@ -189,11 +229,7 @@ export default function GuidePage() {
 
           <DocSection id="faq" title="FAQ">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              {[
-                { q: 'Does the embed widget work on WordPress?', a: 'Yes. Paste the script tag in your theme\'s footer.php or use a custom HTML widget. A dedicated WordPress plugin is on the roadmap.' },
-                { q: 'Can I customise the widget appearance?', a: 'Yes. Bot settings let you change the accent colour, widget position, greeting message, and (on Agency+ plans) upload a custom logo.' },
-                { q: 'How are credits consumed?', a: 'Each AI response costs credits proportional to the length of the conversation. Credits are deducted before each call. Your monthly plan includes a credit allowance; additional packs are available on the Billing page.' },
-              ].map(({ q, a }) => (
+              {FAQ_ITEMS.map(({ q, a }) => (
                 <div key={q}>
                   <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{q}</p>
                   <p style={{ fontSize: 14, color: 'var(--ink-muted)', margin: 0, lineHeight: 1.65 }}>{a}</p>

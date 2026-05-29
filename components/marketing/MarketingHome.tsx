@@ -1725,6 +1725,25 @@ export default function MarketingHome() {
       </section>
 
       <LogoBar />
+
+      {/* Answer block — AI-search citability */}
+      <section style={{ paddingBlock: 64, borderTop: '1px solid var(--hairline)' }}>
+        <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px' }}>
+          <h2 style={{ fontSize: 'clamp(22px, 2.6vw, 28px)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 16, lineHeight: 1.25 }}>
+            What is a white-label AI chatbot platform?
+          </h2>
+          <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.75, margin: 0 }}>
+            A white-label AI chatbot platform lets you build chatbots for other businesses and put your own brand on them instead
+            of the vendor&apos;s. Octively is one made for freelancers and agencies. You create a bot in a visual dashboard, add one
+            script tag to your client&apos;s website, and give the client a login to their own portal. From there they can read every
+            conversation the bot has had, see the leads it captured, and check basic analytics, all under your branding. You can
+            start on a free plan and move up to a paid plan from ₨2,500 a month in Pakistan, or $15 internationally, which stays
+            well below what most agency chatbot tools charge. It means you can hand a client a working chatbot and a dashboard to
+            watch it, without building that dashboard yourself.
+          </p>
+        </div>
+      </section>
+
       <ProblemStrip />
       <HowItWorks />
       <FeatureBento />

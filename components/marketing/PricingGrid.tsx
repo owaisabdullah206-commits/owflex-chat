@@ -233,6 +233,26 @@ const COMPARE_ROWS = [
   { feat: 'Support level', values: ['Community', 'Email', 'Priority email', 'Dedicated', 'Dedicated + SLA'] },
 ] as const
 
+// ─── Competitor comparison ──────────────────────────────────────────────────────
+// Columns map 1:1 to each row's `values` array. Octively is first (us: true).
+// Competitor figures are published entry rates as of May 2026 (see footnote in UI).
+
+const COMPETITORS = [
+  { name: 'Octively', us: true },
+  { name: 'Stammer.ai', us: false },
+  { name: 'ConvoCore', us: false },
+  { name: 'ChatLab', us: false },
+] as const
+
+const COMPARE_VS_ROWS = [
+  { label: 'Starting paid plan', values: ['₨2,500 / $15 per mo', '$197/mo', '$220/mo', '$360/mo'] },
+  { label: 'Free plan (no trial limit)', values: [true, false, false, false] },
+  { label: 'Built-in client portal', values: [true, 'Add-on', true, true] },
+  { label: 'White-label branding', values: [true, true, true, true] },
+  { label: 'No coding required', values: [true, true, true, true] },
+  { label: 'Built for freelancers too', values: [true, false, false, false] },
+] as const
+
 // ─── Credit packs ─────────────────────────────────────────────────────────────
 
 const CREDIT_PACKS = [
@@ -770,6 +790,78 @@ export default function PricingGrid() {
                 </tbody>
               </table>
             </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Competitor comparison */}
+      <section style={{ paddingBlock: 80, borderTop: '1px solid var(--hairline)', background: 'var(--surface-2)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
+          <Reveal style={{ marginBottom: 28 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', fontWeight: 500 }}>
+              How Octively compares
+            </span>
+            <h2 style={{ marginTop: 10, fontSize: 'clamp(24px, 2.8vw, 34px)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              The same job, at a fraction of the price.
+            </h2>
+            <p style={{ marginTop: 12, fontSize: 15, color: 'var(--ink-muted)', lineHeight: 1.6, maxWidth: 560 }}>
+              Most agency chatbot platforms start near $200 a month before you take on a single client. Here is how the entry plans line up.
+            </p>
+          </Reveal>
+          <Reveal>
+            <div style={{ overflowX: 'auto', border: '1px solid var(--hairline)', borderRadius: 14, background: 'var(--surface)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 720, fontSize: 13.5 }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'left', padding: '18px 20px', fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: 12, color: 'var(--ink-muted)', letterSpacing: '0.04em', textTransform: 'uppercase', width: '28%', borderBottom: '1px solid var(--hairline)' }} />
+                    {COMPETITORS.map((c) => (
+                      <th
+                        key={c.name}
+                        style={{
+                          padding: '18px 14px', textAlign: 'left', fontWeight: 600, fontSize: 13,
+                          borderLeft: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)',
+                          background: c.us ? 'color-mix(in srgb, var(--of-primary) 6%, var(--surface))' : 'var(--surface)',
+                          minWidth: 130, verticalAlign: 'top',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {c.name}
+                          {c.us && (
+                            <span style={{ background: 'var(--of-primary)', color: 'white', borderRadius: 999, padding: '1px 6px', fontSize: 9, fontFamily: 'var(--font-mono)' }}>
+                              THIS IS US
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARE_VS_ROWS.map((row, i) => (
+                    <tr key={i} style={{ borderTop: '1px solid var(--hairline)' }}>
+                      <td style={{ padding: '13px 20px', color: 'var(--ink)', fontSize: 14, fontWeight: 500 }}>{row.label}</td>
+                      {row.values.map((v, j) => (
+                        <td
+                          key={j}
+                          style={{
+                            padding: '13px 14px', textAlign: 'left',
+                            borderLeft: '1px solid var(--hairline)',
+                            background: COMPETITORS[j].us ? 'color-mix(in srgb, var(--of-primary) 4%, var(--surface))' : 'transparent',
+                            color: COMPETITORS[j].us ? 'var(--ink)' : 'var(--ink-muted)',
+                            fontWeight: COMPETITORS[j].us ? 600 : 400,
+                          }}
+                        >
+                          <CompareCell v={v} />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p style={{ marginTop: 14, fontSize: 12, color: 'var(--ink-subtle)', lineHeight: 1.6 }}>
+              Competitor prices are their published entry rates as of May 2026 and may change. Check each provider&apos;s site for current pricing.
+            </p>
           </Reveal>
         </div>
       </section>
