@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { Redis } from '@upstash/redis'
 import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
@@ -10,33 +11,26 @@ import { sendResetPasswordEmail } from '@/lib/email/reset-password'
 // Stores sessions and rate-limit counters in Redis so they survive across
 // serverless function instances (Netlify/Vercel edge workers share nothing).
 function makeSecondaryStorage() {
-  const url   = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return undefined
-
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return undefined
+  }
+  const redis = new Redis({
+    url:   process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  })
   return {
     async get(key: string) {
-      const res = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      const json = await res.json() as { result: string | null }
-      return json.result ?? null
+      return redis.get<string>(key)
     },
     async set(key: string, value: string, ttl?: number) {
-      const path = ttl
-        ? `/set/${encodeURIComponent(key)}?ex=${ttl}`
-        : `/set/${encodeURIComponent(key)}`
-      await fetch(`${url}${path}`, {
-        method:  'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body:    JSON.stringify(value),
-      })
+      if (ttl) {
+        await redis.set(key, value, { ex: ttl })
+      } else {
+        await redis.set(key, value)
+      }
     },
     async delete(key: string) {
-      await fetch(`${url}/del/${encodeURIComponent(key)}`, {
-        method:  'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await redis.del(key)
     },
   }
 }
