@@ -1,9 +1,13 @@
 import type { Metadata } from 'next'
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Octively',
   description: 'Client dashboard for AI chatbots',
+  verification: {
+    google: 'nGDKGrJoZ6o0uJhb1Q9qXy-WH57whMuNkcXHaUalR_E',
+  },
 }
 
 export default function RootLayout({
@@ -21,7 +25,15 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {process.env.NEXT_PUBLIC_GTM_ID && (
+          <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+        )}
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        )}
+      </body>
     </html>
   )
 }

@@ -406,6 +406,112 @@ Model credit cost rates are set per-model in the admin model prices table (Phase
 
 ---
 
+## 8a. SEO Strategy
+
+### Target Audience for SEO
+
+- **Primary:** Freelancers who add AI chatbots as a recurring service to client projects (web designers, digital marketers, consultants)
+- **Secondary:** Small/mid digital agencies (2–20 people) managing chatbots for multiple SMB clients
+- **Geography:** Pakistan-first for PKR traffic; English globally for USD traffic
+
+### Competitive Positioning in Search
+
+| Competitor | Price | SEO dominance | Our angle |
+|-----------|-------|--------------|-----------|
+| Stammer.ai | $197/mo | "white label AI agents for agencies" | Too expensive for freelancers/small agencies |
+| ConvoCore | $220/mo | "white label AI chatbot platform agencies" | No free tier, USD-only |
+| ChatLab | $360/mo | "white label client portal chatbot" | Expensive, no flexible model |
+| Social Intents | $299/mo | "AI chatbot agency platform" | No free LLM, USD-only |
+| BotPenguin | $1,200/yr | "developer-friendly white label" | Annual billing, limited AI quality |
+
+**Our SEO angles where we can win:**
+1. **Affordable** — only platform with a genuinely free tier and PKR pricing
+2. **Client portal first-class** — each SMB client gets their own branded login; competitors treat this as an add-on
+3. **No per-message LLM cost** — OpenRouter free tier; competitors all charge per message
+4. **Freelancer-specific** — no competitor targets freelancers adding chatbots to client projects; this SERP is wide open
+
+### Primary Keywords (one per page)
+
+| Page | Primary Keyword | Competition |
+|------|----------------|-------------|
+| `/` | `white label AI chatbot platform` | High — differentiate on free tier + client portal |
+| `/for-agencies` | `white label chatbot for agencies` | High — differentiate on affordability |
+| `/for-freelancers` | `AI chatbot platform for freelancers` | Low — wide open SERP |
+| `/guide` | `how to embed AI chatbot on website` | Medium — step-by-step content gap |
+| `/pricing` | `affordable white label chatbot pricing` | Low — no one owns this angle |
+| `/about` | `AI chatbot company for agencies` | Very low |
+
+### Secondary Keywords (use in headings and body copy)
+
+```
+AI chatbot with client portal
+white label chatbot with lead management
+no-code AI chatbot builder for agencies
+AI chatbot embed script for client websites
+white label chatbot free plan
+free tier AI chatbot agency platform
+chatbot conversation history for clients
+multi-client chatbot management platform
+AI chatbot knowledge base
+chatbot platform without per-message fees
+```
+
+### High-Intent Long-Tail Keywords
+
+```
+affordable stammer.ai alternative
+cheap white label chatbot for agencies
+free white label chatbot platform
+AI chatbot platform for small agencies
+easy AI chatbot builder for agencies
+chatbot platform no coding required
+AI chatbot platform where clients can login
+give clients their own chatbot dashboard
+```
+
+### Keywords to AVOID
+
+```
+❌ "chatbot" alone — too generic
+❌ "AI agent platform" — dominated by Salesforce/Microsoft/Google
+❌ "chatbot for customer service" — dominated by Intercom/Zendesk/Drift
+❌ "GoHighLevel alternative" — completely different product
+❌ "white label chatbot" alone — dominated by Stammer ($3M+ content budget)
+```
+
+### AI Search / GEO (Question-Format)
+
+Landing pages should have 140–160 word self-contained answer blocks for:
+- "What is a white label AI chatbot platform?"
+- "What is the cheapest white label chatbot platform for agencies?"
+- "What AI chatbot platforms have a free plan for agencies?"
+- "What is the best AI chatbot tool for freelancers?"
+
+### Phase 2 Blog Content Gaps
+
+| URL | Target keyword | Priority |
+|-----|---------------|----------|
+| `/blog/stammer-alternative` | `stammer.ai alternative` | High |
+| `/blog/affordable-white-label-chatbot` | `affordable white label chatbot` | High |
+| `/blog/ai-chatbot-for-freelancers` | `AI chatbot for freelance web designers` | High |
+| `/blog/free-white-label-chatbot` | `free white label AI chatbot` | Medium |
+| `/blog/chatbot-client-portal` | `chatbot with client portal for clients` | Medium |
+
+### Technical SEO Foundation (Phase 1)
+
+- `metadataBase` in `app/layout.tsx` — critical, currently missing
+- Twitter cards + per-page `openGraph` on all 6 marketing pages
+- `public/llms.txt` — AI agent discovery index
+- `components/shared/SchemaOrg.tsx` — JSON-LD renderer
+- Schema types: `Organization`, `SoftwareApplication` (pricing page), `FAQPage` (guide page), `WebSite` with `SearchAction`
+
+### Tools
+
+- **Claude SEO plugin** — `/plugin marketplace add AgriciDaniel/claude-seo` → run after each deploy
+- **Google API (free Tier 0)** — PageSpeed Insights + CrUX field data; no paid tools needed at this stage
+
+---
+
 ## 9. Infrastructure — Zero to Scale
 
 ### Phase 1–2: Free Stack (€0/month)
