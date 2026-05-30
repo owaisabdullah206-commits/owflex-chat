@@ -53,8 +53,7 @@ export function MarketingNav({
           padding: scrolled ? '8px 20px' : '0',
           // Non-scrolled bg on the nav itself; pill handles its own bg
           background: scrolled ? 'transparent' : 'var(--bg)',
-          borderBottom: scrolled ? 'none' : '1px solid transparent',
-          transition: 'height .3s ease, padding .3s ease, background .25s ease, border-color .25s ease',
+          transition: 'height .3s ease, padding .3s ease, background .25s ease',
         }}
       >
         <div
@@ -75,12 +74,14 @@ export function MarketingNav({
             backdropFilter:       scrolled ? 'saturate(180%) blur(18px)' : 'none',
             WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(18px)' : 'none',
             borderRadius: scrolled ? 999 : 0,
-            border: scrolled ? '1px solid var(--hairline)' : 'none',
+            // Always 1px border — only color transitions (transparent ↔ hairline)
+            // so CSS never adds/removes border existence (prevents flash)
+            border: scrolled ? '1px solid var(--hairline)' : '1px solid transparent',
             boxShadow: scrolled
               ? '0 4px 24px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05)'
               : 'none',
 
-            transition: 'max-width .3s ease, background .25s ease, border-radius .3s ease, border-color .25s ease, box-shadow .3s ease',
+            transition: 'max-width .3s ease, background .25s ease, border-radius .3s ease, border-color .3s ease, box-shadow .3s ease',
           }}
         >
           {/* ── Logo ────────────────────────────────────────────────────── */}
