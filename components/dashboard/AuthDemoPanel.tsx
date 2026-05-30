@@ -19,10 +19,12 @@ import { MessageSquare, UserPlus, Globe, BarChart2, Code2, Copy, Check } from 'l
 //   row-1 centre: 85+30        = 115 px → 45 %
 
 const STEPS = [
-  { title: 'Build your AI chatbot',         desc: 'Visual dashboard, no code required' },
-  { title: 'Deploy with one script tag',     desc: 'Paste into any client website in 30 seconds' },
-  { title: 'Leads captured automatically',   desc: 'Every conversation turns into a lead record' },
-  { title: 'Clients get their own portal',   desc: 'They log in and see their data. You keep control.' },
+  { title: 'Build your AI chatbot',        desc: 'Visual dashboard, no code required' },
+  { title: 'Deploy with one script tag',   desc: 'Paste into any client website in 30 seconds' },
+  { title: 'Leads captured automatically', desc: 'Every conversation turns into a lead record' },
+  { title: 'Clients get their own portal', desc: 'They log in and see their data. You keep control.' },
+  { title: 'Track performance at a glance', desc: 'Conversations, leads, and response rates in one view' },
+  { title: 'All your bots, one place',     desc: 'Switch between clients without losing context' },
 ]
 
 const NAV_ITEMS = [
@@ -207,6 +209,49 @@ function ClientsScreen() {
   )
 }
 
+// ── Analytics screen ─────────────────────────────────────────────────────────
+function AnalyticsScreen() {
+  const stats = [
+    { label: 'Conversations', value: '1,284', delta: '+12%' },
+    { label: 'Leads captured', value: '187',   delta: '+8%'  },
+    { label: 'Avg. response',  value: '1.4s',  delta: '—'    },
+  ]
+  const bars = [42, 67, 55, 80, 63, 74, 88]
+  return (
+    <div style={{ padding: '14px 16px' }}>
+      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em', display: 'block', marginBottom: 10 }}>
+        Analytics
+      </span>
+      {/* Stat tiles */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 5, marginBottom: 12 }}>
+        {stats.map((s, i) => (
+          <div key={i} style={{ background: 'var(--surface-2)', padding: '6px 7px', borderRadius: 4 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--ink)', lineHeight: 1 }}>
+              {s.value}
+            </div>
+            <div style={{ fontSize: 8, color: 'var(--ink-muted)', marginTop: 2 }}>{s.label}</div>
+            <div style={{ fontSize: 8, color: s.delta.startsWith('+') ? 'var(--of-success)' : 'var(--ink-subtle)', marginTop: 1 }}>
+              {s.delta}
+            </div>
+          </div>
+        ))}
+      </div>
+      {/* Mini bar chart */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 40 }}>
+        {bars.map((h, i) => (
+          <div key={i} style={{
+            flex: 1, borderRadius: 2,
+            height: `${h}%`,
+            background: i === bars.length - 1 ? 'var(--of-primary)' : 'var(--of-primary-soft)',
+            transition: 'height 0.4s ease',
+          }} />
+        ))}
+      </div>
+      <div style={{ fontSize: 8, color: 'var(--ink-subtle)', marginTop: 4 }}>Last 7 days</div>
+    </div>
+  )
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 export function AuthDemoPanel() {
   const containerRef  = useRef<HTMLDivElement>(null)
@@ -220,61 +265,65 @@ export function AuthDemoPanel() {
   const [activeNav,    setActiveNav]    = useState(0)
 
   // ── GSAP timeline ─────────────────────────────────────────────────────────
-  // All cursor positions are % of containerRef (chrome ~34px + grid 220px = 254px total).
-  // Sidebar nav x centre ≈ 9% (35px/380px). Bot row-0 centre y ≈ 33%.
-  // Embed copy button x ≈ 84%, y ≈ 73%. Leads nav y ≈ 37%. Clients nav y ≈ 45%.
+  // Container = chrome(~34px) + grid(250px) = 284px total.
+  // Sidebar nav x centre ≈ 9% (35px/380px).
+  // Nav y centres: Bots 26%, Leads 33%, Clients 40% — click targets shifted +3% down.
+  // Bot row-0 centre ≈ 33%. Embed copy button ≈ (84%, 76%).
   useGSAP(() => {
     const c = cursorRef.current!
     const ease = 'power3.inOut'
-    const click = [
-      { scale: 0.80, duration: 0.07 },
-      { scale: 1.00, duration: 0.10 },
-    ]
+    const dn = { scale: 0.80, duration: 0.07 }
+    const up = { scale: 1.00, duration: 0.10 }
 
     const tl = gsap.timeline({ repeat: -1 })
 
-    // ── Step 0: hover over Karachi Kurta Co row (no bot selected yet) ────────
+    // ── Step 0: hover on Karachi Kurta Co (no bot selected) ──────────────────
     tl.set(c, { left: '55%', top: '33%' })
       .call(() => { setStep(0); setActiveBotIdx(-1); setActiveNav(0); setShowEmbed(false); setShowCopied(false) })
-      .to({}, { duration: 1.2 })  // hover pause
+      .to({}, { duration: 1.2 })
 
-      // click → highlight bot
-      .to(c, { ...click[0], ease })
-      .to(c, { ...click[1], ease })
-      .call(() => setActiveBotIdx(0))
-      .to({}, { duration: 0.6 })
+      // click → bot highlights + embed appears immediately
+      .to(c, { ...dn, ease }).to(c, { ...up, ease })
+      .call(() => { setActiveBotIdx(0); setShowEmbed(true); setStep(1) })
+      .to({}, { duration: 0.5 })
 
-    // ── Step 1: move to embed copy button ────────────────────────────────────
-      .to(c, { left: '84%', top: '73%', duration: 0.8, ease })
-      .call(() => { setStep(1); setShowEmbed(true) })
-      .to({}, { duration: 0.9 })  // embed fades in, pause before copy
-
-      // click copy button
-      .to(c, { ...click[0], ease })
-      .to(c, { ...click[1], ease })
+    // ── Step 1: move to embed Copy button ────────────────────────────────────
+      .to(c, { left: '84%', top: '76%', duration: 0.8, ease })
+      .to({}, { duration: 0.7 })  // let embed fully fade in before clicking
+      .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => setShowCopied(true))
       .to({}, { duration: 1.4 })
       .call(() => setShowCopied(false))
       .to({}, { duration: 0.4 })
 
-    // ── Step 2: move to Leads nav tab ─────────────────────────────────────────
-      .to(c, { left: '9%', top: '37%', duration: 0.85, ease })
-      .to(c, { ...click[0], ease })
-      .to(c, { ...click[1], ease })
+    // ── Step 2: click Leads nav tab ───────────────────────────────────────────
+      .to(c, { left: '9%', top: '40%', duration: 0.85, ease })
+      .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => { setStep(2); setActiveNav(1) })
       .to({}, { duration: 2.4 })
 
-    // ── Step 3: move to Clients nav tab ───────────────────────────────────────
-      .to(c, { left: '9%', top: '45%', duration: 0.7, ease })
-      .to(c, { ...click[0], ease })
-      .to(c, { ...click[1], ease })
+    // ── Step 3: click Clients nav tab ─────────────────────────────────────────
+      .to(c, { left: '9%', top: '48%', duration: 0.7, ease })
+      .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => { setStep(3); setActiveNav(2) })
       .to({}, { duration: 2.2 })
 
-    // ── Return to start (seamless loop) ───────────────────────────────────────
-      .to(c, { left: '55%', top: '33%', duration: 0.9, ease })
-      .to({}, { duration: 0.3 })
-      // GSAP repeat fires here — cursor already at (55%, 33%), no jump
+    // ── Step 4: click Analytics nav tab ──────────────────────────────────────
+    // Analytics nav centre: Clients(114.5) + 20 = 134.5px → 134.5/284 ≈ 47%  click +3% = 50%
+      .to(c, { left: '9%', top: '56%', duration: 0.7, ease })
+      .to(c, { ...dn, ease }).to(c, { ...up, ease })
+      .call(() => { setStep(4); setActiveNav(3) })
+      .to({}, { duration: 2.0 })
+
+    // ── Step 5: click Bots nav tab (closes the loop naturally) ───────────────
+      .to(c, { left: '9%', top: '29%', duration: 0.7, ease })
+      .to(c, { ...dn, ease }).to(c, { ...up, ease })
+      .call(() => { setStep(5); setActiveNav(0); setActiveBotIdx(-1); setShowEmbed(false) })
+      .to({}, { duration: 1.0 })
+
+    // ── Return cursor to bot-row area — seamless repeat ───────────────────────
+      .to(c, { left: '55%', top: '33%', duration: 0.8, ease })
+      .to({}, { duration: 0.4 })
 
   }, { scope: containerRef })
 
@@ -330,11 +379,11 @@ export function AuthDemoPanel() {
           </div>
         </div>
 
-        {/* App grid — FIXED height so embed block never changes outer height */}
+        {/* App grid — FIXED height 250px so embed block (≈84px) fits fully */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '76px 1fr',
-          height: 220,
+          height: 250,
           background: 'var(--surface)',
           overflow: 'hidden',
         }}>
@@ -372,6 +421,7 @@ export function AuthDemoPanel() {
             )}
             {activeNav === 1 && <LeadsScreen />}
             {activeNav === 2 && <ClientsScreen />}
+            {activeNav === 3 && <AnalyticsScreen />}
           </div>
         </div>
 

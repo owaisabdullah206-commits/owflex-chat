@@ -34,6 +34,10 @@ export default function DashboardSignupPage() {
 
   const strength = getStrength(password)
 
+  async function handleGoogle() {
+    await authClient.signIn.social({ provider: 'google', callbackURL: '/dashboard/bots' })
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -151,6 +155,19 @@ export default function DashboardSignupPage() {
                 {loading ? 'Creating account…' : 'Create free account'}
               </Button>
             </form>
+
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[var(--hairline)]" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-[var(--surface)] px-2 text-[var(--ink-subtle)]">or</span>
+              </div>
+            </div>
+
+            <Button type="button" variant="secondary" className="w-full" onClick={handleGoogle}>
+              Continue with Google
+            </Button>
           </div>
 
           <p className="text-center text-sm text-[var(--ink-muted)] mt-5">
