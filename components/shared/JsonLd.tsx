@@ -32,7 +32,12 @@ export const organizationSchema = {
         'White-label AI chatbot platform for freelancers and agencies. Build AI chatbots for your SMB clients and give each client a branded portal to view conversations, leads, and analytics.',
       foundingDate: '2024',
       areaServed: 'Worldwide',
-      sameAs: ['https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas'],
+      sameAs: [
+        'https://x.com/octivelyai',
+        'https://linkedin.com/company/octively',
+        'https://facebook.com/octively',
+        'https://instagram.com/getoctively',
+      ],
     },
     {
       '@type': 'WebSite',
