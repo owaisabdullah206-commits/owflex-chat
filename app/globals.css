@@ -45,8 +45,16 @@
 }
 
 @theme inline {
-  --font-sans: "Inter", -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Mono", ui-monospace, monospace;
+  /* next/font injects --font-jakarta, --font-source-serif, --font-jetbrains-mono
+     as CSS variables on <body>. Reference them here so Tailwind utility classes
+     (font-sans, font-mono) resolve correctly at runtime. */
+  --font-sans:  var(--font-jakarta), "Plus Jakarta Sans", -apple-system, sans-serif;
+  --font-mono:  var(--font-jetbrains-mono), "JetBrains Mono", "Fira Mono", ui-monospace, monospace;
+}
+
+:root {
+  /* Prose/article serif — Source Serif 4 for blog body text only */
+  --font-prose: var(--font-source-serif), "Source Serif 4", Georgia, "Times New Roman", serif;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -205,7 +213,7 @@ html {
 body {
   background-color: var(--bg, #0C0A09);
   color: var(--ink, #F5F0EB);
-  font-family: var(--font-sans, "Inter", -apple-system, sans-serif);
+  font-family: var(--font-sans, "Plus Jakarta Sans", "Inter", -apple-system, sans-serif);
   min-height: 100vh;
 }
 

@@ -38,14 +38,14 @@ function MdLi({ children }: PropsWithChildren) {
   if (type === 'ol') {
     return (
       <li style={{ color: 'var(--of-primary)', marginBottom: 12, paddingLeft: 4, lineHeight: 1.8 }}>
-        <span style={{ fontSize: 17, color: 'var(--ink)', lineHeight: 1.8 }}>
+        <span style={{ fontSize: 18, color: 'var(--ink)', lineHeight: 1.85 }}>
           {children}
         </span>
       </li>
     )
   }
 
-  // ul → custom sky-teal dot, text in --ink
+  // ul → custom sky-teal dot, text in --ink (prose serif via parent div)
   return (
     <li style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 12, paddingLeft: 0 }}>
       <span
@@ -56,10 +56,10 @@ function MdLi({ children }: PropsWithChildren) {
           borderRadius: '50%',
           background: 'var(--of-primary)',
           flexShrink: 0,
-          marginTop: '0.6em',
+          marginTop: '0.65em',
         }}
       />
-      <span style={{ fontSize: 17, color: 'var(--ink)', lineHeight: 1.8, flex: 1 }}>
+      <span style={{ fontSize: 18, color: 'var(--ink)', lineHeight: 1.85, flex: 1 }}>
         {children}
       </span>
     </li>
@@ -323,7 +323,8 @@ export default function BlogPostView({
 
           {/* Article body */}
           <div id="article-body">
-            <div>
+            {/* Source Serif 4 for prose; headings override back to --font-sans */}
+            <div style={{ fontFamily: 'var(--font-prose)' }}>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -334,6 +335,7 @@ export default function BlogPostView({
                       <h2
                         id={id}
                         style={{
+                          fontFamily: 'var(--font-sans)',
                           fontSize: 24,
                           fontWeight: 700,
                           letterSpacing: '-0.02em',
@@ -355,6 +357,7 @@ export default function BlogPostView({
                       <h3
                         id={id}
                         style={{
+                          fontFamily: 'var(--font-sans)',
                           fontSize: 19,
                           fontWeight: 700,
                           letterSpacing: '-0.01em',
@@ -369,14 +372,14 @@ export default function BlogPostView({
                     )
                   },
                   h4: ({ children }) => (
-                    <h4 style={{ fontSize: 17, fontWeight: 600, marginTop: 28, marginBottom: 8, color: 'var(--ink)' }}>
+                    <h4 style={{ fontFamily: 'var(--font-sans)', fontSize: 17, fontWeight: 600, marginTop: 28, marginBottom: 8, color: 'var(--ink)' }}>
                       {children}
                     </h4>
                   ),
 
                   // ── Body text ───────────────────────────────────────────
                   p: ({ children }) => (
-                    <p style={{ fontSize: 17, color: 'var(--ink)', lineHeight: 1.85, marginBottom: 22 }}>
+                    <p style={{ fontSize: 18, color: 'var(--ink)', lineHeight: 1.9, marginBottom: 24 }}>
                       {children}
                     </p>
                   ),
