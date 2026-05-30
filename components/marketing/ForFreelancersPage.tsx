@@ -6,7 +6,8 @@ import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
 import { OctivelyButton } from '@/components/brand/OctivelyButton'
-import { AiAnswerBlock } from './AiAnswerBlock'
+import { MarketingFAQ } from './MarketingFAQ'
+import type { FAQItem } from './MarketingFAQ'
 
 const STEPS = [
   { n: '01', title: 'Sign up free', body: 'No card. No trial timer. The free plan works indefinitely for a single bot.' },
@@ -215,16 +216,6 @@ export default function ForFreelancersPage() {
         </div>
       </section>
 
-      {/* Answer block — AI-search citability */}
-      <AiAnswerBlock question="What is the best AI chatbot platform for freelancers?">
-        For a freelancer, the best platform is the cheapest one that does not require code and still gives the client
-        something to log into. Octively fills that gap. You build the bot in a visual dashboard, paste one script tag on the
-        client&apos;s site, and send them an invite to their own branded portal where they can see conversations and leads
-        without emailing you for an update. There is a free plan, so you can deploy a chatbot on a project at no cost and bill
-        a monthly retainer on top. Paid plans start at ₨2,500/month in Pakistan, or $15 internationally — well under what
-        Stammer.ai or ConvoCore charge, which makes the first client profitable rather than a cost centre.
-      </AiAnswerBlock>
-
       {/* Testimonial */}
       <section style={{ paddingBlock: 64, background: 'var(--surface-2)', borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
@@ -286,7 +277,36 @@ export default function ForFreelancersPage() {
         </div>
       </section>
 
+      <MarketingFAQ items={FREELANCER_FAQS} />
       <MarketingFooter />
     </div>
   )
 }
+
+const FREELANCER_FAQS: FAQItem[] = [
+  {
+    question: 'What is the best AI chatbot platform for freelancers?',
+    answer:
+      'For a freelancer, the best platform is the cheapest one that does not require code and still gives the client something to log into. Octively fills that gap. You build the bot in a visual dashboard, paste one script tag on the client\'s site, and they get their own branded portal with conversations and leads — without emailing you for updates. There is a permanent free plan to start.',
+  },
+  {
+    question: 'Can I use Octively for free on my first client project?',
+    answer:
+      'Yes. The free plan is permanent — no trial period, no expiry. It covers one bot and up to 100 conversations a month. You can deploy a real chatbot on a real client site at no cost, bill a retainer on top, and upgrade only when you need more capacity.',
+  },
+  {
+    question: 'Does setting up a chatbot require coding skills?',
+    answer:
+      'No. You train the bot from a visual dashboard by adding your client\'s website URL, uploading documents, or typing knowledge directly. The only technical step is pasting one script tag on the client\'s site — and Octively provides step-by-step guides for WordPress, Webflow, Shopify, and other platforms.',
+  },
+  {
+    question: 'How much should I charge clients for a managed chatbot?',
+    answer:
+      'Most freelancers charge between ₨10,000–₨20,000/month in Pakistan ($40–$80 internationally) for a managed chatbot retainer. Octively\'s paid plans start at ₨2,500/month ($15), which leaves significant margin. The service sells on the client portal: clients can check their own leads and conversations without contacting you, which justifies the ongoing retainer.',
+  },
+  {
+    question: 'Will clients see Octively branding in their portal?',
+    answer:
+      'No. The client portal shows your branding — your name, your colours, your domain. Octively is invisible to your clients. They see a professional tool that appears to be built specifically for them.',
+  },
+]

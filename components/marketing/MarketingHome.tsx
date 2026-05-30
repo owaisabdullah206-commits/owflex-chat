@@ -10,7 +10,8 @@ import {
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
 import { useDarkMode } from './useDarkMode'
-import { AiAnswerBlock } from './AiAnswerBlock'
+import { MarketingFAQ } from './MarketingFAQ'
+import type { FAQItem } from './MarketingFAQ'
 // ─── Reveal helper ────────────────────────────────────────────────────────────
 
 function Reveal({
@@ -1684,6 +1685,36 @@ function HeroLeadCopy() {
   )
 }
 
+// ─── FAQ data ─────────────────────────────────────────────────────────────────
+
+const HOME_FAQS: FAQItem[] = [
+  {
+    question: 'What is a white-label AI chatbot platform?',
+    answer:
+      'A white-label AI chatbot platform lets you build AI chatbots for other businesses and brand them as your own — no vendor logo, your colours, your domain. Octively is built for freelancers and agencies. You create the bot in a visual dashboard, paste one script tag on the client\'s site, and each client gets a login to their own portal where they can read conversations, view captured leads, and check analytics.',
+  },
+  {
+    question: 'Do I need to know how to code?',
+    answer:
+      'No. You build and train the bot from a visual dashboard — no code required. The only technical step is pasting a single script tag on your client\'s website, and Octively provides step-by-step guides for every major platform (WordPress, Webflow, Shopify, and others).',
+  },
+  {
+    question: 'How do my clients access their data?',
+    answer:
+      'Each client gets an invite to their own branded portal on your domain. They log in and see only their conversations, leads, and analytics. You control access levels — read-only or full access. They never see other clients\' data, and they never see Octively branding.',
+  },
+  {
+    question: 'What does Octively cost?',
+    answer:
+      'There is a permanent free plan with one bot and up to 100 conversations a month — no credit card needed. Paid plans start at ₨2,500/month in Pakistan or $15/month internationally. The Agency plan at ₨20,000/month ($79) covers unlimited client portals with no per-seat fees.',
+  },
+  {
+    question: 'Is there a per-message or per-conversation fee?',
+    answer:
+      'No. All plans include a conversation allowance — you pay the flat monthly rate, not per message. There are no surprise usage bills. If you exceed your plan\'s limit, you can upgrade or purchase a top-up pack.',
+  },
+]
+
 // ─── Root Component ───────────────────────────────────────────────────────────
 
 export default function MarketingHome() {
@@ -1728,21 +1759,12 @@ export default function MarketingHome() {
 
       <LogoBar />
 
-      {/* Answer block — AI-search citability */}
-      <AiAnswerBlock question="What is a white-label AI chatbot platform?">
-        A white-label AI chatbot platform lets you build chatbots for other businesses and put your own brand on them instead
-        of the vendor&apos;s. Octively is built for freelancers and agencies. You create a bot in a visual dashboard, add one
-        script tag to your client&apos;s website, and give the client a login to their own portal. From there they can read every
-        conversation the bot has had, see the leads it captured, and check basic analytics — all under your branding. You can
-        start on a free plan and move up to a paid plan from ₨2,500 a month in Pakistan, or $15 internationally, well below
-        what most agency chatbot tools charge.
-      </AiAnswerBlock>
-
       <ProblemStrip />
       <HowItWorks />
       <FeatureBento />
       <PricingTeaser />
       <Testimonials dark={true} />
+      <MarketingFAQ items={HOME_FAQS} />
       <CTABanner />
       <MarketingFooter />
     </div>

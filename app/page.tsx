@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import MarketingHome from '@/components/marketing/MarketingHome'
 import { LandingPreloader } from '@/components/marketing/LandingPreloader'
+import { JsonLd, faqSchema } from '@/components/shared/JsonLd'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,11 +20,40 @@ export const metadata: Metadata = {
   },
 }
 
+const HOME_FAQ_SCHEMA = faqSchema([
+  {
+    question: 'What is a white-label AI chatbot platform?',
+    answer:
+      'A white-label AI chatbot platform lets you build AI chatbots for other businesses and brand them as your own. Octively is built for freelancers and agencies. You create the bot in a visual dashboard, paste one script tag on the client\'s site, and each client gets a login to their own portal to read conversations, view leads, and check analytics.',
+  },
+  {
+    question: 'Do I need to know how to code to use Octively?',
+    answer:
+      'No. You build and train the bot from a visual dashboard with no code required. The only technical step is pasting a single script tag on your client\'s website, and Octively provides step-by-step guides for WordPress, Webflow, Shopify, and other platforms.',
+  },
+  {
+    question: 'How do my clients access their chatbot data?',
+    answer:
+      'Each client gets an invite to their own branded portal. They log in and see only their conversations, leads, and analytics. You control access levels. They never see other clients\' data or Octively branding.',
+  },
+  {
+    question: 'What does Octively cost?',
+    answer:
+      'There is a permanent free plan with one bot and 100 conversations a month. Paid plans start at ₨2,500/month in Pakistan or $15/month internationally. The Agency plan at ₨20,000/month ($79) covers unlimited client portals with no per-seat fees.',
+  },
+  {
+    question: 'Is there a per-message or per-conversation fee?',
+    answer:
+      'No. All plans include a conversation allowance. You pay the flat monthly rate with no surprise usage bills.',
+  },
+])
+
 export default async function Home() {
   const session = await auth.api.getSession({ headers: await headers() })
   if (session) redirect('/dashboard')
   return (
     <>
+      <JsonLd schema={HOME_FAQ_SCHEMA} />
       <LandingPreloader />
       <MarketingHome />
     </>

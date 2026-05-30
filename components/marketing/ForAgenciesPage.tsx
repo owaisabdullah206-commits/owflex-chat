@@ -6,7 +6,8 @@ import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
 import { OctivelyButton } from '@/components/brand/OctivelyButton'
-import { AiAnswerBlock } from './AiAnswerBlock'
+import { MarketingFAQ } from './MarketingFAQ'
+import type { FAQItem } from './MarketingFAQ'
 
 const FEATURES = [
   {
@@ -223,16 +224,6 @@ export default function ForAgenciesPage() {
         </div>
       </section>
 
-      {/* Answer block — AI-search citability */}
-      <AiAnswerBlock question="How do agencies manage AI chatbots for multiple clients?">
-        Most agencies do it through a white-label platform instead of building something custom for every client. On Octively,
-        each client gets their own workspace with its own bot, branding, and login. You build and train the chatbot from one
-        dashboard — no code — drop a single script tag on the client&apos;s site, and invite them to a portal where they can check
-        their own conversations and leads. You control access and billing. The key for agency margin is flat pricing: one rate
-        with no per-seat fee, so your tenth client costs the same as your first. The Agency plan covers unlimited client portals
-        at ₨20,000/month in Pakistan, or $79 internationally. Stammer.ai and ConvoCore start closer to $200.
-      </AiAnswerBlock>
-
       {/* Testimonial */}
       <section style={{ paddingBlock: 64, background: 'var(--surface-2)', borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
@@ -282,7 +273,36 @@ export default function ForAgenciesPage() {
         </div>
       </section>
 
+      <MarketingFAQ items={AGENCY_FAQS} />
       <MarketingFooter />
     </div>
   )
 }
+
+const AGENCY_FAQS: FAQItem[] = [
+  {
+    question: 'How do agencies manage AI chatbots for multiple clients?',
+    answer:
+      'Most agencies use a white-label platform rather than building something custom for every client. On Octively each client gets their own workspace — their own bot, branding, and login. You build and train from one dashboard, drop a script tag on their site, and they access a portal showing only their conversations and leads. You control billing and access behind the scenes.',
+  },
+  {
+    question: 'Is there a per-client or per-seat fee?',
+    answer:
+      'No. The Agency plan is flat-rate: ₨20,000/month in Pakistan or $79 internationally, regardless of how many clients you manage. Signing your tenth client costs the same as signing your first. Competitors like Stammer.ai and ConvoCore charge $15–$200 per additional client.',
+  },
+  {
+    question: 'Can each client see only their own data?',
+    answer:
+      'Yes. Tenant isolation is enforced at the database level. Each client portal shows only that client\'s conversations, leads, and analytics. No client can see another client\'s data, and they never see Octively branding — only your brand.',
+  },
+  {
+    question: 'How long does it take to onboard a new client?',
+    answer:
+      'Most agencies onboard a new client in under an hour. You create their workspace, train the bot on their content (website, documents, or typed knowledge), and paste the embed script on their site. Their portal is live the moment you send them an invite.',
+  },
+  {
+    question: 'What happens if a client wants to cancel?',
+    answer:
+      'You can archive or delete a client workspace at any time. The client\'s portal access is immediately removed. Your plan cost stays the same — there is no per-seat reduction, but there is also no cancellation fee or minimum contract on monthly plans.',
+  },
+]
