@@ -1,10 +1,71 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, createContext, useContext } from 'react'
+import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { ArrowLeft, Link2, ChevronDown, ChevronUp, BookOpen, Clock } from 'lucide-react'
+
+// ─── List rendering helpers ───────────────────────────────────────────────────
+// Must be module-level so useContext works inside them.
+
+const ListTypeCtx = createContext<'ul' | 'ol'>('ul')
+
+function MdUl({ children }: PropsWithChildren) {
+  return (
+    <ListTypeCtx.Provider value="ul">
+      <ul style={{ listStyle: 'none', margin: '8px 0 24px', padding: 0 }}>
+        {children}
+      </ul>
+    </ListTypeCtx.Provider>
+  )
+}
+
+function MdOl({ children }: PropsWithChildren) {
+  return (
+    <ListTypeCtx.Provider value="ol">
+      <ol style={{ listStyleType: 'decimal', margin: '8px 0 24px', paddingLeft: 28 }}>
+        {children}
+      </ol>
+    </ListTypeCtx.Provider>
+  )
+}
+
+function MdLi({ children }: PropsWithChildren) {
+  const type = useContext(ListTypeCtx)
+
+  if (type === 'ol') {
+    // Keep native decimal number; use colour trick to tint the ::marker sky-teal
+    return (
+      <li style={{ color: 'var(--of-primary)', marginBottom: 10, paddingLeft: 4, lineHeight: 1.75 }}>
+        <span style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.75 }}>
+          {children}
+        </span>
+      </li>
+    )
+  }
+
+  // ul → custom sky-teal dot, text separate
+  return (
+    <li style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10, paddingLeft: 0 }}>
+      <span
+        aria-hidden
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: 'var(--of-primary)',
+          flexShrink: 0,
+          marginTop: '0.62em',
+        }}
+      />
+      <span style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.75, flex: 1 }}>
+        {children}
+      </span>
+    </li>
+  )
+}
 
 function XIcon({ size = 13 }: { size?: number }) {
   return (
@@ -267,13 +328,11 @@ export default function BlogPostView({
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
+                  // ── Headings ────────────────────────────────────────────
                   h2: ({ children }) => {
                     const id = slugify(String(children))
                     return (
-                      <h2
-                        id={id}
-                        style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.01em', marginTop: 44, marginBottom: 14, lineHeight: 1.25, color: 'var(--ink)' }}
-                      >
+                      <h2 id={id} style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.015em', marginTop: 48, marginBottom: 14, lineHeight: 1.25, color: 'var(--ink)' }}>
                         {children}
                       </h2>
                     )
@@ -281,116 +340,158 @@ export default function BlogPostView({
                   h3: ({ children }) => {
                     const id = slugify(String(children))
                     return (
-                      <h3
-                        id={id}
-                        style={{ fontSize: 19, fontWeight: 600, marginTop: 32, marginBottom: 10, color: 'var(--ink)' }}
-                      >
+                      <h3 id={id} style={{ fontSize: 19, fontWeight: 600, letterSpacing: '-0.01em', marginTop: 36, marginBottom: 10, lineHeight: 1.3, color: 'var(--ink)' }}>
                         {children}
                       </h3>
                     )
                   },
+                  h4: ({ children }) => (
+                    <h4 style={{ fontSize: 16.5, fontWeight: 600, marginTop: 28, marginBottom: 8, color: 'var(--ink)' }}>
+                      {children}
+                    </h4>
+                  ),
+
+                  // ── Body text ───────────────────────────────────────────
                   p: ({ children }) => (
-                    <p style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.8, marginBottom: 20 }}>
+                    <p style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.85, marginBottom: 22 }}>
                       {children}
                     </p>
-                  ),
-                  ul: ({ children }) => (
-                    <ul style={{ margin: '0 0 20px', paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {children}
-                    </ul>
-                  ),
-                  ol: ({ children }) => (
-                    <ol style={{ margin: '0 0 20px', paddingLeft: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {children}
-                    </ol>
-                  ),
-                  li: ({ children }) => (
-                    <li style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.75 }}>{children}</li>
                   ),
                   strong: ({ children }) => (
                     <strong style={{ color: 'var(--ink)', fontWeight: 600 }}>{children}</strong>
                   ),
+                  em: ({ children }) => (
+                    <em style={{ fontStyle: 'italic', color: 'var(--ink-muted)' }}>{children}</em>
+                  ),
+                  del: ({ children }) => (
+                    <del style={{ textDecoration: 'line-through', color: 'var(--ink-subtle)', opacity: 0.8 }}>{children}</del>
+                  ),
                   a: ({ href, children }) => (
-                    <Link href={href ?? '#'} style={{ color: 'var(--of-primary)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+                    <Link
+                      href={href ?? '#'}
+                      style={{ color: 'var(--of-primary)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationThickness: 1 }}
+                    >
                       {children}
                     </Link>
                   ),
+
+                  // ── Lists (MdUl/MdOl/MdLi defined at module level) ─────
+                  ul: MdUl,
+                  ol: MdOl,
+                  li: MdLi,
+
+                  // ── Blockquote ──────────────────────────────────────────
                   blockquote: ({ children }) => (
                     <blockquote
                       style={{
                         borderLeft: '3px solid var(--of-primary)',
                         paddingLeft: 20,
-                        margin: '24px 0',
-                        color: 'var(--ink-muted)',
-                        fontStyle: 'italic',
-                        fontSize: 17,
-                        lineHeight: 1.7,
+                        paddingTop: 4,
+                        paddingBottom: 4,
+                        margin: '28px 0',
+                        background: 'var(--of-primary-soft)',
+                        borderRadius: '0 10px 10px 0',
                       }}
                     >
                       {children}
                     </blockquote>
                   ),
-                  code: ({ children }) => (
-                    <code
-                      style={{
-                        fontSize: 14,
-                        fontFamily: 'var(--font-mono)',
-                        background: 'var(--surface-2)',
-                        padding: '2px 6px',
-                        borderRadius: 4,
-                        color: 'var(--ink)',
-                        border: '1px solid var(--hairline)',
-                      }}
-                    >
-                      {children}
-                    </code>
-                  ),
+
+                  // ── Code ────────────────────────────────────────────────
+                  // Inline code has no className; fenced blocks have "language-*"
+                  code: ({ className, children }) => {
+                    if (className?.startsWith('language-') || String(children).includes('\n')) {
+                      // Fenced code block (rendered inside <pre>)
+                      return (
+                        <code className={className} style={{ fontFamily: 'var(--font-mono)', fontSize: 13.5, lineHeight: 1.7 }}>
+                          {children}
+                        </code>
+                      )
+                    }
+                    // Inline code
+                    return (
+                      <code
+                        style={{
+                          fontSize: '0.875em',
+                          fontFamily: 'var(--font-mono)',
+                          background: 'var(--surface-2)',
+                          padding: '2px 7px',
+                          borderRadius: 5,
+                          color: 'var(--of-primary)',
+                          border: '1px solid var(--hairline)',
+                          fontWeight: 500,
+                          letterSpacing: '-0.01em',
+                        }}
+                      >
+                        {children}
+                      </code>
+                    )
+                  },
                   pre: ({ children }) => (
                     <pre
                       style={{
-                        fontSize: 13.5,
                         fontFamily: 'var(--font-mono)',
+                        fontSize: 13.5,
                         background: 'var(--surface-2)',
-                        padding: '18px 20px',
+                        padding: '18px 22px',
                         borderRadius: 12,
-                        margin: '0 0 24px',
+                        margin: '4px 0 28px',
                         overflowX: 'auto',
                         border: '1px solid var(--hairline)',
-                        lineHeight: 1.6,
+                        lineHeight: 1.7,
                       }}
                     >
                       {children}
                     </pre>
                   ),
+
+                  // ── Image ───────────────────────────────────────────────
+                  img: ({ src, alt }) => (
+                    <span style={{ display: 'block', margin: '28px 0' }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={src ?? ''}
+                        alt={alt ?? ''}
+                        style={{ maxWidth: '100%', height: 'auto', borderRadius: 12, border: '1px solid var(--hairline)', display: 'block' }}
+                        loading="lazy"
+                      />
+                      {alt && (
+                        <span style={{ display: 'block', fontSize: 13, color: 'var(--ink-subtle)', textAlign: 'center', marginTop: 8, fontStyle: 'italic' }}>
+                          {alt}
+                        </span>
+                      )}
+                    </span>
+                  ),
+
+                  // ── Table ───────────────────────────────────────────────
                   table: ({ children }) => (
-                    <div style={{ overflowX: 'auto', border: '1px solid var(--hairline)', borderRadius: 12, margin: '0 0 24px' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14.5, minWidth: 440 }}>
+                    <div style={{ overflowX: 'auto', border: '1px solid var(--hairline)', borderRadius: 12, margin: '4px 0 28px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14.5, minWidth: 380 }}>
                         {children}
                       </table>
                     </div>
                   ),
+                  thead: ({ children }) => (
+                    <thead style={{ background: 'var(--surface-2)' }}>{children}</thead>
+                  ),
+                  tbody: ({ children }) => <tbody>{children}</tbody>,
+                  tr: ({ children }) => (
+                    <tr style={{ borderBottom: '1px solid var(--hairline)' }}>{children}</tr>
+                  ),
                   th: ({ children }) => (
-                    <th
-                      style={{
-                        textAlign: 'left',
-                        padding: '11px 16px',
-                        fontWeight: 600,
-                        fontSize: 13,
-                        borderBottom: '1px solid var(--hairline)',
-                        background: 'var(--surface-2)',
-                        color: 'var(--ink)',
-                      }}
-                    >
+                    <th style={{ textAlign: 'left', padding: '11px 16px', fontWeight: 600, fontSize: 13, color: 'var(--ink)', letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
                       {children}
                     </th>
                   ),
                   td: ({ children }) => (
-                    <td style={{ padding: '11px 16px', color: 'var(--ink-muted)', borderBottom: '1px solid var(--hairline)' }}>
+                    <td style={{ padding: '11px 16px', color: 'var(--ink-muted)', verticalAlign: 'top', lineHeight: 1.55 }}>
                       {children}
                     </td>
                   ),
+
+                  // ── Misc ────────────────────────────────────────────────
                   hr: () => (
-                    <hr style={{ border: 'none', borderTop: '1px solid var(--hairline)', margin: '40px 0' }} />
+                    <hr style={{ border: 'none', borderTop: '1px solid var(--hairline)', margin: '44px 0' }} />
                   ),
                 }}
               >
