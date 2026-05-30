@@ -65,7 +65,7 @@ The white-label setup is solid. You get a branded subdomain, your name on the da
 
 Voice is where Stammer has a real advantage over most alternatives. The platform is built for agencies that want to deploy phone agents — bots that answer calls, handle basic questions, and book appointments verbally. If your clients are asking for that, the competition is thin. It's a genuine capability, not a gimmick.
 
-Stammer also supports more channels than most competitors: web chat, voice, and some social integrations. For an agency with a broad AI service catalogue, that breadth matters.
+Stammer also supports more channels than most competitors: web chat, voice, WhatsApp, Instagram DMs, and Facebook Messenger. For an agency with a broad AI service catalogue, that breadth matters.
 
 ## The price problem
 
@@ -79,7 +79,7 @@ For agencies already running at capacity, $197 is a normal monthly tool cost. Fo
 
 Most agencies doing website chatbots for small businesses don't need voice agents. A dental practice, a restaurant, a local law firm — they want a chat widget that captures leads overnight and lets staff check them in the morning. Phone agents are useful for specific businesses, but they're not the default ask.
 
-The cost of building and maintaining voice infrastructure is real, and it's part of why Stammer is priced where it is. Same with social channel integrations. Both features are genuinely useful for the right clients. For an agency doing website chat only, you're effectively subsidising features you won't invoice for.
+The cost of voice infrastructure and multi-channel deployment (WhatsApp, Instagram DMs, Facebook Messenger) is real, and it's part of why Stammer is priced where it is. Both are genuinely useful for the right clients. For an agency doing website chat only, you're effectively subsidising features you won't invoice for.
 
 ## How the client portals compare
 
@@ -105,14 +105,14 @@ On usage: both platforms charge for AI responses through a credit system. A typi
 
 | | Octively | Stammer.ai |
 |---|---|---|
-| Starting paid plan | ₨2,500 / $15 per month | ~$197 per month |
-| Agency plan (unlimited portals) | ₨20,000 / $79 per month | Higher tiers |
-| Free plan | Yes, no expiry | Trial only |
+| Starting paid plan | ₨2,500 / $15/mo | $197/mo (Agency — 20 sub-accounts) |
+| Unlimited clients | ₨20,000 / $79/mo | $497/mo (Full SaaS Mode) |
+| Free plan | Yes, permanent | 14-day trial only |
 | Client portal | Yes, on all plans | Yes |
 | Web chat | Yes | Yes |
-| Voice agents | No | Yes |
-| Social channels | No | Some |
-| Best suited for | Website chat for SMB clients | Chat and voice for larger agencies |
+| Voice agents | No | Yes ($0.11+/min) |
+| WhatsApp / Instagram / Messenger | No | Yes (all three) |
+| Best suited for | Website chat for SMB clients | Chat + voice + social channels |
 
 ## Which one to pick
 
@@ -612,6 +612,192 @@ A chatbot isn't going to double a business's revenue in the first month. For a t
 The clearer value is consistency: leads come in even when the owner is busy, closed, or asleep. They have a record of what each person asked, not just a phone number. And they have a portal to check it themselves, which means they're not dependent on you to tell them whether it's working.
 
 That combination — consistent capture, transparent reporting, low maintenance — is what makes the service worth paying for monthly.`,
+  },
+
+  {
+    _id: 'post-convocore-alternative',
+    slug: 'convocore-alternative',
+    title: 'Looking for a ConvoCore alternative? An honest breakdown',
+    description:
+      'ConvoCore is a capable multi-channel platform with voice, WhatsApp, and Instagram support — but the per-seat pricing adds up fast. Here is when it makes sense and when it does not.',
+    keyword: 'ConvoCore alternative',
+    tags: ['Comparison', 'Agency'],
+    publishedAt: '2026-05-30T10:30:00.000Z',
+    readingMinutes: 5,
+    faq: [
+      {
+        question: 'How much does ConvoCore actually cost for an agency?',
+        answer:
+          'White-labeling ConvoCore requires the $200/month white-label add-on on top of the $20/month base plan, totalling $220/month. That includes 5 client seats. Each additional client seat costs $15/month extra, so 10 clients costs around $295/month before any AI usage.',
+      },
+      {
+        question: 'Does ConvoCore support WhatsApp and Instagram?',
+        answer:
+          'Yes. ConvoCore supports WhatsApp, Instagram DMs, Facebook Messenger, and web chat from a single dashboard. All channels are included on the Pay As You Go plan and above.',
+      },
+      {
+        question: 'Does ConvoCore have voice agents?',
+        answer:
+          'Yes. Voice agents are included in ConvoCore from the Pay As You Go plan. Phone numbers require Twilio ($3/month each) and additional concurrent call lines cost $5/month.',
+      },
+      {
+        question: 'What is cheaper than ConvoCore for agencies doing website chat only?',
+        answer:
+          'Octively charges ₨20,000/month ($79) flat for unlimited client portals on the Agency plan — no per-seat fees. If your service is website chat without social channels or voice, that is significantly cheaper than ConvoCore at scale.',
+      },
+    ],
+    body: `ConvoCore is a legitimate platform for AI agencies. It handles both chat and voice agents from one dashboard, supports WhatsApp, Instagram DMs, Facebook Messenger, and web chat out of the box, and the white-label setup is real. If you are building an agency that sells multi-channel AI deployments, it is worth looking at seriously.
+
+People looking for an alternative usually land on one of two problems: the per-seat cost gets expensive as the client list grows, or they are paying for voice and social channel infrastructure they are not actually selling.
+
+## What ConvoCore does well
+
+The multi-channel support is the main draw. You can deploy the same AI agent to web chat, WhatsApp, Instagram DMs, and Facebook Messenger from a single build. Most platforms require separate tools for each channel. ConvoCore handles them together.
+
+Voice agents are part of the product, not a separate tool. You can give a client a phone agent and a website chatbot from the same dashboard. For agencies selling both, that simplicity has real value.
+
+The usage model is credits-based: [$1 buys 1,000 AI interactions](https://convocore.ai/pricing) ($0.001 per message). For clients with irregular traffic, that can work out cheaper than paying for a fixed token allowance every month whether or not it gets used.
+
+## How the pricing actually works
+
+The base Pay As You Go plan is $20/month. At that price, your clients see ConvoCore's branding. White-labeling is a separate $200/month add-on, making the real entry price **$220/month** for a white-labeled agency setup.
+
+That $220/month includes 5 client seats. After that, each additional client company costs $15/month extra.
+
+The bill at different client counts:
+
+- 5 clients: $220/month (5 seats included)
+- 10 clients: ~$295/month ($220 + $75 for 5 extra seats)
+- 20 clients: ~$370/month ($220 + $150 for 15 extra seats)
+
+That is before any AI usage costs. Credits at $0.001 each add up with active clients — a client with 500 conversations a month at five messages each costs about $2.50 in credits. Voice adds more: Twilio phone numbers cost $3/month each, and additional concurrent call lines are $5/month.
+
+## The seat cost problem
+
+Per-seat pricing means your platform cost grows with every client you sign. There is no flat rate unless you negotiate enterprise pricing.
+
+That is manageable if each client pays enough to absorb their seat cost. But it makes margins harder to predict. Every new client changes your monthly platform bill, which makes it harder to quote retainer prices from a stable baseline.
+
+## When the channel coverage justifies it
+
+If you are charging clients for multi-channel deployments — WhatsApp and Instagram alongside the website widget — the per-seat cost is easier to absorb. You are selling a broader service and charging accordingly.
+
+If your service is website chatbots only, you are paying for channel infrastructure your clients do not use. At 10 clients, that means $295/month for a capability set you are not invoicing for.
+
+## Comparison
+
+| | Octively | ConvoCore |
+|---|---|---|
+| White-label entry price | ₨20,000 / $79/mo flat | $220/mo + $15 per extra client seat |
+| Permanent free tier | Yes (1 bot) | Yes (5 agents, 2 clients, no white-label) |
+| 10 clients cost | ₨20,000 / $79/mo | ~$295/mo + usage |
+| Voice agents | No | Yes |
+| WhatsApp / Instagram / Messenger | No | Yes |
+| Web chat | Yes | Yes |
+| Per-seat fees | No | Yes ($15/extra client) |
+
+## Which to use
+
+ConvoCore is the right fit if multi-channel is a real part of your offer — if you are deploying WhatsApp bots, Instagram DM agents, and phone agents alongside website chat, the all-in-one dashboard and channel coverage justify the cost.
+
+Octively makes more sense for agencies and freelancers focused on website chatbots and client portals, where a flat rate that does not move with client count makes the service easier to run profitably. Check the [Agency plan details](/pricing) for current rates.`,
+  },
+  {
+    _id: 'post-chatlab-alternative',
+    slug: 'chatlab-alternative',
+    title: 'ChatLab alternative for agencies: what $360/month actually includes',
+    description:
+      'ChatLab is a polished chat-only platform with a genuine agency package — but at $360/month with a 25-bot cap and no voice, here is when the price makes sense and when to look elsewhere.',
+    keyword: 'ChatLab alternative',
+    tags: ['Comparison', 'Agency'],
+    publishedAt: '2026-05-30T11:00:00.000Z',
+    readingMinutes: 5,
+    faq: [
+      {
+        question: 'What does ChatLab cost for agencies?',
+        answer:
+          'The ChatLab agency package is included in the Premium plan at $360/month. That covers 25 chatbots, 25 user accounts, 50,000 message credits, white-label branding, and a client portal on your custom domain. There is no cheaper tier with agency/white-label features.',
+      },
+      {
+        question: 'Does ChatLab have voice agents?',
+        answer:
+          'No. ChatLab is a chat-only platform. It supports web chat widgets and WhatsApp (from the $95 Standard plan upward), but does not offer phone or voice agents.',
+      },
+      {
+        question: 'What happens when I need more than 25 bots on ChatLab?',
+        answer:
+          'You pay $7/month per additional chatbot plus one extra user account. So 30 clients costs $360 + $35 = $395/month, 40 clients costs $395 + $70 = $465/month, and so on.',
+      },
+      {
+        question: 'Is there a cheaper alternative to ChatLab for website chatbots?',
+        answer:
+          'Yes. Octively offers an Agency plan at ₨20,000/month ($79) with unlimited client portals and no per-bot limit. ChatLab costs $360/month for up to 25 bots, then $7/bot extra. For most agency use cases focused on website chat, Octively is significantly cheaper.',
+      },
+    ],
+    body: `ChatLab is a chat-only platform. No voice agents, no phone deployments. The agency package — white-label branding, custom domain, client portal on your own domain — is only available at one price point: the Premium plan at $360/month. That is confirmed directly on [ChatLab's pricing page](https://www.chatlab.com/pricing).
+
+If you need a focused, polished chat platform for website deployments, it works well. Whether the price makes sense depends on how many bots you are running and how much traffic they handle.
+
+## What ChatLab does well
+
+The platform is focused. ChatLab builds good chatbots and does not try to be a full-stack AI agency tool. Training from websites, PDFs, and documents works cleanly. The widget is customisable. The interface is straightforward.
+
+The client portal is genuinely well-designed. Clients log in on your custom domain, view conversations, access leads, and see analytics. You can give them limited access (view only) or full access (including bot configuration). That flexibility is useful when clients vary in how hands-on they want to be.
+
+WhatsApp integration is included from the Standard plan ($95/month) upward. The Standard plan also removes the ChatLab logo from the widget — but it does not include the client portal on your own domain, which requires Premium.
+
+A 7-day free trial is available on all paid plans.
+
+## What the $360/month actually covers
+
+The [Premium plan](https://www.chatlab.com/agencypackage) includes:
+- 25 chatbots
+- 25 user accounts
+- 50,000 message credits per month
+- White-label client portal on your custom domain
+- Daily auto-retraining
+- 30-minute monthly support calls
+
+That is it. One plan for agency work, no intermediate tier.
+
+## The 25-bot ceiling and what happens after
+
+25 chatbots is the limit on the base Premium plan. For agencies with 25 clients or fewer, fine. Beyond that, extra bots cost $7/month per additional bot plus one user account.
+
+- 30 clients: $360 + $35 = $395/month
+- 40 clients: $360 + $105 = $465/month
+- 50 clients: $360 + $175 = $535/month
+
+The cost climbs steadily and there is no tier where it plateaus. For a growing agency, that is something to price into your retainer rates from the start.
+
+## Message credit overages
+
+50,000 credits sounds like a comfortable allowance. But in ChatLab's model, credits are individual bot responses — not conversations. A typical conversation involves five to eight bot replies. At five replies per conversation, 50,000 credits covers around 10,000 conversations a month.
+
+For a small portfolio with moderate traffic, that is usually enough. For a larger operation, extra credits cost $7 per 1,000. At 150,000 credits a month, that is $700 in overage on top of the $360 plan — $1,060 in total. At that scale, credits become the dominant cost driver.
+
+## No voice agents
+
+ChatLab is chat only. If a client asks about phone agent automation, ChatLab cannot help. This does not matter for every agency, but it is worth knowing before you commit to it as your platform.
+
+## Comparison
+
+| | Octively | ChatLab |
+|---|---|---|
+| Agency pricing | ₨20,000 / $79/mo | $360/mo (Premium only) |
+| Permanent free tier | Yes (1 bot) | No (7-day trial) |
+| White-label client portal | Yes, all plans | Premium only ($360/mo) |
+| Voice agents | No | No |
+| Bot limit | Unlimited on Agency | 25 base, $7/extra bot |
+| Message overage | Top-up packs | $7 per 1,000 extra credits |
+| WhatsApp | No | Standard ($95/mo) and above |
+| Custom domain | Yes | Premium only |
+
+## Which to use
+
+ChatLab at $360/month works well for an agency with a stable roster under 25 clients, predictable traffic, and no requirement for voice. The platform is polished and the client portal is genuinely good.
+
+For freelancers and growing agencies, the escalating per-bot cost and the single white-label tier make it harder to maintain margins as you scale. Octively's flat Agency rate stays constant regardless of client count. If you are just starting out, the [free plan](/pricing) lets you deploy a real bot before paying anything.`,
   },
 ]
 

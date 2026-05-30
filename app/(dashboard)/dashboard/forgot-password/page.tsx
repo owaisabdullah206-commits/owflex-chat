@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth/client'
+import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -38,11 +39,8 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-6">
-            <div className="w-7 h-7 bg-[var(--of-primary)] flex items-center justify-center">
-              <span className="text-white text-sm font-bold">O</span>
-            </div>
-            <span className="text-[var(--ink)] font-semibold text-lg tracking-tight">Octively</span>
+          <div className="mb-6">
+            <OctivelyLogo size={28} color="var(--of-primary)" wordmarkColor="var(--ink)" />
           </div>
           <h1 className="text-xl font-semibold text-[var(--ink)]">Reset your password</h1>
           <p className="text-sm text-[var(--ink-muted)] mt-1">

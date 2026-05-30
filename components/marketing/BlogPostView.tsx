@@ -5,7 +5,7 @@ import type { PropsWithChildren } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { ArrowLeft, Link2, ChevronDown, ChevronUp, BookOpen, Clock } from 'lucide-react'
+import { ArrowLeft, Link2, ChevronDown, ChevronUp, BookOpen, Clock, ExternalLink } from 'lucide-react'
 
 // ─── List rendering helpers ───────────────────────────────────────────────────
 // Must be module-level so useContext works inside them.
@@ -36,31 +36,30 @@ function MdLi({ children }: PropsWithChildren) {
   const type = useContext(ListTypeCtx)
 
   if (type === 'ol') {
-    // Keep native decimal number; use colour trick to tint the ::marker sky-teal
     return (
-      <li style={{ color: 'var(--of-primary)', marginBottom: 10, paddingLeft: 4, lineHeight: 1.75 }}>
-        <span style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.75 }}>
+      <li style={{ color: 'var(--of-primary)', marginBottom: 12, paddingLeft: 4, lineHeight: 1.8 }}>
+        <span style={{ fontSize: 17, color: 'var(--ink)', lineHeight: 1.8 }}>
           {children}
         </span>
       </li>
     )
   }
 
-  // ul → custom sky-teal dot, text separate
+  // ul → custom sky-teal dot, text in --ink
   return (
-    <li style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10, paddingLeft: 0 }}>
+    <li style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 12, paddingLeft: 0 }}>
       <span
         aria-hidden
         style={{
-          width: 6,
-          height: 6,
+          width: 7,
+          height: 7,
           borderRadius: '50%',
           background: 'var(--of-primary)',
           flexShrink: 0,
-          marginTop: '0.62em',
+          marginTop: '0.6em',
         }}
       />
-      <span style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.75, flex: 1 }}>
+      <span style={{ fontSize: 17, color: 'var(--ink)', lineHeight: 1.8, flex: 1 }}>
         {children}
       </span>
     </li>
@@ -332,7 +331,20 @@ export default function BlogPostView({
                   h2: ({ children }) => {
                     const id = slugify(String(children))
                     return (
-                      <h2 id={id} style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.015em', marginTop: 48, marginBottom: 14, lineHeight: 1.25, color: 'var(--ink)' }}>
+                      <h2
+                        id={id}
+                        style={{
+                          fontSize: 24,
+                          fontWeight: 700,
+                          letterSpacing: '-0.02em',
+                          marginTop: 52,
+                          marginBottom: 16,
+                          lineHeight: 1.25,
+                          color: 'var(--ink)',
+                          borderLeft: '3px solid var(--of-primary)',
+                          paddingLeft: 14,
+                        }}
+                      >
                         {children}
                       </h2>
                     )
@@ -340,40 +352,68 @@ export default function BlogPostView({
                   h3: ({ children }) => {
                     const id = slugify(String(children))
                     return (
-                      <h3 id={id} style={{ fontSize: 19, fontWeight: 600, letterSpacing: '-0.01em', marginTop: 36, marginBottom: 10, lineHeight: 1.3, color: 'var(--ink)' }}>
+                      <h3
+                        id={id}
+                        style={{
+                          fontSize: 19,
+                          fontWeight: 700,
+                          letterSpacing: '-0.01em',
+                          marginTop: 36,
+                          marginBottom: 10,
+                          lineHeight: 1.3,
+                          color: 'var(--ink)',
+                        }}
+                      >
                         {children}
                       </h3>
                     )
                   },
                   h4: ({ children }) => (
-                    <h4 style={{ fontSize: 16.5, fontWeight: 600, marginTop: 28, marginBottom: 8, color: 'var(--ink)' }}>
+                    <h4 style={{ fontSize: 17, fontWeight: 600, marginTop: 28, marginBottom: 8, color: 'var(--ink)' }}>
                       {children}
                     </h4>
                   ),
 
                   // ── Body text ───────────────────────────────────────────
                   p: ({ children }) => (
-                    <p style={{ fontSize: 16.5, color: 'var(--ink-muted)', lineHeight: 1.85, marginBottom: 22 }}>
+                    <p style={{ fontSize: 17, color: 'var(--ink)', lineHeight: 1.85, marginBottom: 22 }}>
                       {children}
                     </p>
                   ),
                   strong: ({ children }) => (
-                    <strong style={{ color: 'var(--ink)', fontWeight: 600 }}>{children}</strong>
+                    <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>{children}</strong>
                   ),
                   em: ({ children }) => (
-                    <em style={{ fontStyle: 'italic', color: 'var(--ink-muted)' }}>{children}</em>
+                    <em style={{ fontStyle: 'italic', color: 'var(--ink)' }}>{children}</em>
                   ),
                   del: ({ children }) => (
-                    <del style={{ textDecoration: 'line-through', color: 'var(--ink-subtle)', opacity: 0.8 }}>{children}</del>
+                    <del style={{ textDecoration: 'line-through', color: 'var(--ink-subtle)', opacity: 0.75 }}>{children}</del>
                   ),
-                  a: ({ href, children }) => (
-                    <Link
-                      href={href ?? '#'}
-                      style={{ color: 'var(--of-primary)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationThickness: 1 }}
-                    >
-                      {children}
-                    </Link>
-                  ),
+                  a: ({ href, children }) => {
+                    const url = href ?? '#'
+                    const isExternal = /^https?:\/\//.test(url) && !url.includes('octively.com')
+                    if (isExternal) {
+                      return (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: 'var(--of-primary)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationThickness: 1, display: 'inline-flex', alignItems: 'center', gap: 3 }}
+                        >
+                          {children}
+                          <ExternalLink size={11} style={{ flexShrink: 0, opacity: 0.7, display: 'inline' }} aria-label="opens in new tab" />
+                        </a>
+                      )
+                    }
+                    return (
+                      <Link
+                        href={url}
+                        style={{ color: 'var(--of-primary)', textDecoration: 'underline', textUnderlineOffset: 3, textDecorationThickness: 1 }}
+                      >
+                        {children}
+                      </Link>
+                    )
+                  },
 
                   // ── Lists (MdUl/MdOl/MdLi defined at module level) ─────
                   ul: MdUl,
@@ -386,11 +426,16 @@ export default function BlogPostView({
                       style={{
                         borderLeft: '3px solid var(--of-primary)',
                         paddingLeft: 20,
-                        paddingTop: 4,
-                        paddingBottom: 4,
+                        paddingTop: 12,
+                        paddingBottom: 12,
+                        paddingRight: 16,
                         margin: '28px 0',
                         background: 'var(--of-primary-soft)',
-                        borderRadius: '0 10px 10px 0',
+                        borderRadius: '0 12px 12px 0',
+                        fontSize: 17,
+                        fontStyle: 'italic',
+                        lineHeight: 1.75,
+                        color: 'var(--ink)',
                       }}
                     >
                       {children}
@@ -484,7 +529,7 @@ export default function BlogPostView({
                     </th>
                   ),
                   td: ({ children }) => (
-                    <td style={{ padding: '11px 16px', color: 'var(--ink-muted)', verticalAlign: 'top', lineHeight: 1.55 }}>
+                    <td style={{ padding: '12px 16px', color: 'var(--ink)', verticalAlign: 'top', lineHeight: 1.6, fontSize: 14.5 }}>
                       {children}
                     </td>
                   ),
