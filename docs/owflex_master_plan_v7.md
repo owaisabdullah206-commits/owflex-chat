@@ -1,12 +1,12 @@
-# OwFlex SaaS Master Plan v7.0
-## "The Client Dashboard Layer for Custom AI Chatbots"
+# Octively SaaS Master Plan v1.0
+## "White-Label AI Chatbot Builder for Freelancers & Agencies"
 
-**Date:** May 2026
-**Status:** Execution Ready — SDD Edition
+**Date:** May 2026 (originally OwFlex v7, rebranded to Octively)
+**Status:** Phase 1 Shipped — Phase 2 Active
 **Developer:** Solo (Owais Abdullah) + Claude Code
 **Methodology:** Spec-Driven Development (SDD)
-**Architecture:** Neon Free Tier → Hetzner Self-Hosted
-**Primary Market:** Pakistani Digital Agencies & Freelancers
+**Architecture:** Neon + Netlify → Hetzner Self-Hosted (Phase 3+)
+**Primary Market:** Pakistani Freelancers & Digital Agencies → International
 
 ---
 
@@ -28,28 +28,49 @@ for a solo side project. v7 fixes that with one rule:
 
 ## 1. The Product — One Sentence
 
-A lightweight, white-label dashboard that freelance developers and small agencies give
-their SMB clients to view chatbot conversations, captured leads, and usage stats —
-without calling the developer every time.
+A white-label AI chatbot builder for freelancers and agencies: build AI chatbots in a
+visual no-code dashboard, deploy to any client website with one embed script, and give
+each SMB client their own branded portal to view conversations, leads, and analytics.
 
-**OwFlex is NOT a chatbot builder. OwFlex IS the management layer for chatbots you
-already built.**
+**Octively has two sides:** the developer dashboard (`admin.octively.com`) where
+freelancers and agencies build and manage bots, and the client portal (`app.octively.com`)
+where their SMB clients log in and self-serve — without calling the developer every time.
+
+**Primary market:** Pakistani freelancers and digital agencies (PKR pricing, affordable
+plans). **Goal:** International expansion (USD pricing via Lemon Squeezy already live).
+
+**Competitive advantage:** Stammer.ai ($197/mo), ConvoCore ($220/mo), and ChatLab
+($360/mo) are expensive, USD-only, and don't target freelancers. Octively's Agency plan
+at ₨20,000/month ($79) is 60–80% cheaper with a comparable feature set, a permanent
+free tier, and flat pricing with no per-seat fees.
 
 ---
 
 ## 2. Target Customers
 
-**Primary — Freelance Chatbot Developer (You, 6 months ago)**
-Builds custom Next.js + OpenAI chatbots for Pakistani SMB clients. Has 2–8 active
-sites. Needs a professional way to give clients visibility and charge a retainer.
+**Primary — Freelance Developer / Web Designer (Pakistan)**
+Builds websites or chatbots for Pakistani SMB clients. Has 2–8 active client sites.
+Uses Octively to build AI chatbots for each client, deploy them with one embed script,
+and charge a monthly retainer. The client portal means zero "what are my leads?" calls.
 
-**Secondary — Small Pakistani Digital Agency (2–10 people)**
-Offers AI chatbots as a service. Wants white-label client portals without $495/month
-enterprise pricing.
+**Secondary — Small Digital Agency (2–10 people, Pakistan → International)**
+Offers AI chatbots as a managed service. Needs white-label client portals at an
+affordable flat rate — no per-seat fees, no $200+/mo surprise bills.
 
-**Future — The SMB Client Themselves**
-Once the developer sets it up, the SMB owner manages their own bot's content and
-reviews leads directly.
+**Also — Individual Developers / Solo Builders**
+A single developer building their own product, portfolio site, or a bot for one client.
+The Free plan (₨0, 1 bot, 200 convos/month) and Starter plan (₨2,500/$15) serve this
+audience. No agency or white-label features required — just build a bot, deploy it, see
+conversations and leads. These users are a real segment, not an afterthought.
+
+**Future — International Freelancers & Agencies**
+Same use cases, USD pricing. The go-to platform for affordable white-label AI chatbots
+outside Pakistan once traction is established locally.
+
+**End user (not a buyer) — The SMB Client**
+Once the developer sets it up, the SMB owner logs into their own branded portal to
+review leads, read conversations, and check analytics. They cannot create or modify bots
+— that power stays with the developer.
 
 ---
 
@@ -91,7 +112,7 @@ requires nothing — just one embed script.
 | **"Powered by OwFlex" on widget** | Forced ON | ON (can turn off) | ON (can turn off) | Custom or OFF | Custom or OFF |
 | **Custom branding text + URL** | ❌ | ❌ | ❌ | ✅ | ✅ |
 | **White-label portal login** | ❌ | ❌ | ❌ | ✅ | ✅ |
-| **Separate client portal** (`app.owflex.com`) | ✅ | ✅ | ✅ | ✅ white-label | ✅ white-label |
+| **Separate client portal** (`app.octively.com`) | ✅ | ✅ | ✅ | ✅ white-label | ✅ white-label |
 | **Full widget customization** | Color only | ✅ Full | ✅ Full | ✅ Full | ✅ Full |
 | **Lead capture on/off control** | ❌ | ✅ | ✅ | ✅ | ✅ |
 | **Strict mode** | ❌ | ✅ | ✅ | ✅ | ✅ |
@@ -369,7 +390,7 @@ Annual discount: 2 months free (pay 10, get 12).
 Agencies worry: "If OwFlex prices are public, my client will bypass me."
 
 This is solved at the architecture level:
-1. **Developer-only bot creation** — SMBs get `app.owflex.com` portal access, not bot creation access. They CANNOT self-serve.
+1. **Developer-only bot creation** — SMBs get `app.octively.com` portal access, not bot creation access. They CANNOT self-serve.
 2. **Agency white-label** — at Agency plan, "Powered by OwFlex" disappears from every widget. Client sees "Powered by [Agency]". The agency is the product.
 3. **Plan segmentation** — Free/Starter/Pro max out at 2 or 8 bots. An agency serving 10+ clients cannot use Pro. The plans are different products.
 4. **Agency value = setup + support + strategy**, not the $79 license. Even if a client finds OwFlex, they still need someone to build, integrate, and maintain their bot.
@@ -869,9 +890,9 @@ We are NOT a chatbot builder. We are the management layer.
 ## Subdomain Architecture (Critical)
 Three subdomains. Three surfaces. Three layout components.
 
-owflex.com          → /app/(marketing)/layout.tsx  — marketing site
-admin.owflex.com    → /app/(dashboard)/layout.tsx  — developer dashboard
-app.owflex.com      → /app/(portal)/layout.tsx     — client portal
+octively.com          → /app/(marketing)/layout.tsx  — marketing site
+admin.octively.com    → /app/(dashboard)/layout.tsx  — developer dashboard
+app.octively.com      → /app/(portal)/layout.tsx     — client portal
 
 Before building ANY UI, confirm which subdomain you are building for.
 Apply the correct layout and token set. Never mix surfaces.
@@ -897,23 +918,23 @@ Primary accent: Sky-Teal #0EA5E9 — used on all three surfaces.
 NOT indigo. NOT purple. Sky-Teal only.
 
 Surface token prefixes:
-  mkt-*  → owflex.com (marketing, cream canvas #F5F1EC)
-  adm-*  → admin.owflex.com (dashboard, near-black canvas #0C0A09)
-  prt-*  → app.owflex.com (portal, off-white canvas #FAFAFA)
+  mkt-*  → octively.com (marketing, cream canvas #F5F1EC)
+  adm-*  → admin.octively.com (dashboard, near-black canvas #0C0A09)
+  prt-*  → app.octively.com (portal, off-white canvas #FAFAFA)
 
-JetBrains Mono rule: admin.owflex.com ONLY.
+JetBrains Mono rule: admin.octively.com ONLY.
   - ALL metric numbers → JetBrains Mono
   - ALL embed keys, API keys → JetBrains Mono
   - ALL model name displays → JetBrains Mono
-  - NEVER use JetBrains Mono on app.owflex.com (portal)
+  - NEVER use JetBrains Mono on app.octively.com (portal)
 
 Read DESIGN.md before building any UI component.
 Read it fresh — do not rely on memory from previous sessions.
 
 ## File Structure
-/app/(marketing)        owflex.com pages and layout
-/app/(dashboard)        admin.owflex.com pages and layout
-/app/(portal)           app.owflex.com pages and layout
+/app/(marketing)        octively.com pages and layout
+/app/(dashboard)        admin.octively.com pages and layout
+/app/(portal)           app.octively.com pages and layout
 /app/api/v1             All API routes (versioned)
 /components/marketing   Marketing-specific components (mkt-*)
 /components/dashboard   Dashboard-specific components (adm-*)
@@ -956,12 +977,26 @@ All model calls go through /lib/ai/litellm.ts — never call provider APIs direc
 
 ---
 
-### Phase 1: MVP — "The Talking Dashboard" (2 Weeks)
+### Phase 1: MVP — "The Talking Dashboard" ✅ SHIPPED
 
 **Spec file:** `/specs/phase-1-mvp.md`
 
-**Success condition:** Owais uses OwFlex on Nasir Siddiqui's chatbot. Nasir logs
-in and sees his conversations and leads. No features beyond this.
+**Status: Complete.** Bot creation, embed script, client portal, knowledge base (documents + URL scraping + RAG), credits system, PayFast PKR billing, Lemon Squeezy USD billing, analytics, and white-label features are all live at octively.com.
+
+**What shipped beyond original Phase 1 scope:**
+- Knowledge base: document upload, URL scraping, pgvector RAG
+- Credits system: Redis debit-first, credit ledger, top-up packs (PKR + USD)
+- PayFast PKR subscriptions + Lemon Squeezy USD subscriptions
+- Bot widget full customization (color, name, position, branding toggle)
+- Admin analytics panel (MRR, plan distribution, usage stats)
+- Blog powered by Sanity CMS — 8 published posts including 3 competitor comparisons
+  (Stammer.ai alternative, ConvoCore alternative, ChatLab alternative)
+- Full marketing site (octively.com) — 11 pages with SEO, FAQPage JSON-LD,
+  llms.txt, Open Graph, Twitter cards, sitemap, robots.txt
+- Changelog, Roadmap, Pricing, Guide, About, Contact, Privacy, Terms pages
+- Google Analytics 4 + GTM + Google Search Console verification
+- Plus Jakarta Sans + Source Serif 4 fonts via next/font (no FOUT)
+- Auth pages (login, signup, forgot/reset password) with GSAP-animated product demo
 
 ```
 Task 1.1 — Project scaffold + CLAUDE.md + DESIGN.md
@@ -976,16 +1011,16 @@ Task 1.2 — Database schema (Phase 1 tables)
 
 Task 1.3 — BetterAuth setup
   Files: /lib/auth/index.ts, /app/api/auth/[...all]/route.ts
-  Roles: developer (admin.owflex.com), client (app.owflex.com)
+  Roles: developer (admin.octively.com), client (app.octively.com)
   Commit: "feat: auth setup with BetterAuth"
 
-Task 1.4 — Developer dashboard (admin.owflex.com)
+Task 1.4 — Developer dashboard (admin.octively.com)
   Files: /app/(dashboard)/layout.tsx, /bots/page.tsx, /bots/new/page.tsx
   Design: adm-* tokens, near-black canvas, 220px sidebar, Sky-Teal CTA
   Features: org creation on signup, create/delete bots, view embed code
   Commit: "feat: developer dashboard"
 
-Task 1.5 — Client portal (app.owflex.com)
+Task 1.5 — Client portal (app.octively.com)
   Files: /app/(portal)/layout.tsx, /conversations/page.tsx, /leads/page.tsx
   Design: prt-* tokens, off-white canvas, top nav only, Inter Bold metrics
   Features: conversations list, leads table + CSV export, basic stats
@@ -1016,25 +1051,28 @@ Task 1.9 — Deploy
 
 ---
 
-### Phase 2: Smart Dashboard + Billing (Weeks 3–6)
+### Phase 2: Smart Dashboard + Billing 🔄 ACTIVE
 
 **Spec file:** `/specs/phase-2-billing-credits.md`
 
+**Status:** Most Phase 2 features shipped in Phase 1+ (see above). Remaining work:
+
 ```
-Task 2.1 — Knowledge base (Documents tab — PDF upload + URL scraping + RAG)
-Task 2.2 — Unanswered questions detection + list
-Task 2.3 — Weekly email digest (Resend cron)
-Task 2.4 — Bot widget customization UI (color, name, position)
-Task 2.5 — Credits schema + Redis balance system
-Task 2.6 — Credit debit flow in chat API (debit-first pattern)
-Task 2.7 — Model selector per bot (dropdown in bot settings)
-Task 2.8 — PayFast webhook integration (PKR subscriptions)
-Task 2.9 — Lemon Squeezy webhook integration (USD subscriptions)
-Task 2.10 — Plan limits enforcement (message counter in Redis)
-Task 2.11 — Credit top-up flow + purchase UI
-Task 2.12 — "Out of credits" graceful fallback
-Task 2.13 — Conversation search + date filtering
-Task 2.14 — Analytics improvements (conversion rate, avg session)
+✅ Task 2.1 — Knowledge base (PDF upload + URL scraping + RAG) — SHIPPED
+✅ Task 2.2 — Unanswered questions detection + list — SHIPPED
+✅ Task 2.4 — Bot widget customization UI — SHIPPED
+✅ Task 2.5 — Credits schema + Redis balance system — SHIPPED
+✅ Task 2.6 — Credit debit flow in chat API (debit-first) — SHIPPED
+✅ Task 2.7 — Model selector per bot — SHIPPED
+✅ Task 2.8 — PayFast webhook integration (PKR) — SHIPPED
+✅ Task 2.9 — Lemon Squeezy webhook integration (USD) — SHIPPED
+✅ Task 2.10 — Plan limits enforcement — SHIPPED
+✅ Task 2.11 — Credit top-up flow + purchase UI — SHIPPED
+✅ Task 2.12 — "Out of credits" graceful fallback — SHIPPED
+
+🔲 Task 2.3 — Weekly email digest (Resend cron) — PENDING
+🔲 Task 2.13 — Conversation search + date filtering — PENDING
+🔲 Task 2.14 — Analytics improvements (conversion rate, avg session) — PENDING
 ```
 
 ---
@@ -1076,7 +1114,7 @@ Task 4.5 — Advanced analytics (top questions, resolution rate)
 Task 4.6 — Audit log viewer for agencies
 Task 4.7 — Google Analytics event emit on lead capture
 Task 4.8 — Referral system (give ₨500, get ₨500)
-Task 4.9 — Public-facing landing page (owflex.com)
+Task 4.9 — Public-facing landing page (octively.com)
 Task 4.10 — Help documentation site
 ```
 
@@ -1229,7 +1267,7 @@ Do not make changes — just report.
 | First user | Never reached | Nasir Siddiqui — Phase 1 complete |
 | Document | Master plan only | CLAUDE.md + DESIGN.md + per-phase specs |
 | Build method | Vibe coding | Spec-Driven Development with Claude Code |
-| Subdomains | Single app | owflex.com / admin.owflex.com / app.owflex.com |
+| Subdomains | Single app | octively.com / admin.octively.com / app.octively.com |
 | Accent color | Indigo #6366F1 (AI default) | Sky-Teal #0EA5E9 (differentiated) |
 | Design system | Generic shadcn + GUI configurator | Tri-surface DESIGN.md, CSS vars direct |
 | Mono font | Dashboard only (vague) | JetBrains Mono admin ONLY, never portal |
@@ -1562,16 +1600,16 @@ own layout, its own theme, and its own emotional contract with the user.
 
 | Subdomain | Surface | Inspired By | Canvas | Accent |
 |-----------|---------|-------------|--------|--------|
-| owflex.com | Marketing | Intercom | Warm cream #F5F1EC | Sky-Teal CTA only |
-| admin.owflex.com | Developer Dashboard | Linear | Near-black #0C0A09 | Sky-Teal CTA + metrics |
-| app.owflex.com | Client Portal | Supabase (light) | Off-white #FAFAFA | Sky-Teal CTA |
+| octively.com | Marketing | Intercom | Warm cream #F5F1EC | Sky-Teal CTA only |
+| admin.octively.com | Developer Dashboard | Linear | Near-black #0C0A09 | Sky-Teal CTA + metrics |
+| app.octively.com | Client Portal | Supabase (light) | Off-white #FAFAFA | Sky-Teal CTA |
 
 This maps to three Next.js layout components:
 
 ```
-/app/(marketing)/layout.tsx    → owflex.com — mkt-* tokens, cream canvas
-/app/(dashboard)/layout.tsx    → admin.owflex.com — adm-* tokens, dark canvas
-/app/(portal)/layout.tsx       → app.owflex.com — prt-* tokens, light canvas
+/app/(marketing)/layout.tsx    → octively.com — mkt-* tokens, cream canvas
+/app/(dashboard)/layout.tsx    → admin.octively.com — adm-* tokens, dark canvas
+/app/(portal)/layout.tsx       → app.octively.com — prt-* tokens, light canvas
 ```
 
 ### Why Sky-Teal (#0EA5E9) — Not Indigo
@@ -1582,24 +1620,24 @@ will recognise it as "AI-built" immediately.
 
 Sky-Teal (#0EA5E9) is clean, technically precise, and rare in the Pakistani
 SaaS market. It appears on all three surfaces as the primary CTA — the single
-brand thread connecting owflex.com → admin → app.owflex.com.
+brand thread connecting octively.com → admin → app.octively.com.
 
 ### The Single Most Important Design Rule
 
-**JetBrains Mono on admin.owflex.com only. Never on app.owflex.com.**
+**JetBrains Mono on admin.octively.com only. Never on app.octively.com.**
 
 The same number "589" reads as "technical data" in JetBrains Mono and as
 "your customers this month" in Inter Bold 700. The font choice changes the
-emotional meaning of the number. SMB clients on app.owflex.com get Inter Bold.
-Developers on admin.owflex.com get JetBrains Mono for all metrics, keys, codes.
+emotional meaning of the number. SMB clients on app.octively.com get Inter Bold.
+Developers on admin.octively.com get JetBrains Mono for all metrics, keys, codes.
 
 ### Theme Modes Per Subdomain
 
 | Subdomain | Default | Dark Mode | Toggle | System Preference |
 |-----------|---------|-----------|--------|-------------------|
-| owflex.com | Light (cream) | ❌ Not supported | ❌ No toggle | ❌ Ignored |
-| admin.owflex.com | **Dark** | ✅ Full support | ✅ Yes | ✅ Respected |
-| app.owflex.com | Light | ✅ Full support | ✅ Yes | ✅ Respected |
+| octively.com | Light (cream) | ❌ Not supported | ❌ No toggle | ❌ Ignored |
+| admin.octively.com | **Dark** | ✅ Full support | ✅ Yes | ✅ Respected |
+| app.octively.com | Light | ✅ Full support | ✅ Yes | ✅ Respected |
 
 **Why marketing is light-only:** The warm cream canvas (#F5F1EC) is the OwFlex
 brand signal on the landing page. A dark version would be a different product
@@ -1617,11 +1655,11 @@ because Android system dark mode adoption is growing in Pakistan.
 Theme is applied via CSS classes on `<html>`:
 
 ```
-<html class="marketing">          → owflex.com (always light, no toggle)
-<html class="dashboard dark">     → admin.owflex.com dark (default)
-<html class="dashboard light">    → admin.owflex.com light (toggled)
-<html class="portal light">       → app.owflex.com light (default)
-<html class="portal dark">        → app.owflex.com dark (toggled/system)
+<html class="marketing">          → octively.com (always light, no toggle)
+<html class="dashboard dark">     → admin.octively.com dark (default)
+<html class="dashboard light">    → admin.octively.com light (toggled)
+<html class="portal light">       → app.octively.com light (default)
+<html class="portal dark">        → app.octively.com dark (toggled/system)
 ```
 
 Theme state is managed by `useTheme(surface)` hook in `hooks/useTheme.ts`.
@@ -1643,18 +1681,18 @@ anti-flash script, and Tailwind var() usage pattern) is in DESIGN.md under
 --warning:        #F59E0B;
 --error:          #EF4444;
 
-/* Marketing (owflex.com) */
+/* Marketing (octively.com) */
 --mkt-canvas:     #F5F1EC;   /* Warm cream — the brand's anchor */
 --mkt-surface-1:  #FFFFFF;   /* Floating cards on cream */
 --mkt-ink:        #111111;   /* Charcoal type */
 
-/* Dashboard (admin.owflex.com) */
+/* Dashboard (admin.octively.com) */
 --adm-canvas:     #0C0A09;   /* Near-black, warm undertone */
 --adm-surface-1:  #171512;   /* Cards, sidebar */
 --adm-surface-2:  #211E1A;   /* Hover, raised */
 --adm-ink:        #F5F0EB;   /* Warm light gray type */
 
-/* Portal (app.owflex.com) */
+/* Portal (app.octively.com) */
 --prt-canvas:     #FAFAFA;   /* Off-white */
 --prt-surface:    #FFFFFF;   /* Cards */
 --prt-ink:        #171717;   /* Near-black type */
@@ -1689,19 +1727,19 @@ No manual GUI step anywhere in the workflow.
   --of-credit-dark:   #34D399;
 }
 
-/* owflex.com — cream canvas, always light */
+/* octively.com — cream canvas, always light */
 .marketing { --bg: #F5F1EC; --surface: #FFFFFF; --ink: #111111; }
 
-/* admin.owflex.com — dark default */
+/* admin.octively.com — dark default */
 .dashboard  { --bg: #0C0A09; --surface: #171512; --ink: #F5F0EB; }
 
-/* admin.owflex.com — light toggle */
+/* admin.octively.com — light toggle */
 .dashboard.light { --bg: #FAFAFA; --surface: #FFFFFF; --ink: #171717; }
 
-/* app.owflex.com — light default */
+/* app.octively.com — light default */
 .portal  { --bg: #FAFAFA; --surface: #FFFFFF; --ink: #171717; }
 
-/* app.owflex.com — dark toggle */
+/* app.octively.com — dark toggle */
 .portal.dark { --bg: #0F0F0F; --surface: #1A1A1A; --ink: #F5F5F5; }
 ```
 
@@ -1714,16 +1752,16 @@ Full variable map (hairlines, ink-muted, semantic colors, etc.) is in DESIGN.md.
 Full prompts are in DESIGN.md. Shorthand for daily use:
 
 ```
-Marketing page:   "Read DESIGN.md. Build for owflex.com (Surface 1: Marketing).
+Marketing page:   "Read DESIGN.md. Build for octively.com (Surface 1: Marketing).
                    Light only — cream canvas #F5F1EC, no dark mode, no toggle.
                    Follow mkt-* tokens."
 
-Dashboard page:   "Read DESIGN.md. Build for admin.owflex.com (Surface 2: Dashboard).
+Dashboard page:   "Read DESIGN.md. Build for admin.octively.com (Surface 2: Dashboard).
                    Dark default + light toggle. Use var(--bg), var(--surface),
                    var(--ink) CSS vars everywhere — never hardcode hex colors.
                    JetBrains Mono on ALL metrics. Follow adm-* and adm-light-* tokens."
 
-Portal page:      "Read DESIGN.md. Build for app.owflex.com (Surface 3: Portal).
+Portal page:      "Read DESIGN.md. Build for app.octively.com (Surface 3: Portal).
                    Light default + dark toggle. Use var(--bg), var(--surface),
                    var(--ink) CSS vars everywhere — never hardcode hex colors.
                    Inter Bold for stat numbers — NO mono. 44px touch targets.
@@ -1746,7 +1784,7 @@ Task 4.6 — Audit log viewer
 Task 4.7 — WordPress plugin (submit to wordpress.org)
 Task 4.8 — Shopify app (submit to Shopify App Store)
 Task 4.9 — Referral system
-Task 4.10 — Public landing page (owflex.com)
+Task 4.10 — Public landing page (octively.com)
 Task 4.11 — Help documentation (Mintlify or Fumadocs)
 Task 4.12 — Webflow / Framer embed integrations
 ```
@@ -1789,11 +1827,11 @@ Task 4.12 — Webflow / Framer embed integrations
 
 ### Portal Domain Gap (Until Phase 3)
 
-`app.owflex.com` is a visible OwFlex domain. A client who goes to `owflex.com` can find pricing. Two mitigations applied now; full fix in Phase 3/4:
+`app.octively.com` is a visible OwFlex domain. A client who goes to `octively.com` can find pricing. Two mitigations applied now; full fix in Phase 3/4:
 
 1. **Pricing page copy** — targets developers explicitly ("Build chatbots for your clients"). SMBs reading it shouldn't identify themselves as the end buyer. No "per-client" framing anywhere.
 2. **Portal login page** — zero billing UI, no pricing or plan links visible to clients. Just a conversation/leads viewer.
-3. **Phase 3** — `{agency}.owflex.com` subdomain (agency name in URL; OwFlex still visible but secondary).
+3. **Phase 3** — `{agency}.octively.com` subdomain (agency name in URL; OwFlex still visible but secondary).
 4. **Phase 4** — Full custom domain (`portal.myagency.com`) — OwFlex completely invisible at the URL level.
 
 ### Pricing Transparency & Markup Conflict
@@ -1863,7 +1901,7 @@ brandingUrl:     string   // custom link  (agency/enterprise only)
 Agency plan white-label means SMB clients never discover OwFlex pricing:
 - Widget footer shows "Powered by [Agency Name]" not "Powered by OwFlex"
 - Client portal login shows agency branding (Phase 3)
-- SMBs cannot create bots — only view conversations and leads via `app.owflex.com`
+- SMBs cannot create bots — only view conversations and leads via `app.octively.com`
 - Bot creation requires developer role → agencies are the intermediary, not a competitor
 
 ---
@@ -1989,7 +2027,7 @@ Task 4.20 — Agent mode analytics — tool usage counts, action completion rate
 
 ---
 
-*OwFlex Master Plan v7.0 — May 2026 (Final)*
+\*Octively Master Plan v1.0 — May 2026 (formerly OwFlex v7, rebranded)\*
 *Next action: Task 1.1 — Initialize project, write CLAUDE.md and DESIGN.md, set up tri-surface route groups*
 *Next review: After Phase 1 ships and first paying user is acquired.*
-*Design system: See separate DESIGN.md file (tri-surface: owflex.com / admin.owflex.com / app.owflex.com)*
+*Design system: See separate DESIGN.md file (tri-surface: octively.com / admin.octively.com / app.octively.com)*

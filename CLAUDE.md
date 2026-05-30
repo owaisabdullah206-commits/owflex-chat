@@ -6,13 +6,26 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 
 ---
 
-## Project Context — OwFlex v7
+## Project Context — Octively v1
 
 > READ THIS FILE AND `DESIGN.md` BEFORE EVERY SESSION. DO NOT SKIP EITHER.
 
 ### What We're Building
 
-A white-label client dashboard layer for custom AI chatbots. Developers add our embed script to their existing chatbot. Their SMB clients get a login to view conversations and leads. **We are NOT a chatbot builder. We are the management layer.**
+A **white-label AI chatbot builder** for freelancers and agencies, with two separate dashboards and a client-facing portal.
+
+**Developer dashboard** (`admin.octively.com`): Developers build AI chatbots in a visual no-code dashboard, train them with documents, FAQs, and website scraping, configure the widget, and deploy to any client website via one embed script tag.
+
+**Client portal** (`app.octively.com`): Each SMB client gets their own branded portal login to view their chatbot's conversations, captured leads, and analytics — without calling the developer.
+
+**Who uses it:**
+- **Individual developers / solo builders** — Free plan (₨0) and Starter plan (₨2,500/$15) for building a single bot for yourself or one client
+- **Freelancers** — build chatbots for multiple clients, each with their own portal, earn monthly retainers
+- **Agencies** — Agency plan (₨20,000/$79), unlimited bots, full white-label, no per-seat fees
+
+**Primary market:** Pakistan-first (PKR pricing, PayFast). Goal: international expansion (USD pricing via Lemon Squeezy already live).
+
+The product is Pakistan-first (PKR pricing via PayFast) with USD pricing via Lemon Squeezy for international users. Competitors (Stammer.ai $197/mo, ConvoCore $220/mo, ChatLab $360/mo) are significantly more expensive and don't target freelancers or the Pakistani market.
 
 ### Subdomain Architecture (Critical)
 
@@ -33,7 +46,7 @@ Before building ANY UI, confirm which subdomain you are building for. Apply the 
 
 ### Current Phase
 
-Phase 1: MVP Dashboard
+Phase 2: Smart Dashboard + Billing (Phase 1 MVP shipped — bot creation, embed, client portal, knowledge base, credits, billing all live)
 
 ### Stack (Non-Negotiable — Do Not Suggest Alternatives)
 
@@ -53,24 +66,24 @@ Phase 1: MVP Dashboard
 Primary accent: **Sky-Teal #0EA5E9** — used on all three surfaces. NOT indigo. NOT purple. Sky-Teal only.
 
 Surface token prefixes:
-- `mkt-*` → owflex.com (marketing, cream canvas `#F5F1EC`)
-- `adm-*` → admin.owflex.com (dashboard, near-black canvas `#0C0A09`)
-- `prt-*` → app.owflex.com (portal, off-white canvas `#FAFAFA`)
+- `mkt-*` → octively.com (marketing, cream canvas `#F5F1EC`)
+- `adm-*` → admin.octively.com (dashboard, near-black canvas `#0C0A09`)
+- `prt-*` → app.octively.com (portal, off-white canvas `#FAFAFA`)
 
-**JetBrains Mono rule: admin.owflex.com ONLY.**
+**JetBrains Mono rule: admin.octively.com ONLY.**
 - ALL metric numbers → JetBrains Mono
 - ALL embed keys, API keys → JetBrains Mono
 - ALL model name displays → JetBrains Mono
-- NEVER use JetBrains Mono on app.owflex.com (portal)
+- NEVER use JetBrains Mono on app.octively.com (portal)
 
 Read `DESIGN.md` before building any UI component. Read it fresh — do not rely on memory from previous sessions.
 
 ### File Structure
 
 ```
-/app/(marketing)        owflex.com pages and layout
-/app/(dashboard)        admin.owflex.com pages and layout
-/app/(portal)           app.owflex.com pages and layout
+/app/(marketing)        octively.com pages and layout
+/app/(dashboard)        admin.octively.com pages and layout
+/app/(portal)           app.octively.com pages and layout
 /app/api/v1             All API routes (versioned)
 /components/marketing   Marketing-specific components (mkt-*)
 /components/dashboard   Dashboard-specific components (adm-*)
