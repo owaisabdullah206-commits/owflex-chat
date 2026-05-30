@@ -1,136 +1,90 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
-import { MessageSquare, UserPlus, Globe, BarChart2, Code2 } from 'lucide-react'
+import { MessageSquare, UserPlus, Globe, BarChart2, Code2, Copy, Check } from 'lucide-react'
 
-gsap.registerPlugin()
+// ── Layout constants (keep in sync with mockup DOM) ──────────────────────────
+// Chrome bar  ≈ 34 px.  Grid height fixed 220 px.  Total container ≈ 254 px.
+// Sidebar width 76 px (max-width 380 px container).
+// Nav item centres from container top:
+//   chrome(34) + sidebar-pad-top(10) + logo-row(21) = 65 px offset before first item
+//   each item ≈ 19 px tall (pad 5+5 + icon/text ~9 px) + 1 px gap
+//   Bots   : 65 + 9.5            = 74.5 px → 74.5/254 ≈ 29 %
+//   Leads  : 74.5 + 20           = 94.5 px → 94.5/254 ≈ 37 %
+//   Clients: 94.5 + 20           = 114.5 px → 114.5/254 ≈ 45 %
+// Bot row centres (grid starts at 34 px, BotsScreen pad-top 14 px, header ~24 px):
+//   row-0 centre: 34+14+24+13 = 85 px → 85/254 ≈ 33 %
+//   row-1 centre: 85+30        = 115 px → 45 %
 
-// ── Feature steps cycled by the animated cursor ─────────────────────────────
-// Positions are % of the containerRef div (includes browser chrome + grid).
-// Chrome ≈ 34px, grid minHeight 190px → total ≈ 224px.
-// Sidebar 76px wide (max-width 380px container).
-// Nav item centres (from container top): Bots 29%, Leads 37%, Clients 46%.
-// Sidebar item x centre ≈ 35px / 380px ≈ 9%.
-// Bot row 0 centre ≈ 39%, row 1 ≈ 52%. Cursor TIP must land on row centre.
 const STEPS = [
-  {
-    id: 'bots',
-    title: 'Build your AI chatbot',
-    desc: 'Visual dashboard, no code required',
-    cursorX: '60%',
-    cursorY: '39%',   // tip on Karachi Kurta Co row centre
-    activeNav: 0,
-  },
-  {
-    id: 'embed',
-    title: 'Deploy with one script tag',
-    desc: 'Paste into any client website in 30 seconds',
-    cursorX: '70%',
-    cursorY: '72%',   // tip on embed code block
-    activeNav: 0,
-  },
-  {
-    id: 'leads',
-    title: 'Leads captured automatically',
-    desc: 'Every conversation turns into a lead record',
-    cursorX: '9%',    // sidebar x centre
-    cursorY: '37%',   // Leads nav item centre
-    activeNav: 1,
-  },
-  {
-    id: 'clients',
-    title: 'Clients get their own portal',
-    desc: 'They log in and see their data. You keep control.',
-    cursorX: '9%',    // sidebar x centre
-    cursorY: '46%',   // Clients nav item centre
-    activeNav: 2,
-  },
+  { title: 'Build your AI chatbot',         desc: 'Visual dashboard, no code required' },
+  { title: 'Deploy with one script tag',     desc: 'Paste into any client website in 30 seconds' },
+  { title: 'Leads captured automatically',   desc: 'Every conversation turns into a lead record' },
+  { title: 'Clients get their own portal',   desc: 'They log in and see their data. You keep control.' },
 ]
 
 const NAV_ITEMS = [
-  { label: 'Bots', Icon: MessageSquare },
-  { label: 'Leads', Icon: UserPlus },
-  { label: 'Clients', Icon: Globe },
+  { label: 'Bots',      Icon: MessageSquare },
+  { label: 'Leads',     Icon: UserPlus },
+  { label: 'Clients',   Icon: Globe },
   { label: 'Analytics', Icon: BarChart2 },
 ]
 
-// ── Mini SVG cursor ──────────────────────────────────────────────────────────
+// ── SVG cursor ───────────────────────────────────────────────────────────────
 function CursorSVG() {
   return (
-    <svg
-      width="18"
-      height="22"
-      viewBox="0 0 18 22"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))' }}
-    >
-      <path
-        d="M2 2L2 16.5L5.5 13L8 19L10 18L7.5 12L12.5 12L2 2Z"
-        fill="white"
-        stroke="#0C0A09"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
+    <svg width="18" height="22" viewBox="0 0 18 22" fill="none"
+      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.45))' }}>
+      <path d="M2 2L2 16.5L5.5 13L8 19L10 18L7.5 12L12.5 12L2 2Z"
+        fill="white" stroke="#0C0A09" strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   )
 }
 
-// ── Bot list screen ──────────────────────────────────────────────────────────
-function BotsScreen({ step }: { step: number }) {
+// ── Bots screen ──────────────────────────────────────────────────────────────
+function BotsScreen({
+  activeBotIdx,
+  showEmbed,
+  showCopied,
+}: {
+  activeBotIdx: number
+  showEmbed: boolean
+  showCopied: boolean
+}) {
   const bots = [
-    { name: 'Karachi Kurta Co.', status: 'Active', convos: 142 },
-    { name: 'Pak Travels', status: 'Active', convos: 89 },
-    { name: 'MediCare Clinic', status: 'Active', convos: 54 },
+    { name: 'Karachi Kurta Co.', convos: 142 },
+    { name: 'Pak Travels',        convos: 89  },
+    { name: 'MediCare Clinic',    convos: 54  },
   ]
 
   return (
-    <div style={{ padding: '14px 16px' }}>
+    <div style={{ padding: '14px 16px 0', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>My Bots</span>
-        <span
-          style={{
-            fontSize: 9,
-            fontWeight: 700,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-            color: 'var(--of-primary)',
-            background: 'var(--of-primary-soft)',
-            padding: '2px 7px',
-            borderRadius: 4,
-          }}
-        >
-          + New bot
-        </span>
+        <span style={{
+          fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+          color: 'var(--of-primary)', background: 'var(--of-primary-soft)', padding: '2px 7px', borderRadius: 4,
+        }}>+ New bot</span>
       </div>
 
       {/* Bot rows */}
       {bots.map((bot, i) => (
-        <div
-          key={i}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '7px 8px',
-            borderRadius: 6,
-            marginBottom: 4,
-            background: i === 0 ? 'var(--of-primary-soft)' : 'transparent',
-            border: i === 0 ? '1px solid rgba(14,165,233,0.18)' : '1px solid transparent',
-          }}
-        >
+        <div key={i} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '7px 8px', borderRadius: 6, marginBottom: 4,
+          background: i === activeBotIdx ? 'var(--of-primary-soft)' : 'transparent',
+          border: i === activeBotIdx ? '1px solid rgba(14,165,233,0.2)' : '1px solid transparent',
+          transition: 'background 0.2s, border-color 0.2s',
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: 'var(--of-primary)',
-                flexShrink: 0,
-              }}
-            />
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: i === activeBotIdx ? 'var(--of-primary)' : 'var(--ink-subtle)',
+              flexShrink: 0, transition: 'background 0.2s',
+            }} />
             <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--ink)' }}>{bot.name}</span>
           </div>
           <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)' }}>
@@ -139,66 +93,79 @@ function BotsScreen({ step }: { step: number }) {
         </div>
       ))}
 
-      {/* Embed code block (shown on step 1) */}
-      {step === 1 && (
-        <div
-          style={{
-            marginTop: 10,
-            background: '#0C0A09',
-            borderRadius: 6,
-            padding: '8px 10px',
-            border: '1px solid rgba(14,165,233,0.25)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5 }}>
+      {/* Embed block — always in DOM, opacity transition keeps height stable */}
+      <div style={{
+        marginTop: 8,
+        background: '#0C0A09',
+        borderRadius: 0,
+        padding: '7px 10px 8px',
+        border: '1px solid rgba(14,165,233,0.25)',
+        opacity: showEmbed ? 1 : 0,
+        transition: 'opacity 0.3s ease',
+        flexShrink: 0,
+      }}>
+        {/* Label + copy button */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <Code2 size={9} style={{ color: 'var(--of-primary)' }} />
             <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--of-primary)' }}>
               Embed script
             </span>
           </div>
-          <code
-            style={{
-              display: 'block',
-              fontFamily: 'var(--font-mono)',
-              fontSize: 8,
-              color: '#7DD3FC',
-              lineHeight: 1.6,
-              whiteSpace: 'pre',
-            }}
-          >
-            {'<script\n  src="https://octively.com/e.js"\n  data-bot="k-kurta-co"\n></script>'}
-          </code>
+          {/* Copy button — cursor clicks here */}
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 3,
+              padding: '2px 6px',
+              border: '1px solid rgba(14,165,233,0.35)',
+              borderRadius: 3,
+              cursor: 'default',
+              background: showCopied ? 'rgba(14,165,233,0.15)' : 'transparent',
+              transition: 'background 0.2s',
+            }}>
+              {showCopied
+                ? <Check size={8} style={{ color: '#22C55E' }} />
+                : <Copy size={8} style={{ color: 'rgba(14,165,233,0.7)' }} />}
+              <span style={{
+                fontSize: 8, fontFamily: 'var(--font-mono)',
+                color: showCopied ? '#22C55E' : 'rgba(14,165,233,0.7)',
+                transition: 'color 0.2s',
+              }}>
+                {showCopied ? 'Copied!' : 'Copy'}
+              </span>
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Code */}
+        <code style={{
+          display: 'block', fontFamily: 'var(--font-mono)', fontSize: 7.5,
+          color: '#7DD3FC', lineHeight: 1.65, whiteSpace: 'pre',
+        }}>
+          {'<script\n  src="https://octively.com/e.js"\n  data-bot="k-kurta-co"\n></script>'}
+        </code>
+      </div>
     </div>
   )
 }
 
 // ── Leads screen ─────────────────────────────────────────────────────────────
 function LeadsScreen() {
-  const leads = [
-    { name: 'Ahmed K.', email: 'ahmed@...', time: '2m ago' },
-    { name: 'Sana M.', email: 'sana@...', time: '18m ago' },
-    { name: 'Omar F.', email: 'omar@...', time: '1h ago' },
-  ]
   return (
     <div style={{ padding: '14px 16px' }}>
       <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em', display: 'block', marginBottom: 10 }}>
         Recent Leads
       </span>
-      {leads.map((l, i) => (
-        <div
-          key={i}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '6px 8px',
-            borderRadius: 6,
-            marginBottom: 3,
-            background: 'var(--surface-2)',
-          }}
-        >
+      {[
+        { name: 'Ahmed K.',  email: 'ahmed@...',  time: '2m ago'  },
+        { name: 'Sana M.',   email: 'sana@...',   time: '18m ago' },
+        { name: 'Omar F.',   email: 'omar@...',   time: '1h ago'  },
+      ].map((l, i) => (
+        <div key={i} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '6px 8px', borderRadius: 6, marginBottom: 3,
+          background: 'var(--surface-2)',
+        }}>
           <div>
             <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--ink)' }}>{l.name}</div>
             <div style={{ fontSize: 9, color: 'var(--ink-muted)', fontFamily: 'var(--font-mono)' }}>{l.email}</div>
@@ -212,44 +179,28 @@ function LeadsScreen() {
 
 // ── Clients screen ────────────────────────────────────────────────────────────
 function ClientsScreen() {
-  const clients = [
-    { name: 'Karachi Kurta Co.', portal: 'Active' },
-    { name: 'Pak Travels', portal: 'Active' },
-    { name: 'MediCare Clinic', portal: 'Invited' },
-  ]
   return (
     <div style={{ padding: '14px 16px' }}>
       <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em', display: 'block', marginBottom: 10 }}>
         Client Portals
       </span>
-      {clients.map((c, i) => (
-        <div
-          key={i}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '7px 8px',
-            borderRadius: 6,
-            marginBottom: 4,
-            background: 'var(--surface-2)',
-          }}
-        >
+      {[
+        { name: 'Karachi Kurta Co.', status: 'Active'  },
+        { name: 'Pak Travels',        status: 'Active'  },
+        { name: 'MediCare Clinic',    status: 'Invited' },
+      ].map((c, i) => (
+        <div key={i} style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '7px 8px', borderRadius: 6, marginBottom: 4,
+          background: 'var(--surface-2)',
+        }}>
           <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--ink)' }}>{c.name}</span>
-          <span
-            style={{
-              fontSize: 8,
-              fontWeight: 700,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: c.portal === 'Active' ? 'var(--of-success)' : 'var(--ink-muted)',
-              background: c.portal === 'Active' ? 'var(--of-success-soft)' : 'var(--surface)',
-              padding: '2px 6px',
-              borderRadius: 4,
-            }}
-          >
-            {c.portal}
-          </span>
+          <span style={{
+            fontSize: 8, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: c.status === 'Active' ? 'var(--of-success)' : 'var(--ink-muted)',
+            background: c.status === 'Active' ? 'var(--of-success-soft)' : 'var(--surface)',
+            padding: '2px 6px', borderRadius: 4,
+          }}>{c.status}</span>
         </div>
       ))}
     </div>
@@ -258,75 +209,93 @@ function ClientsScreen() {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export function AuthDemoPanel() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const cursorRef    = useRef<HTMLDivElement>(null)
-  const [step, setStep] = useState(0)
+  const containerRef  = useRef<HTMLDivElement>(null)
+  const cursorRef     = useRef<HTMLDivElement>(null)
 
-  // Cursor animation — GSAP moves it between positions, React state drives the step
-  useGSAP(
-    () => {
-      if (!cursorRef.current) return
-      const tl = gsap.timeline({ repeat: -1, defaults: { ease: 'power3.inOut' } })
+  // Animation state driven by GSAP .call() hooks
+  const [step,         setStep]         = useState(0)
+  const [activeBotIdx, setActiveBotIdx] = useState(-1)   // -1 = no bot selected
+  const [showEmbed,    setShowEmbed]    = useState(false)
+  const [showCopied,   setShowCopied]   = useState(false)
+  const [activeNav,    setActiveNav]    = useState(0)
 
-      STEPS.forEach((s, i) => {
-        tl
-          // Move to position
-          .to(cursorRef.current!, {
-            left: s.cursorX,
-            top:  s.cursorY,
-            duration: 0.75,
-          })
-          // Tiny click-scale
-          .to(cursorRef.current!, { scale: 0.82, duration: 0.08 })
-          .to(cursorRef.current!, { scale: 1,    duration: 0.12 })
-          // Hold & update React state
-          .call(() => setStep(i))
-          .to({}, { duration: 2.6 })
-      })
-    },
-    { scope: containerRef },
-  )
+  // ── GSAP timeline ─────────────────────────────────────────────────────────
+  // All cursor positions are % of containerRef (chrome ~34px + grid 220px = 254px total).
+  // Sidebar nav x centre ≈ 9% (35px/380px). Bot row-0 centre y ≈ 33%.
+  // Embed copy button x ≈ 84%, y ≈ 73%. Leads nav y ≈ 37%. Clients nav y ≈ 45%.
+  useGSAP(() => {
+    const c = cursorRef.current!
+    const ease = 'power3.inOut'
+    const click = [
+      { scale: 0.80, duration: 0.07 },
+      { scale: 1.00, duration: 0.10 },
+    ]
 
-  const activeNav = STEPS[step].activeNav
+    const tl = gsap.timeline({ repeat: -1 })
+
+    // ── Step 0: hover over Karachi Kurta Co row (no bot selected yet) ────────
+    tl.set(c, { left: '55%', top: '33%' })
+      .call(() => { setStep(0); setActiveBotIdx(-1); setActiveNav(0); setShowEmbed(false); setShowCopied(false) })
+      .to({}, { duration: 1.2 })  // hover pause
+
+      // click → highlight bot
+      .to(c, { ...click[0], ease })
+      .to(c, { ...click[1], ease })
+      .call(() => setActiveBotIdx(0))
+      .to({}, { duration: 0.6 })
+
+    // ── Step 1: move to embed copy button ────────────────────────────────────
+      .to(c, { left: '84%', top: '73%', duration: 0.8, ease })
+      .call(() => { setStep(1); setShowEmbed(true) })
+      .to({}, { duration: 0.9 })  // embed fades in, pause before copy
+
+      // click copy button
+      .to(c, { ...click[0], ease })
+      .to(c, { ...click[1], ease })
+      .call(() => setShowCopied(true))
+      .to({}, { duration: 1.4 })
+      .call(() => setShowCopied(false))
+      .to({}, { duration: 0.4 })
+
+    // ── Step 2: move to Leads nav tab ─────────────────────────────────────────
+      .to(c, { left: '9%', top: '37%', duration: 0.85, ease })
+      .to(c, { ...click[0], ease })
+      .to(c, { ...click[1], ease })
+      .call(() => { setStep(2); setActiveNav(1) })
+      .to({}, { duration: 2.4 })
+
+    // ── Step 3: move to Clients nav tab ───────────────────────────────────────
+      .to(c, { left: '9%', top: '45%', duration: 0.7, ease })
+      .to(c, { ...click[0], ease })
+      .to(c, { ...click[1], ease })
+      .call(() => { setStep(3); setActiveNav(2) })
+      .to({}, { duration: 2.2 })
+
+    // ── Return to start (seamless loop) ───────────────────────────────────────
+      .to(c, { left: '55%', top: '33%', duration: 0.9, ease })
+      .to({}, { duration: 0.3 })
+      // GSAP repeat fires here — cursor already at (55%, 33%), no jump
+
+  }, { scope: containerRef })
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: 380,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 24,
-      }}
-    >
+    <div style={{ width: '100%', maxWidth: 380, display: 'flex', flexDirection: 'column', gap: 20 }}>
+
       {/* Header copy */}
       <div>
-        <p
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            color: 'var(--of-primary)',
-            marginBottom: 8,
-            fontFamily: 'var(--font-mono)',
-          }}
-        >
+        <p style={{
+          fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+          color: 'var(--of-primary)', marginBottom: 8, fontFamily: 'var(--font-mono)',
+        }}>
           Octively dashboard
         </p>
-        <h2
-          style={{
-            fontSize: 'clamp(18px, 2vw, 22px)',
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
-            lineHeight: 1.25,
-            color: 'var(--ink)',
-            marginBottom: 6,
-          }}
-        >
+        <h2 style={{
+          fontSize: 'clamp(17px, 1.8vw, 21px)', fontWeight: 700, letterSpacing: '-0.02em',
+          lineHeight: 1.25, color: 'var(--ink)', marginBottom: 5,
+        }}>
           {STEPS[step].title}
         </h2>
-        <p style={{ fontSize: 13.5, color: 'var(--ink-muted)', lineHeight: 1.5 }}>
+        <p style={{ fontSize: 13, color: 'var(--ink-muted)', lineHeight: 1.5 }}>
           {STEPS[step].desc}
         </p>
       </div>
@@ -343,86 +312,64 @@ export function AuthDemoPanel() {
         }}
       >
         {/* Browser chrome */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '8px 12px',
-            background: 'var(--surface-2)',
-            borderBottom: '1px solid var(--hairline)',
-          }}
-        >
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+          background: 'var(--surface-2)', borderBottom: '1px solid var(--hairline)',
+        }}>
           <div style={{ display: 'flex', gap: 5 }}>
             {['#FF5F57', '#FEBC2E', '#28C840'].map((c, i) => (
               <span key={i} style={{ width: 9, height: 9, borderRadius: '50%', background: c }} />
             ))}
           </div>
-          <div
-            style={{
-              flex: 1,
-              background: 'var(--surface)',
-              borderRadius: 5,
-              padding: '3px 8px',
-              fontSize: 9,
-              fontFamily: 'var(--font-mono)',
-              color: 'var(--ink-muted)',
-              border: '1px solid var(--hairline)',
-            }}
-          >
+          <div style={{
+            flex: 1, background: 'var(--surface)', borderRadius: 0, padding: '3px 8px',
+            fontSize: 9, fontFamily: 'var(--font-mono)', color: 'var(--ink-muted)',
+            border: '1px solid var(--hairline)',
+          }}>
             admin.octively.com/dashboard
           </div>
         </div>
 
-        {/* App grid */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '76px 1fr',
-            minHeight: 190,
-            background: 'var(--surface)',
-          }}
-        >
+        {/* App grid — FIXED height so embed block never changes outer height */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '76px 1fr',
+          height: 220,
+          background: 'var(--surface)',
+          overflow: 'hidden',
+        }}>
           {/* Sidebar */}
-          <aside
-            style={{
-              borderRight: '1px solid var(--hairline)',
-              padding: '10px 6px',
-              background: 'var(--surface-2)',
-              display: 'flex',
-              flexDirection: 'column',
-              height: '100%',
-              fontFamily: 'var(--font-mono)',
-            }}
-          >
+          <aside style={{
+            borderRight: '1px solid var(--hairline)',
+            padding: '10px 6px',
+            background: 'var(--surface-2)',
+            display: 'flex', flexDirection: 'column',
+            height: '100%',
+            fontFamily: 'var(--font-mono)',
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '2px 4px 10px' }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)', flexShrink: 0 }} />
               <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--ink)' }}>Octively</span>
             </div>
             {NAV_ITEMS.map(({ label, Icon }, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  padding: '5px 6px',
-                  borderRadius: 4,
-                  marginBottom: 1,
-                  background: i === activeNav ? 'var(--of-primary-soft)' : 'transparent',
-                  color: i === activeNav ? 'var(--of-primary-deep)' : 'var(--ink-subtle)',
-                  transition: 'all 0.3s ease',
-                }}
-              >
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 5, padding: '5px 6px',
+                borderRadius: 4, marginBottom: 1,
+                background: i === activeNav ? 'var(--of-primary-soft)' : 'transparent',
+                color: i === activeNav ? 'var(--of-primary-deep)' : 'var(--ink-subtle)',
+                transition: 'background 0.25s, color 0.25s',
+              }}>
                 <Icon size={9} />
                 <span style={{ fontSize: 8.5 }}>{label}</span>
               </div>
             ))}
           </aside>
 
-          {/* Main content — switches per step */}
-          <div style={{ overflow: 'hidden' }}>
-            {activeNav === 0 && <BotsScreen step={step} />}
+          {/* Main content — clips to grid height */}
+          <div style={{ overflow: 'hidden', height: '100%' }}>
+            {activeNav === 0 && (
+              <BotsScreen activeBotIdx={activeBotIdx} showEmbed={showEmbed} showCopied={showCopied} />
+            )}
             {activeNav === 1 && <LeadsScreen />}
             {activeNav === 2 && <ClientsScreen />}
           </div>
@@ -433,11 +380,10 @@ export function AuthDemoPanel() {
           ref={cursorRef}
           style={{
             position: 'absolute',
-            left: STEPS[0].cursorX,
-            top:  STEPS[0].cursorY,
+            left: '55%',
+            top: '33%',
             pointerEvents: 'none',
             zIndex: 10,
-            transform: 'translate(-2px, -2px)',
           }}
         >
           <CursorSVG />
@@ -447,18 +393,14 @@ export function AuthDemoPanel() {
       {/* Step dots */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         {STEPS.map((_, i) => (
-          <span
-            key={i}
-            style={{
-              width: i === step ? 20 : 6,
-              height: 6,
-              borderRadius: 3,
-              background: i === step ? 'var(--of-primary)' : 'var(--hairline-strong)',
-              transition: 'all 0.35s ease',
-            }}
-          />
+          <span key={i} style={{
+            width: i === step ? 20 : 6, height: 6, borderRadius: 3,
+            background: i === step ? 'var(--of-primary)' : 'var(--hairline-strong)',
+            transition: 'all 0.35s ease',
+          }} />
         ))}
       </div>
+
     </div>
   )
 }
