@@ -14,16 +14,44 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 
 A **white-label AI chatbot builder** for freelancers and agencies, with two separate dashboards and a client-facing portal.
 
-**Developer dashboard** (`admin.octively.com`): Developers build AI chatbots in a visual no-code dashboard, train them with documents, FAQs, and website scraping, configure the widget, and deploy to any client website via one embed script tag.
+**Developer dashboard** (`admin.octively.com`): Build AI chatbots in a no-code visual dashboard, train them with documents, FAQs, and website scraping (RAG), configure the widget, deploy to any client website via one embed script tag.
 
-**Client portal** (`app.octively.com`): Each SMB client gets their own branded portal login to view their chatbot's conversations, captured leads, and analytics — without calling the developer.
+**Client portal** (`app.octively.com`): Each client gets their own branded portal login to view their chatbot's conversations, captured leads, and analytics — without contacting the freelancer/agency.
 
-**Who uses it:**
-- **Individual developers / solo builders** — Free plan (₨0) and Starter plan (₨2,500/$15) for building a single bot for yourself or one client
-- **Freelancers** — build chatbots for multiple clients, each with their own portal, earn monthly retainers
-- **Agencies** — Agency plan (₨20,000/$79), unlimited bots, full white-label, no per-seat fees
+---
 
-**Primary market:** Pakistan-first (PKR pricing, PayFast). Goal: international expansion (USD pricing via Lemon Squeezy already live).
+**Who our customer is:**
+
+The primary customer is a Pakistani freelancer or small agency **already doing digital work** for SMB clients — web design, website management, digital marketing, SEO, social media. They are NOT necessarily chatbot specialists. Octively lets them **add an AI chatbot service to their existing offering** — a new revenue stream from clients they already have.
+
+Examples:
+- A web designer who builds WordPress/Webflow sites can now offer "AI chatbot for your site" as an add-on retainer
+- A digital marketing agency can offer "AI chatbot for lead capture" as a new service package
+- An SEO freelancer can upsell "AI chatbot to convert your traffic into leads"
+- A social media manager can expand into website AI without any coding knowledge
+
+The pitch to these customers:
+> "You already have the client relationship. Add a chatbot service for ₨10,000–₨20,000/month. The tool costs you ₨2,500–₨20,000/month flat. Your client gets their own portal to see results — you stop getting support calls."
+
+---
+
+**Why Octively specifically — things nobody else combines:**
+
+1. **Permanent free plan** — real, no credit card, no 14-day timer. Try before you commit. Every competitor has trials only.
+2. **RAG knowledge base included** — document upload, URL scraping, pgvector semantic search. Competitors charge extra or don't offer it.
+3. **PKR pricing + PayFast** — Pakistani freelancers/agencies can pay in rupees. No competitor supports PKR.
+4. **Price** — Starter ₨2,500/mo, Agency ₨20,000/mo. Stammer.ai = $197, ConvoCore = $220, ChatLab = $360. We are 60–80% cheaper.
+5. **No per-seat fees** — Agency plan covers unlimited clients at a flat rate. Competitors charge $15–$50 per additional client.
+6. **White-label client portal** — Each client gets their own branded login. This is the service that justifies the retainer.
+
+---
+
+**User tiers:**
+- **Individual / solo builder** — Free plan (₨0, 1 bot, 200 convos) or Starter (₨2,500/$15) for their own site or one client
+- **Freelancer** — Starter/Pro plans, multiple clients each with their own portal, recurring retainer income
+- **Agency** — Agency plan (₨20,000/$79), unlimited bots, full white-label, no per-seat fees, client management at scale
+
+**Primary market:** Pakistan-first (PKR + PayFast). **Goal:** International expansion (USD pricing via Lemon Squeezy already live).
 
 The product is Pakistan-first (PKR pricing via PayFast) with USD pricing via Lemon Squeezy for international users. Competitors (Stammer.ai $197/mo, ConvoCore $220/mo, ChatLab $360/mo) are significantly more expensive and don't target freelancers or the Pakistani market.
 

@@ -48,29 +48,59 @@ free tier, and flat pricing with no per-seat fees.
 
 ## 2. Target Customers
 
-**Primary — Freelance Developer / Web Designer (Pakistan)**
-Builds websites or chatbots for Pakistani SMB clients. Has 2–8 active client sites.
-Uses Octively to build AI chatbots for each client, deploy them with one embed script,
-and charge a monthly retainer. The client portal means zero "what are my leads?" calls.
+**The key insight about who buys Octively:**
 
-**Secondary — Small Digital Agency (2–10 people, Pakistan → International)**
-Offers AI chatbots as a managed service. Needs white-label client portals at an
-affordable flat rate — no per-seat fees, no $200+/mo surprise bills.
+The primary buyer is NOT a dedicated chatbot developer. They are a Pakistani freelancer
+or small agency **already doing digital work** for SMB clients — web design, website
+management, digital marketing, SEO, social media management. Octively lets them **add
+an AI chatbot as a new service** to clients they already have relationships with. They
+don't need to be AI experts — the dashboard is no-code.
 
-**Also — Individual Developers / Solo Builders**
-A single developer building their own product, portfolio site, or a bot for one client.
-The Free plan (₨0, 1 bot, 200 convos/month) and Starter plan (₨2,500/$15) serve this
-audience. No agency or white-label features required — just build a bot, deploy it, see
-conversations and leads. These users are a real segment, not an afterthought.
+---
+
+**Primary — Pakistani Freelancer (Web / Marketing / SEO / Design)**
+Has 3–10 existing SMB clients. Already earns retainers for websites and marketing.
+Uses Octively to upsell a chatbot for each client site — new recurring income from the
+same client base, no new sales required. The client portal means zero "how many leads?"
+calls. Realistic pitch: "I'll add an AI chatbot to your site for ₨10,000/month."
+Octively costs them ₨2,500–₨7,500. Margin: 50–75% on the retainer.
+
+**Secondary — Small Pakistani Digital Agency (2–15 people)**
+Offers website builds, digital marketing, social media management. Adds "AI chatbot
+service" to their packages. Needs white-label so clients see agency branding, not
+Octively's. Flat Agency plan at ₨20,000/month regardless of how many clients — makes
+the math simple and profitable.
+
+**Also — Individual Developer / Solo Builder**
+Single developer building their own product, a client project, or experimenting.
+Free plan (₨0, 1 bot, 200 convos) is permanent — no trial, no pressure. Starter plan
+(₨2,500/$15) when they outgrow it. These users are a real segment and the source
+of word-of-mouth referrals.
 
 **Future — International Freelancers & Agencies**
-Same use cases, USD pricing. The go-to platform for affordable white-label AI chatbots
-outside Pakistan once traction is established locally.
+Same profile as Pakistan primary. Web designers, marketing freelancers, small agencies
+worldwide who want affordable white-label AI without $197–$360/month bills. USD pricing
+via Lemon Squeezy is already live.
 
-**End user (not a buyer) — The SMB Client**
-Once the developer sets it up, the SMB owner logs into their own branded portal to
-review leads, read conversations, and check analytics. They cannot create or modify bots
-— that power stays with the developer.
+**End user (not the buyer) — The SMB Client**
+The business owner (restaurant, clinic, clothing store, travel agency, etc.) logs into
+their branded portal to see conversations, leads, and analytics. They cannot build or
+modify bots — that stays with the freelancer/agency. The portal is what justifies the
+monthly retainer in their eyes.
+
+---
+
+**Why Octively uniquely serves this market — what nobody else combines:**
+
+| Advantage | Octively | Stammer.ai | ConvoCore | ChatLab |
+|-----------|----------|-----------|-----------|---------|
+| Permanent free plan | ✅ Real, no timer | ❌ Trial only | ❌ None | ❌ 7-day trial |
+| RAG knowledge base | ✅ Included all plans | ⚠️ Limited | ⚠️ Extra | ✅ Included |
+| PKR pricing / PayFast | ✅ Yes | ❌ USD only | ❌ USD only | ❌ USD only |
+| Price (agency tier) | ₨20,000 / $79 | $197/mo | $220/mo | $360/mo |
+| Per-seat fees | ❌ None — flat rate | ✅ Per sub-account | ✅ Per client seat | ✅ Per bot |
+| White-label client portal | ✅ All plans | ✅ Agency+ | ✅ Agency+ | ✅ Premium only |
+| No-code bot builder | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
 
 ---
 
