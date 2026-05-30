@@ -6,11 +6,11 @@ import { ArrowRight, Moon, Sun, Menu, X } from 'lucide-react'
 import { OctivelyMark } from '@/components/brand/OctivelyMark'
 
 const NAV_LINKS = [
-  { label: 'Product', href: '/' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Guide', href: '/guide' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Changelog', href: '/changelog' },
+  { label: 'Product',   href: '/'          },
+  { label: 'Pricing',   href: '/pricing'    },
+  { label: 'Guide',     href: '/guide'      },
+  { label: 'Blog',      href: '/blog'       },
+  { label: 'Changelog', href: '/changelog'  },
 ]
 
 export function MarketingNav({
@@ -22,8 +22,8 @@ export function MarketingNav({
   onToggleDark: () => void
   slot?: React.ReactNode
 }) {
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled,  setScrolled]  = useState(false)
+  const [menuOpen,  setMenuOpen]  = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -44,12 +44,14 @@ export function MarketingNav({
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          height: 64,
-          background: scrolled ? 'color-mix(in srgb, var(--bg) 82%, transparent)' : 'var(--bg)',
-          backdropFilter: scrolled ? 'saturate(180%) blur(14px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(14px)' : 'none',
+          height: 60,
+          background: scrolled
+            ? 'color-mix(in srgb, var(--bg) 85%, transparent)'
+            : 'var(--bg)',
+          backdropFilter: scrolled ? 'saturate(180%) blur(16px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(16px)' : 'none',
           borderBottom: scrolled ? '1px solid var(--hairline)' : '1px solid transparent',
-          transition: 'background-color .2s, border-color .2s',
+          transition: 'background-color .25s, border-color .25s',
         }}
       >
         <div
@@ -63,7 +65,7 @@ export function MarketingNav({
             justifyContent: 'space-between',
           }}
         >
-          {/* Logo */}
+          {/* ── Logo ────────────────────────────────────────────────────────── */}
           <a
             href="/"
             style={{
@@ -71,44 +73,55 @@ export function MarketingNav({
               alignItems: 'center',
               gap: 9,
               textDecoration: 'none',
-              fontWeight: 600,
-              fontSize: 16,
-              letterSpacing: '-0.01em',
               color: 'var(--ink)',
+              flexShrink: 0,
             }}
           >
             <OctivelyMark size={24} color="var(--of-primary)" />
-            <span style={{ fontWeight: 600, letterSpacing: '-0.02em' }}>Octively</span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                color: 'var(--ink-muted)',
-                padding: '2px 6px',
-                border: '1px solid var(--hairline)',
-                borderRadius: 4,
-              }}
-            >
+            <span style={{
+              fontWeight: 700,
+              fontSize: 17,
+              letterSpacing: '-0.03em',
+              color: 'var(--ink)',
+            }}>
+              Octively
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              color: 'var(--of-primary)',
+              padding: '2px 6px',
+              border: '1px solid rgba(14,165,233,0.35)',
+              borderRadius: 4,
+              background: 'var(--of-primary-soft)',
+            }}>
               BETA
             </span>
           </a>
 
-          {/* Right side */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {/* Desktop nav links — hidden on mobile */}
-            <div className="mkt-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {/* ── Right side ──────────────────────────────────────────────────── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
+            {/* Desktop nav links */}
+            <div className="mkt-nav-links" style={{ display: 'flex', alignItems: 'center', gap: 0, marginRight: 8 }}>
               {NAV_LINKS.map(({ label, href }) => (
                 <Link
                   key={label}
                   href={href}
                   style={{
-                    padding: '8px 12px',
+                    padding: '7px 13px',
                     fontSize: 14,
+                    fontWeight: 450,
                     color: 'var(--ink-muted)',
                     textDecoration: 'none',
                     borderRadius: 8,
                     transition: 'color .15s',
+                    letterSpacing: '-0.01em',
                   }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--ink)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--ink-muted)')}
                 >
                   {label}
                 </Link>
@@ -116,14 +129,16 @@ export function MarketingNav({
 
               {slot && (
                 <>
-                  <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 4px' }} />
+                  <div style={{ width: 1, height: 16, background: 'var(--hairline)', margin: '0 6px' }} />
                   {slot}
                 </>
               )}
-
-              <div style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 8px' }} />
             </div>
 
+            {/* Divider */}
+            <div className="mkt-nav-links" style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 6px' }} />
+
+            {/* Theme toggle — icon-only, no box */}
             <button
               onClick={onToggleDark}
               aria-label="Toggle theme"
@@ -133,59 +148,69 @@ export function MarketingNav({
                 display: 'grid',
                 placeItems: 'center',
                 background: 'transparent',
-                border: '1px solid var(--hairline-strong)',
+                border: 'none',
                 borderRadius: 8,
                 color: 'var(--ink-subtle)',
                 cursor: 'pointer',
                 transition: 'color .15s, background-color .15s',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-2)'; e.currentTarget.style.color = 'var(--ink)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ink-subtle)' }}
             >
               {dark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
+            {/* Sign in — clean ghost button */}
             <Link
               href="/dashboard/login"
               className="mkt-nav-sign-in"
               style={{
-                height: 36,
-                padding: '0 12px',
+                height: 34,
+                padding: '0 14px',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
                 fontSize: 14,
-                color: 'var(--ink-muted)',
-                border: '1px solid var(--hairline)',
-                borderRadius: 8,
+                fontWeight: 500,
+                color: 'var(--ink)',
                 textDecoration: 'none',
-                transition: 'color .15s, border-color .15s',
+                borderRadius: 8,
+                transition: 'color .15s, background-color .15s',
+                letterSpacing: '-0.01em',
               }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               Sign in
             </Link>
 
+            {/* Start free — primary CTA */}
             <Link
               href="/dashboard/signup"
               className="mkt-nav-start-free"
               style={{
                 height: 36,
-                padding: '0 14px',
+                padding: '0 16px',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 6,
                 fontSize: 14,
-                fontWeight: 500,
+                fontWeight: 600,
                 color: 'white',
                 background: 'var(--of-primary)',
                 borderRadius: 8,
                 textDecoration: 'none',
-                transition: 'background-color .15s',
+                letterSpacing: '-0.01em',
                 border: '1px solid transparent',
+                boxShadow: '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                transition: 'background-color .15s, box-shadow .15s',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'var(--of-primary-hover)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(14,165,233,0.45), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--of-primary)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)' }}
             >
-              Start free <ArrowRight size={13} />
+              Start free <ArrowRight size={14} />
             </Link>
 
-            {/* Hamburger — shown only on mobile */}
+            {/* Hamburger — mobile only */}
             <button
               className="mkt-hamburger"
               onClick={() => setMenuOpen(true)}
@@ -196,7 +221,7 @@ export function MarketingNav({
                 display: 'none',
                 placeItems: 'center',
                 background: 'transparent',
-                border: '1px solid var(--hairline-strong)',
+                border: '1px solid var(--hairline)',
                 borderRadius: 8,
                 color: 'var(--ink)',
                 cursor: 'pointer',
@@ -208,7 +233,7 @@ export function MarketingNav({
         </div>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* ── Mobile drawer ─────────────────────────────────────────────────────── */}
       {menuOpen && (
         <>
           <div
@@ -227,21 +252,17 @@ export function MarketingNav({
               overflowY: 'auto',
             }}
           >
-            {/* Drawer header */}
             <div
               style={{
-                padding: '0 20px',
-                height: 64,
+                padding: '0 20px', height: 60,
                 borderBottom: '1px solid var(--hairline)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 flexShrink: 0,
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <OctivelyMark size={22} color="var(--of-primary)" />
-                <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Octively</span>
+                <span style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-0.03em', color: 'var(--ink)' }}>Octively</span>
               </div>
               <button
                 onClick={() => setMenuOpen(false)}
@@ -256,7 +277,6 @@ export function MarketingNav({
               </button>
             </div>
 
-            {/* Nav links */}
             <nav style={{ flex: 1, padding: '12px 12px' }}>
               {NAV_LINKS.map(({ label, href }) => (
                 <Link
@@ -266,6 +286,7 @@ export function MarketingNav({
                   style={{
                     display: 'block', padding: '12px 12px',
                     fontSize: 16, fontWeight: 500, color: 'var(--ink)',
+                    letterSpacing: '-0.01em',
                     textDecoration: 'none', borderRadius: 8,
                     transition: 'background-color .15s',
                   }}
@@ -275,15 +296,10 @@ export function MarketingNav({
               ))}
             </nav>
 
-            {/* CTAs */}
             <div
               style={{
-                padding: '20px',
-                borderTop: '1px solid var(--hairline)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 10,
-                flexShrink: 0,
+                padding: '20px', borderTop: '1px solid var(--hairline)',
+                display: 'flex', flexDirection: 'column', gap: 10, flexShrink: 0,
               }}
             >
               <Link
@@ -294,6 +310,7 @@ export function MarketingNav({
                   height: 42, borderRadius: 8,
                   border: '1px solid var(--hairline)', background: 'transparent',
                   fontSize: 15, fontWeight: 500, color: 'var(--ink)', textDecoration: 'none',
+                  letterSpacing: '-0.01em',
                 }}
               >
                 Sign in
@@ -305,7 +322,9 @@ export function MarketingNav({
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   height: 42, borderRadius: 8,
                   background: 'var(--of-primary)', border: '1px solid transparent',
-                  fontSize: 15, fontWeight: 500, color: 'white', textDecoration: 'none',
+                  fontSize: 15, fontWeight: 600, color: 'white', textDecoration: 'none',
+                  letterSpacing: '-0.01em',
+                  boxShadow: '0 1px 4px rgba(14,165,233,0.35)',
                 }}
               >
                 Start free <ArrowRight size={14} />

@@ -1,5 +1,6 @@
 import { PLAN_PRICES_PKR } from '@/lib/billing/payfast'
-import { ArrowUpRight, Zap, BarChart2, Globe, Building2, MessageCircle } from 'lucide-react'
+import { ArrowUpRight, Zap, BarChart2, Globe, Building2 } from 'lucide-react'
+import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon'
 
 const PLAN_ORDER = ['free', 'starter', 'pro', 'agency', 'enterprise'] as const
 type KnownPlan = (typeof PLAN_ORDER)[number]
@@ -126,7 +127,7 @@ function PlanCard({ plan, featured = false, userEmail }: { plan: 'starter' | 'pr
               className="flex items-center justify-center gap-2 py-2 text-white text-[11px] font-semibold hover:opacity-90 transition-opacity"
               style={{ fontFamily: 'var(--font-mono)', background: '#25D366' }}
             >
-              <MessageCircle className="h-3.5 w-3.5" />
+              <WhatsAppIcon size={14} />
               Upgrade via WhatsApp
             </a>
             {/*
@@ -221,7 +222,7 @@ function PlanCard({ plan, featured = false, userEmail }: { plan: 'starter' | 'pr
         className="flex items-center justify-center gap-2 py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity mt-auto"
         style={{ fontFamily: 'var(--font-mono)', background: '#25D366' }}
       >
-        <MessageCircle className="h-3.5 w-3.5" />
+        <WhatsAppIcon size={14} />
         Upgrade via WhatsApp
       </a>
       {/*
@@ -342,7 +343,7 @@ export function PlanUpgradeSection({ currentPlan, userEmail }: Props) {
                 className="flex items-center justify-center gap-2 py-1.5 text-white text-[11px] font-medium hover:opacity-90 transition-opacity"
                 style={{ fontFamily: 'var(--font-mono)', background: '#25D366' }}
               >
-                <MessageCircle className="h-3.5 w-3.5" />
+                <WhatsAppIcon size={14} />
                 Contact via WhatsApp
               </a>
               {/*

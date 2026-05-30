@@ -6,6 +6,7 @@ import {
   Check, Minus, ArrowRight, ArrowUpRight,
   Sparkles, Shield, ChevronDown,
 } from 'lucide-react'
+import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon'
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
 import { useDarkMode } from './useDarkMode'
@@ -335,13 +336,20 @@ function PriceDisplay({ plan, dark, currency, billing = 'monthly' }: { plan: Pla
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 44, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1 }}>{display}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 44, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1 }}>
+          {/* Render ₨ / $ symbol smaller so it doesn't overpower the number */}
+          {(display.startsWith('₨') || display.startsWith('$')) && (
+            <span style={{ fontSize: 26 }}>{display[0]}</span>
+          )}
+          {(display.startsWith('₨') || display.startsWith('$')) ? display.slice(1) : display}
+        </span>
         {suffix && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: dark ? 'var(--dark-ink-muted)' : 'var(--ink-muted)' }}>{suffix}</span>}
       </div>
       {billing === 'monthly' && full && (
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: dark ? 'var(--dark-ink-muted)' : 'var(--ink-muted)', marginTop: 6 }}>
           <span style={{ textDecoration: 'line-through' }}>
-            {currency === 'PKR' ? `₨${(fullPkr as number).toLocaleString()}` : `$${fullUsd}`}
+            <span style={{ fontSize: 9 }}>{currency === 'PKR' ? '₨' : '$'}</span>
+            {currency === 'PKR' ? (fullPkr as number).toLocaleString() : fullUsd}
           </span>{' '}
           <span style={{ color: 'var(--of-success)' }}>launch price</span>
         </div>
@@ -683,6 +691,7 @@ export default function PricingGrid() {
                       rel="noopener noreferrer"
                       style={{ marginTop: 6, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'white', background: '#25D366', border: '1px solid transparent', textDecoration: 'none' }}
                     >
+                      <WhatsAppIcon size={16} />
                       Buy via WhatsApp
                     </a>
                   </div>
@@ -888,7 +897,7 @@ export default function PricingGrid() {
               rel="noopener noreferrer"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline)', textDecoration: 'none' }}
             >
-              Ask on WhatsApp <ArrowUpRight size={13} />
+              <WhatsAppIcon size={15} /> Ask on WhatsApp <ArrowUpRight size={13} />
             </a>
           </Reveal>
           <Reveal style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

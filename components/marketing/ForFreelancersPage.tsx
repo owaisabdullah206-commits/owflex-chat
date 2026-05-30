@@ -240,7 +240,9 @@ export default function ForFreelancersPage() {
           <p style={{ fontSize: 15, color: 'var(--ink-muted)', textAlign: 'center', marginBottom: 32 }}>No trial period. No expiry date. Upgrade only when you need to.</p>
           <div style={{ border: '1px solid var(--hairline)', borderRadius: 16, padding: '32px 28px', background: 'var(--surface)', boxShadow: '0 4px 24px rgba(12,10,9,.06)' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 40, fontWeight: 700, letterSpacing: '-0.02em' }}>₨0</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 40, fontWeight: 700, letterSpacing: '-0.02em' }}>
+                <span style={{ fontSize: 24 }}>₨</span>0
+              </span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink-muted)' }}>forever</span>
             </div>
             <p style={{ fontSize: 13, color: 'var(--ink-muted)', marginBottom: 24 }}>Perfect for your first client project.</p>

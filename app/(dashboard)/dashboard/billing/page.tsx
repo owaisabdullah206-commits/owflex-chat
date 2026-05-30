@@ -10,6 +10,7 @@ import { CreditStatusBanner } from '@/components/dashboard/CreditStatusBanner'
 import { PlanUpgradeSection } from '@/components/dashboard/PlanUpgradeSection'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
+import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon'
 
 export default async function BillingPage() {
   const user = await requireDeveloper()
@@ -105,8 +106,9 @@ export default async function BillingPage() {
                   href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''}?text=${encodeURIComponent(`Hi, I'd like to upgrade to the Pro plan on Octively. (Account: ${user.email})`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--accent)] hover:underline"
+                  className="text-[var(--accent)] hover:underline inline-flex items-center gap-1"
                 >
+                  <WhatsAppIcon size={12} />
                   upgrade via WhatsApp →
                 </a>
                 {/* // ── Direct payment link (re-enable when ready) ────────── */}
