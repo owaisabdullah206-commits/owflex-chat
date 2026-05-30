@@ -288,7 +288,7 @@ export function AuthDemoPanel() {
       .to({}, { duration: 0.5 })
 
     // ── Step 1: move to embed Copy button ────────────────────────────────────
-      .to(c, { left: '84%', top: '76%', duration: 0.8, ease })
+      .to(c, { left: '84%', top: '75%', duration: 0.8, ease })
       .to({}, { duration: 0.7 })  // let embed fully fade in before clicking
       .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => setShowCopied(true))

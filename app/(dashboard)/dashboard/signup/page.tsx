@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth/client'
+import Image from 'next/image'
 import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
 import { AuthDemoPanel } from '@/components/dashboard/AuthDemoPanel'
 
@@ -165,7 +166,8 @@ export default function DashboardSignupPage() {
               </div>
             </div>
 
-            <Button type="button" variant="secondary" className="w-full" onClick={handleGoogle}>
+            <Button type="button" variant="secondary" className="w-full flex items-center justify-center gap-2.5" onClick={handleGoogle}>
+              <Image src="/Google-logo.svg.webp" alt="Google" width={18} height={18} unoptimized />
               Continue with Google
             </Button>
           </div>
