@@ -270,7 +270,16 @@ export default function ForFreelancersPage() {
       {/* CTA strip */}
       <section style={{ paddingBlock: 64, background: 'var(--surface-2)', borderTop: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
-          <MessageCircle size={28} style={{ color: 'var(--of-primary)', marginBottom: 16 }} />
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: '50%',
+              background: 'var(--of-primary-soft)',
+              border: '1px solid rgba(14,165,233,0.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <MessageCircle size={22} style={{ color: 'var(--of-primary)' }} />
+            </div>
+          </div>
           <h2 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 12 }}>Your client has a question. Again.</h2>
           <p style={{ fontSize: 16, color: 'var(--ink-muted)', lineHeight: 1.65, marginBottom: 28 }}>Or you could send them a link and let the portal answer it.</p>
           <OctivelyButton href="/dashboard/signup" size="lg">
