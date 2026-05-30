@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth/client'
 import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
+import { AuthDemoPanel } from '@/components/dashboard/AuthDemoPanel'
 
 function getStrength(pw: string): { score: number; label: string; color: string } {
   let score = 0
@@ -24,12 +25,12 @@ function getStrength(pw: string): { score: number; label: string; color: string 
 
 export default function DashboardSignupPage() {
   const router = useRouter()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [name,     setName]     = useState('')
+  const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
-  const [showPw, setShowPw] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [showPw,   setShowPw]   = useState(false)
+  const [error,    setError]    = useState('')
+  const [loading,  setLoading]  = useState(false)
 
   const strength = getStrength(password)
 
@@ -56,104 +57,116 @@ export default function DashboardSignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="mb-6">
-            <OctivelyLogo size={28} color="var(--of-primary)" wordmarkColor="var(--ink)" />
-          </div>
-          <h1 className="text-xl font-semibold text-[var(--ink)]">Create your account</h1>
-          <p className="text-sm text-[var(--ink-muted)] mt-1">Start managing your AI chatbots</p>
-        </div>
+    <div className="flex min-h-[calc(100vh-41px)]">
 
-        <div className="bg-[var(--surface)] border border-[var(--hairline)] p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Full name</Label>
-              <Input
-                id="name"
-                type="text"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Owais Abdullah"
-                required
-              />
+      {/* ── Left: form ─────────────────────────────────────────────────────── */}
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
+        <div className="w-full max-w-sm">
+
+          {/* Logo */}
+          <div className="mb-8">
+            <div className="mb-5">
+              <OctivelyLogo size={28} color="var(--of-primary)" wordmarkColor="var(--ink)" />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
+            <h1 className="text-xl font-semibold text-[var(--ink)] tracking-tight">
+              Create your free account
+            </h1>
+            <p className="text-sm text-[var(--ink-muted)] mt-1">
+              Start managing AI chatbots for your clients
+            </p>
+          </div>
+
+          {/* Form card */}
+          <div className="bg-[var(--surface)] border border-[var(--hairline)] rounded-xl p-6 shadow-sm">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="name">Full name</Label>
                 <Input
-                  id="password"
-                  type={showPw ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min. 8 characters"
+                  id="name"
+                  type="text"
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
                   required
-                  className="pr-10"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
-                  aria-label={showPw ? 'Hide password' : 'Show password'}
-                >
-                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPw ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min. 8 characters"
+                    required
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
+                    aria-label={showPw ? 'Hide password' : 'Show password'}
+                  >
+                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+
+                {/* Password strength meter */}
+                {password.length > 0 && (
+                  <div className="space-y-1 pt-0.5">
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((seg) => (
+                        <div
+                          key={seg}
+                          className="h-1 flex-1 rounded-full transition-colors duration-200"
+                          style={{ background: seg <= strength.score ? strength.color : 'var(--surface-2)' }}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-[11px]" style={{ color: strength.color, fontFamily: 'var(--font-mono)' }}>
+                      {strength.label}
+                    </p>
+                  </div>
+                )}
               </div>
 
-              {/* Strength meter */}
-              {password.length > 0 && (
-                <div className="space-y-1 pt-0.5">
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((seg) => (
-                      <div
-                        key={seg}
-                        className="h-1 flex-1 rounded-full transition-colors duration-200"
-                        style={{
-                          background: seg <= strength.score ? strength.color : 'var(--surface-2)',
-                        }}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-[11px]" style={{ color: strength.color, fontFamily: 'var(--font-mono)' }}>
-                    {strength.label}
-                  </p>
-                </div>
-              )}
-            </div>
+              {error && <p className="text-sm text-[var(--of-error)]">{error}</p>}
 
-            {error && (
-              <p className="text-sm text-[var(--of-error)]">{error}</p>
-            )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating account…' : 'Create free account'}
+              </Button>
+            </form>
+          </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account…' : 'Create account'}
-            </Button>
-          </form>
+          <p className="text-center text-sm text-[var(--ink-muted)] mt-5">
+            Already have an account?{' '}
+            <Link href="/dashboard/login" className="text-[var(--of-primary)] hover:underline font-medium">
+              Sign in →
+            </Link>
+          </p>
         </div>
-
-        <p className="text-center text-sm text-[var(--ink-muted)] mt-5">
-          Already have an account?{' '}
-          <Link href="/dashboard/login" className="text-[var(--primary-text)] hover:underline font-medium">
-            Sign in →
-          </Link>
-        </p>
       </div>
+
+      {/* ── Right: animated product demo (desktop only) ─────────────────────── */}
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-[var(--surface-2)] border-l border-[var(--hairline)] px-12 py-12">
+        <AuthDemoPanel />
+      </div>
+
     </div>
   )
 }

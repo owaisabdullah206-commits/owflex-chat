@@ -8,9 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth/client'
 import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
+import { AuthDemoPanel } from '@/components/dashboard/AuthDemoPanel'
 
-// Reads ?reason= from the URL so the login page can explain why the user was redirected.
-// Wrapped in Suspense by the parent to satisfy Next.js App Router requirements.
 function SessionExpiredBanner() {
   const searchParams = useSearchParams()
   if (searchParams.get('reason') !== 'expired') return null
@@ -24,11 +23,11 @@ function SessionExpiredBanner() {
 
 export default function DashboardLoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
-  const [showPw, setShowPw] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [showPw,   setShowPw]   = useState(false)
+  const [error,    setError]    = useState('')
+  const [loading,  setLoading]  = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -53,102 +52,108 @@ export default function DashboardLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="mb-6">
-            <OctivelyLogo size={28} color="var(--of-primary)" wordmarkColor="var(--ink)" />
-          </div>
-          <h1 className="text-xl font-semibold text-[var(--ink)]">Sign in to your dashboard</h1>
-          <p className="text-sm text-[var(--ink-muted)] mt-1">Manage your bots and clients</p>
-        </div>
+    <div className="flex min-h-[calc(100vh-41px)]">
 
-        {/* Form card */}
-        <div className="bg-[var(--surface)] border border-[var(--hairline)] p-6">
-          <Suspense>
-            <SessionExpiredBanner />
-          </Suspense>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-              />
+      {/* ── Left: form ─────────────────────────────────────────────────────── */}
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
+        <div className="w-full max-w-sm">
+
+          {/* Logo */}
+          <div className="mb-8">
+            <div className="mb-5">
+              <OctivelyLogo size={28} color="var(--of-primary)" wordmarkColor="var(--ink)" />
             </div>
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/dashboard/forgot-password"
-                  className="text-xs text-[var(--ink-subtle)] hover:text-[var(--of-primary)] transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="relative">
+            <h1 className="text-xl font-semibold text-[var(--ink)] tracking-tight">
+              Sign in to your dashboard
+            </h1>
+            <p className="text-sm text-[var(--ink-muted)] mt-1">Manage your bots and clients</p>
+          </div>
+
+          {/* Form card */}
+          <div className="bg-[var(--surface)] border border-[var(--hairline)] rounded-xl p-6 shadow-sm">
+            <Suspense>
+              <SessionExpiredBanner />
+            </Suspense>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="password"
-                  type={showPw ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
                   required
-                  className="pr-10"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
-                  aria-label={showPw ? 'Hide password' : 'Show password'}
-                >
-                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    href="/dashboard/forgot-password"
+                    className="text-xs text-[var(--ink-subtle)] hover:text-[var(--of-primary)] transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPw ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw(!showPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-subtle)] hover:text-[var(--ink)] cursor-pointer"
+                    aria-label={showPw ? 'Hide password' : 'Show password'}
+                  >
+                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {error && <p className="text-sm text-[var(--of-error)]">{error}</p>}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Signing in…' : 'Sign in'}
+              </Button>
+            </form>
+
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[var(--hairline)]" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-[var(--surface)] px-2 text-[var(--ink-subtle)]">or</span>
               </div>
             </div>
 
-            {error && (
-              <p className="text-sm text-[var(--of-error)]">{error}</p>
-            )}
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in…' : 'Sign in'}
+            <Button type="button" variant="secondary" className="w-full" onClick={handleGoogle}>
+              Continue with Google
             </Button>
-          </form>
-
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[var(--hairline)]" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-[var(--surface)] px-2 text-[var(--ink-subtle)]">or</span>
-            </div>
           </div>
 
-          <Button
-            type="button"
-            variant="secondary"
-            className="w-full"
-            onClick={handleGoogle}
-          >
-            Continue with Google
-          </Button>
+          <p className="text-center text-sm text-[var(--ink-muted)] mt-5">
+            Don&apos;t have an account?{' '}
+            <Link href="/dashboard/signup" className="text-[var(--of-primary)] hover:underline font-medium">
+              Sign up free →
+            </Link>
+          </p>
         </div>
-
-        <p className="text-center text-sm text-[var(--ink-muted)] mt-5">
-          Don&apos;t have an account?{' '}
-          <Link href="/dashboard/signup" className="text-[var(--primary-text)] hover:underline font-medium">
-            Sign up →
-          </Link>
-        </p>
       </div>
+
+      {/* ── Right: animated product demo (desktop only) ─────────────────────── */}
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-[var(--surface-2)] border-l border-[var(--hairline)] px-12 py-12">
+        <AuthDemoPanel />
+      </div>
+
     </div>
   )
 }

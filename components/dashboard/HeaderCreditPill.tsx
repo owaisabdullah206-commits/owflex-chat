@@ -25,11 +25,11 @@ export function HeaderCreditPill() {
   async function fetchBalance() {
     try {
       const res = await fetch('/api/dashboard/credits/balance', { cache: 'no-store' })
-      if (!res.ok) return
+      // 401 = not logged in yet; any non-ok clears the skeleton rather than hanging
+      if (!res.ok) { if (isMounted.current) setLoading(false); return }
       const json = await res.json() as CreditData
       if (isMounted.current) { setData(json); setLoading(false) }
     } catch {
-      // network error — keep showing previous data / skeleton
       if (isMounted.current) setLoading(false)
     }
   }
