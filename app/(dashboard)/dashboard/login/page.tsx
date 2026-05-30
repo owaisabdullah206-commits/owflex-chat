@@ -142,7 +142,7 @@ export default function DashboardLoginPage() {
 
             <Button type="button" variant="secondary" className="w-full flex items-center justify-center gap-2.5" onClick={handleGoogle}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/Google-logo.svg.webp" alt="" width={18} height={18} style={{ display: 'block', flexShrink: 0 }} />
+              <img src="/google-logo.png" alt="" width={18} height={18} style={{ display: 'block', flexShrink: 0 }} />
               Continue with Google
             </Button>
           </div>
