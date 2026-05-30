@@ -8,37 +8,43 @@ import { MessageSquare, UserPlus, Globe, BarChart2, Code2 } from 'lucide-react'
 gsap.registerPlugin()
 
 // ── Feature steps cycled by the animated cursor ─────────────────────────────
+// Positions are % of the containerRef div (includes browser chrome + grid).
+// Chrome ≈ 34px, grid minHeight 190px → total ≈ 224px.
+// Sidebar 76px wide (max-width 380px container).
+// Nav item centres (from container top): Bots 29%, Leads 37%, Clients 46%.
+// Sidebar item x centre ≈ 35px / 380px ≈ 9%.
+// Bot row 0 centre ≈ 39%, row 1 ≈ 52%. Cursor TIP must land on row centre.
 const STEPS = [
   {
     id: 'bots',
     title: 'Build your AI chatbot',
     desc: 'Visual dashboard, no code required',
-    cursorX: '62%',
-    cursorY: '34%',
+    cursorX: '60%',
+    cursorY: '39%',   // tip on Karachi Kurta Co row centre
     activeNav: 0,
   },
   {
     id: 'embed',
     title: 'Deploy with one script tag',
     desc: 'Paste into any client website in 30 seconds',
-    cursorX: '72%',
-    cursorY: '56%',
+    cursorX: '70%',
+    cursorY: '72%',   // tip on embed code block
     activeNav: 0,
   },
   {
     id: 'leads',
     title: 'Leads captured automatically',
     desc: 'Every conversation turns into a lead record',
-    cursorX: '22%',
-    cursorY: '46%',
+    cursorX: '9%',    // sidebar x centre
+    cursorY: '37%',   // Leads nav item centre
     activeNav: 1,
   },
   {
     id: 'clients',
     title: 'Clients get their own portal',
     desc: 'They log in and see their data. You keep control.',
-    cursorX: '22%',
-    cursorY: '58%',
+    cursorX: '9%',    // sidebar x centre
+    cursorY: '46%',   // Clients nav item centre
     activeNav: 2,
   },
 ]
@@ -330,7 +336,7 @@ export function AuthDemoPanel() {
         ref={containerRef}
         style={{
           position: 'relative',
-          borderRadius: 12,
+          borderRadius: 0,
           border: '1px solid var(--hairline-strong)',
           overflow: 'hidden',
           boxShadow: '0 8px 32px rgba(0,0,0,0.18)',

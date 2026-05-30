@@ -77,7 +77,7 @@ export default function DashboardSignupPage() {
           </div>
 
           {/* Form card */}
-          <div className="bg-[var(--surface)] border border-[var(--hairline)] rounded-xl p-6 shadow-sm">
+          <div className="bg-[var(--surface)] border border-[var(--hairline)] p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="name">Full name</Label>

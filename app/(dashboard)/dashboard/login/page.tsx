@@ -54,7 +54,12 @@ export default function DashboardLoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-41px)]">
 
-      {/* ── Left: form ─────────────────────────────────────────────────────── */}
+      {/* ── Left: animated product demo (desktop only) ──────────────────────── */}
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-[var(--surface-2)] border-r border-[var(--hairline)] px-12 py-12">
+        <AuthDemoPanel />
+      </div>
+
+      {/* ── Right: form ────────────────────────────────────────────────────── */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
         <div className="w-full max-w-sm">
 
@@ -70,7 +75,7 @@ export default function DashboardLoginPage() {
           </div>
 
           {/* Form card */}
-          <div className="bg-[var(--surface)] border border-[var(--hairline)] rounded-xl p-6 shadow-sm">
+          <div className="bg-[var(--surface)] border border-[var(--hairline)] p-6">
             <Suspense>
               <SessionExpiredBanner />
             </Suspense>
@@ -149,10 +154,6 @@ export default function DashboardLoginPage() {
         </div>
       </div>
 
-      {/* ── Right: animated product demo (desktop only) ─────────────────────── */}
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-[var(--surface-2)] border-l border-[var(--hairline)] px-12 py-12">
-        <AuthDemoPanel />
-      </div>
 
     </div>
   )
