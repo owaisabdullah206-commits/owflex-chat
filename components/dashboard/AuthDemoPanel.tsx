@@ -288,7 +288,7 @@ export function AuthDemoPanel() {
       .to({}, { duration: 0.5 })
 
     // ── Step 1: move to embed Copy button ────────────────────────────────────
-      .to(c, { left: '84%', top: '75%', duration: 0.8, ease })
+      .to(c, { left: '84%', top: '74%', duration: 0.8, ease })
       .to({}, { duration: 0.7 })  // let embed fully fade in before clicking
       .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => setShowCopied(true))
@@ -297,20 +297,20 @@ export function AuthDemoPanel() {
       .to({}, { duration: 0.4 })
 
     // ── Step 2: click Leads nav tab ───────────────────────────────────────────
-      .to(c, { left: '9%', top: '40%', duration: 0.85, ease })
+      .to(c, { left: '9%', top: '39%', duration: 0.85, ease })
       .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => { setStep(2); setActiveNav(1) })
       .to({}, { duration: 2.4 })
 
     // ── Step 3: click Clients nav tab ─────────────────────────────────────────
-      .to(c, { left: '9%', top: '48%', duration: 0.7, ease })
+      .to(c, { left: '9%', top: '47%', duration: 0.7, ease })
       .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => { setStep(3); setActiveNav(2) })
       .to({}, { duration: 2.2 })
 
     // ── Step 4: click Analytics nav tab ──────────────────────────────────────
     // Analytics nav centre: Clients(114.5) + 20 = 134.5px → 134.5/284 ≈ 47%  click +3% = 50%
-      .to(c, { left: '9%', top: '56%', duration: 0.7, ease })
+      .to(c, { left: '9%', top: '55%', duration: 0.7, ease })
       .to(c, { ...dn, ease }).to(c, { ...up, ease })
       .call(() => { setStep(4); setActiveNav(3) })
       .to({}, { duration: 2.0 })
