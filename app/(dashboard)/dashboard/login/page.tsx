@@ -52,7 +52,7 @@ export default function DashboardLoginPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-41px)]">
+    <div className="flex min-h-screen">
 
       {/* ── Left: animated product demo (desktop only) ──────────────────────── */}
       <div className="hidden lg:flex flex-1 items-center justify-center bg-[var(--surface-2)] border-r border-[var(--hairline)] px-12 py-12">

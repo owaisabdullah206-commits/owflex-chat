@@ -26,7 +26,7 @@ export function MarketingNav({
   const [menuOpen,  setMenuOpen]  = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    const onScroll = () => setScrolled(window.scrollY > 60)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -39,33 +39,51 @@ export function MarketingNav({
 
   return (
     <>
+      {/* ── Nav ────────────────────────────────────────────────────────────────
+          Non-scrolled: full-width flush bar (height 60)
+          Scrolled:     transparent wrapper + floating pill (height 76 with 8px
+                        padding top/bottom so pill height = 60)
+      ──────────────────────────────────────────────────────────────────────── */}
       <nav
         style={{
           position: 'sticky',
           top: 0,
           zIndex: 50,
-          height: 60,
-          background: scrolled
-            ? 'color-mix(in srgb, var(--bg) 85%, transparent)'
-            : 'var(--bg)',
-          backdropFilter: scrolled ? 'saturate(180%) blur(16px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(16px)' : 'none',
-          borderBottom: scrolled ? '1px solid var(--hairline)' : '1px solid transparent',
-          transition: 'background-color .25s, border-color .25s',
+          height: scrolled ? 76 : 60,
+          padding: scrolled ? '8px 20px' : '0',
+          // Non-scrolled bg on the nav itself; pill handles its own bg
+          background: scrolled ? 'transparent' : 'var(--bg)',
+          borderBottom: scrolled ? 'none' : '1px solid transparent',
+          transition: 'height .3s ease, padding .3s ease, background .25s ease, border-color .25s ease',
         }}
       >
         <div
           style={{
-            maxWidth: 1200,
+            // Pill container
+            maxWidth: scrolled ? 880 : 1200,
             margin: '0 auto',
-            padding: '0 24px',
+            padding: '0 20px',
             height: '100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+
+            // Pill appearance on scroll
+            background: scrolled
+              ? 'color-mix(in srgb, var(--bg) 90%, transparent)'
+              : 'transparent',
+            backdropFilter:       scrolled ? 'saturate(180%) blur(18px)' : 'none',
+            WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(18px)' : 'none',
+            borderRadius: scrolled ? 999 : 0,
+            border: scrolled ? '1px solid var(--hairline)' : 'none',
+            boxShadow: scrolled
+              ? '0 4px 24px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05)'
+              : 'none',
+
+            transition: 'max-width .3s ease, background .25s ease, border-radius .3s ease, border-color .25s ease, box-shadow .3s ease',
           }}
         >
-          {/* ── Logo ────────────────────────────────────────────────────────── */}
+          {/* ── Logo ────────────────────────────────────────────────────── */}
           <a
             href="/"
             style={{
@@ -101,7 +119,7 @@ export function MarketingNav({
             </span>
           </a>
 
-          {/* ── Right side ──────────────────────────────────────────────────── */}
+          {/* ── Right side ────────────────────────────────────────────── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 
             {/* Desktop nav links */}
@@ -138,15 +156,13 @@ export function MarketingNav({
             {/* Divider */}
             <div className="mkt-nav-links" style={{ width: 1, height: 18, background: 'var(--hairline)', margin: '0 6px' }} />
 
-            {/* Theme toggle — icon-only, no box */}
+            {/* Theme toggle */}
             <button
               onClick={onToggleDark}
               aria-label="Toggle theme"
               style={{
-                width: 34,
-                height: 34,
-                display: 'grid',
-                placeItems: 'center',
+                width: 34, height: 34,
+                display: 'grid', placeItems: 'center',
                 background: 'transparent',
                 border: 'none',
                 borderRadius: 8,
@@ -160,21 +176,18 @@ export function MarketingNav({
               {dark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            {/* Sign in — clean ghost button */}
+            {/* Sign in */}
             <Link
               href="/dashboard/login"
               className="mkt-nav-sign-in"
               style={{
-                height: 34,
-                padding: '0 14px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                fontSize: 14,
-                fontWeight: 500,
+                height: 34, padding: '0 14px',
+                display: 'inline-flex', alignItems: 'center',
+                fontSize: 14, fontWeight: 500,
                 color: 'var(--ink)',
                 textDecoration: 'none',
                 borderRadius: 8,
-                transition: 'color .15s, background-color .15s',
+                transition: 'background-color .15s',
                 letterSpacing: '-0.01em',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
@@ -183,21 +196,17 @@ export function MarketingNav({
               Sign in
             </Link>
 
-            {/* Start free — primary CTA */}
+            {/* Start free CTA */}
             <Link
               href="/dashboard/signup"
               className="mkt-nav-start-free"
               style={{
-                height: 36,
-                padding: '0 16px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                fontSize: 14,
-                fontWeight: 600,
+                height: 36, padding: '0 16px',
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 14, fontWeight: 600,
                 color: 'white',
                 background: 'var(--of-primary)',
-                borderRadius: 8,
+                borderRadius: 999,
                 textDecoration: 'none',
                 letterSpacing: '-0.01em',
                 border: '1px solid transparent',
@@ -216,10 +225,8 @@ export function MarketingNav({
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
               style={{
-                width: 36,
-                height: 36,
-                display: 'none',
-                placeItems: 'center',
+                width: 36, height: 36,
+                display: 'none', placeItems: 'center',
                 background: 'transparent',
                 border: '1px solid var(--hairline)',
                 borderRadius: 8,
@@ -233,7 +240,7 @@ export function MarketingNav({
         </div>
       </nav>
 
-      {/* ── Mobile drawer ─────────────────────────────────────────────────────── */}
+      {/* ── Mobile drawer ──────────────────────────────────────────────────── */}
       {menuOpen && (
         <>
           <div
@@ -252,14 +259,12 @@ export function MarketingNav({
               overflowY: 'auto',
             }}
           >
-            <div
-              style={{
-                padding: '0 20px', height: 60,
-                borderBottom: '1px solid var(--hairline)',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                flexShrink: 0,
-              }}
-            >
+            <div style={{
+              padding: '0 20px', height: 60,
+              borderBottom: '1px solid var(--hairline)',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              flexShrink: 0,
+            }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <OctivelyMark size={22} color="var(--of-primary)" />
                 <span style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-0.03em', color: 'var(--ink)' }}>Octively</span>
@@ -285,8 +290,8 @@ export function MarketingNav({
                   onClick={() => setMenuOpen(false)}
                   style={{
                     display: 'block', padding: '12px 12px',
-                    fontSize: 16, fontWeight: 500, color: 'var(--ink)',
-                    letterSpacing: '-0.01em',
+                    fontSize: 16, fontWeight: 500,
+                    color: 'var(--ink)', letterSpacing: '-0.01em',
                     textDecoration: 'none', borderRadius: 8,
                     transition: 'background-color .15s',
                   }}
@@ -296,12 +301,10 @@ export function MarketingNav({
               ))}
             </nav>
 
-            <div
-              style={{
-                padding: '20px', borderTop: '1px solid var(--hairline)',
-                display: 'flex', flexDirection: 'column', gap: 10, flexShrink: 0,
-              }}
-            >
+            <div style={{
+              padding: '20px', borderTop: '1px solid var(--hairline)',
+              display: 'flex', flexDirection: 'column', gap: 10, flexShrink: 0,
+            }}>
               <Link
                 href="/dashboard/login"
                 onClick={() => setMenuOpen(false)}
@@ -309,8 +312,8 @@ export function MarketingNav({
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   height: 42, borderRadius: 8,
                   border: '1px solid var(--hairline)', background: 'transparent',
-                  fontSize: 15, fontWeight: 500, color: 'var(--ink)', textDecoration: 'none',
-                  letterSpacing: '-0.01em',
+                  fontSize: 15, fontWeight: 500, color: 'var(--ink)',
+                  textDecoration: 'none', letterSpacing: '-0.01em',
                 }}
               >
                 Sign in
@@ -320,10 +323,10 @@ export function MarketingNav({
                 onClick={() => setMenuOpen(false)}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  height: 42, borderRadius: 8,
+                  height: 42, borderRadius: 999,
                   background: 'var(--of-primary)', border: '1px solid transparent',
-                  fontSize: 15, fontWeight: 600, color: 'white', textDecoration: 'none',
-                  letterSpacing: '-0.01em',
+                  fontSize: 15, fontWeight: 600, color: 'white',
+                  textDecoration: 'none', letterSpacing: '-0.01em',
                   boxShadow: '0 1px 4px rgba(14,165,233,0.35)',
                 }}
               >

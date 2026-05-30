@@ -1275,7 +1275,12 @@ function PricingTeaser() {
                     <div style={{ fontSize: 12, color: featured ? 'var(--dark-ink-muted)' : 'var(--ink-muted)', marginTop: 2 }}>{p.blurb}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 34, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1 }}>{price}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 34, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1 }}>
+                      {(price.startsWith('₨') || price.startsWith('$')) && (
+                        <span style={{ fontSize: 20 }}>{price[0]}</span>
+                      )}
+                      {(price.startsWith('₨') || price.startsWith('$')) ? price.slice(1) : price}
+                    </span>
                     {suffix && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: featured ? 'var(--dark-ink-muted)' : 'var(--ink-muted)' }}>{suffix}</span>}
                   </div>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>

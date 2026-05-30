@@ -61,7 +61,7 @@ export default function DashboardSignupPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-41px)]">
+    <div className="flex min-h-screen">
 
       {/* ── Left: form ─────────────────────────────────────────────────────── */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12">
