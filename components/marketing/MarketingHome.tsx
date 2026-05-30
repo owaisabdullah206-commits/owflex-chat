@@ -75,6 +75,7 @@ function DashboardSidebar({ small = false }: { small?: boolean }) {
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'var(--font-mono)',
+        height: '100%',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: small ? '4px 4px 12px' : '4px 6px 22px' }}>
