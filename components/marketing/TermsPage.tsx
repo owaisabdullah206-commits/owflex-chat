@@ -75,7 +75,7 @@ export default function TermsPage() {
 
           <TSection id="cancellation" title="Cancellation">
             <p>You may cancel your subscription at any time from the Billing page. Your access continues until the end of the current billing period. We do not offer pro-rated refunds for partial months.</p>
-            <p>To permanently delete your account and all associated data, contact <a href="mailto:support@octively.com" style={{ color: 'var(--of-primary)' }}>support@octively.com</a>.</p>
+            <p>To permanently delete your account and all associated data, contact <a href="mailto:hello@octively.com" style={{ color: 'var(--of-primary)' }}>hello@octively.com</a>.</p>
           </TSection>
 
           <TSection id="liability" title="Limitation of Liability">
@@ -89,7 +89,7 @@ export default function TermsPage() {
 
           <TSection id="contact" title="Contact">
             <p>Questions about these Terms? Contact us:</p>
-            <p><strong>Email:</strong> <a href="mailto:legal@octively.com" style={{ color: 'var(--of-primary)' }}>legal@octively.com</a></p>
+            <p><strong>Email:</strong> <a href="mailto:hello@octively.com" style={{ color: 'var(--of-primary)' }}>hello@octively.com</a></p>
             <p><strong>Address:</strong> Octively, Karachi, Pakistan</p>
           </TSection>
         </div>
