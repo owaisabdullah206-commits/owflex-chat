@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import * as schema from '@/lib/db/schema'
 import { sendWelcomeEmail } from '@/lib/email/welcome'
 import { sendResetPasswordEmail } from '@/lib/email/reset-password'
+import { sendVerificationEmail } from '@/lib/email/verify-email'
 
 // Upstash-backed SecondaryStorage adapter for BetterAuth.
 // Stores sessions and rate-limit counters in Redis so they survive across
@@ -57,9 +58,18 @@ export const auth = betterAuth({
     },
   },
 
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }: { user: { email: string; name?: string | null }; url: string }) => {
+      void sendVerificationEmail({ email: user.email, name: user.name ?? 'Developer', url })
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    expiresIn: 3600,
+  },
+
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false,
+    requireEmailVerification: true,
     sendResetPassword: async ({ user, url }: { user: { email: string }; url: string }) => {
       await sendResetPasswordEmail({ email: user.email, url })
     },
@@ -96,10 +106,20 @@ export const auth = betterAuth({
             })
           }
 
-          try {
-            await sendWelcomeEmail({ name: u.name ?? 'Developer', email: u.email })
-          } catch (err) {
-            console.error('[auth] welcome email failed:', err)
+          // Google OAuth users are pre-verified — send welcome email immediately.
+          // Email/password users get a combined welcome+verify email from sendVerificationEmail.
+          const [account] = await db
+            .select({ providerId: schema.accounts.providerId })
+            .from(schema.accounts)
+            .where(eq(schema.accounts.userId, u.id))
+            .limit(1)
+          const isOAuth = account?.providerId && account.providerId !== 'credential'
+          if (isOAuth) {
+            try {
+              await sendWelcomeEmail({ name: u.name ?? 'Developer', email: u.email })
+            } catch (err) {
+              console.error('[auth] welcome email failed:', err)
+            }
           }
         },
       },

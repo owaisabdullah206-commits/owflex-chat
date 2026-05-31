@@ -1,7 +1,5 @@
-import { Resend } from 'resend'
+import { resend, RESEND_FROM } from './clients'
 import { LOGO_LIGHT } from './shared'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendWelcomeEmail({
   name,
@@ -15,7 +13,7 @@ export async function sendWelcomeEmail({
 
   try {
     await resend.emails.send({
-      from: 'Octively <noreply@octively.com>',
+      from: RESEND_FROM,
       to: email,
       subject: 'Welcome to Octively — your first bot is one step away',
       html: `

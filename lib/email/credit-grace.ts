@@ -1,7 +1,5 @@
-import { Resend } from 'resend'
+import { resend, RESEND_FROM } from './clients'
 import { LOGO_LIGHT } from './shared'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendCreditGraceEmail({
   to,
@@ -15,7 +13,7 @@ export async function sendCreditGraceEmail({
 
   try {
     await resend.emails.send({
-      from: 'octively <noreply@octively.com>',
+      from: RESEND_FROM,
       to,
       subject: `Your bot "${botName}" is running on the default model — 2 hours before service interruption`,
       html: `

@@ -1,8 +1,6 @@
-import { Resend } from 'resend'
 import type { WeeklyStats } from '@/lib/db/queries/digest'
+import { brevo, DIGEST_SENDER } from './clients'
 import { LOGO_DARK } from './shared'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 function generateDigestHtml(params: {
   developerName: string
@@ -81,11 +79,11 @@ export async function sendDigestEmail(
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   const weekRange = `${weekAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
 
-  await resend.emails.send({
-    from: 'digest@octively.com',
-    to: developer.email,
+  await brevo.transactionalEmails.sendTransacEmail({
+    sender: DIGEST_SENDER,
+    to: [{ email: developer.email, name: developer.name }],
     subject: `Your Octively Week: ${stats.conversationCount} conversations, ${stats.leadCount} leads`,
-    html: generateDigestHtml({
+    htmlContent: generateDigestHtml({
       developerName: developer.name,
       conversationCount: stats.conversationCount,
       leadCount: stats.leadCount,

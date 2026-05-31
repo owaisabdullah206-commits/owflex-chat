@@ -1,7 +1,5 @@
-import { Resend } from 'resend'
+import { resend, RESEND_FROM } from './clients'
 import { LOGO_LIGHT } from './shared'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 interface HandoffNotificationParams {
   ownerEmail: string
@@ -24,7 +22,7 @@ export async function sendHandoffNotification({
   const visitorLabel = visitorName ?? visitorEmail ?? 'Anonymous visitor'
 
   await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL ?? 'octively <onboarding@resend.dev>',
+    from: RESEND_FROM,
     to: ownerEmail,
     subject: `Human handoff requested — ${botName}`,
     html: `

@@ -1,7 +1,5 @@
-import { Resend } from 'resend'
+import { resend, RESEND_FROM } from './clients'
 import { LOGO_LIGHT } from './shared'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 interface SendClientInvitationParams {
   clientEmail: string
@@ -16,7 +14,7 @@ export async function sendClientInvitation({
 }: SendClientInvitationParams): Promise<{ sent: boolean }> {
   try {
     const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL ?? 'octively <onboarding@resend.dev>',
+      from: RESEND_FROM,
       to: clientEmail,
       subject: `You've been invited to view ${botName}`,
       html: `

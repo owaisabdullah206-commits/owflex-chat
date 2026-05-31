@@ -32,6 +32,7 @@ export default function DashboardSignupPage() {
   const [showPw,   setShowPw]   = useState(false)
   const [error,    setError]    = useState('')
   const [loading,  setLoading]  = useState(false)
+  const [verified, setVerified] = useState(false)
 
   const strength = getStrength(password)
 
@@ -48,18 +49,51 @@ export default function DashboardSignupPage() {
     }
     setLoading(true)
     try {
-      const result = await authClient.signUp.email({ name, email, password })
+      const result = await authClient.signUp.email({
+        name,
+        email,
+        password,
+        callbackURL: '/dashboard/bots',
+      })
       if (result.error) {
         setError(result.error.message ?? 'Could not create account')
       } else {
         trackGAEvent('signup_complete', { method: 'email' })
-        router.push('/dashboard/bots')
+        setVerified(true)
       }
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (verified) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] px-6">
+        <div className="w-full max-w-sm text-center">
+          <div className="mb-6 flex justify-center">
+            <OctivelyLogo size={32} color="var(--of-primary)" wordmarkColor="var(--ink)" />
+          </div>
+          <div className="mb-4 flex justify-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--of-primary)]/10">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+            </div>
+          </div>
+          <h2 className="mb-2 text-xl font-semibold text-[var(--ink)]">Check your email</h2>
+          <p className="mb-6 text-sm text-[var(--ink-muted)] leading-relaxed">
+            We sent a verification link to <strong className="text-[var(--ink)]">{email}</strong>.
+            Click it to activate your account.
+          </p>
+          <p className="text-xs text-[var(--ink-subtle)]">
+            Didn&apos;t receive it? Check your spam folder. The link expires in 1 hour.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (

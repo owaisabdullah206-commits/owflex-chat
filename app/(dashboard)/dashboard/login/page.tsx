@@ -26,17 +26,24 @@ export default function DashboardLoginPage() {
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
   const [showPw,   setShowPw]   = useState(false)
-  const [error,    setError]    = useState('')
-  const [loading,  setLoading]  = useState(false)
+  const [error,       setError]       = useState('')
+  const [loading,     setLoading]     = useState(false)
+  const [unverified,  setUnverified]  = useState(false)
+  const [resendSent,  setResendSent]  = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+    setUnverified(false)
     setLoading(true)
     try {
       const result = await authClient.signIn.email({ email, password })
       if (result.error) {
-        setError(result.error.message ?? 'Invalid email or password')
+        if (result.error.code === 'EMAIL_NOT_VERIFIED') {
+          setUnverified(true)
+        } else {
+          setError(result.error.message ?? 'Invalid email or password')
+        }
       } else {
         router.push('/dashboard/bots')
       }
@@ -44,6 +51,16 @@ export default function DashboardLoginPage() {
       setError('Something went wrong. Please try again.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleResendVerification() {
+    setResendSent(false)
+    try {
+      await authClient.sendVerificationEmail({ email, callbackURL: '/dashboard/bots' })
+      setResendSent(true)
+    } catch {
+      setError('Could not resend verification email. Try again.')
     }
   }
 
@@ -125,6 +142,19 @@ export default function DashboardLoginPage() {
               </div>
 
               {error && <p className="text-sm text-[var(--of-error)]">{error}</p>}
+
+              {unverified && (
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
+                  <p className="text-amber-600 font-medium mb-1">Email not verified</p>
+                  <p className="text-amber-600/80 text-xs mb-2">Check your inbox for the verification link.</p>
+                  {resendSent
+                    ? <p className="text-xs text-amber-600">Verification email resent ✓</p>
+                    : <button type="button" onClick={handleResendVerification} className="text-xs text-amber-600 underline underline-offset-2 hover:opacity-80">
+                        Resend verification email
+                      </button>
+                  }
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Signing in…' : 'Sign in'}

@@ -1,7 +1,5 @@
-import { Resend } from 'resend'
+import { brevo, BREVO_SENDER } from './clients'
 import { LOGO_LIGHT } from './shared'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 type Metric = 'conversations' | 'credits' | 'leads'
 
@@ -23,11 +21,11 @@ export async function sendUsageWarningEmail({
   const metricLabel = metric === 'credits' ? 'credits' : metric
 
   try {
-    await resend.emails.send({
-      from: 'Octively <noreply@octively.com>',
-      to,
+    await brevo.transactionalEmails.sendTransacEmail({
+      sender: BREVO_SENDER,
+      to: [{ email: to }],
       subject: `You've used ${pctUsed}% of your ${planName} ${metricLabel} limit`,
-      html: `
+      htmlContent: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#111;">
           ${LOGO_LIGHT}
           <h2 style="font-size:20px;margin-bottom:8px;">Approaching your ${metricLabel} limit</h2>
