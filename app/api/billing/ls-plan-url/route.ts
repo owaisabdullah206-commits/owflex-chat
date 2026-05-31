@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const checkoutUrl = generatePlanCheckoutUrl(org.id, parsed.data.plan as PlanId)
+  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/dashboard/billing?upgraded=${parsed.data.plan}`
+  const checkoutUrl = generatePlanCheckoutUrl(org.id, parsed.data.plan as PlanId, returnUrl)
   redirect(checkoutUrl)
 }

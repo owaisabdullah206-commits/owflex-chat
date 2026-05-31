@@ -86,11 +86,12 @@ export interface LsSubscriptionPayload {
   }
 }
 
-export function generatePlanCheckoutUrl(orgId: string, planId: PlanId): string {
+export function generatePlanCheckoutUrl(orgId: string, planId: PlanId, returnUrl?: string): string {
   const variantId = getPlanVariantId(planId)
   if (!variantId) throw new Error(`LS_VARIANT_PLAN_${planId.toUpperCase()} env var not set`)
   const storeId = process.env.LEMON_SQUEEZY_STORE_ID ?? ''
-  return `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+  const base = `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+  return returnUrl ? `${base}&checkout[redirect_url]=${encodeURIComponent(returnUrl)}` : base
 }
 
 export function extractSubscriptionInfo(payload: LsSubscriptionPayload): {

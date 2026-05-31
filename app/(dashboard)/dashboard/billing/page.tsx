@@ -11,8 +11,14 @@ import { PlanUpgradeSection } from '@/components/dashboard/PlanUpgradeSection'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
 import { RefreshButton } from '@/components/shared/RefreshButton'
 import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon'
+import { UpgradeTracker } from '@/components/dashboard/UpgradeTracker'
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upgraded?: string }>
+}) {
+  const { upgraded } = await searchParams
   const user = await requireDeveloper()
 
   const [org] = await db
@@ -73,6 +79,7 @@ export default async function BillingPage() {
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
       <AutoRefresh intervalMs={30_000} />
+      {upgraded && <UpgradeTracker plan={upgraded} />}
       <Sidebar />
       <main className="flex-1 md:ml-56 pb-16 md:pb-0">
         <div className="flex items-start justify-between px-4 sm:px-8 py-5 border-b border-[var(--hairline)]">

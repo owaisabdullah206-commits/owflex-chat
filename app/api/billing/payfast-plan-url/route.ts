@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const returnUrl = `${appUrl}/dashboard/billing`
+  const returnUrl = `${appUrl}/dashboard/billing?upgraded=${parsed.data.plan}`
   const notifyUrl = `${appUrl}/api/webhooks/payfast`
 
   const paymentUrl = generatePlanPaymentUrl(org.id, parsed.data.plan as PlanId, returnUrl, notifyUrl)

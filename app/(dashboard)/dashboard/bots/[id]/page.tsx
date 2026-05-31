@@ -7,6 +7,7 @@ import { Suspense } from 'react'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { OnboardingBanner } from '@/components/dashboard/OnboardingBanner'
+import { OnboardingTracker } from '@/components/dashboard/OnboardingTracker'
 import { QuickActionsPanel } from '@/components/dashboard/QuickActionsPanel'
 import { EmbedCodeBlock } from '@/components/dashboard/EmbedCodeBlock'
 import { StatCard } from '@/components/dashboard/StatCard'
@@ -30,13 +31,13 @@ const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Settings', 'Kn
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ tab?: string; q?: string; from?: string; to?: string }>
+  searchParams: Promise<{ tab?: string; q?: string; from?: string; to?: string; onboarding?: string }>
 }
 
 export default async function BotDetailPage({ params, searchParams }: BotDetailPageProps) {
   const user = await requireDeveloper()
   const { id } = await params
-  const { tab = 'overview', q, from: fromStr, to: toStr } = await searchParams
+  const { tab = 'overview', q, from: fromStr, to: toStr, onboarding } = await searchParams
 
   const [bot] = await db
     .select({
@@ -191,6 +192,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         {/* Onboarding banner */}
         <Suspense fallback={null}>
           <OnboardingBanner botId={bot.id} />
+          {onboarding === '1' && <OnboardingTracker />}
         </Suspense>
 
         {/* Tab nav */}

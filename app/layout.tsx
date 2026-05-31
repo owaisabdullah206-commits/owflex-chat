@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans, Source_Serif_4, JetBrains_Mono } from 'next/font/google'
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { JsonLd, organizationSchema, SITE_URL } from '@/components/shared/JsonLd'
+import { UTMCapture } from '@/components/shared/UTMCapture'
 import './globals.css'
 
 // ── Fonts (self-hosted via next/font — no FOUT, no layout shift) ──────────────
@@ -62,6 +63,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${jakarta.variable} ${sourceSerif.variable} ${mono.variable}`}>
         <JsonLd schema={organizationSchema} />
+        <UTMCapture />
         {children}
         {process.env.NEXT_PUBLIC_GTM_ID && (
           <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />

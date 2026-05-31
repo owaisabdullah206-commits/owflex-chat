@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { trackGAEvent } from '@/lib/analytics'
 import { Copy, Check, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -73,6 +74,7 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
       }
 
       if (data.emailSent) {
+        trackGAEvent('client_invited')
         toast.success('Invitation sent!')
         setEmail('')
         setOpen(false)

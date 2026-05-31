@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authClient } from '@/lib/auth/client'
+import { trackGAEvent } from '@/lib/analytics'
 import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
 import { AuthDemoPanel } from '@/components/dashboard/AuthDemoPanel'
 
@@ -51,6 +52,7 @@ export default function DashboardSignupPage() {
       if (result.error) {
         setError(result.error.message ?? 'Could not create account')
       } else {
+        trackGAEvent('signup_complete', { method: 'email' })
         router.push('/dashboard/bots')
       }
     } catch {
