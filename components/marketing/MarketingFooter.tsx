@@ -16,7 +16,7 @@ const COLS = [
     items: [
       { label: 'Guide', href: '/guide' },
       { label: 'API reference', href: '/guide#api' },
-      { label: 'Status', href: 'https://octively.betteruptime.com' },
+      { label: 'Status', href: 'https://octively.instatus.com' },
       { label: 'Changelog', href: '/changelog' },
     ],
   },
