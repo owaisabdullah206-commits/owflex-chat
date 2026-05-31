@@ -694,7 +694,7 @@ function HowItWorks() {
             </h2>
           </div>
           <a
-            href="#"
+            href="/guide#embed-guide"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -1561,7 +1561,9 @@ function CTABanner() {
                 Create your first bot portal <ArrowRight size={16} />
               </Link>
               <a
-                href="#"
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? ''}?text=${encodeURIComponent('Hi, I have a question about Octively.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',

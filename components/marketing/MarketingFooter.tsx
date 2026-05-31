@@ -8,7 +8,7 @@ const COLS = [
       { label: 'Features', href: '/#features' },
       { label: 'Pricing', href: '/pricing' },
       { label: 'Embed guide', href: '/guide#embed-guide' },
-      { label: 'WordPress plugin', href: '#' },
+      { label: 'WordPress plugin', href: '/guide#wordpress' },
     ],
   },
   {
@@ -16,7 +16,7 @@ const COLS = [
     items: [
       { label: 'Guide', href: '/guide' },
       { label: 'API reference', href: '/guide#api' },
-      { label: 'Status', href: '#' },
+      { label: 'Status', href: 'https://octively.betteruptime.com' },
       { label: 'Changelog', href: '/changelog' },
     ],
   },

@@ -155,7 +155,7 @@ const PLANS = [
     bots: 'Unlimited',
     convos: 'Custom volume',
     cta: 'Talk to sales',
-    href: '#',
+    href: '/contact',
     features: [
       'Everything in Agency',
       'Custom conversation & credit volume',
@@ -653,7 +653,7 @@ export default function PricingGrid() {
                 Top-tier flagship models from OpenAI, Anthropic, and Google consume credits. Default models stay included in your plan. Bigger packs come with bigger bonuses.
               </p>
             </div>
-            <a href="#" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, color: 'var(--of-primary)', textDecoration: 'none', fontWeight: 500 }}>
+            <a href="/pricing#credits" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, color: 'var(--of-primary)', textDecoration: 'none', fontWeight: 500 }}>
               See credit rates <ArrowUpRight size={14} />
             </a>
           </Reveal>

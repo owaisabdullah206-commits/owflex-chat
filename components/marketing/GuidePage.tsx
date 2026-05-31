@@ -57,7 +57,7 @@ const SIDEBAR = [
 
 const EMBED_SNIPPET = `<script
   src="https://app.octively.com/embed.js"
-  data-bot-key="bot_XXXXXXXXXXXX"
+  data-bot-key="YOUR_EMBED_KEY"
   defer
 ></script>`
 
@@ -147,7 +147,7 @@ export default function GuidePage() {
 
           <DocSection id="embed-guide" title="Embed guide">
             <p style={{ fontSize: 14.5, color: 'var(--ink-muted)', lineHeight: 1.7, marginBottom: 20 }}>
-              Add the following script to any HTML page. Replace <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>bot_XXXX</code> with your bot&apos;s embed key from the Dashboard.
+              Add the following script to any HTML page. Replace <code style={{ fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--surface-2)', padding: '1px 5px', borderRadius: 3 }}>YOUR_EMBED_KEY</code> with your bot&apos;s embed key from the Dashboard.
             </p>
             <div style={{ position: 'relative', border: '1px solid var(--hairline)', borderRadius: 10, background: 'var(--surface-2)', overflow: 'hidden' }}>
               <pre style={{ fontFamily: 'var(--font-mono)', fontSize: 13, padding: '20px 24px', margin: 0, overflowX: 'auto', lineHeight: 1.6, color: 'var(--ink)' }}>
