@@ -39,7 +39,7 @@ const HOME_FAQ_SCHEMA = faqSchema([
   {
     question: 'What does Octively cost?',
     answer:
-      'There is a permanent free plan with one bot and 100 conversations a month. Paid plans start at ₨2,500/month in Pakistan or $15/month internationally. The Agency plan at ₨20,000/month ($79) covers unlimited client portals with no per-seat fees.',
+      'There is a permanent free plan with one bot and 200 conversations a month. Paid plans start at ₨2,500/month in Pakistan or $15/month internationally. The Agency plan at ₨20,000/month ($79) covers unlimited client portals with no per-seat fees.',
   },
   {
     question: 'Is there a per-message or per-conversation fee?',

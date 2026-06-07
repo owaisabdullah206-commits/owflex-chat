@@ -32,11 +32,20 @@ const COLS = [
   {
     title: 'Resources',
     items: [
-      { label: 'Loom demo', href: '#' },
+      { label: 'Demo video', href: '/guide' },
       { label: 'For agencies', href: '/for-agencies' },
       { label: 'For freelancers', href: '/for-freelancers' },
       { label: 'Roadmap', href: '/roadmap' },
       { label: 'Compare', href: '/pricing#compare' },
+    ],
+  },
+  {
+    title: 'Free Tools',
+    items: [
+      { label: 'Chatbot pricing calculator', href: '/tools/chatbot-pricing-calculator' },
+      { label: 'Chatbot ROI calculator', href: '/tools/chatbot-roi-calculator' },
+      { label: 'Agency retainer calculator', href: '/tools/agency-retainer-calculator' },
+      { label: 'AI services directory', href: '/directory/ai-services-to-sell' },
     ],
   },
 ]

@@ -11,7 +11,7 @@ import type { FAQItem } from './MarketingFAQ'
 
 const STEPS = [
   { n: '01', title: 'Sign up free', body: 'No card. No trial timer. The free plan works indefinitely for a single bot.' },
-  { n: '02', title: 'Add the embed script', body: 'One tiny script tag — loads async, zero dependencies, zero slowdown to your client\'s site. Works on WordPress, Webflow, Shopify, plain HTML. Two minutes, start to finish.' },
+  { n: '02', title: 'Add the embed script', body: 'One tiny script tag, loads async, zero dependencies, zero slowdown to your client\'s site. Works on WordPress, Webflow, Shopify, plain HTML. Two minutes, start to finish.' },
   { n: '03', title: 'Invite your client', body: "Enter their email. They set a password and land on a portal with their bot's conversations and leads. Done." },
   { n: '04', title: 'Bill for the value', body: 'Your client has a professional dashboard. You look like you built it. Charge accordingly.' },
 ]
@@ -132,7 +132,7 @@ export default function ForFreelancersPage() {
       <section style={{ paddingBlock: '72px 64px', borderBottom: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div className="mkt-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 520px)', gap: 40, alignItems: 'center' }}>
-            {/* Left — copy */}
+            {/* Left, copy */}
             <div>
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 18 }}>For freelancers</p>
               <h1 style={{ fontSize: 'clamp(36px, 4.5vw, 54px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.07, marginBottom: 20 }}>
@@ -167,7 +167,7 @@ export default function ForFreelancersPage() {
                 ))}
               </div>
             </div>
-            {/* Right — portal preview */}
+            {/* Right, portal preview */}
             <div className="mkt-hero-mockup">
               <PortalPreview />
             </div>
@@ -181,7 +181,7 @@ export default function ForFreelancersPage() {
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 32, textAlign: 'center' }}>Sound familiar?</p>
           <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {[
-              { Icon: Mail, title: 'Client emails you weekly', body: '"What conversations came in this week?" — now they just log in and check themselves.' },
+              { Icon: Mail, title: 'Client emails you weekly', body: '"What conversations came in this week?", now they just log in and check themselves.' },
               { Icon: Clock, title: 'Manual lead forwarding', body: 'Copying lead data from logs to emails. Every. Single. Week. That time is yours.' },
               { Icon: DollarSign, title: 'Underselling the work', body: 'A raw chatbot is worth one fee. A chatbot with a client portal commands a retainer.' },
             ].map(({ Icon, title, body }) => (
@@ -221,7 +221,7 @@ export default function ForFreelancersPage() {
         <div style={{ maxWidth: 600, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
           <div style={{ fontSize: 56, color: 'var(--of-primary)', lineHeight: 1, marginBottom: 8, opacity: 0.3, fontFamily: 'Georgia, serif' }}>&ldquo;</div>
           <blockquote style={{ fontSize: 19, fontStyle: 'italic', lineHeight: 1.6, color: 'var(--ink)', marginBottom: 28, marginTop: 0 }}>
-            My clients used to email me every week. Now they just log in. I&apos;ve reclaimed at least 3 hours a month per client — and raised my retainer by 30%.
+            My clients used to email me every week. Now they just log in. I&apos;ve reclaimed at least 3 hours a month per client, and raised my retainer by 30%.
           </blockquote>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--of-primary)', display: 'grid', placeItems: 'center', color: 'white', fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: 13 }}>OA</div>
@@ -298,17 +298,17 @@ const FREELANCER_FAQS: FAQItem[] = [
   {
     question: 'What is the best AI chatbot platform for freelancers?',
     answer:
-      'For a freelancer, the best platform is the cheapest one that does not require code and still gives the client something to log into. Octively fills that gap. You build the bot in a visual dashboard, paste one script tag on the client\'s site, and they get their own branded portal with conversations and leads — without emailing you for updates. There is a permanent free plan to start.',
+      'For a freelancer, the best platform is the cheapest one that does not require code and still gives the client something to log into. Octively fills that gap. You build the bot in a visual dashboard, paste one script tag on the client\'s site, and they get their own branded portal with conversations and leads, without emailing you for updates. There is a permanent free plan to start.',
   },
   {
     question: 'Can I use Octively for free on my first client project?',
     answer:
-      'Yes. The free plan is permanent — no trial period, no expiry. It covers one bot and up to 100 conversations a month. You can deploy a real chatbot on a real client site at no cost, bill a retainer on top, and upgrade only when you need more capacity.',
+      'Yes. The free plan is permanent, no trial period, no expiry. It covers one bot and up to 200 conversations a month. You can deploy a real chatbot on a real client site at no cost, bill a retainer on top, and upgrade only when you need more capacity.',
   },
   {
     question: 'Does setting up a chatbot require coding skills?',
     answer:
-      'No. You train the bot from a visual dashboard by adding your client\'s website URL, uploading documents, or typing knowledge directly. The only technical step is pasting one script tag on the client\'s site — and Octively provides step-by-step guides for WordPress, Webflow, Shopify, and other platforms.',
+      'No. You train the bot from a visual dashboard by adding your client\'s website URL, uploading documents, or typing knowledge directly. The only technical step is pasting one script tag on the client\'s site, and Octively provides step-by-step guides for WordPress, Webflow, Shopify, and other platforms.',
   },
   {
     question: 'How much should I charge clients for a managed chatbot?',
@@ -318,6 +318,6 @@ const FREELANCER_FAQS: FAQItem[] = [
   {
     question: 'Will clients see Octively branding in their portal?',
     answer:
-      'No. The client portal shows your branding — your name, your colours, your domain. Octively is invisible to your clients. They see a professional tool that appears to be built specifically for them.',
+      'No. The client portal shows your branding, your name, your colours, your domain. Octively is invisible to your clients. They see a professional tool that appears to be built specifically for them.',
   },
 ]

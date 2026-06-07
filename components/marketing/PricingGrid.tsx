@@ -112,13 +112,13 @@ const PLANS = [
       'Unlimited leads / month',
       '100 MB document storage · unlimited history',
       'Enhanced responses · advanced analytics',
-      'Per-page analytics — top conversation pages breakdown',
-      'Message ratings — thumbs up/down, satisfaction score',
-      'Lead webhook — push to Zapier, n8n, Make, or CRM',
+      'Per-page analytics, top conversation pages breakdown',
+      'Message ratings, thumbs up/down, satisfaction score',
+      'Lead webhook, push to Zapier, n8n, Make, or CRM',
       'Unanswered questions list',
       'Weekly email digest',
       'PDF, DOCX, CSV / Excel upload + website scraping',
-      'Selective page crawling — include/exclude path filters',
+      'Selective page crawling, include/exclude path filters',
       'Smart model routing',
       'Human handoff & escalation',
       'WordPress plugin · priority email support',
@@ -140,7 +140,7 @@ const PLANS = [
       'Unlimited leads',
       '500 MB document storage · unlimited history',
       'Full performance · analytics suite',
-      'Full white-label — custom branding text + URL',
+      'Full white-label, custom branding text + URL',
       'White-label portal login + custom subdomain',
       'Sub-tenant management · per-bot allocation',
       'Lead webhook + full REST API access',
@@ -159,7 +159,7 @@ const PLANS = [
     features: [
       'Everything in Agency',
       'Custom conversation & credit volume',
-      'BYOK — bring your own LLM API keys',
+      'BYOK, bring your own LLM API keys',
       'Dedicated support + SLA',
       'SOC 2 / DPA on request',
       'Optional self-hosted / on-prem deployment',
@@ -205,13 +205,13 @@ const COMPARE_ROWS = [
 
   { section: 'AI & intelligence' },
   { feat: 'Analytics', values: ['Basic', 'Basic', 'Advanced + flagged', 'Full', 'Full'] },
-  { feat: 'Per-page analytics — top conversation pages', values: [false, false, true, true, true] },
+  { feat: 'Per-page analytics, top conversation pages', values: [false, false, true, true, true] },
   { feat: 'Message ratings & satisfaction score', values: [false, false, true, true, true] },
   { feat: 'Smart auto-routing', values: [false, false, true, true, true] },
   { feat: 'Unanswered questions list', values: [false, false, true, true, true] },
-  { feat: 'Document upload — PDF, DOCX, CSV / Excel', values: ['3 docs', false, true, true, true] },
+  { feat: 'Document upload, PDF, DOCX, CSV / Excel', values: ['3 docs', false, true, true, true] },
   { feat: 'Website scraping', values: [false, false, true, true, true] },
-  { feat: 'Selective page crawling — path include/exclude filters', values: [false, false, true, true, true] },
+  { feat: 'Selective page crawling, path include/exclude filters', values: [false, false, true, true, true] },
   { feat: 'CSV / Excel product catalog import (Shopify & WooCommerce)', values: ['10 products', false, true, true, true] },
 
   { section: 'Operations' },
@@ -223,10 +223,10 @@ const COMPARE_ROWS = [
   { feat: 'Sub-tenant management', values: [false, false, false, true, true] },
   { feat: 'Per-bot resource allocation', values: [false, false, false, true, true] },
   { feat: 'API access', values: [false, false, false, true, true] },
-  { feat: 'Lead webhook — Zapier / n8n / Make / custom endpoint', values: [false, false, true, true, true] },
+  { feat: 'Lead webhook, Zapier / n8n / Make / custom endpoint', values: [false, false, true, true, true] },
   { feat: 'Full REST API access', values: [false, false, false, true, true] },
   { feat: 'Audit log viewer', values: [false, false, false, true, true] },
-  { feat: 'BYOK — bring your own LLM key', values: [false, false, false, false, true] },
+  { feat: 'BYOK, bring your own LLM key', values: [false, false, false, false, true] },
   { feat: 'WordPress plugin', values: [true, true, true, true, true] },
 
   { section: 'Support' },
@@ -265,18 +265,18 @@ const CREDIT_PACKS = [
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 
 const FAQS = [
-  { q: 'What counts as a "conversation"?', a: 'A unique session — one visitor\'s chat with your bot, no matter how many messages. Sessions reset after 30 minutes of inactivity. Easy to forecast.' },
-  { q: 'What happens if I run out of credits mid-month?', a: 'Your bots fall back to your plan\'s included default model silently — your end users never see an error. You get an email and a dashboard banner: top up to restore premium models.' },
-  { q: 'How does billing work — PKR vs USD?', a: 'We handle upgrades and top-ups manually for now. Message us on WhatsApp with your preferred currency (PKR or USD) and plan, and we\'ll sort the payment and activate your plan within the hour.' },
+  { q: 'What counts as a "conversation"?', a: 'A unique session, one visitor\'s chat with your bot, no matter how many messages. Sessions reset after 30 minutes of inactivity. Easy to forecast.' },
+  { q: 'What happens if I run out of credits mid-month?', a: 'Your bots fall back to your plan\'s included default model silently, your end users never see an error. You get an email and a dashboard banner: top up to restore premium models.' },
+  { q: 'How does billing work, PKR vs USD?', a: 'We handle upgrades and top-ups manually for now. Message us on WhatsApp with your preferred currency (PKR or USD) and plan, and we\'ll sort the payment and activate your plan within the hour.' },
   { q: 'Is my clients\' conversation data used to train AI models?', a: 'No. We route through providers under zero-data-retention agreements (DeepSeek, OpenRouter, Groq). Messages are processed in transit only and discarded after the response.' },
-  { q: 'Do you charge per seat?', a: 'No. Every plan is org-based, unlimited seats. Charge your clients however you want — Octively doesn\'t meter users.' },
-  { q: 'Can my client self-serve and bypass me?', a: 'No. SMB clients only get portal access (app.Octively.com). Bot creation, billing, and model settings stay with the developer/agency — by design.' },
+  { q: 'Do you charge per seat?', a: 'No. Every plan is org-based, unlimited seats. Charge your clients however you want, Octively doesn\'t meter users.' },
+  { q: 'Can my client self-serve and bypass me?', a: 'No. SMB clients only get portal access (app.Octively.com). Bot creation, billing, and model settings stay with the developer/agency, by design.' },
 ]
 
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. Octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers, and I bill them ₨15k/mo for the dashboard. Octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
   { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to Octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
   { q: 'The credit system is the killer feature. I let small clients use the included models, and upsell premium clients onto flagship tiers without lifting a finger.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
   { q: 'I onboarded a tea-export client in 12 minutes. They were sending Urdu queries to the bot and getting Urdu replies. Their finance team now exports leads to CSV themselves.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
@@ -284,7 +284,7 @@ const QUOTES_ROW_1 = [
 const QUOTES_ROW_2 = [
   { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single Octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
   { q: 'Switched four clients off Botpress in a weekend. Embed key swap, that\'s the whole migration. Conversation history came along via the import endpoint.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
-  { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS — now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
+  { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS, now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
   { q: 'I bill in PKR via PayFast, my UK client pays USD via Lemon Squeezy, both land in the same dashboard. No more two-spreadsheet accounting.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
 ]
 
@@ -355,7 +355,7 @@ function PriceDisplay({ plan, dark, currency, billing = 'monthly' }: { plan: Pla
       )}
       {billing === 'annual' && plan.pkr !== 0 && plan.pkr !== 'custom' && (
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--of-success)', marginTop: 6 }}>
-          2 months free — save {currency === 'PKR' ? `₨${Math.round((plan.pkr as number) * 2).toLocaleString()}` : `$${Math.round((plan.usd as number) * 2)}`}
+          2 months free, save {currency === 'PKR' ? `₨${Math.round((plan.pkr as number) * 2).toLocaleString()}` : `$${Math.round((plan.usd as number) * 2)}`}
         </div>
       )}
     </div>
@@ -403,7 +403,7 @@ function CompareCell({ v }: { v: boolean | string }) {
   return <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink)' }}>{v}</span>
 }
 
-// ─── Plan cards — Traditional layout ─────────────────────────────────────────
+// ─── Plan cards, Traditional layout ─────────────────────────────────────────
 
 function PlanCardTraditional({ plan, currency, billing }: { plan: Plan; currency: Currency; billing: Billing }) {
   return (
@@ -545,13 +545,13 @@ export default function PricingGrid() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', position: 'relative', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 11, padding: '4px 12px', borderRadius: 999, border: '1px solid rgba(14,165,233,.3)', background: 'var(--of-primary-soft)', color: 'var(--of-primary-deep)', fontWeight: 500 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)' }} />
-            Launch pricing — locked for founding members
+            Launch pricing, locked for founding members
           </span>
           <h1 style={{ maxWidth: 820, fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.08, margin: 0 }}>
             Developer plans built for <span style={{ color: 'var(--of-primary)' }}>Pakistani agencies</span> and freelancers.
           </h1>
           <p style={{ textAlign: 'center', fontSize: 17, color: 'var(--ink-muted)', lineHeight: 1.65, maxWidth: '60ch', margin: 0 }}>
-            Local pricing in PKR. Fair USD for the rest of the world. Every plan includes a monthly credit allowance — top up only when you outgrow it.
+            Local pricing in PKR. Fair USD for the rest of the world. Every plan includes a monthly credit allowance, top up only when you outgrow it.
           </p>
           {/* Currency toggle */}
           <div role="tablist" style={{ display: 'inline-flex', padding: 4, gap: 2, background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 999 }}>
@@ -569,7 +569,7 @@ export default function PricingGrid() {
                   boxShadow: currency === k ? 'var(--shadow-sm)' : 'none',
                 }}
               >
-                {k === 'PKR' ? '₨ — Pakistan' : '$ — International'}
+                {k === 'PKR' ? '₨ Pakistan' : '$ International'}
               </button>
             ))}
           </div>
@@ -620,7 +620,7 @@ export default function PricingGrid() {
                   <Shield size={16} style={{ color: 'var(--of-primary)' }} /> {enterprisePlan.name}
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--ink-subtle)', marginTop: 4, maxWidth: 540 }}>
-                  {enterprisePlan.tagline} — BYOK, audit logs, SLA, optional on-prem. Talk to us about data residency, model preferences, and integration needs.
+                  {enterprisePlan.tagline}, BYOK, audit logs, SLA, optional on-prem. Talk to us about data residency, model preferences, and integration needs.
                 </div>
               </div>
               <Link href={enterprisePlan.href} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '11px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: 'white', background: 'var(--of-primary)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
@@ -888,7 +888,7 @@ export default function PricingGrid() {
               Common pricing questions.
             </h2>
             <p style={{ marginTop: 14, marginBottom: 18, color: 'var(--ink-subtle)', fontSize: 15, lineHeight: 1.6 }}>
-              Don&apos;t see yours? Talk to Owais directly — DMs open in the freelancer/agency communities Octively was built for.
+              Don&apos;t see yours? Talk to Owais directly, DMs open in the freelancer/agency communities Octively was built for.
             </p>
             <a
               href={waHref('Hi, I have a question about Octively pricing.')}

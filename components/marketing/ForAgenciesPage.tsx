@@ -13,7 +13,7 @@ const FEATURES = [
   {
     Icon: Palette,
     title: 'White-label branding',
-    body: 'Your logo. Your colours. Your domain (coming soon). Clients see your agency brand — never ours.',
+    body: 'Your logo. Your colours. Your domain (coming soon). Clients see your agency brand, never ours.',
   },
   {
     Icon: Users,
@@ -36,7 +36,7 @@ const AGENCY_PLAN = [
   'Unlimited bots',
   'Unlimited client portals',
   '50M credits / month',
-  'White-label — remove all Octively references',
+  'White-label, remove all Octively references',
   'Custom logo & colours per client',
   'Priority support',
   'Monthly or annual billing (PKR + USD)',
@@ -149,7 +149,7 @@ export default function ForAgenciesPage() {
       <section style={{ paddingBlock: '72px 64px', borderBottom: '1px solid var(--hairline)' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
           <div className="mkt-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 540px)', gap: 40, alignItems: 'center' }}>
-            {/* Left — copy */}
+            {/* Left, copy */}
             <div>
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', marginBottom: 18 }}>For agencies</p>
               <h1 style={{ fontSize: 'clamp(36px, 4.5vw, 54px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.07, marginBottom: 20 }}>
@@ -184,7 +184,7 @@ export default function ForAgenciesPage() {
                 ))}
               </div>
             </div>
-            {/* Right — visual */}
+            {/* Right, visual */}
             <div className="mkt-hero-mockup">
               <AgencyDashboard />
             </div>
@@ -229,7 +229,7 @@ export default function ForAgenciesPage() {
         <div style={{ maxWidth: 640, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
           <div style={{ fontSize: 56, color: 'var(--of-primary)', lineHeight: 1, marginBottom: 8, opacity: 0.3, fontFamily: 'Georgia, serif' }}>&ldquo;</div>
           <blockquote style={{ fontSize: 19, fontStyle: 'italic', lineHeight: 1.6, color: 'var(--ink)', marginBottom: 28, marginTop: 0 }}>
-            Tenant isolation is what got our retainer client to sign. They wouldn&apos;t touch a shared SaaS — now they review their own portal and never email me about it.
+            Tenant isolation is what got our retainer client to sign. They wouldn&apos;t touch a shared SaaS, now they review their own portal and never email me about it.
           </blockquote>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--of-primary)', display: 'grid', placeItems: 'center', color: 'white', fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: 13 }}>FZ</div>
@@ -285,7 +285,7 @@ const AGENCY_FAQS: FAQItem[] = [
   {
     question: 'How do agencies manage AI chatbots for multiple clients?',
     answer:
-      'Most agencies use a white-label platform rather than building something custom for every client. On Octively each client gets their own workspace — their own bot, branding, and login. You build and train from one dashboard, drop a script tag on their site, and they access a portal showing only their conversations and leads. You control billing and access behind the scenes.',
+      'Most agencies use a white-label platform rather than building something custom for every client. On Octively each client gets their own workspace, their own bot, branding, and login. You build and train from one dashboard, drop a script tag on their site, and they access a portal showing only their conversations and leads. You control billing and access behind the scenes.',
   },
   {
     question: 'Is there a per-client or per-seat fee?',
@@ -295,7 +295,7 @@ const AGENCY_FAQS: FAQItem[] = [
   {
     question: 'Can each client see only their own data?',
     answer:
-      'Yes. Tenant isolation is enforced at the database level. Each client portal shows only that client\'s conversations, leads, and analytics. No client can see another client\'s data, and they never see Octively branding — only your brand.',
+      'Yes. Tenant isolation is enforced at the database level. Each client portal shows only that client\'s conversations, leads, and analytics. No client can see another client\'s data, and they never see Octively branding, only your brand.',
   },
   {
     question: 'How long does it take to onboard a new client?',
@@ -305,6 +305,6 @@ const AGENCY_FAQS: FAQItem[] = [
   {
     question: 'What happens if a client wants to cancel?',
     answer:
-      'You can archive or delete a client workspace at any time. The client\'s portal access is immediately removed. Your plan cost stays the same — there is no per-seat reduction, but there is also no cancellation fee or minimum contract on monthly plans.',
+      'You can archive or delete a client workspace at any time. The client\'s portal access is immediately removed. Your plan cost stays the same, there is no per-seat reduction, but there is also no cancellation fee or minimum contract on monthly plans.',
   },
 ]

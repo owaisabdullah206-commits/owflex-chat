@@ -329,6 +329,25 @@ export const routingDecisions = pgTable('routing_decisions', {
   index('routing_decisions_message_id_idx').on(t.messageId),
 ])
 
+// ── SHORT LINKS ───────────────────────────────────────────────────────────────
+// Platform-admin only. Each code = octively.com/r/<code> → 302 to destination
+// with UTM params appended. Click count tracked in-DB (fire-and-forget).
+export const shortLinks = pgTable('short_links', {
+  id:           text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  code:         varchar('code', { length: 32 }).notNull().unique(),
+  label:        varchar('label', { length: 120 }),
+  destinationUrl: text('destination_url').notNull(),
+  utmSource:    varchar('utm_source',   { length: 100 }),
+  utmMedium:    varchar('utm_medium',   { length: 100 }),
+  utmCampaign:  varchar('utm_campaign', { length: 100 }),
+  utmTerm:      varchar('utm_term',     { length: 100 }),
+  utmContent:   varchar('utm_content',  { length: 100 }),
+  clickCount:   integer('click_count').notNull().default(0),
+  createdAt:    tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('short_links_code_idx').on(t.code),
+])
+
 // ── FEEDBACK ──────────────────────────────────────────────────────────────────
 // Developer-submitted feedback, bug reports, and suggestions from the dashboard.
 export const feedback = pgTable('feedback', {

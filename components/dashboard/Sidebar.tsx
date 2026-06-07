@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity, GitBranch, ClipboardList, MessageSquarePlus } from 'lucide-react'
+import { Bot, Users, UserCheck, CreditCard, Settings, LogOut, BarChart2, Cpu, Shield, Activity, GitBranch, ClipboardList, MessageSquarePlus, Link2 } from 'lucide-react'
 import { authClient } from '@/lib/auth/client'
 import { cn } from '@/lib/utils'
 import { OctivelyMark } from '@/components/brand/OctivelyMark'
@@ -24,6 +24,7 @@ const adminItems = [
   { href: '/dashboard/admin/models',     label: 'Models',     icon: Cpu },
   { href: '/dashboard/admin/platform',   label: 'Platform',   icon: Shield },
   { href: '/dashboard/admin/audit',      label: 'Audit Log',  icon: ClipboardList },
+  { href: '/dashboard/admin/links',      label: 'Short links', icon: Link2 },
 ]
 
 function NavLink({ href, label, icon: Icon, pathname, badge }: {

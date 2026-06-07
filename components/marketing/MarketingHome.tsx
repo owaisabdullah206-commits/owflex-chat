@@ -489,7 +489,7 @@ function LogoBar() {
             alignItems: 'center',
           }}
         >
-          Trusted by Pakistani developers building for —
+          Trusted by Pakistani developers building for
         </div>
 
       <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
@@ -550,7 +550,7 @@ function ProblemStrip() {
     {
       Icon: Clock,
       h: 'Custom portals take weeks',
-      p: 'Auth, RBAC, billing, analytics, lead export — six weeks of work nobody pays you extra for. And it never feels finished.',
+      p: 'Auth, RBAC, billing, analytics, lead export. Six weeks of work nobody pays you extra for, and it never feels finished.',
     },
     {
       Icon: PackageX,
@@ -632,6 +632,84 @@ function ProblemStrip() {
   )
 }
 
+// ─── Opportunity (ROI worked example) ───────────────────────────────────────────
+
+function OpportunityStrip() {
+  const tiles = [
+    { value: '₨50,000', label: 'A website you already build' },
+    { value: '+ ₨10,000 / mo', label: 'An AI chatbot you add on', accent: true },
+    { value: '₨120,000 / yr', label: 'New recurring income, per client' },
+  ]
+  return (
+    <section style={{ paddingBlock: 80, borderBottom: '1px solid var(--hairline)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <Reveal style={{ marginBottom: 36 }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--of-primary)',
+              fontWeight: 500,
+            }}
+          >
+            The opportunity
+          </span>
+          <h2
+            style={{
+              marginTop: 10,
+              fontSize: 'clamp(26px, 3vw, 36px)',
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+              maxWidth: 720,
+            }}
+          >
+            One client. One upsell. ₨120,000 a year.
+          </h2>
+          <p style={{ marginTop: 12, color: 'var(--ink-muted)', fontSize: 16, lineHeight: 1.6, maxWidth: 620 }}>
+            You do not need new clients to grow your income. You need one more service to sell the clients you already have.
+          </p>
+        </Reveal>
+        <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          {tiles.map(({ value, label, accent }, i) => (
+            <Reveal key={i} delay={i * 80}>
+              <div
+                style={{
+                  background: accent ? 'var(--of-primary-soft)' : 'var(--surface)',
+                  border: `1px solid ${accent ? 'rgba(14,165,233,.35)' : 'var(--hairline)'}`,
+                  borderRadius: 12,
+                  padding: 24,
+                  height: '100%',
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 'clamp(22px, 2.4vw, 28px)',
+                    fontWeight: 700,
+                    letterSpacing: '-0.02em',
+                    color: accent ? 'var(--of-primary-deep)' : 'var(--ink)',
+                  }}
+                >
+                  {value}
+                </div>
+                <p style={{ color: 'var(--ink-subtle)', fontSize: 14, margin: '8px 0 0', lineHeight: 1.5 }}>{label}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal delay={260}>
+          <p style={{ marginTop: 24, color: 'var(--ink-muted)', fontSize: 15, lineHeight: 1.6, maxWidth: 720 }}>
+            Octively costs you ₨2,500 to ₨7,500 a month. On a ₨10,000 retainer, that is a 50 to 75 percent margin.
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 // ─── How It Works ─────────────────────────────────────────────────────────────
 
 function HowItWorks() {
@@ -640,13 +718,13 @@ function HowItWorks() {
       Icon: Code2,
       n: '01',
       h: 'Drop in the embed script',
-      p: 'One tiny script tag — loads async, no impact on page speed. Drop it on WordPress, Shopify, Wix, or plain HTML. Streaming replies appear token-by-token so visitors see responses instantly.',
+      p: 'One tiny script tag that loads async, with no impact on page speed. Drop it on WordPress, Shopify, Wix, or plain HTML. Streaming replies appear token by token so visitors see responses instantly.',
     },
     {
       Icon: UserPlus,
       n: '02',
       h: 'Invite your client to their portal',
-      p: 'They get a magic link to app.octively.com. White-labelled on Agency plan — they see your branding, not ours.',
+      p: 'They get a magic link to app.octively.com. White-labelled on the Agency plan, so they see your branding, not ours.',
     },
     {
       Icon: BarChart3,
@@ -1120,7 +1198,7 @@ function FeatureBento() {
             <BentoTile span={2} Icon={Shield} title="Tenant isolation" sub="Every query scoped to bot_id. No cross-leaks. Audited by design.">
               <BentoIsolation />
             </BentoTile>
-            <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One tiny script tag, zero dependencies, loads async. Drop it on WordPress, Shopify, or any HTML site — no impact on your client's page speed or Core Web Vitals.">
+            <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One tiny script tag, zero dependencies, loads async. Drop it on WordPress, Shopify, or any HTML site, with no impact on your client's page speed or Core Web Vitals.">
               <BentoBotStack />
             </BentoTile>
           </div>
@@ -1324,7 +1402,7 @@ function PricingTeaser() {
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers — and I bill them ₨15k/mo for the dashboard. Octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers, and I bill them ₨15k/mo for the dashboard. Octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
   { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to Octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
   { q: 'The credit system is the killer feature. I let small clients use the included models, and upsell premium clients onto flagship tiers without lifting a finger.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
   { q: 'I onboarded a tea-export client in 12 minutes. They were sending Urdu queries to the bot and getting Urdu replies. Their finance team now exports leads to CSV themselves.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
@@ -1332,7 +1410,7 @@ const QUOTES_ROW_1 = [
 const QUOTES_ROW_2 = [
   { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single Octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
   { q: 'Switched four clients off Botpress in a weekend. Embed key swap, that\'s the whole migration. Conversation history came along via the import endpoint.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
-  { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS — now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
+  { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS. Now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
   { q: 'I bill in PKR via PayFast, my UK client pays USD via Lemon Squeezy, both land in the same dashboard. No more two-spreadsheet accounting.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
 ]
 
@@ -1622,7 +1700,7 @@ function HeroLeadCopy() {
         }}
       >
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)' }} />
-        v1.1.0 — Now in beta
+        v1.1.0 · Now in beta
       </span>
       <h1
         style={{
@@ -1634,12 +1712,12 @@ function HeroLeadCopy() {
           color: 'var(--ink)',
         }}
       >
-        Give every client their own
+        Turn clients you already have into
         <br />
-        <span style={{ color: 'var(--of-primary)' }}>chatbot portal.</span>
+        <span style={{ color: 'var(--of-primary)' }}>monthly AI chatbot retainers.</span>
       </h1>
       <p style={{ fontSize: 17, color: 'var(--ink-muted)', lineHeight: 1.65, margin: 0, maxWidth: '52ch' }}>
-        Octively runs your AI chatbots and gives every client their own portal. Conversations, leads, analytics. One embed script. No rebuilding.
+        Add an AI chatbot to the sites you already build and manage. Each client gets their own branded portal for conversations, leads, and analytics, and you add ₨10,000 to ₨30,000 a month in recurring income. One script to embed, nothing to rebuild.
       </p>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <Link
@@ -1661,8 +1739,8 @@ function HeroLeadCopy() {
         >
           Start free <ArrowRight size={16} />
         </Link>
-        <a
-          href="#"
+        <Link
+          href="/guide"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -1678,7 +1756,7 @@ function HeroLeadCopy() {
           }}
         >
           Watch 60-sec demo
-        </a>
+        </Link>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 14, color: 'var(--ink-muted)', fontSize: 13, marginTop: 4 }}>
         <span style={{ fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1698,27 +1776,27 @@ const HOME_FAQS: FAQItem[] = [
   {
     question: 'What is a white-label AI chatbot platform?',
     answer:
-      'A white-label AI chatbot platform lets you build AI chatbots for other businesses and brand them as your own — no vendor logo, your colours, your domain. Octively is built for freelancers and agencies. You create the bot in a visual dashboard, paste one script tag on the client\'s site, and each client gets a login to their own portal where they can read conversations, view captured leads, and check analytics.',
+      'A white-label AI chatbot platform lets you build AI chatbots for other businesses and brand them as your own, with no vendor logo, your colours, and your domain. Octively is built for freelancers and agencies. You create the bot in a visual dashboard, paste one script tag on the client\'s site, and each client gets a login to their own portal where they can read conversations, view captured leads, and check analytics.',
   },
   {
     question: 'Do I need to know how to code?',
     answer:
-      'No. You build and train the bot from a visual dashboard — no code required. The only technical step is pasting a single script tag on your client\'s website, and Octively provides step-by-step guides for every major platform (WordPress, Webflow, Shopify, and others).',
+      'No. You build and train the bot from a visual dashboard, with no code required. The only technical step is pasting a single script tag on your client\'s website, and Octively provides step-by-step guides for every major platform (WordPress, Webflow, Shopify, and others).',
   },
   {
     question: 'How do my clients access their data?',
     answer:
-      'Each client gets an invite to their own branded portal on your domain. They log in and see only their conversations, leads, and analytics. You control access levels — read-only or full access. They never see other clients\' data, and they never see Octively branding.',
+      'Each client gets an invite to their own branded portal on your domain. They log in and see only their conversations, leads, and analytics. You control access levels, either read-only or full access. They never see other clients\' data, and they never see Octively branding.',
   },
   {
     question: 'What does Octively cost?',
     answer:
-      'There is a permanent free plan with one bot and up to 100 conversations a month — no credit card needed. Paid plans start at ₨2,500/month in Pakistan or $15/month internationally. The Agency plan at ₨20,000/month ($79) covers unlimited client portals with no per-seat fees.',
+      'There is a permanent free plan with one bot and up to 200 conversations a month, with no credit card needed. Paid plans start at ₨2,500/month in Pakistan or $15/month internationally. The Agency plan at ₨20,000/month ($79) covers unlimited client portals with no per-seat fees.',
   },
   {
     question: 'Is there a per-message or per-conversation fee?',
     answer:
-      'No. All plans include a conversation allowance — you pay the flat monthly rate, not per message. There are no surprise usage bills. If you exceed your plan\'s limit, you can upgrade or purchase a top-up pack.',
+      'No. All plans include a conversation allowance, so you pay the flat monthly rate, not per message. There are no surprise usage bills. If you exceed your plan\'s limit, you can upgrade or purchase a top-up pack.',
   },
 ]
 
@@ -1767,6 +1845,7 @@ export default function MarketingHome() {
       <LogoBar />
 
       <ProblemStrip />
+      <OpportunityStrip />
       <HowItWorks />
       <FeatureBento />
       <PricingTeaser />

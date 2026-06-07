@@ -5,12 +5,12 @@ import { JsonLd, breadcrumbSchema, faqSchema } from '@/components/shared/JsonLd'
 export const metadata: Metadata = {
   title: 'AI Chatbot Platform for Freelancers',
   description:
-    'Add an AI chatbot to any client project without coding. Each client gets their own branded portal to see conversations and leads — and you earn a recurring monthly retainer. Free plan to start.',
+    'Add an AI chatbot to any client project without coding. Each client gets their own branded portal to see conversations and leads, and you earn a recurring monthly retainer. Free plan to start.',
   alternates: { canonical: '/for-freelancers' },
   openGraph: {
-    title: 'AI Chatbot Platform for Freelancers — Octively',
+    title: 'AI Chatbot Platform for Freelancers | Octively',
     description:
-      'Add an AI chatbot to any client project — no coding. Clients get their own portal. Earn recurring revenue.',
+      'Add an AI chatbot to any client project, no coding. Clients get their own portal. Earn recurring revenue.',
     url: '/for-freelancers',
   },
 }
@@ -24,7 +24,7 @@ const FREELANCER_FAQ_SCHEMA = faqSchema([
   {
     question: 'Can I use Octively for free on my first client project?',
     answer:
-      'Yes. The free plan is permanent with no trial period or expiry. It covers one bot and up to 100 conversations a month. You can deploy a real chatbot on a real client site at no cost and bill a retainer on top.',
+      'Yes. The free plan is permanent with no trial period or expiry. It covers one bot and up to 200 conversations a month. You can deploy a real chatbot on a real client site at no cost and bill a retainer on top.',
   },
   {
     question: 'Does setting up a chatbot require coding skills?',
@@ -39,7 +39,7 @@ const FREELANCER_FAQ_SCHEMA = faqSchema([
   {
     question: 'Will clients see Octively branding in their portal?',
     answer:
-      'No. The client portal shows your branding — your name, your colours, your domain. Octively is invisible to your clients.',
+      'No. The client portal shows your branding: your name, your colours, your domain. Octively is invisible to your clients.',
   },
 ])
 
