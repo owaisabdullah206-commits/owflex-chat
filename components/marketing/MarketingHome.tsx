@@ -666,11 +666,7 @@ function OpportunityStrip() {
               maxWidth: 720,
             }}
           >
-            One client. One upsell.{' '}
-            <span style={{ fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
-              <span style={{ fontSize: '0.7em', fontWeight: 700 }}>₨</span>120,000
-            </span>{' '}
-            a year.
+            One client. One upsell. ₨120,000 a year.
           </h2>
           <p style={{ marginTop: 12, color: 'var(--ink-muted)', fontSize: 16, lineHeight: 1.6, maxWidth: 620 }}>
             You do not need new clients to grow your income. You need one more service to sell the clients you already have.
@@ -678,7 +674,7 @@ function OpportunityStrip() {
         </Reveal>
 
         {/* Tiles with arrows between them — mkt-opp-grid collapses to 1fr on mobile */}
-        <div className="mkt-opp-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'start' }}>
+        <div className="mkt-opp-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'center' }}>
           {tiles.map(({ num, suffix, label, sub, accent }, i) => (
             <>
               <Reveal key={i} delay={i * 80}>
@@ -747,8 +743,8 @@ function OpportunityStrip() {
                   </div>
                   {/* Mobile: vertical ↓ */}
                   <div key={`opp-v-${i}`} className="mkt-opp-sep-v" style={{
-                    justifyContent: 'flex-start',
-                    padding: '12px 0',
+                    justifyContent: 'center',
+                    padding: '8px 0',
                     color: 'var(--of-primary)',
                     opacity: 0.65,
                   }}>
@@ -885,11 +881,11 @@ function HowItWorks() {
               </Reveal>
               {i < steps.length - 1 && (
                 <>
-                  {/* Desktop: horizontal → arrow */}
+                  {/* Desktop: horizontal → arrow — paddingTop 11 centers it on the 44px icon box */}
                   <div key={`sep-h-${i}`} className="mkt-sep-h" style={{
                     alignItems: 'flex-start',
-                    paddingTop: 10,
-                    paddingInline: 16,
+                    paddingTop: 11,
+                    paddingInline: 12,
                     color: 'var(--of-primary)',
                     opacity: 0.65,
                   }}>
@@ -899,8 +895,8 @@ function HowItWorks() {
                   </div>
                   {/* Mobile: vertical ↓ arrow */}
                   <div key={`sep-v-${i}`} className="mkt-sep-v" style={{
-                    justifyContent: 'flex-start',
-                    padding: '12px 0',
+                    justifyContent: 'center',
+                    padding: '8px 0',
                     color: 'var(--of-primary)',
                     opacity: 0.65,
                   }}>
