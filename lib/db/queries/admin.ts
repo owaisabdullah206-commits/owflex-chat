@@ -107,8 +107,29 @@ export async function getPlatformStats() {
   const llmCostUsd  = parseFloat(costStats[0]?.total ?? '0')
   const creditRevUsd = parseFloat(creditRevenue[0]?.total ?? '0')
 
+  // Activation: developers who have created at least one bot
+  const [activatedDevs] = await db
+    .select({ cnt: sql<number>`COUNT(DISTINCT owner_id)::int` })
+    .from(schema.organizations)
+    .innerJoin(schema.bots, eq(schema.bots.orgId, schema.organizations.id))
+
+  // Short-link total clicks
+  const [linkClicks] = await db
+    .select({ total: sql<number>`COALESCE(SUM(click_count), 0)::int` })
+    .from(schema.shortLinks)
+
+  const totalDevs   = devCount[0]?.total ?? 0
+  const activatedCount = activatedDevs?.cnt ?? 0
+  const activationRate = totalDevs > 0 ? Math.round((activatedCount / totalDevs) * 100) : 0
+  const freeToPaidRate = totalDevs > 0 ? Math.round((paidCount       / totalDevs) * 100) : 0
+
+  // Gross margin % = (creditRevUsd - llmCostUsd) / creditRevUsd * 100
+  const grossMarginPct = creditRevUsd > 0
+    ? Math.round(((creditRevUsd - llmCostUsd) / creditRevUsd) * 100)
+    : null
+
   return {
-    totalDevelopers:    devCount[0]?.total ?? 0,
+    totalDevelopers:    totalDevs,
     paidDevelopers:     paidCount,
     planBreakdown,
     totalBots:          botStats[0]?.total ?? 0,
@@ -119,7 +140,13 @@ export async function getPlatformStats() {
     llmCostUsd,
     creditRevenueUsd:   creditRevUsd,
     grossProfitUsd:     creditRevUsd - llmCostUsd,
+    grossMarginPct,
     newSignupsThisMonth: newSignups[0]?.cnt ?? 0,
+    // Monitoring dashboard additions
+    activatedDevelopers: activatedCount,
+    activationRatePct:   activationRate,
+    freeToPaidRatePct:   freeToPaidRate,
+    shortLinkClicksTotal: linkClicks?.total ?? 0,
   }
 }
 
