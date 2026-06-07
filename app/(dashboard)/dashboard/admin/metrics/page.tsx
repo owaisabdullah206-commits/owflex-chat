@@ -26,10 +26,16 @@ function Label({ children }: { children: React.ReactNode }) {
 }
 
 function Big({ children, color }: { children: React.ReactNode; color?: string }) {
+  const str = typeof children === 'string' ? children : null
   return (
     <p className={`text-[28px] font-bold leading-none tracking-tight ${color ?? 'text-[var(--ink)]'}`}
       style={{ fontFamily: 'var(--font-mono)' }}>
-      {children}
+      {str?.startsWith('₨') ? (
+        <>
+          <span style={{ fontSize: '0.55em', fontWeight: 600, verticalAlign: 'middle' }}>₨</span>
+          {str.slice(1)}
+        </>
+      ) : children}
     </p>
   )
 }

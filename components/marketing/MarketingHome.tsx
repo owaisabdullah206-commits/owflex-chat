@@ -691,9 +691,17 @@ function OpportunityStrip() {
                     fontWeight: 700,
                     letterSpacing: '-0.02em',
                     color: accent ? 'var(--of-primary-deep)' : 'var(--ink)',
+                    lineHeight: 1,
                   }}
                 >
-                  {value}
+                  {/* Render ₨ smaller so it doesn't overpower the number — same pattern as PricingGrid */}
+                  {value.startsWith('₨') || value.startsWith('+') ? (
+                    <>
+                      {value.startsWith('+') && <span style={{ fontSize: '0.65em', fontWeight: 600, marginRight: 2 }}>+</span>}
+                      <span style={{ fontSize: '0.55em', fontWeight: 600, verticalAlign: 'middle' }}>₨</span>
+                      {value.replace(/^\+\s*/, '').replace('₨', '')}
+                    </>
+                  ) : value}
                 </div>
                 <p style={{ color: 'var(--ink-subtle)', fontSize: 14, margin: '8px 0 0', lineHeight: 1.5 }}>{label}</p>
               </div>
