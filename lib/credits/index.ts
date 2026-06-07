@@ -28,6 +28,32 @@ function creditKey(orgId: string): string {
   return `credits:${orgId}`
 }
 
+// Per-bot monthly credit counter. Key resets naturally after 35 days (TTL).
+function botCreditKey(botId: string): string {
+  const now = new Date()
+  return `bot-credits:${botId}:${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
+/** Check whether a bot has headroom in its monthly credit budget (if set). */
+export async function checkBotCreditBudget(
+  botId: string,
+  monthlyCreditBudget: number | null | undefined,
+): Promise<{ allowed: boolean }> {
+  if (!monthlyCreditBudget) return { allowed: true }
+  const redis = getRedis()
+  const used = await redis.get<number>(botCreditKey(botId))
+  return { allowed: (Number(used) || 0) < monthlyCreditBudget }
+}
+
+/** Increment per-bot monthly credit counter after a successful debit. Fire-and-forget. */
+export async function incrementBotCreditUsage(botId: string, amount: number): Promise<void> {
+  const redis = getRedis()
+  const key = botCreditKey(botId)
+  await redis.incrby(key, amount)
+  // 35-day TTL: covers the full billing month plus a few days of overlap
+  await redis.expire(key, 35 * 24 * 60 * 60)
+}
+
 export async function getBalance(orgId: string, plan?: string): Promise<number> {
   const redis = getRedis()
   const val = await redis.get<number>(creditKey(orgId))

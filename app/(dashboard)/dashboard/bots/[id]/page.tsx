@@ -55,7 +55,11 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       smartRoutingEnabled: schema.bots.smartRoutingEnabled,
       routingLightModel:   schema.bots.routingLightModel,
       routingStrongModel:  schema.bots.routingStrongModel,
-      webhookUrl:          schema.bots.webhookUrl,
+      webhookUrl:           schema.bots.webhookUrl,
+      monthlyConvLimit:     schema.bots.monthlyConvLimit,
+      monthlyLeadLimit:     schema.bots.monthlyLeadLimit,
+      monthlyCreditBudget:  schema.bots.monthlyCreditBudget,
+      allowedModels:        schema.bots.allowedModels,
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -366,7 +370,11 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         productRecommendationsEnabled: (wc.productRecommendationsEnabled as boolean) === true,
                       }
                     })(),
-                    webhookUrl: bot.webhookUrl ?? '',
+                    webhookUrl:           bot.webhookUrl ?? '',
+                    monthlyConvLimit:     bot.monthlyConvLimit ?? null,
+                    monthlyLeadLimit:     bot.monthlyLeadLimit ?? null,
+                    monthlyCreditBudget:  bot.monthlyCreditBudget ?? null,
+                    allowedModels:        (bot.allowedModels as string[] | null) ?? null,
                   }}
                 />
               </div>

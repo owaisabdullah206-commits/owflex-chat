@@ -158,8 +158,11 @@ export async function POST(req: NextRequest) {
         smartRoutingEnabled: schema.bots.smartRoutingEnabled,
         routingLightModel:   schema.bots.routingLightModel,
         routingStrongModel:  schema.bots.routingStrongModel,
-        monthlyConvLimit:    schema.bots.monthlyConvLimit,
-        ownerEmail:          schema.users.email,
+        monthlyConvLimit:     schema.bots.monthlyConvLimit,
+        monthlyLeadLimit:     schema.bots.monthlyLeadLimit,
+        monthlyCreditBudget:  schema.bots.monthlyCreditBudget,
+        allowedModels:        schema.bots.allowedModels,
+        ownerEmail:           schema.users.email,
         clientEmail: sql<string | null>`(
           SELECT email FROM users WHERE id = ${schema.bots.clientUserId}
         )`,
@@ -350,6 +353,18 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Per-bot credit budget check (before org-level debit)
+    const { allowed: botBudgetAllowed } = await creditLib.checkBotCreditBudget(
+      bot.id,
+      bot.monthlyCreditBudget,
+    )
+    if (!botBudgetAllowed) {
+      return NextResponse.json(
+        { error: 'Monthly credit limit for this bot has been reached.', code: 'BOT_CREDIT_LIMIT', status: 402 },
+        { status: 402 },
+      )
+    }
+
     // Debit-first: estimate tokens, debit before LLM call
     const estimatedTokens = Math.ceil(message.length / 4) * 3
     const { ok: creditOk, balance: postDebitBalance } = await creditLib.debit(bot.orgId, estimatedTokens)
@@ -362,6 +377,14 @@ export async function POST(req: NextRequest) {
 
     // Smart routing (if enabled — router handles its own debit/refund for strong model)
     let resolvedModel = bot.model
+
+    // If the agency restricted allowed models for this bot, clamp to the first allowed model
+    if (bot.allowedModels && (bot.allowedModels as string[]).length > 0) {
+      const allowed = bot.allowedModels as string[]
+      if (!allowed.includes(resolvedModel)) {
+        resolvedModel = allowed[0]
+      }
+    }
     let routingDecisionData: {
       classification: string
       classifierModel: string
@@ -497,6 +520,8 @@ export async function POST(req: NextRequest) {
           // Log credit transaction
           if (creditOk) {
             await creditLib.logTransaction(bot.orgId, -tokensUsed, 'chat_debit', insertedMsg.id)
+            // Per-bot budget counter (fire-and-forget)
+            void creditLib.incrementBotCreditUsage(bot.id, tokensUsed)
           }
 
           // Record routing decision

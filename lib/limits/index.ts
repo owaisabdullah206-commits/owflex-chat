@@ -72,7 +72,10 @@ export async function checkConversationLimit(
   return { allowed: org.conversationsThisMonth < limits.conversations }
 }
 
-export async function checkLeadLimit(orgId: string): Promise<{ allowed: boolean }> {
+export async function checkLeadLimit(
+  orgId: string,
+  botId?: string,
+): Promise<{ allowed: boolean }> {
   const [org] = await db
     .select({ plan: schema.organizations.plan, leadsThisMonth: schema.organizations.leadsThisMonth })
     .from(schema.organizations)
@@ -80,6 +83,32 @@ export async function checkLeadLimit(orgId: string): Promise<{ allowed: boolean 
     .limit(1)
 
   if (!org) return { allowed: false }
+
+  // Per-bot cap: enforced before the org-wide limit
+  if (botId) {
+    const [bot] = await db
+      .select({ monthlyLeadLimit: schema.bots.monthlyLeadLimit })
+      .from(schema.bots)
+      .where(and(eq(schema.bots.id, botId), eq(schema.bots.orgId, orgId)))
+      .limit(1)
+
+    if (bot?.monthlyLeadLimit !== null && bot?.monthlyLeadLimit !== undefined) {
+      const startOfMonth = new Date()
+      startOfMonth.setUTCDate(1)
+      startOfMonth.setUTCHours(0, 0, 0, 0)
+
+      const [row] = await db
+        .select({ cnt: count() })
+        .from(schema.leads)
+        .where(and(
+          eq(schema.leads.botId, botId),
+          gte(schema.leads.capturedAt, startOfMonth),
+        ))
+
+      if ((row?.cnt ?? 0) >= bot.monthlyLeadLimit) return { allowed: false }
+    }
+  }
+
   const limits = getLimits(org.plan)
   return { allowed: org.leadsThisMonth < limits.leads }
 }

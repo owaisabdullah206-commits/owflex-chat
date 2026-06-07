@@ -83,6 +83,10 @@ interface BotSettingsFormProps {
     theme: 'light' | 'dark'
     productRecommendationsEnabled: boolean
     webhookUrl: string
+    monthlyConvLimit:    number | null
+    monthlyLeadLimit:    number | null
+    monthlyCreditBudget: number | null
+    allowedModels:       string[] | null
   }
 }
 
@@ -120,6 +124,9 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [productRecsEnabled, setProductRecs]    = useState(initial.productRecommendationsEnabled)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>(initial.theme)
   const [webhookUrl, setWebhookUrl]             = useState(initial.webhookUrl)
+  const [convLimit, setConvLimit]               = useState<string>(initial.monthlyConvLimit?.toString() ?? '')
+  const [leadLimit, setLeadLimit]               = useState<string>(initial.monthlyLeadLimit?.toString() ?? '')
+  const [creditBudget, setCreditBudget]         = useState<string>(initial.monthlyCreditBudget?.toString() ?? '')
 
   const isFreePlan      = orgPlan === 'free'
   const isStarterOrFree = orgPlan === 'free' || orgPlan === 'starter'
@@ -167,6 +174,9 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           productRecommendationsEnabled: productRecsEnabled,
         },
         webhookUrl: webhookUrl.trim() || '',
+        monthlyConvLimit:    convLimit    ? parseInt(convLimit,    10) : null,
+        monthlyLeadLimit:    leadLimit    ? parseInt(leadLimit,    10) : null,
+        monthlyCreditBudget: creditBudget ? parseInt(creditBudget, 10) : null,
       })
       if (result.error) {
         setError(result.error)
@@ -732,6 +742,62 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             </p>
           </div>
         </div>
+
+        {/* ── Usage & Limits (pro / agency / enterprise) ── */}
+        {!isStarterOrFree && (
+          <div className="pt-6 mt-2 border-t border-[var(--hairline)]">
+            <p
+              className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1"
+              style={{ fontFamily: 'var(--font-mono)' }}
+            >
+              usage limits
+            </p>
+            <p className="text-xs text-[var(--ink-muted)] mb-3">
+              Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="convLimit" className="text-xs text-[var(--ink-muted)]">Max conversations / month</Label>
+                <Input
+                  id="convLimit"
+                  type="number"
+                  min={1}
+                  value={convLimit}
+                  onChange={(e) => { setConvLimit(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="leadLimit" className="text-xs text-[var(--ink-muted)]">Max leads / month</Label>
+                <Input
+                  id="leadLimit"
+                  type="number"
+                  min={1}
+                  value={leadLimit}
+                  onChange={(e) => { setLeadLimit(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="creditBudget" className="text-xs text-[var(--ink-muted)]">Credit budget / month</Label>
+                <Input
+                  id="creditBudget"
+                  type="number"
+                  min={1}
+                  value={creditBudget}
+                  onChange={(e) => { setCreditBudget(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Submit */}
         <div className="flex items-center gap-3 pt-2">

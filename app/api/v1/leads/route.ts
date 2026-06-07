@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, count, eq, gte, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { getLeadsRatelimit } from '@/lib/ratelimit'
 import { PLAN_LIMITS } from '@/lib/limits'
@@ -57,11 +57,12 @@ export async function POST(req: NextRequest) {
       .select({
         id:             schema.bots.id,
         orgId:          schema.bots.orgId,
-        embedKey:       schema.bots.embedKey,
-        orgPlan:        schema.organizations.plan,
-        leadsThisMonth: schema.organizations.leadsThisMonth,
-        ownerEmail:     schema.users.email,
-        webhookUrl:     schema.bots.webhookUrl,
+        embedKey:           schema.bots.embedKey,
+        orgPlan:            schema.organizations.plan,
+        leadsThisMonth:     schema.organizations.leadsThisMonth,
+        ownerEmail:         schema.users.email,
+        webhookUrl:         schema.bots.webhookUrl,
+        monthlyLeadLimit:   schema.bots.monthlyLeadLimit,
       })
       .from(schema.bots)
       .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -76,12 +77,24 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Determine if this lead would exceed the plan limit
+    // Determine if this lead would exceed limits (plan-level or per-bot cap)
     const planKey = (bot.orgPlan in PLAN_LIMITS ? bot.orgPlan : 'free') as keyof typeof PLAN_LIMITS
     const leadLimit = PLAN_LIMITS[planKey].leads
     const newLeadCount = bot.leadsThisMonth + 1
     // Lead is hidden when it pushes the org past the plan ceiling (Infinity = unlimited)
-    const hiddenByLimit = leadLimit !== Infinity && newLeadCount > (leadLimit as number)
+    let hiddenByLimit = leadLimit !== Infinity && newLeadCount > (leadLimit as number)
+
+    // Per-bot lead cap: also hide if the bot has its own monthly lead limit
+    if (!hiddenByLimit && bot.monthlyLeadLimit !== null && bot.monthlyLeadLimit !== undefined) {
+      const startOfMonth = new Date()
+      startOfMonth.setUTCDate(1)
+      startOfMonth.setUTCHours(0, 0, 0, 0)
+      const [row] = await db
+        .select({ cnt: count() })
+        .from(schema.leads)
+        .where(and(eq(schema.leads.botId, bot.id), gte(schema.leads.capturedAt, startOfMonth)))
+      if ((row?.cnt ?? 0) >= bot.monthlyLeadLimit) hiddenByLimit = true
+    }
 
     // Find conversation by sessionId + botId (nullable)
     const [conversation] = await db

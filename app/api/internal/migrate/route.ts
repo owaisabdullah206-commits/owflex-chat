@@ -118,6 +118,28 @@ export async function POST(req: NextRequest) {
       AND (system_prompt LIKE '%Octively%' OR system_prompt = '' OR system_prompt = 'You are a helpful assistant.')
   `)
 
+  // ── 0010 — short_links table ─────────────────────────────────────────────────
+  await run('short_links table', sql`
+    CREATE TABLE IF NOT EXISTS "short_links" (
+      "id" text PRIMARY KEY,
+      "code" varchar(32) NOT NULL UNIQUE,
+      "label" varchar(120),
+      "destination_url" text NOT NULL,
+      "utm_source" varchar(100),
+      "utm_medium" varchar(100),
+      "utm_campaign" varchar(100),
+      "utm_term" varchar(100),
+      "utm_content" varchar(100),
+      "click_count" integer NOT NULL DEFAULT 0,
+      "created_at" timestamptz NOT NULL DEFAULT now()
+    )
+  `)
+  await run('short_links_code_idx', sql`CREATE INDEX IF NOT EXISTS "short_links_code_idx" ON "short_links"("code")`)
+
+  // ── 0011 / WS4 — per-bot resource controls (agency/pro) ─────────────────
+  await run('bots.monthly_credit_budget', sql`ALTER TABLE "bots" ADD COLUMN IF NOT EXISTS "monthly_credit_budget" integer`)
+  await run('bots.allowed_models',        sql`ALTER TABLE "bots" ADD COLUMN IF NOT EXISTS "allowed_models" jsonb`)
+
   // ── 0010 — correct legacy free-tier Redis balances ───────────────────────────
   // Orgs created before May 2026 were seeded with 50 K credits instead of 2 M.
   // For each org whose Redis balance is ≤ 50 000, we add:

@@ -107,6 +107,10 @@ export const bots = pgTable('bots', {
   monthlyLeadLimit:    integer('monthly_lead_limit'),
   // Outbound lead webhook — POST to this URL when a lead is captured (null = disabled)
   webhookUrl:          text('webhook_url'),
+  // Per-bot credit budget (null = no bot-level cap, draws from org pool freely)
+  monthlyCreditBudget: integer('monthly_credit_budget'),
+  // Allowed model IDs (null = all models the org plan permits)
+  allowedModels:       jsonb('allowed_models').$type<string[]>(),
   createdAt:           tsz('created_at').defaultNow().notNull(),
 }, (t) => [
   index('bots_embed_key_idx').on(t.embedKey),

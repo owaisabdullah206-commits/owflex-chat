@@ -17,6 +17,11 @@ const updateBotSchema = z.object({
   routingLightModel:   z.enum(SUPPORTED_MODELS).nullable().optional(),
   routingStrongModel:  z.enum(SUPPORTED_MODELS).nullable().optional(),
   webhookUrl: z.string().url().max(500).or(z.literal('')).optional(),
+  // Per-bot resource controls (agency/pro only). null = remove the cap.
+  monthlyConvLimit:    z.number().int().min(1).nullable().optional(),
+  monthlyLeadLimit:    z.number().int().min(1).nullable().optional(),
+  monthlyCreditBudget: z.number().int().min(1).nullable().optional(),
+  allowedModels:       z.array(z.enum(SUPPORTED_MODELS)).nullable().optional(),
   widgetConfig: z.object({
     primaryColor:       z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     position:           z.enum(['bottom-right', 'bottom-left']).optional(),
@@ -88,6 +93,19 @@ export async function updateBot(
   if (parsed.data.webhookUrl !== undefined) {
     // Empty string → clear the webhook
     update.webhookUrl = parsed.data.webhookUrl === '' ? null : parsed.data.webhookUrl
+  }
+
+  // Per-bot resource controls — agency and pro plans only
+  const canSetLimits = ['pro', 'agency', 'enterprise'].includes(botRow.orgPlan)
+  if (canSetLimits) {
+    if (parsed.data.monthlyConvLimit !== undefined)
+      update.monthlyConvLimit    = parsed.data.monthlyConvLimit
+    if (parsed.data.monthlyLeadLimit !== undefined)
+      update.monthlyLeadLimit    = parsed.data.monthlyLeadLimit
+    if (parsed.data.monthlyCreditBudget !== undefined)
+      update.monthlyCreditBudget = parsed.data.monthlyCreditBudget
+    if (parsed.data.allowedModels !== undefined)
+      update.allowedModels       = parsed.data.allowedModels
   }
 
   if (parsed.data.widgetConfig !== undefined) {
