@@ -233,7 +233,7 @@ export function LandingPreloader() {
                 Octively
               </div>
               <div style={{ fontSize: 13, color: INK_SUBTLE, letterSpacing: '-0.01em' }}>
-                The client dashboard layer for custom AI
+                AI chatbot retainers for your existing clients
               </div>
             </div>
 
@@ -253,7 +253,7 @@ export function LandingPreloader() {
                 color:                'transparent',
                 animation:            'oct-lp-shimmer 2.4s ease-in-out infinite',
               }}>
-                Welcome to Octively
+                Turn clients into retainers
               </span>
 
               {/* Indeterminate progress track */}

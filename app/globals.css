@@ -357,6 +357,12 @@ select option {
 
 .mkt-hamburger { display: none; }
 
+/* Arrow separator defaults — desktop shows horizontal, hides vertical */
+.mkt-sep-h   { display: flex; }
+.mkt-sep-v   { display: none; }
+.mkt-opp-sep-h { display: flex; }
+.mkt-opp-sep-v { display: none; }
+
 /* ─── Marketing responsive breakpoints ─────────────────────── */
 @media (max-width: 767px) {
   .mkt-nav-links           { display: none !important; }
@@ -381,8 +387,18 @@ select option {
   .mkt-logobar-wrap        { flex-direction: column !important; gap: 16px !important; }
   .mkt-step-connector-v    { display: none !important; }
   .mkt-step-connector-h    { display: none !important; }
-  .mkt-steps-grid          { gap: 24px !important; }
+
+  /* Steps grid: collapse 1fr auto 1fr auto 1fr → single column */
+  .mkt-steps-grid          { grid-template-columns: 1fr !important; gap: 0 !important; }
   .mkt-steps-grid > * > div { padding-left: 0 !important; padding-right: 0 !important; }
+  /* Arrow separators: hide horizontal → show vertical ↓ */
+  .mkt-sep-h               { display: none !important; }
+  .mkt-sep-v               { display: flex !important; }
+
+  /* Opportunity tiles: collapse 1fr auto 1fr auto 1fr → single column */
+  .mkt-opp-grid            { grid-template-columns: 1fr !important; }
+  .mkt-opp-sep-h           { display: none !important; }
+  .mkt-opp-sep-v           { display: flex !important; }
 }
 
 @media (max-width: 479px) {

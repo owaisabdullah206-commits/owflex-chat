@@ -636,14 +636,14 @@ function ProblemStrip() {
 
 function OpportunityStrip() {
   const tiles = [
-    { value: '₨50,000', label: 'A website you already build' },
-    { value: '+ ₨10,000 / mo', label: 'An AI chatbot you add on', accent: true },
-    { value: '₨120,000 / yr', label: 'New recurring income, per client' },
+    { num: '50,000', suffix: '', label: 'A website you already build', sub: 'one-time project' },
+    { num: '10,000', suffix: '/ mo', label: 'An AI chatbot you add on', sub: 'monthly retainer', accent: true },
+    { num: '120,000', suffix: '/ yr', label: 'New recurring income', sub: 'per client, 70%+ margin' },
   ]
   return (
     <section style={{ paddingBlock: 80, borderBottom: '1px solid var(--hairline)' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-        <Reveal style={{ marginBottom: 36 }}>
+        <Reveal style={{ marginBottom: 40 }}>
           <span
             style={{
               fontFamily: 'var(--font-mono)',
@@ -666,51 +666,104 @@ function OpportunityStrip() {
               maxWidth: 720,
             }}
           >
-            One client. One upsell. ₨120,000 a year.
+            One client. One upsell.{' '}
+            <span style={{ fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: '0.7em', fontWeight: 700 }}>₨</span>120,000
+            </span>{' '}
+            a year.
           </h2>
           <p style={{ marginTop: 12, color: 'var(--ink-muted)', fontSize: 16, lineHeight: 1.6, maxWidth: 620 }}>
             You do not need new clients to grow your income. You need one more service to sell the clients you already have.
           </p>
         </Reveal>
-        <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {tiles.map(({ value, label, accent }, i) => (
-            <Reveal key={i} delay={i * 80}>
-              <div
-                style={{
-                  background: accent ? 'var(--of-primary-soft)' : 'var(--surface)',
-                  border: `1px solid ${accent ? 'rgba(14,165,233,.35)' : 'var(--hairline)'}`,
-                  borderRadius: 12,
-                  padding: 24,
-                  height: '100%',
-                }}
-              >
+
+        {/* Tiles with arrows between them — mkt-opp-grid collapses to 1fr on mobile */}
+        <div className="mkt-opp-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'start' }}>
+          {tiles.map(({ num, suffix, label, sub, accent }, i) => (
+            <>
+              <Reveal key={i} delay={i * 80}>
                 <div
                   style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 'clamp(22px, 2.4vw, 28px)',
-                    fontWeight: 700,
-                    letterSpacing: '-0.02em',
-                    color: accent ? 'var(--of-primary-deep)' : 'var(--ink)',
-                    lineHeight: 1,
+                    background: accent ? 'var(--of-primary-soft)' : 'var(--surface)',
+                    border: `1px solid ${accent ? 'rgba(14,165,233,.4)' : 'var(--hairline)'}`,
+                    borderRadius: 14,
+                    padding: '28px 24px',
+                    height: '100%',
                   }}
                 >
-                  {/* Render ₨ smaller so it doesn't overpower the number — same pattern as PricingGrid */}
-                  {value.startsWith('₨') || value.startsWith('+') ? (
-                    <>
-                      {value.startsWith('+') && <span style={{ fontSize: '0.65em', fontWeight: 600, marginRight: 2 }}>+</span>}
-                      <span style={{ fontSize: '0.55em', fontWeight: 600, verticalAlign: 'middle' }}>₨</span>
-                      {value.replace(/^\+\s*/, '').replace('₨', '')}
-                    </>
-                  ) : value}
+                  {accent && (
+                    <div style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      color: 'var(--of-primary)',
+                      marginBottom: 10,
+                    }}>
+                      + add on
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                    <div style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 'clamp(28px, 3vw, 38px)',
+                      fontWeight: 700,
+                      letterSpacing: '-0.03em',
+                      color: accent ? 'var(--of-primary-deep)' : 'var(--ink)',
+                      lineHeight: 1,
+                    }}>
+                      <span style={{ fontSize: '0.52em', fontWeight: 600, verticalAlign: '0.1em' }}>₨</span>
+                      {num}
+                    </div>
+                    {suffix && (
+                      <span style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 13,
+                        color: accent ? 'var(--of-primary)' : 'var(--ink-muted)',
+                        fontWeight: 500,
+                      }}>
+                        {suffix}
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ color: 'var(--ink)', fontSize: 14, fontWeight: 600, margin: '10px 0 2px', lineHeight: 1.4 }}>{label}</p>
+                  <p style={{ color: 'var(--ink-subtle)', fontSize: 12, margin: 0 }}>{sub}</p>
                 </div>
-                <p style={{ color: 'var(--ink-subtle)', fontSize: 14, margin: '8px 0 0', lineHeight: 1.5 }}>{label}</p>
-              </div>
-            </Reveal>
+              </Reveal>
+              {i < 2 && (
+                <>
+                  {/* Desktop: horizontal → */}
+                  <div key={`opp-h-${i}`} className="mkt-opp-sep-h" style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 12px',
+                    color: 'var(--of-primary)',
+                    opacity: 0.65,
+                  }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
+                    </svg>
+                  </div>
+                  {/* Mobile: vertical ↓ */}
+                  <div key={`opp-v-${i}`} className="mkt-opp-sep-v" style={{
+                    justifyContent: 'flex-start',
+                    padding: '12px 0',
+                    color: 'var(--of-primary)',
+                    opacity: 0.65,
+                  }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 5v14" /><path d="m5 13 7 7 7-7" />
+                    </svg>
+                  </div>
+                </>
+              )}
+            </>
           ))}
         </div>
         <Reveal delay={260}>
           <p style={{ marginTop: 24, color: 'var(--ink-muted)', fontSize: 15, lineHeight: 1.6, maxWidth: 720 }}>
-            Octively costs you ₨2,500 to ₨7,500 a month. On a ₨10,000 retainer, that is a 50 to 75 percent margin.
+            Octively costs you Rs2,500 to Rs7,500 a month. On a Rs10,000 retainer, that is a 50 to 75 percent margin.
           </p>
         </Reveal>
       </div>
@@ -794,70 +847,70 @@ function HowItWorks() {
             Read embed guide <ArrowUpRight size={14} />
           </a>
         </Reveal>
-        <div className="mkt-grid-3 mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative' }}>
+        {/* 1fr auto 1fr auto 1fr — arrows are real grid cells, no absolute positioning */}
+        <div className="mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'start' }}>
           {steps.map(({ Icon, n, h, p }, i) => (
-            <Reveal key={i} delay={i * 100}>
-              <div style={{ position: 'relative', padding: '0 24px' }}>
-                {i > 0 && (
+            <>
+              <Reveal key={i} delay={i * 100}>
+                <div style={{ padding: '0 28px 0 0' }}>
                   <div
-                    className="mkt-step-connector-v"
                     style={{
-                      position: 'absolute',
-                      left: -1,
-                      top: 38,
-                      bottom: 0,
-                      width: 1,
-                      background: 'var(--hairline)',
-                    }}
-                  />
-                )}
-                {i < steps.length - 1 && (
-                  <div
-                    className="mkt-step-connector-h"
-                    style={{
-                      position: 'absolute',
-                      right: -8,
-                      top: 28,
-                      color: 'var(--ink-muted)',
-                      opacity: 0.4,
+                      width: 44,
+                      height: 44,
+                      borderRadius: 12,
+                      background: 'var(--of-primary-soft)',
+                      color: 'var(--of-primary-deep)',
+                      display: 'grid',
+                      placeItems: 'center',
+                      marginBottom: 18,
+                      border: '1px solid rgba(14,165,233,.2)',
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                      <path d="M5 12h14" />
-                      <path d="m13 5 7 7-7 7" />
+                    <Icon size={20} />
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 11,
+                      color: 'var(--ink-muted)',
+                      marginBottom: 6,
+                      letterSpacing: '0.06em',
+                    }}
+                  >
+                    STEP {n}
+                  </div>
+                  <h3 style={{ fontSize: 19, marginBottom: 8, marginTop: 0, fontWeight: 600 }}>{h}</h3>
+                  <p style={{ color: 'var(--ink-subtle)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>{p}</p>
+                </div>
+              </Reveal>
+              {i < steps.length - 1 && (
+                <>
+                  {/* Desktop: horizontal → arrow */}
+                  <div key={`sep-h-${i}`} className="mkt-sep-h" style={{
+                    alignItems: 'flex-start',
+                    paddingTop: 10,
+                    paddingInline: 16,
+                    color: 'var(--of-primary)',
+                    opacity: 0.65,
+                  }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
                     </svg>
                   </div>
-                )}
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 12,
-                    background: 'var(--of-primary-soft)',
-                    color: 'var(--of-primary-deep)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    marginBottom: 18,
-                    border: '1px solid rgba(14,165,233,.2)',
-                  }}
-                >
-                  <Icon size={20} />
-                </div>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 11,
-                    color: 'var(--ink-muted)',
-                    marginBottom: 6,
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  STEP {n}
-                </div>
-                <h3 style={{ fontSize: 19, marginBottom: 8, marginTop: 0, fontWeight: 600 }}>{h}</h3>
-                <p style={{ color: 'var(--ink-subtle)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>{p}</p>
-              </div>
-            </Reveal>
+                  {/* Mobile: vertical ↓ arrow */}
+                  <div key={`sep-v-${i}`} className="mkt-sep-v" style={{
+                    justifyContent: 'flex-start',
+                    padding: '12px 0',
+                    color: 'var(--of-primary)',
+                    opacity: 0.65,
+                  }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 5v14" /><path d="m5 13 7 7 7-7" />
+                    </svg>
+                  </div>
+                </>
+              )}
+            </>
           ))}
         </div>
       </div>
