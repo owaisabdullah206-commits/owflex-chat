@@ -78,9 +78,19 @@ export function NewBotForm() {
 
       <form action={action} className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-sm font-medium text-[var(--ink)]">
-            Bot name
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="name" className="text-sm font-medium text-[var(--ink)]">
+              Bot name
+            </Label>
+            <a
+              href="/tools/ai-chatbot-name-generator"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-[var(--of-primary)] hover:opacity-75 transition-opacity font-medium"
+            >
+              Need a name? ↗
+            </a>
+          </div>
           <Input
             id="name"
             name="name"
@@ -107,6 +117,14 @@ export function NewBotForm() {
             className="bg-[var(--surface)] border-[var(--hairline-md)] text-[var(--ink)]
               placeholder:text-[var(--ink-subtle)] focus-visible:ring-[var(--of-primary)]"
           />
+          <a
+            href="/tools/website-chatbot-readiness-checker"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-[11px] text-[var(--of-primary)] hover:opacity-75 transition-opacity font-medium"
+          >
+            Is this site ready for a bot? Check it ↗
+          </a>
         </div>
 
         <div className="space-y-2">
@@ -186,6 +204,15 @@ export function NewBotForm() {
             <a href="/dashboard/bots">Cancel</a>
           </Button>
         </div>
+
+        <p className="text-xs text-[var(--ink-muted)] pt-1 border-t border-[var(--hairline)] mt-2">
+          Free setup tools:{' '}
+          <a href="/tools/chatbot-welcome-message-generator" target="_blank" rel="noopener noreferrer" className="text-[var(--of-primary)] hover:opacity-75 transition-opacity">welcome messages</a>
+          {' · '}
+          <a href="/tools/chatbot-faq-generator" target="_blank" rel="noopener noreferrer" className="text-[var(--of-primary)] hover:opacity-75 transition-opacity">FAQ generator</a>
+          {' · '}
+          <a href="/tools" target="_blank" rel="noopener noreferrer" className="text-[var(--of-primary)] hover:opacity-75 transition-opacity">all tools</a>
+        </p>
       </form>
     </>
   )
