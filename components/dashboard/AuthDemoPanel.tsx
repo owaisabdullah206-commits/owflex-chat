@@ -77,7 +77,7 @@ function BotsScreen({
         <div key={i} style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '7px 8px', borderRadius: 6, marginBottom: 4,
-          background: i === activeBotIdx ? 'var(--of-primary-soft)' : 'transparent',
+          background: i === activeBotIdx ? 'rgba(14,165,233,0.14)' : 'transparent',
           border: i === activeBotIdx ? '1px solid rgba(14,165,233,0.2)' : '1px solid transparent',
           transition: 'background 0.2s, border-color 0.2s',
         }}>

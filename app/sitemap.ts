@@ -20,11 +20,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/privacy`,       lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${BASE}/terms`,         lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
     // Free tools
-    { url: `${BASE}/tools/chatbot-pricing-calculator`,  lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE}/tools/chatbot-roi-calculator`,      lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE}/tools/agency-retainer-calculator`,  lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE}/tools`,                                   lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/tools/chatbot-pricing-calculator`,        lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/tools/chatbot-roi-calculator`,            lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE}/tools/agency-retainer-calculator`,        lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE}/tools/ai-chatbot-name-generator`,         lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/tools/chatbot-welcome-message-generator`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/tools/chatbot-faq-generator`,             lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/tools/website-chatbot-readiness-checker`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     // Directory
-    { url: `${BASE}/directory/ai-services-to-sell`,     lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE}/directory/ai-services-to-sell`,           lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
   ]
 
   const slugs = await getPostSlugs()

@@ -143,8 +143,16 @@ Where the 20 validation interviews and the first 10 customers actually live.
   the buyer becomes a customer, the agency becomes a partner.
 
 ### Engine D — Free Tools + Case Studies · start once customer #1 exists
-- **Free "AI-Retainer ROI Calculator"** (and/or chatbot pricing calculator): ranks on Google, shared on
-  LinkedIn, collects emails. *Spec/backlog — not built this pass* (see §9).
+- **Free tools hub at `/tools`** (live): an organic, top-of-funnel SEO channel. Every tool ends in an email
+  capture + "Start free" CTA. Two batches:
+  - *Shipped:* chatbot pricing calculator, chatbot ROI calculator, agency retainer calculator, AI services
+    directory, plus Batch 1 below.
+  - *Batch 1 (shipped):* chatbot name generator, welcome message generator, FAQ / knowledge generator,
+    website chatbot readiness checker. Engine is static-first to keep AI cost near zero (large static banks of
+    names and messages), with an optional gated "Generate with AI" button. The FAQ tool is AI-first. The
+    readiness checker uses Tavily extract.
+  - Target keyword clusters and the ranked backlog for future batches live in `docs/free-tools-seo-research.md`.
+  - SEO is a 6 to 12 month compounding bet, so each tool pairs with a CTA, not a standalone page.
 - **Case Study Machine:** document customer #1 end-to-end — before/after, leads captured, conversations,
   revenue generated. People trust case studies more than feature lists; this becomes the strongest asset.
 

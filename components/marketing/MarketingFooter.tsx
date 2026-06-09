@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { OctivelyMark } from '@/components/brand/OctivelyMark'
+import { FOOTER_TOOLS } from '@/lib/data/free-tools'
 
 const COLS = [
   {
@@ -8,16 +9,23 @@ const COLS = [
       { label: 'Features', href: '/#features' },
       { label: 'Pricing', href: '/pricing' },
       { label: 'Embed guide', href: '/guide#embed-guide' },
-      { label: 'WordPress plugin', href: '/guide#wordpress' },
+      { label: 'Changelog', href: '/changelog' },
     ],
   },
   {
-    title: 'Developers',
+    title: 'Resources',
     items: [
+      { label: 'For freelancers', href: '/for-freelancers' },
+      { label: 'For agencies', href: '/for-agencies' },
       { label: 'Guide', href: '/guide' },
-      { label: 'API reference', href: '/guide#api' },
-      { label: 'Status', href: 'https://octively.instatus.com' },
-      { label: 'Changelog', href: '/changelog' },
+      { label: 'Roadmap', href: '/roadmap' },
+    ],
+  },
+  {
+    title: 'Free Tools',
+    items: [
+      ...FOOTER_TOOLS.map((t) => ({ label: t.title, href: t.slug })),
+      { label: 'All free tools', href: '/tools' },
     ],
   },
   {
@@ -27,25 +35,6 @@ const COLS = [
       { label: 'Contact', href: '/contact' },
       { label: 'Privacy', href: '/privacy' },
       { label: 'Terms', href: '/terms' },
-    ],
-  },
-  {
-    title: 'Resources',
-    items: [
-      { label: 'Demo video', href: '/guide' },
-      { label: 'For agencies', href: '/for-agencies' },
-      { label: 'For freelancers', href: '/for-freelancers' },
-      { label: 'Roadmap', href: '/roadmap' },
-      { label: 'Compare', href: '/pricing#compare' },
-    ],
-  },
-  {
-    title: 'Free Tools',
-    items: [
-      { label: 'Chatbot pricing calculator', href: '/tools/chatbot-pricing-calculator' },
-      { label: 'Chatbot ROI calculator', href: '/tools/chatbot-roi-calculator' },
-      { label: 'Agency retainer calculator', href: '/tools/agency-retainer-calculator' },
-      { label: 'AI services directory', href: '/directory/ai-services-to-sell' },
     ],
   },
 ]

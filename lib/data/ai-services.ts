@@ -4,7 +4,8 @@
  * tekkpak.com, botsify.com, NexPrime Agency public rates, Upwork Pakistan
  * profiles, Facebook freelancer community posts, and Contra global benchmarks.
  *
- * Exchange rate: 1 USD = 285 PKR (SBP, Jul 2025) (update when significantly off).
+ * Display USD figures are derived from the PKR values at runtime using the
+ * shared rate in lib/currency.ts (1 USD = 300 PKR, approximate).
  */
 
 export type Difficulty = 'Beginner' | 'Intermediate' | 'Advanced'

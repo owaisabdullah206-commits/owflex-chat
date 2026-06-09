@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { USD_PKR_RATE } from '@/lib/currency'
 
-const USD_RATE = 285
+const USD_RATE = USD_PKR_RATE
 
 function fmt(pkr: number, currency: 'PKR' | 'USD') {
   if (currency === 'USD') return '$' + Math.round(pkr / USD_RATE).toLocaleString('en-US')
@@ -16,7 +17,7 @@ function planFor(clients: number) {
 }
 
 const field: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 6 }
-const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: 'var(--ink)' }
+const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: 'var(--ink)', minHeight: 34, lineHeight: 1.3 }
 const inputStyle: React.CSSProperties = {
   padding: '10px 12px', borderRadius: 8,
   border: '1px solid var(--hairline-strong)',
@@ -104,7 +105,7 @@ export function AgencyRetainerCalculator() {
         With {clients} {clients === 1 ? 'client' : 'clients'} you need the {plan.name} plan
         at {plan.pkr === 0 ? 'no cost' : fmt(plan.pkr, currency) + '/mo'}. Octively charges one flat
         rate, so adding more clients raises your profit without raising your per-client cost.
-        {currency === 'USD' && ` Rates shown in USD (1 USD = ${USD_RATE} PKR per SBP, Jul 2025). Switch to ₨ PKR to see local figures.`}
+        {currency === 'USD' && ` Rates shown in USD (1 USD = ${USD_RATE} PKR approx.). Switch to ₨ PKR to see local figures.`}
       </p>
     </div>
   )

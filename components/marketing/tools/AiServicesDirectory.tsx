@@ -2,16 +2,36 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 import { AI_SERVICES, CATEGORIES, type AIService, type Category } from '@/lib/data/ai-services'
+import { USD_PKR_RATE, pkrToUsd } from '@/lib/currency'
 
-const USD_RATE = 285
+type SortKey = 'featured' | 'cost-asc' | 'cost-desc' | 'profit-desc'
 
-function fmtRange(pkr: [number, number], currency: 'PKR' | 'USD') {
-  if (currency === 'USD') {
-    return `$${Math.round(pkr[0] / USD_RATE).toLocaleString('en-US')}–$${Math.round(pkr[1] / USD_RATE).toLocaleString('en-US')}`
-  }
-  return `₨${pkr[0].toLocaleString('en-PK')}–₨${pkr[1].toLocaleString('en-PK')}`
+const SORT_LABELS: Record<SortKey, string> = {
+  featured: 'Featured',
+  'cost-asc': 'Setup cost: low to high',
+  'cost-desc': 'Setup cost: high to low',
+  'profit-desc': 'Profit margin: high to low',
+}
+
+// Renders a PKR range in the chosen currency with the symbol sized down. The
+// JetBrains Mono face has no rupee glyph, so an unstyled ₨ falls back to a much
+// larger font; pinning the symbol to the body font at a smaller size fixes that.
+// Always converts from the PKR base exactly once.
+function PriceRange({ pkr, currency }: { pkr: [number, number]; currency: 'PKR' | 'USD' }) {
+  const symbol = currency === 'USD' ? '$' : '₨'
+  const lo = currency === 'USD' ? pkrToUsd(pkr[0]) : pkr[0]
+  const hi = currency === 'USD' ? pkrToUsd(pkr[1]) : pkr[1]
+  const locale = currency === 'USD' ? 'en-US' : 'en-PK'
+  const Sym = () => (
+    <span style={{ fontFamily: 'var(--font-jakarta)', fontSize: '0.66em', fontWeight: 700, marginRight: 1 }}>{symbol}</span>
+  )
+  return (
+    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--ink)' }}>
+      <Sym />{lo.toLocaleString(locale)}<span style={{ margin: '0 1px' }}>–</span><Sym />{hi.toLocaleString(locale)}
+    </span>
+  )
 }
 
 const DIFFICULTY_COLOR: Record<string, string> = {
@@ -20,14 +40,22 @@ const DIFFICULTY_COLOR: Record<string, string> = {
   Advanced: 'var(--of-error)',
 }
 
-function ServiceCard({ s, currency }: { s: AIService; currency: 'PKR' | 'USD' }) {
-  const [open, setOpen] = useState(false)
-
+function ServiceCard({
+  s,
+  currency,
+  isOpen,
+  onToggle,
+}: {
+  s: AIService
+  currency: 'PKR' | 'USD'
+  isOpen: boolean
+  onToggle: () => void
+}) {
   return (
     <div
       style={{
         background: 'var(--surface)',
-        border: '1px solid var(--hairline)',
+        border: `1px solid ${isOpen ? 'var(--hairline-strong)' : 'var(--hairline)'}`,
         borderRadius: 14,
         padding: 24,
         display: 'grid',
@@ -59,57 +87,50 @@ function ServiceCard({ s, currency }: { s: AIService; currency: 'PKR' | 'USD' })
           <p style={{ margin: '6px 0 0', fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.6 }}>{s.tagline}</p>
         </div>
 
-        {/* Pricing */}
+        {/* Setup cost (the only money figure shown per service) */}
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: 'var(--ink)' }}>
-            {fmtRange(currency === 'PKR' ? s.monthlyRetainerPkr : [
-              Math.round(s.monthlyRetainerPkr[0] / USD_RATE),
-              Math.round(s.monthlyRetainerPkr[1] / USD_RATE),
-            ] as [number, number], currency === 'PKR' ? 'PKR' : 'USD')}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--ink-subtle)', marginTop: 2 }}>/month retainer</div>
+          <PriceRange pkr={s.setupFeePkr ?? [0, 0]} currency={currency} />
+          <div style={{ fontSize: 12, color: 'var(--ink-subtle)', marginTop: 2 }}>approx. setup cost</div>
           <div style={{ fontSize: 12, color: 'var(--ink-subtle)', marginTop: 1 }}>
-            {s.profitMarginPct[0]}–{s.profitMarginPct[1]}% margin
+            {s.profitMarginPct[0]}–{s.profitMarginPct[1]}% profit margin
           </div>
         </div>
       </div>
 
       {/* Expand button */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={onToggle}
+        aria-expanded={isOpen}
         style={{
-          alignSelf: 'flex-start', padding: '6px 14px', borderRadius: 8,
+          alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '6px 14px', borderRadius: 8,
           border: '1px solid var(--hairline-strong)', background: 'transparent',
           color: 'var(--ink-muted)', fontSize: 13, fontWeight: 500, cursor: 'pointer',
         }}
       >
-        {open ? 'Show less' : 'How to sell this service'}
+        {isOpen ? 'Show less' : 'How to sell this service'}
+        <ChevronDown size={14} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
       </button>
 
       {/* Detail */}
-      {open && (
-        <div style={{ display: 'grid', gap: 14, borderTop: '1px solid var(--hairline)', paddingTop: 16 }}>
+      {isOpen && (
+        <div style={{ display: 'grid', gap: 18, borderTop: '1px solid var(--hairline)', paddingTop: 18 }}>
           <Section title="What it is">{s.what}</Section>
           <Section title="How to deliver it">{s.howToDeliver}</Section>
-          <Section title="Tools you need">
-            <ul style={{ margin: 0, paddingLeft: 18 }}>
-              {s.toolsUsed.map((t) => <li key={t} style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.8 }}>{t}</li>)}
-            </ul>
-          </Section>
-          <Section title="Where to find clients in Pakistan">
-            <ul style={{ margin: 0, paddingLeft: 18 }}>
-              {s.whereToFindClients.map((c) => <li key={c} style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.8 }}>{c}</li>)}
-            </ul>
-          </Section>
-          {s.setupFeePkr && (
-            <Section title="Typical setup fee">
-              {fmtRange(s.setupFeePkr, 'PKR')} one-time
-              {currency === 'USD' && ` (about ${fmtRange([
-                Math.round(s.setupFeePkr[0] / USD_RATE),
-                Math.round(s.setupFeePkr[1] / USD_RATE),
-              ] as [number, number], 'USD')})`}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 18 }}>
+            <Section title="Tools you need">
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {s.toolsUsed.map((t) => <li key={t} style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.8 }}>{t}</li>)}
+              </ul>
             </Section>
-          )}
+            <Section title="Where to find clients">
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {s.whereToFindClients.map((c) => <li key={c} style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.8 }}>{c}</li>)}
+              </ul>
+            </Section>
+          </div>
+
           {s.octivelyLink && (
             <Link
               href="/dashboard/signup"
@@ -139,18 +160,39 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
+const pillBase: React.CSSProperties = {
+  padding: '6px 14px', borderRadius: 999, border: '1px solid var(--hairline-strong)',
+  fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+}
+
 export function AiServicesDirectory() {
   const [currency, setCurrency] = useState<'PKR' | 'USD'>('USD')
   const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All')
+  const [sortBy, setSortBy] = useState<SortKey>('featured')
+  // Accordion: only one service open at a time. null = all collapsed.
+  const [openSlug, setOpenSlug] = useState<string | null>(null)
 
   const filtered = activeCategory === 'All'
     ? AI_SERVICES
     : AI_SERVICES.filter((s) => s.category === activeCategory)
 
+  const sorted = [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case 'cost-asc':
+        return (a.setupFeePkr?.[0] ?? 0) - (b.setupFeePkr?.[0] ?? 0)
+      case 'cost-desc':
+        return (b.setupFeePkr?.[1] ?? 0) - (a.setupFeePkr?.[1] ?? 0)
+      case 'profit-desc':
+        return b.profitMarginPct[1] - a.profitMarginPct[1]
+      default:
+        return 0
+    }
+  })
+
   return (
     <div style={{ display: 'grid', gap: 24 }}>
       {/* Controls */}
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ display: 'grid', gap: 12 }}>
         {/* Category filter */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {(['All', ...CATEGORIES] as const).map((c) => (
@@ -158,10 +200,9 @@ export function AiServicesDirectory() {
               key={c}
               onClick={() => setActiveCategory(c as Category | 'All')}
               style={{
-                padding: '6px 14px', borderRadius: 999, border: '1px solid var(--hairline-strong)',
+                ...pillBase,
                 background: activeCategory === c ? 'var(--ink)' : 'transparent',
                 color: activeCategory === c ? 'var(--bg)' : 'var(--ink-muted)',
-                fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
               }}
             >
               {c}
@@ -169,35 +210,61 @@ export function AiServicesDirectory() {
           ))}
         </div>
 
-        {/* Currency toggle */}
-        <div style={{ display: 'flex', gap: 6 }}>
-          {(['PKR', 'USD'] as const).map((c) => (
-            <button
-              key={c}
-              onClick={() => setCurrency(c)}
+        {/* Sort + currency */}
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink-muted)' }}>Sort by</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortKey)}
               style={{
-                padding: '6px 16px', borderRadius: 999, border: '1px solid var(--hairline-strong)',
-                background: currency === c ? 'var(--ink)' : 'transparent',
-                color: currency === c ? 'var(--bg)' : 'var(--ink-muted)',
-                fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                padding: '7px 12px', borderRadius: 9, border: '1px solid var(--hairline-strong)',
+                background: 'var(--bg)', color: 'var(--ink)', fontSize: 13, fontWeight: 500, cursor: 'pointer',
               }}
             >
-              {c === 'PKR' ? '₨ PKR' : '$ USD'}
-            </button>
-          ))}
+              {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
+                <option key={k} value={k}>{SORT_LABELS[k]}</option>
+              ))}
+            </select>
+          </label>
+
+          <div style={{ display: 'flex', gap: 6 }}>
+            {(['PKR', 'USD'] as const).map((c) => (
+              <button
+                key={c}
+                onClick={() => setCurrency(c)}
+                style={{
+                  ...pillBase,
+                  padding: '6px 16px', fontSize: 13,
+                  background: currency === c ? 'var(--ink)' : 'transparent',
+                  color: currency === c ? 'var(--bg)' : 'var(--ink-muted)',
+                }}
+              >
+                {c === 'PKR' ? '₨ PKR' : '$ USD'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Count */}
       <p style={{ margin: 0, fontSize: 13, color: 'var(--ink-subtle)' }}>
-        {filtered.length} service{filtered.length !== 1 ? 's' : ''}
+        {sorted.length} service{sorted.length !== 1 ? 's' : ''}
         {activeCategory !== 'All' ? ` in ${activeCategory}` : ''}
-        {currency === 'USD' ? ' (USD at 1 USD = 280 PKR approx.)' : ''}
+        {currency === 'USD' ? ` (USD at 1 USD = ${USD_PKR_RATE} PKR approx.)` : ''}
       </p>
 
       {/* Cards */}
       <div style={{ display: 'grid', gap: 16 }}>
-        {filtered.map((s) => <ServiceCard key={s.slug} s={s} currency={currency} />)}
+        {sorted.map((s) => (
+          <ServiceCard
+            key={s.slug}
+            s={s}
+            currency={currency}
+            isOpen={openSlug === s.slug}
+            onToggle={() => setOpenSlug((prev) => (prev === s.slug ? null : s.slug))}
+          />
+        ))}
       </div>
     </div>
   )

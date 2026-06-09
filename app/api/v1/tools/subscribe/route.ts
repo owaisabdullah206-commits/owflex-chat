@@ -13,6 +13,10 @@ const ALLOWED_SOURCES = new Set([
   'chatbot-roi-calculator',
   'agency-retainer-calculator',
   'ai-services-directory',
+  'ai-chatbot-name-generator',
+  'chatbot-welcome-message-generator',
+  'chatbot-faq-generator',
+  'website-chatbot-readiness-checker',
 ])
 
 export async function POST(req: NextRequest) {

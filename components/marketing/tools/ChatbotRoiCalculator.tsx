@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { USD_PKR_RATE } from '@/lib/currency'
 
-const USD_RATE = 285
+const USD_RATE = USD_PKR_RATE
 
 function fmt(pkr: number, currency: 'PKR' | 'USD') {
   if (currency === 'USD') return '$' + Math.round(pkr / USD_RATE).toLocaleString('en-US')
@@ -17,7 +18,7 @@ const DEFLECT_RATE = 0.6    // share of support questions answered by the bot
 const MINUTES_PER_REQUEST = 6
 
 const field: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 6 }
-const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: 'var(--ink)' }
+const labelStyle: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: 'var(--ink)', minHeight: 34, lineHeight: 1.3 }
 
 function inputStyle(currency: 'PKR' | 'USD'): React.CSSProperties {
   return {
@@ -113,7 +114,7 @@ export function ChatbotRoiCalculator() {
       <p style={{ fontSize: 13, color: 'var(--ink-subtle)', lineHeight: 1.6 }}>
         Assumes 8% of visitors chat, 25% leave contact details, and 20% of those become customers.
         The bot also handles about 60% of routine support questions.
-        {currency === 'USD' && ` Rates shown in USD (1 USD = ${USD_RATE} PKR per SBP, Jul 2025). Switch to ₨ PKR to see local figures.`}
+        {currency === 'USD' && ` Rates shown in USD (1 USD = ${USD_RATE} PKR approx.). Switch to ₨ PKR to see local figures.`}
       </p>
     </div>
   )

@@ -44,6 +44,19 @@ plans). **Goal:** International expansion (USD pricing via Lemon Squeezy already
 at ₨20,000/month ($79) is 60–80% cheaper with a comparable feature set, a permanent
 free tier, and flat pricing with no per-seat fees.
 
+> **Positioning (v7.1 — from `docs/Octively-saas-critic.md`):** sell the *outcome*, not the platform.
+> Canonical line, used verbatim everywhere customer-facing:
+> **"Turn the clients you already have into ₨10,000–30,000/month AI chatbot retainers."**
+> Octively is "an AI-retainer business in a box" — the vehicle; the retainer income is the sale.
+> Worked example: ₨50k website client → +₨10k/mo chatbot → ₨120k/yr (50–75% margin). Lead with this,
+> not "cheaper than Stammer" (most PK freelancers have never heard of it — keep competitor comparisons
+> internal / on SEO alternative pages). Live execution plan: `docs/octively-validation-and-distribution-plan.md`.
+>
+> **Free tools SEO channel (live):** a `/tools` hub of free calculators and generators (chatbot pricing, ROI,
+> agency retainer, name generator, welcome message generator, FAQ generator, website readiness checker) plus
+> the AI services directory. Static-first to keep AI cost near zero. Organic top-of-funnel that feeds signup.
+> Ranked idea backlog: `docs/free-tools-seo-research.md`.
+
 ---
 
 ## 2. Target Customers
@@ -87,6 +100,13 @@ The business owner (restaurant, clinic, clothing store, travel agency, etc.) log
 their branded portal to see conversations, leads, and analytics. They cannot build or
 modify bots — that stays with the freelancer/agency. The portal is what justifies the
 monthly retainer in their eyes.
+
+> **Buyer-segmentation watch (from red-team):** "freelancer with 3 sites" and "agency with 100 clients"
+> may not be one product served well by one message. **Instrument which segment actually converts**
+> (tag freelancer-vs-agency at signup) and double down on the one that pays. Watch for the symptom:
+> signups happen, conversions don't. Also test the portal assumption directly — some agencies prefer
+> opacity ("client pays me *not* to look at dashboards"); if so, lean toward the solo-freelancer segment
+> that wants the reporting done for them.
 
 ---
 
@@ -1152,7 +1172,12 @@ Task 4.10 — Help documentation site
 
 ## 14. Go-To-Market: First 10 Paid Clients
 
-No paid ads. No SEO. No content grind. Community-only.
+> **⚠️ Live source:** this section is the original community-first sketch, now refreshed to v7.1. The
+> executable, up-to-date plan lives in **`docs/octively-validation-and-distribution-plan.md`** and
+> **`docs/Octively MVP Go-to-Market.md`**. Corrected sequence (per critic):
+> **validate → demo → get paying → THEN amplify (Product Hunt).** North-star: **3 paying in 30 days.**
+
+No paid ads. No SEO as acquisition. Community + founder-led, validation first.
 
 ### Who You're Actually Selling To
 
@@ -1160,22 +1185,21 @@ Not the SMB. Not the end user. **You are selling to the developer who already
 builds chatbots for clients.** They are your primary customer. Your product saves
 them 10+ hours of dashboard work per client and lets them charge a monthly retainer.
 
-### Your Only Marketing Asset: The Loom Video
+### Your Core Demo Asset: The 60-Second Demo Video
 
-Before any community post, do this:
-1. Deploy OwFlex on Nasir Siddiqui's chatbot (Phase 1 done)
-2. Record a 60-second Loom: show Nasir's client portal with real conversation
-   data, real leads, real stats
-3. No commentary needed — the product sells itself in 60 seconds
+Before any community post, you need one proof asset:
+1. Use a seeded demo account (Agency tier) — see `docs/demo-video-recording-brief.md`
+2. A 60-second demo: admin builds a bot → client portal shows real conversations, leads, stats
+3. Lead with the outcome line, not features
 
-That one video is what you link in every community post.
+That one video is what you link in every community post and use to open founder demos.
 
-### Week 1–2: Before Announcing
+### Week 1–2: Validate Before Announcing
 
-- Ship Phase 1 completely
-- Use it live on at least one client site
+- Run the 30-Day Validation Sprint (20 interviews, the 4 questions) — plan doc §4
+- Use Octively live on at least one real client site
 - Screenshot the dashboard with real data (anonymized)
-- Record the Loom video
+- Record the demo video
 
 ### Week 3: Soft Launch (Community Posts)
 
@@ -1197,17 +1221,17 @@ Post this in each community — not as a promotion, as a story:
 > client kept asking: 'How many people chatted? What leads did we get?'
 > And I had no clean answer.
 >
-> So I built OwFlex — a lightweight dashboard my clients log into to
+> So I built Octively — a lightweight dashboard my clients log into to
 > see their conversations, leads, and stats. Took me 2 weeks with Claude Code.
 >
-> [Loom video link]
+> [Demo video link]
 >
 > If you build chatbots for clients and have the same problem — I'm
 > looking for 5 people to try it for free. DM me."
 
 **What this post does:**
 - Leads with a relatable problem (not a product pitch)
-- Shows proof (the Loom)
+- Shows proof (the demo video)
 - Asks for 5 testers (low commitment, creates scarcity)
 - Gets you DMs from exactly the right people
 
@@ -1215,11 +1239,11 @@ Post this in each community — not as a promotion, as a story:
 
 After 5 testers have used it for 1–2 weeks:
 - Follow up individually: "Has it been useful?"
-- Show them the Starter plan: ₨2,000/month
+- Show them the Starter plan: ₨2,500/month
 - Offer 1 free month if they commit now (time pressure)
-- Ask each one: "Do you know other developers with the same problem?"
+- Ask each one: "Do you know other freelancers/agencies with the same problem?"
 
-**Target:** 3 paying users by end of Week 6. That's ₨6,000/month recurring.
+**Target:** 3 paying users by end of Week 6. That's ₨7,500/month recurring.
 Not life-changing — but proof the idea works and enough to fund Hetzner.
 
 ### Month 2: Scale the Same Playbook
@@ -1236,9 +1260,26 @@ Not life-changing — but proof the idea works and enough to fund Hetzner.
 |-----------|-------|
 | 1–5 (testers) | Free for 1 month, then Starter |
 | 6–10 | Starter at ₨1,500/mo for life (founding member discount) |
-| 11+ | Full ₨2,000/month |
+| 11+ | Full ₨2,500/month |
 
 Founding member pricing creates urgency and loyalty. They become your ambassadors.
+
+### Strategic Risks & Defenses (from red-team)
+
+The three risks that decide Octively's fate, and the chosen defenses (full 12-scenario table in
+`docs/octively-validation-and-distribution-plan.md` §6):
+
+1. **Distribution never becomes repeatable** *(highest)* — most SaaS dies here, not from competition.
+   Defense: make **one** channel predictable (build-in-public + PK communities + partnerships) before scaling.
+2. **Market timing — too early** — the freelancer AI-retainer market is still emerging, so expect
+   customer-*education* cost. Defense: sell the business opportunity (the retainer) before the software;
+   validate continuously with the 30-day sprint.
+3. **Commoditization (2–3 years)** — chatbots get cheaper every year. Defense: evolve "chatbot" into an
+   **AI Client Operations layer** (lead mgmt, booking, human handoff, CRM/WhatsApp sync, agent workflows).
+   Workflow becomes the moat — this is why the Phase 4 integrations/agent roadmap stays on the table.
+
+Margin guard: keep credits **debit-first and tied to revenue** (never absorb unlimited AI cost; watch
+gross margin ≥ 70%). Founder-as-support guard: move onboarding to docs/video/wizard early.
 
 ---
 
