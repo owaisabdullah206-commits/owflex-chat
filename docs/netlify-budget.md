@@ -1,7 +1,7 @@
 # Netlify Build Budget
 
 ## Credit System (free plan: 300 credits/month, resets 24th of each month)
-## Current cycle: May 24 – Jun 24 · 170.7 credits remaining · 7 production deploys used
+## Current cycle: May 24 – Jun 24 · ~155.6 credits remaining · 8 production deploys used
 ## Breakdown: deploys 105cr · compute 18.5cr · requests 3.4cr · bandwidth 2.4cr = 129.3cr used
 
 | Resource              | Cost               | With 300 credits     |
@@ -41,4 +41,5 @@ At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credi
 | 2026-05-30 | 9        | 0 (failed)   | FAILED — secrets scanner blocked NEXT_PUBLIC_SANITY_API_VERSION + NEXT_PUBLIC_SANITY_DATASET |
 | 2026-05-30 | 10       | 0 (failed)   | FAILED — SECRETS_SCAN_OMIT_KEYS dashboard var didn't override netlify.toml value |
 | 2026-05-30 | 11       | ~15          | fix: add Sanity vars to SECRETS_SCAN_OMIT_KEYS in netlify.toml (permanent fix) |
+| 2026-06-09 | 12       | ~15          | feat: 4 free tools + /tools hub + directory fixes + bot-form tool links |
 
