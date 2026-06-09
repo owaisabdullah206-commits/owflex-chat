@@ -723,8 +723,10 @@ function OpportunityStrip() {
                       </span>
                     )}
                   </div>
-                  <p style={{ color: 'var(--ink)', fontSize: 14, fontWeight: 600, margin: '10px 0 2px', lineHeight: 1.4 }}>{label}</p>
-                  <p style={{ color: 'var(--ink-subtle)', fontSize: 12, margin: 0 }}>{sub}</p>
+                  {/* The accent card keeps a fixed light fill in both themes, so its text
+                      uses fixed dark colors — theme --ink goes light in dark mode and would vanish. */}
+                  <p style={{ color: accent ? '#0C0A09' : 'var(--ink)', fontSize: 14, fontWeight: 600, margin: '10px 0 2px', lineHeight: 1.4 }}>{label}</p>
+                  <p style={{ color: accent ? '#57534E' : 'var(--ink-subtle)', fontSize: 12, margin: 0 }}>{sub}</p>
                 </div>
               </Reveal>
               {i < 2 && (
