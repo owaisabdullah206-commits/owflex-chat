@@ -1,0 +1,41 @@
+IMAGE PROMPT:
+Extreme wide shot of a single developer alone in a completely dark room. Only the glow of one monitor illuminates his face from below — cold blue-white light. The screen shows cascading code. Everything else is black. The isolation feels intentional, not lonely. Style: cinematic still from a tech thriller. Think: the opening scene of The Social Network. South Asian man, late 20s, no expression visible, just the silhouette and the glow. No other light sources. Shot from slightly above and behind. 16:9 ratio. Ultra-cinematic.
+---
+
+I have been building a full product alone, evenings and weekends, using Claude Code.
+
+Not a landing page. A full product.
+Auth, payments, a knowledge base, a client portal, an admin dashboard, an embed widget.
+
+I want to share what that experience actually looks like.
+
+The honest version:
+
+Claude Code is not magic.
+It does not write perfect code.
+It writes a lot of code, fast.
+Then you review, fix, and steer.
+
+What changed for me:
+👉 I spend less time on boilerplate, more time on product decisions
+👉 Features that used to take 2 days now take a few hours
+👉 I catch problems earlier because I am reading more of my own code
+
+What did not change:
+👉 I still need to understand what I am building
+👉 Bugs are still real bugs
+👉 The decisions about what to build are still entirely on me
+
+The biggest shift is not speed.
+It is that I can actually build a product of this scope alone.
+Without Claude Code, I would have needed a team or a much narrower scope.
+
+I am still figuring out if people actually want what I am building.
+But the build process itself has been one of the more honest experiences I have had as a developer.
+
+If you are a developer thinking about AI-assisted coding, start with a single feature, not a whole project.
+Learn how to review and steer it before you let it run.
+
+What has your experience been with AI coding tools?
+
+#ClaudeCode #BuildingInPublic #SoloFounder #AITools #SaaS #Pakistan

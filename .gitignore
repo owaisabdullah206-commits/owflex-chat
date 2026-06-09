@@ -34,11 +34,13 @@ embed/dist/embed.min.js
 
 # ── SDD tooling (all tracked in this repo) ───────────────
 # Uncomment lines below to stop tracking SDD artifacts:
-CLAUDE.md
+# CLAUDE.md
 .claude/
 .specify/
 DESIGN.md
 specs/
 history/
-# docs/ — tracked (contains production-deployment.md and netlify-budget.md)
-owflex_master_plan_v7.md
+docs/owflex_master_plan_v7.md
+docs/Octively MVP Go-to-Market.md
+docs/Octively-saas-critic.md
+docs/outreach-guide.md

@@ -1,0 +1,16 @@
+IMAGE PROMPT:
+Dark background. Four glowing teal cards arranged in a 2x2 grid, each with a thin neon-teal border and a subtle inner glow. Card labels in bold white: "Pricing Calculator", "ROI Calculator", "Retainer Calculator", "AI Services Directory". Below each card: one line of grey text (e.g. "What to charge your client"). At the very bottom center: "octively.com" in small teal monospace. Style: dark SaaS product launch graphic — the kind that gets screenshotted and shared. The glow effect makes it look like something is about to launch.
+---
+
+Shipped 4 free tools for Pakistani freelancers this week.
+
+Chatbot pricing calculator.
+ROI calculator.
+Agency retainer calculator.
+AI services directory with real PKR rates.
+
+No email required. Just use them.
+
+octively.com/tools
+
+#BuildingInPublic #Pakistan #Freelancing

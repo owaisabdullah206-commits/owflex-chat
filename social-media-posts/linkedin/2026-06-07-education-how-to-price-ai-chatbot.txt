@@ -1,0 +1,36 @@
+IMAGE PROMPT:
+Split screen, ultra-bold graphic. LEFT side: dark red-tinted background. A phone ringing icon, unanswered. Below it: "₨0 earned" in cold white. Label at top: "WHAT YOU CHARGE". RIGHT side: deep teal background. A chat bubble with a checkmark. Below it: "₨120,000/mo saved" in bright white. Label at top: "WHAT IT'S WORTH". Bold sans-serif font, massive text. High contrast. The split feels like a punch. Style: fintech app ad crossed with a protest poster. No photos, pure graphic design.
+---
+
+Most freelancers underprice AI chatbots because they price the tool, not the outcome.
+
+Wrong question: "What does this chatbot cost me?"
+Right question: "What is this chatbot worth to my client?"
+
+Here's how I think about it:
+
+A clinic in Karachi gets 30 calls a day asking: "What are your hours?" "Do you accept XYZ insurance?" "How do I book?"
+
+That's 30 calls their receptionist answers manually.
+
+An AI chatbot handles all 30.
+24 hours a day.
+Including weekends.
+
+The clinic saves maybe 2 hours of staff time per day.
+At even ₨200/hour that's ₨120,000 a month in recovered time.
+
+You are charging ₨10,000 to ₨15,000/month.
+You are keeping ₨7,500 after tool costs.
+The clinic is saving ₨120,000.
+
+That is not a tech purchase. That is a business decision.
+
+When you frame it that way in a proposal, the conversation changes.
+
+Stop selling software.
+Start selling the outcome the software creates.
+
+How do you currently price services for clients?
+
+#Freelancing #Pakistan #AIRetainer #ClientWork #Pricing

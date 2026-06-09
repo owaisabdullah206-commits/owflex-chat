@@ -1,0 +1,42 @@
+IMAGE PROMPT:
+Dark background. Three stacked horizontal bars, growing in width like a loading bar. Bar 1 (shortest, grey): "₨50,000 — once". Bar 2 (medium, teal-tinted): "₨10,000 × 12". Bar 3 (fullwidth, bright teal, glowing): "₨120,000 / year". Each bar has a subtle glow effect — the last one is almost blinding white-teal. The progression feels like power building. Numbers in bold monospace font, right-aligned. Style: data visualization meets a neon sign. No photos. The image should feel like money accumulating in real time.
+---
+
+You built a website for a client. They paid ₨50,000.
+That project is done.
+
+Now what?
+
+Here is the math most freelancers miss:
+
+That same client has a website with visitors.
+Some of those visitors leave without contacting them.
+That is lost business.
+
+You add an AI chatbot.
+It captures leads, answers questions, runs 24/7.
+
+You charge ₨10,000/month to manage it.
+The tool costs you ₨2,500/month.
+You keep ₨7,500.
+
+One client. ₨90,000/year. From work you do once at setup.
+
+Now multiply by 5 clients.
+₨450,000/year in recurring income.
+From clients you already have.
+
+No cold outreach.
+No Upwork bids.
+No new proposals.
+
+The hardest part is not building the chatbot.
+The hardest part is asking the client: "Can I show you something that might help your business?"
+
+That's one WhatsApp message.
+
+If you have web design or digital marketing clients right now, this is worth trying.
+
+What's stopping you from adding a retainer service to your current clients?
+
+#Freelancing #AIRetainer #Pakistan #RecurringRevenue #WebDesign

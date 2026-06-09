@@ -1,0 +1,36 @@
+IMAGE PROMPT:
+Dramatic close-up of two hands: one holding a phone with a WhatsApp screen showing the same message repeated 5 times ("Report kab milegi?", "Leads aaye?", "Koi update?") — each unanswered. The other hand holds a pen over a half-filled notebook. Dark moody background. Single harsh spotlight on the hands only. Deep shadows. High contrast black and white with the WhatsApp green subtly visible in color. Cinematic, editorial photography style. No faces, no clutter. The exhaustion is in the objects, not the person.
+---
+
+A friend who runs a small digital agency told me this 3 weeks ago:
+
+"I spend 3 hours every Sunday writing client reports."
+
+Same questions every week over WhatsApp:
+"How many leads came in?"
+"What are people asking?"
+"Is it even working?"
+
+He answers them manually. Every Sunday. For every client.
+
+I asked him: what would you pay to stop doing that?
+
+He said: "A lot."
+
+That one conversation changed what I decided to build.
+
+I spent the next few days building a client portal.
+Every client gets their own login.
+They see their own data, their own conversations, their own leads.
+They stop asking because the answer is one click away.
+
+Three hours every Sunday back.
+No more 11pm WhatsApp messages.
+No more being the middleman between your client and information that should already be theirs.
+
+I am still in early stages, still talking to freelancers and agency owners to make sure I am solving the right problem and not just the one I assumed.
+
+If you manage projects for multiple clients, how do you handle reporting right now?
+Even a short answer genuinely helps.
+
+#BuildingInPublic #Freelancing #Pakistan #ClientPortal #Founder #AgencyLife

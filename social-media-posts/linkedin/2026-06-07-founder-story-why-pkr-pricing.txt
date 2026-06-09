@@ -1,0 +1,30 @@
+IMAGE PROMPT:
+Bold typographic poster. Pure black background. Left half: giant "$197" in cold grey — slightly faded, almost ghosted. Right half: giant "₨2,500" in vivid electric teal, sharp and bright. A thin diagonal slash divides them. No other elements. The contrast is violent. Think: a currency exchange board crossed with a concert poster. The teal number should be at least 3x more visually dominant than the grey. Ultra-minimal, ultra-high contrast. Style: Swiss typography meets fintech ad.
+---
+
+Every tool I researched to build my product charged in dollars.
+
+$197/month. $220/month. $360/month.
+
+That is ₨55,000 to ₨100,000 a month.
+
+The freelancers I am building for charge ₨30,000 to ₨50,000 for a full website project.
+The tool would cost more than the project.
+
+So when I set pricing for my product, I did not think too long about it.
+
+Starter plan: ₨2,500/month.
+
+The freelancer charges their client ₨10,000/month for the service.
+They keep ₨7,500.
+The tool does not eat the margin. That is the whole point.
+
+I am sharing this because a lot of people building in Pakistan default to dollar pricing.
+Sometimes it makes sense. Sometimes you are just copying what you see.
+
+If your customer earns in rupees and pays bills in rupees, price in rupees.
+It took me 30 seconds to decide. It should have been obvious from day one.
+
+What pricing decisions have you made early in a project that you later realized were obvious?
+
+#BuildingInPublic #Pakistan #SaaS #FreelancerLife #Founder #Pricing

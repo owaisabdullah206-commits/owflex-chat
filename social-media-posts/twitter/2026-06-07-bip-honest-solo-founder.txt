@@ -1,0 +1,14 @@
+IMAGE PROMPT:
+Black card, 1:1 ratio. Two columns. Left column header "SHIPPED ✓" in teal. Five items with teal checkmarks — all blurred/illegible, they don't matter. Right column header "NOT SHIPPED" in cold grey. One single item clearly readable: "First paying customer □". The empty checkbox on the right is twice the size of all the checkmarks on the left. The asymmetry is the whole point. Monospace font throughout. No color except teal on the left. The empty box on the right glows slightly — like it's waiting. Stark, minimal, brutally honest aesthetic.
+---
+
+3 weeks of solo building.
+
+The feature list is long.
+The customer list is zero.
+
+Everything else is just preparation.
+
+Back to talking to people this week.
+
+#BuildingInPublic #SoloFounder #Pakistan

@@ -1,0 +1,27 @@
+FORMAT: Feed post (works well with a desk/screen setup photo)
+
+IMAGE PROMPT:
+Use a real photo of yourself for this one — authenticity beats AI on Instagram build-in-public content.
+
+Suggested shot: Sit at your actual desk at night. One lamp on. Laptop open. Take the photo from slightly above and to the side so the screen glow hits your face. Make it look like someone walked in and caught you mid-build — not posed. Have a cup of chai in frame, slightly out of focus. Wear whatever you normally wear at night.
+
+If you must use AI: South Asian man, late 20s, sitting alone at a minimal dark desk, face partially lit by monitor glow in cool blue-white. One hand on keyboard, one on chin — thinking, not typing. Shallow depth of field. Blurred code on screen. A cup of chai in foreground, soft focus. Cinematic still photography style. The image should feel like an intimate behind-the-scenes moment, not a tech startup photoshoot.
+---
+
+Building a SaaS product alone. Evenings and weekends.
+
+No co-founder. No team.
+Just a laptop, Claude Code, and a lot of iteration.
+
+Week 3 update:
+Shipped: landing page, client portal, 3 free calculators, admin dashboard, embed widget.
+
+Not shipped yet: first paying customer.
+
+That's the real metric. Everything else is just preparation.
+
+Back to talking to people this week.
+
+Follow along if you want the honest version of building in public.
+
+#BuildingInPublic #SoloFounder #SaaS #Pakistan #IndieHacker #ClaudeCode #Freelancing

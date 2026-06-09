@@ -1,0 +1,16 @@
+IMAGE PROMPT:
+Dark card, receipt-style layout. Three line items stacked like a bill. Item 1: "Stammer.ai" — price "₨56,000/mo" in red, struck through. Item 2: "ConvoCore" — price "₨62,700/mo" in red, struck through. Item 3: "What I'm building" — price "₨2,500/mo" in glowing teal, NOT struck through, with a bold checkmark beside it. At the bottom a thin line and a "TOTAL SAVINGS" row showing "₨54,200/mo" in bright white. Monospace font throughout. The teal row should feel like relief.
+---
+
+Tools in this space:
+
+Stammer.ai — $197/mo — ₨56,000
+ConvoCore — $220/mo — ₨62,700
+
+What I'm building — ₨2,500/mo
+
+Same category.
+20x cheaper.
+Built for Pakistan.
+
+#Pakistan #SaaS #Freelancing #BuildingInPublic
