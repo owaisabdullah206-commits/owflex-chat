@@ -12,6 +12,7 @@ const RELEASES = [
     date: 'May 2026',
     tag: 'Latest',
     items: [
+      'Unanswered questions now show the full pair: each visitor question with the bot’s uncertain reply beneath it, plus a link to view the conversation, so you can see exactly what to add to the knowledge base',
       'Streaming SSE fix — Content-Encoding: none header prevents Next.js from gzip-buffering the stream; responses now appear token-by-token on all providers and connection types',
       'Response conciseness rule — bot replies in 1–3 sentences for greetings and simple queries; product cards carry the detail so the text stays clean; explicit detail requests ("tell me more about X") still get a full answer',
       'Model speed badges — all four model selectors in bot settings now show a tier pill (⚡ Ultra Fast / ⚡ Fast / ⚖️ Balanced / 🧠 Smart / 🔮 Experimental) and a latency note beneath each dropdown so you can compare before saving',
