@@ -28,6 +28,20 @@ export default async function LeadsPage({
 
   if (portalConfig?.showLeads === false) redirect('/portal')
 
+  // CSV export is a paid feature for the developer's org. The portal is the
+  // CLIENT's view — never show plan or upgrade language here; the button is
+  // simply absent on free-tier orgs.
+  let canExport = false
+  if (bot) {
+    const [org] = await db
+      .select({ plan: schema.organizations.plan })
+      .from(schema.organizations)
+      .innerJoin(schema.bots, eq(schema.bots.orgId, schema.organizations.id))
+      .where(eq(schema.bots.id, bot.id))
+      .limit(1)
+    canExport = !!org && org.plan !== 'free'
+  }
+
   const leads = bot
     ? await db
         .select({
@@ -60,7 +74,7 @@ export default async function LeadsPage({
           <h1 className="text-xl font-bold text-[var(--ink)]">Leads</h1>
           <div className="flex items-center gap-2">
             <RefreshButton />
-            {leads.length > 0 && (
+            {leads.length > 0 && canExport && (
               <Button variant="secondary" size="sm" asChild>
                 <a href="/api/portal/leads/export" download>
                   <Download className="h-4 w-4 mr-1.5" />

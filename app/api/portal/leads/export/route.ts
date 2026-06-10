@@ -13,13 +13,20 @@ export async function GET(_req: NextRequest) {
   const user = await requireClient()
 
   const [bot] = await db
-    .select({ id: schema.bots.id, name: schema.bots.name })
+    .select({ id: schema.bots.id, name: schema.bots.name, orgPlan: schema.organizations.plan })
     .from(schema.bots)
+    .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
     .where(eq(schema.bots.clientUserId, user.id))
     .limit(1)
 
   if (!bot) {
     return new Response('No bot assigned', { status: 404 })
+  }
+
+  // Paid-plan feature. White-label rule: this response can reach the developer's
+  // CLIENT, so it carries no plan or upgrade language.
+  if (bot.orgPlan === 'free') {
+    return new Response('Export is not enabled for this portal', { status: 403 })
   }
 
   const leads = await db

@@ -178,6 +178,11 @@ The three risks to fear most: **distribution never becoming repeatable**, **mark
 | 11 | AI agents replace chatbots | Keep agent/workflow roadmap option open (master plan Phase 4) | Buyers ask for actions/integrations |
 | 12 | Distribution never repeatable | Make **one** channel predictable (Engines A–C) before scaling | First customers = only friends/network |
 
+> **Status note (June 2026):** Failure #3's early-warning signal has fired — ChatLab now markets a
+> branded client portal in its $360/mo agency program. Defense is active: positioning leans on niche
+> (built for freelancers/agencies), price (₨2,500 vs $360), permanent free tier, and PKR — not portal
+> exclusivity. See the GTM doc's "Competitive watch" for details.
+
 ---
 
 ## 7. Monthly Monitoring Dashboard
@@ -208,16 +213,19 @@ is adding platform features before proving a repeatable acquisition channel. Don
 
 ---
 
-## 9. Backlog (Build Later — Specs Only)
+## 9. Backlog — Status as of 2026-06-11
 
-Captured here so they're not lost; **not built this pass**. Each must still pass the §8 test.
+Each item must still pass the §8 test before further investment.
 
-- **Free AI-Retainer ROI Calculator** — input: # clients, retainer price, tool cost → output: monthly/
-  yearly margin. Public marketing page, email capture, shareable result. Engine D asset.
-- **Outcome-led homepage reposition** — hero + an ROI worked-example block (₨50k site → +₨10k/mo →
-  ₨120k/yr). Lead with the canonical line. (Deploy is Netlify-budget-tracked.)
-- **Case-study page template** — before/after, metrics, embedded demo video.
-- **Buyer-segment tagging** — capture freelancer-vs-agency at signup to power Failure #4 analysis.
-- **Self-serve onboarding wizard + docs/video** — Failure #9 defense.
+- ✅ **Free AI-Retainer ROI Calculator** — BUILT. Live at `/tools/chatbot-roi-calculator` plus 6 more
+  free tools (retainer calculator, pricing calculator, FAQ/welcome/name generators, readiness checker).
+  Remaining: distribution, not code.
+- ✅ **Outcome-led homepage reposition** — BUILT. Hero leads with the retainer outcome + worked example.
+- ⬜ **Case-study page template** — before/after, metrics, embedded demo video. Blocked on customer #1.
+- ✅ **Buyer-segment tagging** — BUILT 2026-06-11. Signup form asks freelancer / agency / business owner;
+  stored on `users.segment` (migration 0012) and sent as a `signup_complete` GA4 event param. Google
+  OAuth signups skip the form (segment stays null). Powers Failure #4 analysis.
+- 🔶 **Self-serve onboarding wizard + docs/video** — PARTIAL. Onboarding banner + step tracker exist in
+  the dashboard; full wizard + video walkthrough still open. Failure #9 defense.
 
 All customer-facing copy drafted from these must pass `/humanizer-main` before publishing.

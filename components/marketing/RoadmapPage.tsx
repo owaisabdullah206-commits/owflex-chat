@@ -45,11 +45,12 @@ const SHIPPED = [
 
 const IN_PROGRESS = [
   { title: 'WordPress plugin', desc: 'One-click install, no manual script pasting.' },
-  { title: 'Weekly email digest for clients', desc: 'Summary of conversations and new leads delivered to client inboxes every Monday.' },
+  { title: 'Weekly email digest', desc: 'A Monday summary of each bot\'s conversations, new leads, and unanswered questions delivered to your inbox.' },
   { title: 'Team seats', desc: 'Invite colleagues to your workspace with role-based access controls.' },
 ]
 
 const PLANNED = [
+  { title: 'WhatsApp Business API channel', desc: 'Run your client\'s bot on their WhatsApp Business number, not just their website. The same knowledge base and lead capture, on the channel Pakistani customers actually use.' },
   { title: 'PayFast (PKR) + Lemon Squeezy (USD) billing', desc: 'Self-serve plan upgrades and credit top-ups via PayFast for Pakistani developers and Lemon Squeezy for international payments — no WhatsApp message required.' },
   { title: 'Embed key rotation', desc: 'Rotate a compromised embed key with a 24-hour grace window — deployed widgets stay live while you push the updated key to production.' },
   { title: 'Hybrid RAG — vector + full-text', desc: 'Combine cosine similarity with BM25 (Postgres tsvector) and re-rank the union. Exact product names and SKUs surface reliably even when embedding scores are low.' },

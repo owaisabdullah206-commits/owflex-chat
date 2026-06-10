@@ -87,15 +87,28 @@ export default async function LeadsPage() {
             )}
           </div>
           {visibleLeads.length > 0 && (
-            <a
-              href="/api/v1/leads/export"
-              download
-              className="flex items-center gap-1.5 h-8 px-3 text-[13px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors mt-1"
-              style={{ fontFamily: 'var(--font-mono)' }}
-            >
-              <Download className="h-3 w-3" />
-              Export CSV
-            </a>
+            planKey === 'free' ? (
+              <a
+                href="/dashboard/billing"
+                title="CSV export is available on paid plans"
+                className="flex items-center gap-1.5 h-8 px-3 text-[13px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-subtle)] hover:text-[var(--ink-muted)] transition-colors mt-1"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                <Download className="h-3 w-3" />
+                Export CSV
+                <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Starter+</span>
+              </a>
+            ) : (
+              <a
+                href="/api/v1/leads/export"
+                download
+                className="flex items-center gap-1.5 h-8 px-3 text-[13px] border border-[var(--hairline)] bg-[var(--surface-2)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors mt-1"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                <Download className="h-3 w-3" />
+                Export CSV
+              </a>
+            )
           )}
         </div>
 

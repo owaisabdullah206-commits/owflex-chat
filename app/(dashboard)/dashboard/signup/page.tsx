@@ -28,6 +28,7 @@ export default function DashboardSignupPage() {
   const router = useRouter()
   const [name,     setName]     = useState('')
   const [email,    setEmail]    = useState('')
+  const [segment,  setSegment]  = useState('')
   const [password, setPassword] = useState('')
   const [showPw,   setShowPw]   = useState(false)
   const [error,    setError]    = useState('')
@@ -54,11 +55,13 @@ export default function DashboardSignupPage() {
         email,
         password,
         callbackURL: '/dashboard/bots',
-      })
+        // additionalField defined in lib/auth/index.ts — client types don't know it
+        ...(segment ? { segment } : {}),
+      } as Parameters<typeof authClient.signUp.email>[0])
       if (result.error) {
         setError(result.error.message ?? 'Could not create account')
       } else {
-        trackGAEvent('signup_complete', { method: 'email' })
+        trackGAEvent('signup_complete', { method: 'email', ...(segment ? { segment } : {}) })
         setVerified(true)
       }
     } catch {
@@ -142,6 +145,21 @@ export default function DashboardSignupPage() {
                   placeholder="you@example.com"
                   required
                 />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="segment">What best describes you?</Label>
+                <select
+                  id="segment"
+                  value={segment}
+                  onChange={(e) => setSegment(e.target.value)}
+                  required
+                  className="flex h-9 w-full border border-[var(--hairline)] bg-transparent px-3 py-1 text-sm text-[var(--ink)] focus:outline-none focus:border-[var(--of-primary)] cursor-pointer"
+                >
+                  <option value="" disabled>Select one</option>
+                  <option value="freelancer">Freelancer working with clients</option>
+                  <option value="agency">Agency or team</option>
+                  <option value="business">Business owner (bot for my own site)</option>
+                </select>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="password">Password</Label>

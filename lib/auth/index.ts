@@ -55,6 +55,13 @@ export const auth = betterAuth({
         defaultValue: 'developer',
         input: false,
       },
+      // Buyer segment from the signup form (failure-mode #4: instrument which
+      // segment converts). Optional — Google OAuth signups skip the form.
+      segment: {
+        type: 'string' as const,
+        required: false,
+        input: true,
+      },
     },
   },
 

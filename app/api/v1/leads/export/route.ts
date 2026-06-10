@@ -15,13 +15,21 @@ export async function GET(_req: NextRequest) {
   const user = await requireDeveloper()
 
   const [org] = await db
-    .select({ id: schema.organizations.id, name: schema.organizations.name })
+    .select({ id: schema.organizations.id, name: schema.organizations.name, plan: schema.organizations.plan })
     .from(schema.organizations)
     .where(eq(schema.organizations.ownerId, user.id))
     .limit(1)
 
   if (!org) {
     return new Response('No organization found', { status: 404 })
+  }
+
+  // Free tier: leads are viewable in the dashboard, CSV export is a paid feature
+  if (org.plan === 'free') {
+    return Response.json(
+      { error: 'CSV export is available on paid plans. Upgrade to export your leads.', code: 'PLAN_LIMIT', status: 402 },
+      { status: 402 },
+    )
   }
 
   const leads = await db

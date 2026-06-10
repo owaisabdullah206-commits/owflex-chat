@@ -28,6 +28,8 @@ export const users = pgTable('users', {
   image:         text('image'),
   // Octively extension: 'developer' | 'client'
   role:          varchar('role', { length: 20 }).notNull().default('developer'),
+  // Buyer segment captured at signup: 'freelancer' | 'agency' | 'business' (null for OAuth/legacy signups)
+  segment:       varchar('segment', { length: 20 }),
   createdAt:     timestamp('created_at').notNull(),
   updatedAt:     timestamp('updated_at').notNull(),
 })

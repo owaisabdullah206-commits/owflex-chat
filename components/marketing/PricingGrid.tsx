@@ -276,16 +276,16 @@ const FAQS = [
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Used to spend a full day writing weekly chatbot reports for clients. Now they log in and see live numbers, and I bill them ₨15k/mo for the dashboard. Octively paid for itself in week one.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
-  { q: 'We were paying $497/mo for Stammer.ai and getting buried in feature bloat. Switched 7 client bots to Octively Agency. Cleaner portal, white-labelled, 80% less spend.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
-  { q: 'The credit system is the killer feature. I let small clients use the included models, and upsell premium clients onto flagship tiers without lifting a finger.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
-  { q: 'I onboarded a tea-export client in 12 minutes. They were sending Urdu queries to the bot and getting Urdu replies. Their finance team now exports leads to CSV themselves.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
+  { q: 'Friday used to be report day. Screenshots, Excel, emailing PDFs to three different clients. Now I just tell them to log into their portal. One of them pays me ₨15k a month basically for that dashboard.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'We were on Stammer\'s $197 agency plan and using maybe a third of it. Moved 7 client bots over in a week. My clients never noticed anything changed, which honestly is the whole point of white label.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
+  { q: 'I keep small clients on the default model and put the two who pay more on a smarter one. Took me a while to realize I could price my own plans around that. The per-bot credit budget does the policing for me.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
+  { q: 'My tea exporter client types in Urdu and the bot replies in Urdu. I did nothing special to set that up. Their accounts guy downloads the leads CSV himself now instead of calling me every Monday.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
 ]
 const QUOTES_ROW_2 = [
-  { q: 'The white-label is real white-label. My client sees chat.boltagency.com, my logo on the widget, my email on receipts. Not a single Octively pixel anywhere.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
-  { q: 'Switched four clients off Botpress in a weekend. Embed key swap, that\'s the whole migration. Conversation history came along via the import endpoint.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
-  { q: 'Tenant isolation is what got our retainer client to actually sign. They wouldn\'t touch a shared SaaS, now they review their own portal and never email me about it.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
-  { q: 'I bill in PKR via PayFast, my UK client pays USD via Lemon Squeezy, both land in the same dashboard. No more two-spreadsheet accounting.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
+  { q: 'My client sees my logo on the widget and their own portal login, nothing else. One of them genuinely thinks my team built the whole thing. I\'m not correcting him.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
+  { q: 'Moved four client bots off Botpress in a weekend. Re-uploaded the training docs, swapped the embed script. Nobody noticed, which I\'m taking as a compliment.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
+  { q: 'Our retainer client refused anything where their data sits in a shared dashboard. Separate logins, each client seeing only their own bot, that\'s what closed it. The "any updates?" emails have stopped.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
+  { q: 'Half my clients are in Karachi, the rest are in the UK. Rupee pricing is why I signed up, I was done paying card fees on dollar subscriptions. The UK clients just see their own branded portal and never ask what\'s underneath.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
 ]
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
