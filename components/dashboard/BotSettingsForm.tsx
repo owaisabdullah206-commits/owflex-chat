@@ -82,6 +82,8 @@ interface BotSettingsFormProps {
     storeCurrency: string
     theme: 'light' | 'dark'
     productRecommendationsEnabled: boolean
+    language: string
+    whatsappNumber: string
     webhookUrl: string
     monthlyConvLimit:    number | null
     monthlyLeadLimit:    number | null
@@ -122,6 +124,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [storeUrl, setStoreUrl]                 = useState(initial.storeUrl)
   const [storeCurrency, setStoreCurrency]       = useState(initial.storeCurrency)
   const [productRecsEnabled, setProductRecs]    = useState(initial.productRecommendationsEnabled)
+  const [language, setLanguage]                 = useState(initial.language)
+  const [whatsappNumber, setWhatsappNumber]     = useState(initial.whatsappNumber)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>(initial.theme)
   const [webhookUrl, setWebhookUrl]             = useState(initial.webhookUrl)
   const [convLimit, setConvLimit]               = useState<string>(initial.monthlyConvLimit?.toString() ?? '')
@@ -144,6 +148,12 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
     e.preventDefault()
     setSaved(false)
     setError(null)
+    // Store URL is required — without it the bot is locked to preview only and
+    // cannot serve any external website (see chat route domain-lock).
+    if (!storeUrl.trim()) {
+      setError('Store / Website URL is required before this bot can go live.')
+      return
+    }
     startTransition(async () => {
       const result = await updateBot(botId, {
         name,
@@ -172,6 +182,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           storeCurrency: (storeCurrency || undefined) as '' | 'PKR' | 'USD' | 'AED' | 'GBP' | 'EUR' | 'SAR' | 'INR' | 'BDT' | 'LKR' | 'NGN' | 'KES' | 'ZAR' | undefined,
           theme: previewTheme,
           productRecommendationsEnabled: productRecsEnabled,
+          language: language as 'auto' | 'english' | 'urdu' | 'roman-urdu',
+          whatsappNumber: whatsappNumber.replace(/[^0-9]/g, ''),
         },
         webhookUrl: webhookUrl.trim() || '',
         monthlyConvLimit:    convLimit    ? parseInt(convLimit,    10) : null,
@@ -441,6 +453,26 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             disabled={isPending} />
         </div>
 
+        {/* Reply Language */}
+        <div className="space-y-1.5">
+          <Label htmlFor="language" className="text-xs text-[var(--ink-muted)]">Reply Language</Label>
+          <div className="relative">
+            <select id="language" value={language}
+              onChange={(e) => { setLanguage(e.target.value); markDirty() }}
+              disabled={isPending}
+              className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer">
+              <option value="auto">Auto — match the visitor&apos;s language</option>
+              <option value="english">English only</option>
+              <option value="urdu">Urdu (اردو script)</option>
+              <option value="roman-urdu">Roman Urdu (Latin letters)</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
+          </div>
+          <p className="text-[11px] text-[var(--ink-subtle)]">
+            Auto mirrors whatever language each visitor writes in. Pick a fixed language to force every reply into it.
+          </p>
+        </div>
+
         {/* Catalog / Store */}
         <div className="border border-[var(--hairline)] bg-[var(--surface)] p-4 space-y-4">
           <p
@@ -452,19 +484,24 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
 
           {/* Store URL */}
           <div className="space-y-1.5">
-            <Label htmlFor="storeUrl" className="text-xs text-[var(--ink-muted)]">Store / Website URL</Label>
+            <Label htmlFor="storeUrl" className="text-xs text-[var(--ink-muted)]">
+              Store / Website URL <span className="text-[var(--error-text)]">*</span>
+            </Label>
             <Input
               id="storeUrl"
               type="url"
+              required
               value={storeUrl}
               onChange={(e) => { setStoreUrl(e.target.value); markDirty() }}
               placeholder="https://yourstore.com"
-              className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
+              className={`bg-[var(--surface)] text-[var(--ink)] rounded-none ${
+                storeUrl.trim() ? 'border-[var(--hairline)]' : 'border-amber-400/60'
+              }`}
               disabled={isPending}
             />
             {!storeUrl.trim() && (
               <p className="text-[11px] text-amber-400">
-                ⚠ Set a store URL to protect your embed key and enable absolute product links in AI responses.
+                ⚠ Required to go live. Until this is set, the bot only works in preview — it will not respond on any external website. Setting it also locks the bot to your domain and enables absolute product links.
               </p>
             )}
             <p className="text-[11px] text-[var(--ink-subtle)]">
@@ -725,6 +762,26 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           <p className="text-xs text-[var(--ink-muted)] mb-3">
             POST new leads to a URL — pipe directly to Zapier, Make, n8n, or your CRM.
           </p>
+
+          {/* WhatsApp continue */}
+          <div className="space-y-1.5 mb-4">
+            <Label htmlFor="whatsappNumber" className="text-xs text-[var(--ink-muted)]">WhatsApp Number</Label>
+            <Input
+              id="whatsappNumber"
+              type="tel"
+              inputMode="numeric"
+              value={whatsappNumber}
+              onChange={(e) => { setWhatsappNumber(e.target.value); markDirty() }}
+              placeholder="923001234567"
+              className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+              style={{ fontFamily: 'var(--font-mono)' }}
+              disabled={isPending}
+            />
+            <p className="text-[11px] text-[var(--ink-subtle)]">
+              Full international format, digits only (e.g. 923001234567). Adds a &ldquo;Continue on WhatsApp&rdquo; button inside the widget. Leave blank to hide it.
+            </p>
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="webhookUrl" className="text-xs text-[var(--ink-muted)]">Lead Webhook URL</Label>
             <Input

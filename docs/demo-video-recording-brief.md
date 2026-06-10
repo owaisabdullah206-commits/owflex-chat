@@ -10,14 +10,6 @@
 **one short clip per beat** (named exactly as below), I can sequence and time everything
 deterministically. One long take would force guesswork. Short clips = clean edit.
 
-Demo account credentials
-
-Developer — admin.octively.com (Flow A: build a bot)
-- demo@octively.com / OctivelyDemo!2026
-
-Client — app.octively.com (Flow B: leads & export)
-- client.demo@octively.com / OctivelyClient!2026
-
 ---
 
 ## 0. Before You Hit Record (Prerequisites)

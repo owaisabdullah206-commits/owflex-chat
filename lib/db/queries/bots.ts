@@ -42,6 +42,8 @@ const updateBotSchema = z.object({
     storeCurrency: z.enum(['', 'PKR', 'USD', 'AED', 'GBP', 'EUR', 'SAR', 'INR', 'BDT', 'LKR', 'NGN', 'KES', 'ZAR']).optional(),
     theme:                        z.enum(['light', 'dark']).optional(),
     productRecommendationsEnabled: z.boolean().optional(),
+    language:                     z.enum(['auto', 'english', 'urdu', 'roman-urdu']).optional(),
+    whatsappNumber:               z.string().regex(/^[0-9]{6,15}$/).or(z.literal('')).optional(),
   }).optional(),
 })
 

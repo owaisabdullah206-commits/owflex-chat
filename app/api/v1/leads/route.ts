@@ -55,14 +55,15 @@ export async function POST(req: NextRequest) {
   try {
     const [bot] = await db
       .select({
-        id:             schema.bots.id,
-        orgId:          schema.bots.orgId,
-        embedKey:           schema.bots.embedKey,
-        orgPlan:            schema.organizations.plan,
-        leadsThisMonth:     schema.organizations.leadsThisMonth,
-        ownerEmail:         schema.users.email,
-        webhookUrl:         schema.bots.webhookUrl,
-        monthlyLeadLimit:   schema.bots.monthlyLeadLimit,
+        id:               schema.bots.id,
+        orgId:            schema.bots.orgId,
+        name:             schema.bots.name,
+        embedKey:         schema.bots.embedKey,
+        orgPlan:          schema.organizations.plan,
+        leadsThisMonth:   schema.organizations.leadsThisMonth,
+        ownerEmail:       schema.users.email,
+        webhookUrl:       schema.bots.webhookUrl,
+        monthlyLeadLimit: schema.bots.monthlyLeadLimit,
       })
       .from(schema.bots)
       .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
@@ -128,6 +129,20 @@ export async function POST(req: NextRequest) {
     // Non-blocking 90% lead usage warning
     if (bot.ownerEmail) {
       void checkAndWarnUsage(bot.orgId, 'leads', newLeadCount, leadLimit, bot.orgPlan, bot.ownerEmail)
+    }
+
+    // Instant lead notification email — fire-and-forget, only for visible leads
+    if (!hiddenByLimit && bot.ownerEmail) {
+      const { sendLeadNotification } = await import('@/lib/email/lead-notification')
+      void sendLeadNotification({
+        ownerEmail:     bot.ownerEmail,
+        botName:        bot.name,
+        leadName:       name  ?? null,
+        leadEmail:      email ?? null,
+        leadPhone:      phone ?? null,
+        leadNotes:      notes ?? null,
+        conversationId: conversation?.id ?? null,
+      })
     }
 
     // Non-blocking outbound webhook — fire-and-forget, never delays the response

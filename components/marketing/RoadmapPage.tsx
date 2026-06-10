@@ -36,6 +36,11 @@ const SHIPPED = [
   'Bot preview panel — sandboxed iframe widget inside the dashboard for zero-context-switch testing',
   'Per-product CSV chunking — each catalog row embedded as an atomic chunk, no cross-row field splits',
   'RAG retrieval quality fix — generic product queries now reliably surface catalog items',
+  'Instant lead notification email: bot owner emailed the moment a visitor leaves their contact details',
+  'Reply language control: Auto, English, Urdu, or Roman Urdu per bot',
+  'WhatsApp continue button: visitors move the chat to WhatsApp in one tap',
+  'Domain lock by default: every bot is tied to its Store URL so a copied embed key cannot be reused elsewhere',
+  'Over-limit leads banner: leads past your plan limit are saved and surfaced with an upgrade prompt',
 ]
 
 const IN_PROGRESS = [

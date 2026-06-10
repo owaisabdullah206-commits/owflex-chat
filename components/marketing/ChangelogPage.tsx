@@ -8,9 +8,21 @@ import { useDarkMode } from './useDarkMode'
 
 const RELEASES = [
   {
+    version: 'v1.2.0',
+    date: 'June 2026',
+    tag: 'Latest',
+    items: [
+      'Instant lead notification email: the moment a visitor leaves their details, the bot owner gets an email with the name, email, phone, and a link to the conversation, so no lead sits unseen',
+      'Reply language control per bot: pick Auto (mirror the visitor), English, Urdu, or Roman Urdu in bot settings and every reply follows that choice',
+      'WhatsApp continue button: add a WhatsApp number in settings and the widget shows a “Continue on WhatsApp” button so visitors can move the chat to WhatsApp in one tap',
+      'Domain lock by default: every bot is tied to its Store URL, so a copied embed key cannot be used to run your bot (and spend your credits) on someone else’s website',
+      'Over-limit leads banner: leads captured past your plan limit are saved and surfaced with an upgrade prompt instead of being silently dropped',
+    ],
+  },
+  {
     version: 'v1.1.0',
     date: 'May 2026',
-    tag: 'Latest',
+    tag: 'Insights',
     items: [
       'Unanswered questions now show the full pair: each visitor question with the bot’s uncertain reply beneath it, plus a link to view the conversation, so you can see exactly what to add to the knowledge base',
       'Streaming SSE fix — Content-Encoding: none header prevents Next.js from gzip-buffering the stream; responses now appear token-by-token on all providers and connection types',
@@ -83,7 +95,6 @@ const RELEASES = [
     date: 'Apr 2026',
     tag: 'Billing',
     items: [
-      'PayFast integration (PKR payments) + Lemon Squeezy (USD payments)',
       'Credit packs — purchase additional AI credits without upgrading plan',
       'Bento-style plan cards on pricing and billing pages',
       'Annual billing toggle with 2-month discount',
@@ -150,6 +161,7 @@ const RELEASES = [
 
 const TAG_COLORS: Record<string, string> = {
   Latest:       'var(--of-primary)',
+  Insights:     '#8B5CF6',
   Streaming:    '#06B6D4',
   'RAG Quality': '#8B5CF6',
   Operations:   '#10B981',
@@ -179,7 +191,7 @@ export default function ChangelogPage() {
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 20, padding: '5px 12px', border: '1px solid var(--hairline)', borderRadius: 999, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-muted)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)', display: 'inline-block' }} />
-            Current: v1.1.0
+            Current: v1.2.0
           </div>
         </div>
       </section>

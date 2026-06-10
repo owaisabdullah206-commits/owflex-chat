@@ -22,6 +22,7 @@ type WidgetConfig = {
   brandingUrl?: string
   theme?: 'light' | 'dark'
   productRecommendationsEnabled?: boolean
+  whatsappNumber?: string
 }
 
 export async function GET(req: NextRequest) {
@@ -90,6 +91,7 @@ export async function GET(req: NextRequest) {
       brandingUrl,
       theme: config.theme ?? 'light',
       productRecommendationsEnabled: config.productRecommendationsEnabled === true,
+      whatsappNumber: typeof config.whatsappNumber === 'string' ? config.whatsappNumber : '',
     },
     {
       headers: { 'Cache-Control': 'public, max-age=300' },

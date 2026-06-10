@@ -23,10 +23,14 @@ next-env.d.ts
 Thumbs.db
 
 # ── Env files ────────────────────────────────────────────
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# ── Demo seed (live prod account setup — keep out of the public repo) ──
+scripts/seed-demo.ts
 
 # ── Embed build output ───────────────────────────────────
 embed/node_modules

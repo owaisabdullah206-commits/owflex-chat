@@ -43,9 +43,9 @@ export async function requireClient() {
 
 export async function requirePlatformOwner() {
   const user = await requireDeveloper()
-  // Prefer server-only var; fall back to legacy NEXT_PUBLIC_ so existing
-  // deployments keep working until the env is updated.
-  const ownerEmail = process.env.PLATFORM_OWNER_EMAIL ?? process.env.NEXT_PUBLIC_PLATFORM_OWNER_EMAIL
+  // Server-only var ONLY — a NEXT_PUBLIC_ fallback would ship the admin email
+  // in the client bundle, handing attackers the exact account to target.
+  const ownerEmail = process.env.PLATFORM_OWNER_EMAIL
   if (!ownerEmail || user.email !== ownerEmail) redirect('/dashboard')
   return user
 }

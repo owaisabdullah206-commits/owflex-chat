@@ -377,6 +377,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         storeCurrency:      (wc.storeCurrency as string) ?? '',
                         theme:              ((wc.theme as string) === 'dark' ? 'dark' : 'light') as 'light' | 'dark',
                         productRecommendationsEnabled: (wc.productRecommendationsEnabled as boolean) === true,
+                        language: (wc.language as string) ?? 'auto',
+                        whatsappNumber: (wc.whatsappNumber as string) ?? '',
                       }
                     })(),
                     webhookUrl:           bot.webhookUrl ?? '',

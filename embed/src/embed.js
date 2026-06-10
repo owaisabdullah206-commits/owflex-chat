@@ -10,7 +10,7 @@ try{var _lm=JSON.parse(localStorage.getItem("_of_msgs")||"[]");if(Array.isArray(
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
 var ti="message-circle",br=16,te=false,tms=[];
 var be=false,bt="Powered by Octively",burl="https://octively.com";
-var clb=false,dk=false;
+var clb=false,dk=false,wa="";
 var op=0,busy=0,started=0,lastMsg="";
 
 /* ── Icon SVG paths (exact Lucide v1.16.0) ── */
@@ -43,6 +43,7 @@ fetch(bu+"/api/v1/widget-config?key="+k)
     if(c.brandingText)bt=c.brandingText;
     if(c.brandingUrl&&safeUrl(c.brandingUrl))burl=safeUrl(c.brandingUrl);
     dk=c.theme==="dark";
+    if(c.whatsappNumber)wa=String(c.whatsappNumber).replace(/[^0-9]/g,"");
     go();
   })
   .catch(go);
@@ -103,6 +104,11 @@ var css=
 "#oS:hover{transform:scale(1.1)}"+
 "#oS:disabled{opacity:.4!important;cursor:default!important;transform:none!important}"+
 
+/* ── WhatsApp continue strip ── */
+"#oWA{display:flex;align-items:center;justify-content:center;gap:7px;padding:9px 12px;border-top:1px solid #f0f0f0;background:#fafafa;flex-shrink:0;font-size:12.5px;font-weight:600;color:#075E54;text-decoration:none;transition:background .15s}"+
+"#oWA:hover{background:#f0fdf4}"+
+"#oWA svg{flex-shrink:0}"+
+
 /* ── Branding — stylesheet base layer ── */
 "#oB{display:flex!important;align-items:center!important;justify-content:center!important;padding:4px 0!important;font-size:10px!important;border-top:1px solid #f0f0f0!important;background:#fafafa!important;flex-shrink:0!important;opacity:0.5!important;visibility:visible!important;height:auto!important;max-height:none!important;overflow:visible!important;clip:auto!important;clip-path:none!important;transform:none!important;filter:none!important;position:relative!important;z-index:0!important;color:inherit!important;letter-spacing:normal!important;text-indent:0!important;margin:0!important;pointer-events:auto!important;content-visibility:visible!important}"+
 "#oB a{color:inherit!important;text-decoration:none!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important}"+
@@ -128,6 +134,8 @@ if(dk){document.head.insertAdjacentHTML("beforeend","<style>"+
   "#oI{background:#1e293b!important;color:#f1f5f9!important;border-color:#374151!important}"+
   "#oI::placeholder{color:#6b7280!important}"+
   "#oB{background:#0f172a!important;border-color:#1f2937!important}"+
+  "#oWA{background:#0f172a!important;border-color:#1f2937!important;color:#4ade80!important}"+
+  "#oWA:hover{background:#14241c!important}"+
 "</style>");}
 
 /* Glow ring */
@@ -176,6 +184,7 @@ pnl.innerHTML=
       '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'+
     '</button>'+
   '</div>'+
+  (wa?'<a id="oWA" href="https://wa.me/'+wa+'" target="_blank" rel="noopener"><svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.413c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>Continue on WhatsApp</a>':'')+
   (be?'<div id="oB"><a href="'+esc(burl)+'" target="_blank" rel="noopener">'+esc(bt)+'</a></div>':'');
 document.body.appendChild(pnl);
 

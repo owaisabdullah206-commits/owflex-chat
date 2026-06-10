@@ -97,8 +97,13 @@ function corsHeaders(origin: string): Record<string, string> {
   }
 }
 
-export async function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: corsHeaders('*') })
+export async function OPTIONS(req: NextRequest) {
+  // Reflect the caller's origin (per-bot allowlist is enforced on the POST itself —
+  // the preflight has no body, so the embed key isn't known yet).
+  return new NextResponse(null, {
+    status: 204,
+    headers: { ...corsHeaders(req.headers.get('origin') ?? '*'), Vary: 'Origin' },
+  })
 }
 
 const bodySchema = z.object({
@@ -201,6 +206,7 @@ export async function POST(req: NextRequest) {
       storeUrl?: string
       storeCurrency?: string
       productRecommendationsEnabled?: boolean
+      language?: 'auto' | 'english' | 'urdu' | 'roman-urdu'
     }
     const storeUrl      = (wc.storeUrl      && wc.storeUrl.trim())      ? wc.storeUrl.trim()      : undefined
     const storeCurrency = (wc.storeCurrency && wc.storeCurrency.trim()) ? wc.storeCurrency.trim() : undefined
@@ -213,14 +219,30 @@ export async function POST(req: NextRequest) {
       ? (() => { try { return new URL(process.env.NEXT_PUBLIC_APP_URL!).origin } catch { return null } })()
       : null
     const fromAppItself = appOrigin && requestOrigin === appOrigin
-    if (allowedOrigin && requestOrigin && requestOrigin !== allowedOrigin && !fromAppItself) {
+    if (allowedOrigin) {
+      // Store URL set: only that exact origin (plus the app's own preview) may embed.
+      if (requestOrigin && requestOrigin !== allowedOrigin && !fromAppItself) {
+        return NextResponse.json(
+          {
+            error: `This bot is only embeddable on ${allowedOrigin}. Update the bot's Store URL in Settings to change this restriction.`,
+            code: 'ORIGIN_NOT_ALLOWED',
+            status: 403,
+          },
+          { status: 403, headers: corsHeaders(allowedOrigin) },
+        )
+      }
+    } else if (requestOrigin && !fromAppItself) {
+      // No Store URL set: locked down by default. Only the app's own preview/embed-test
+      // (same-origin, which omits Origin, or appOrigin) may use the bot. Any real external
+      // browser origin is blocked until the developer sets a Store URL — this prevents a
+      // leaked embed key from being used on third-party sites to burn the owner's credits.
       return NextResponse.json(
         {
-          error: `This bot is only embeddable on ${allowedOrigin}. Update the bot's Store URL in Settings to change this restriction.`,
-          code: 'ORIGIN_NOT_ALLOWED',
+          error: 'This chat is not available on this site yet.',
+          code: 'STORE_URL_REQUIRED',
           status: 403,
         },
-        { status: 403, headers: corsHeaders(allowedOrigin) },
+        { status: 403, headers: corsHeaders(requestOrigin) },
       )
     }
 
@@ -315,6 +337,17 @@ export async function POST(req: NextRequest) {
     const leadEnabled = wc.leadCaptureEnabled !== false && wc.collectLeadBefore !== true
     const handoffEnabled = wc.handoffEnabled === true
     const handoffNotifyTarget = wc.handoffNotifyTarget ?? 'developer'
+    // Reply-language directive: 'auto' mirrors the visitor (default LANGUAGE_RULE);
+    // a fixed choice forces every reply into that language regardless of input.
+    const FORCED_LANGUAGE_RULES: Record<string, string> = {
+      english: `LANGUAGE RULE (highest priority — always obey):\nAlways reply in clear, natural English ONLY, regardless of which language the visitor writes in. Never switch to any other language or script.`,
+      urdu: `LANGUAGE RULE (highest priority — always obey):\nAlways reply in Urdu using Arabic/Nastaliq script ONLY (e.g. "آپ کیسے ہیں؟"), regardless of which language the visitor writes in. Never reply in English or Roman Urdu.`,
+      'roman-urdu': `LANGUAGE RULE (highest priority — always obey):\nAlways reply in Roman Urdu — Urdu written with Latin/English letters ONLY (e.g. "aap kaise hain"), regardless of which language the visitor writes in. Never switch to Urdu/Arabic script or pure English.`,
+    }
+    const languageRule = (wc.language && wc.language !== 'auto' && FORCED_LANGUAGE_RULES[wc.language])
+      ? FORCED_LANGUAGE_RULES[wc.language]
+      : LANGUAGE_RULE
+
     const strictMode = wc.strictMode === true
     const strictInstructions = strictMode
       ? leadEnabled
@@ -323,8 +356,8 @@ export async function POST(req: NextRequest) {
       : ''
 
     const finalSystemPrompt = composeSystemPrompt({
-      // LANGUAGE_RULE + CONCISENESS_RULE go FIRST — LLMs weight earlier instructions more heavily
-      platform: [LANGUAGE_RULE, CONCISENESS_RULE, platformPrompt].filter(Boolean).join('\n\n'),
+      // language rule + CONCISENESS_RULE go FIRST — LLMs weight earlier instructions more heavily
+      platform: [languageRule, CONCISENESS_RULE, platformPrompt].filter(Boolean).join('\n\n'),
       bot: bot.systemPrompt,
       docs: docContextBlock || undefined,
       faqs: strictInstructions || undefined,
@@ -348,7 +381,9 @@ export async function POST(req: NextRequest) {
         meta:       { plan: bot.orgPlan, convCount: bot.convCount },
       })
       return NextResponse.json(
-        { error: 'Monthly conversation limit reached. Upgrade your plan to continue.', code: 'PLAN_LIMIT', status: 402 },
+        // Visitor-facing: never mention plans/limits — the visitor is the CLIENT's customer,
+        // and plan talk breaks the white-label promise. The owner is notified separately.
+        { error: 'We are receiving a lot of messages right now. Please try again shortly or leave your contact details.', code: 'PLAN_LIMIT', status: 402 },
         { status: 402 },
       )
     }
@@ -360,7 +395,7 @@ export async function POST(req: NextRequest) {
     )
     if (!botBudgetAllowed) {
       return NextResponse.json(
-        { error: 'Monthly credit limit for this bot has been reached.', code: 'BOT_CREDIT_LIMIT', status: 402 },
+        { error: 'We are receiving a lot of messages right now. Please try again shortly or leave your contact details.', code: 'BOT_CREDIT_LIMIT', status: 402 },
         { status: 402 },
       )
     }

@@ -95,6 +95,8 @@ export async function fireLeadWebhook(
       body,
       // 10-second hard timeout — never block lead capture on slow receivers
       signal: AbortSignal.timeout(10_000),
+      // A redirect could bounce a vetted URL to an internal/metadata address (SSRF bypass)
+      redirect: 'error',
     })
     if (!res.ok) {
       console.warn(`[webhook] ${webhookUrl} responded ${res.status}`)
