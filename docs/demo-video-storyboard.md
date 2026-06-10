@@ -42,7 +42,7 @@ into Product Hunt, LinkedIn, the landing page, and WhatsApp.
 - Admin surface canvas `#0C0A09`; portal surface canvas `#FAFAFA`; marketing cream `#F5F1EC`.
 - Inter for all UI/body text. Animated captions use Inter 600/700.
 - Pricing shown must match live plans: Free (₨0, 1 bot, 200 convos), Starter **₨2,500 / $15**.
-- Default model string on screen: `meta-llama/llama-3.3-70b-instruct:free`.
+- Model shown on screen: the dropdown label **"Llama 3.3 70B"** (⚡ Fast badge) — the product's friendly label, NOT a raw `...:free` string. The model is never labeled "free"; "free" applies only to the Scene 4 pricing CTA.
 
 **Constraints:**
 - Remotion lives in `/video` with its **own `package.json`** — never added to the Next.js app deps (protects the build gate).
@@ -123,7 +123,7 @@ final timing follows the rendered narration.
 | Beat | Frames | On screen | Animation | VO/Caption |
 |---|---|---|---|---|
 | 2.1 | 330–375 | Dark admin window flies onto stage; URL bar types `admin.octively.com` | Window slide-up `spring`; URL typewriter | VO S2 (a) "So we built Octively." |
-| 2.2 | 375–510 | "Create bot" form: cursor types bot name **"Auraline Cosmetics"**; model dropdown shows `meta-llama/llama-3.3-70b-instruct:free` (JetBrains Mono) | Animated typing, dropdown open/close, Sky-Teal focus ring | VO S2 (b) "Create a chatbot in under a minute…" |
+| 2.2 | 375–510 | "Create bot" form: cursor types bot name **"Auraline Cosmetics"**; model dropdown shows **"Llama 3.3 70B"** with its ⚡ Fast speed badge (product label, not a raw `:free` string) | Animated typing, dropdown open/close, Sky-Teal focus ring | VO S2 (b) "Create a chatbot in under a minute…" |
 | 2.3 | 510–570 | Sky-Teal **"Create bot"** button press → success toast (✓ emerald) | Button depress, toast slide bottom-right | SFX click + success |
 | 2.4 | 570–750 | Embed code block reveals: `<script src="https://cdn.octively.com/embed.js" data-key="ob_live_…"></script>` (JetBrains Mono, key in Sky 400) | Code lines stagger in; copy button → "Copied!" | VO S2 (c) "Copy one embed line…" |
 | 2.5 | 750–870 | Dashboard **Live Preview** (real `/embed.js` widget in a browser-framed panel); chat bubble pops, opens, user message + bot reply. Caption: "Live on any website." | Widget `spring` pop; bubble bounce | VO S2 (d) "…paste it on any client site." |

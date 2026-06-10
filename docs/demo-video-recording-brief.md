@@ -10,6 +10,14 @@
 **one short clip per beat** (named exactly as below), I can sequence and time everything
 deterministically. One long take would force guesswork. Short clips = clean edit.
 
+Demo account credentials
+
+Developer — admin.octively.com (Flow A: build a bot)
+- demo@octively.com / OctivelyDemo!2026
+
+Client — app.octively.com (Flow B: leads & export)
+- client.demo@octively.com / OctivelyClient!2026
+
 ---
 
 ## 0. Before You Hit Record (Prerequisites)
@@ -57,12 +65,32 @@ Record these as **5 separate clips**:
 | Clip file | What to capture | Pacing notes |
 |---|---|---|
 | `video/raw/admin-01-dashboard.mp4` | Land on the admin dashboard (bots list / overview). Sit still 2s, then move cursor toward "Create bot". | Establishing shot. Calm. |
-| `video/raw/admin-02-create-form.mp4` | Click **Create bot** → the form opens. Type the bot name slowly. **Open the model dropdown** so the model string `meta-llama/llama-3.3-70b-instruct:free` is visible, then select it. | Type at human speed, not instant paste. Let the dropdown sit open 1.5s. |
+| `video/raw/admin-02-create-form.mp4` | Click **Create bot** → the form opens. Type the bot name slowly. **Open the model dropdown** so the option **"Llama 3.3 70B"** (with its ⚡ Fast speed badge) is visible, then select it. | Type at human speed, not instant paste. Let the dropdown sit open 1.5s. Do NOT imply the model is "free" — "free" belongs to the pricing plan in the CTA, not the model. |
 | `video/raw/admin-03-create-success.mp4` | Click the Sky-Teal **Create bot** button → success state / toast appears. | Hold on the success toast 2s. |
 | `video/raw/admin-04-embed-copy.mp4` | Open the bot's **Embed** view so the `<script ... data-key="...">` code block is fully visible. Click the **Copy** button → "Copied!" state. | Hold on the full code block 2s before copying. This is the hero shot. |
 | `video/raw/admin-05-widget-preview.mp4` | **Use the dashboard's built-in Live Preview** (the `preview · Auraline Cosmetics` panel — it runs the *real* `/embed.js` widget in a mini browser frame). Click the chat bubble → it opens → type one message → bot replies. | No external site needed — this is the genuine widget. I'll caption it "Live on any website." |
 
 **Bot name to use:** **"Auraline Cosmetics"** (the featured bot the seed script links to the client portal).
+
+> ⚠️ **Two bots, by design.** The *create* clips (`admin-02/03`) make a **fresh** bot to show the
+> "build in 60s" story. Everything that needs real data — **embed, live preview, knowledge base,
+> unanswered, guardrail** — must be recorded on the **already-seeded "Auraline Cosmetics"** bot (the
+> one with documents, conversations, and leads). In the final edit these stitch into one smooth flow;
+> viewers won't notice it's technically two bots. If a duplicate name in the list looks odd during the
+> create clip, name the throwaway anything (e.g. "Test Bot") — I only need the create *motion*, not the name.
+
+---
+
+## FLOW A-2 — Admin: Smart Features (overview) (`admin.octively.com`)
+*Maps to new Storyboard beats in Scene 2. Dark UI. Record on the **seeded** Auraline Cosmetics bot.*
+
+These are quick **overview** shots — open the tab, let it sit, move on. Don't deep-dive each one.
+
+| Clip file | What to capture | Pacing notes |
+|---|---|---|
+| `video/raw/admin-06-knowledge.mp4` | Open the bot's **Knowledge Base** tab — shows the 4 ready docs (3 files + 1 scraped URL, all "Ready" with chunk counts). Then **upload `Auraline-Cosmetics-Store-Guide.md`** live and let it process **Queued → Parsing → Ready**. | This is the RAG differentiator. Hold on the populated list 2s, then do the live upload. Upload on **production** admin (R2/QStash/Gemini must be live, or it stalls at Queued). |
+| `video/raw/admin-07-unanswered.mp4` | Open the **Unanswered** tab — shows the **Q&A pairs**: each visitor question ("Asked") with the bot's "I don't know" reply ("Bot") and a View conversation link. Slow scroll 2-3 rows. | Proves the bot is honest (no hallucinating) and the tool keeps improving. Pause on a full pair 2s. |
+| `video/raw/admin-08-guardrail.mp4` | Open the **Settings** tab — show the **"I don't know" guardrail toggle ON** ("Bot refuses questions outside its knowledge base"). Hover/pause on it. | Quick flash. Reassures SMBs the bot won't make things up. |
 
 ---
 
@@ -82,10 +110,12 @@ Record these as **4 separate clips**:
 
 ## Recording Order Checklist
 
-- [ ] Demo account seeded with realistic conversations + leads
+- [ ] Demo account seeded with realistic conversations + leads (✅ done — incl. KB docs, unanswered, guardrail)
+- [ ] `docs/demo-assets/Auraline-Cosmetics-Store-Guide.md` handy for the live KB upload
 - [ ] Browser cleaned (incognito, 100% zoom, maximized, notifications off)
 - [ ] ScreenPal set to 1920×1080 @ 30fps, click-highlight on, mic OFF
 - [ ] Flow A: 5 clips (`admin-01` … `admin-05`)
+- [ ] Flow A-2: 3 clips (`admin-06` knowledge · `admin-07` unanswered · `admin-08` guardrail) — on the **seeded** bot
 - [ ] Flow B: 4 clips (`portal-01` … `portal-04`)
 - [ ] All clips exported as MP4 into `video/raw/`
 - [ ] Tell me when they're in — I start the Remotion build

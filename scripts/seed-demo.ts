@@ -96,6 +96,28 @@ const BOT_MSGS = [
   'Yes, exchanges are accepted within 7 days with the receipt.', 'Our current sale is up to 30% off selected items!',
 ]
 
+// Knowledge-base documents for the featured bot — seeded as fully "ready" so the
+// Knowledge Base tab looks populated on camera (no real chunks needed for the visual list).
+const FEATURED_DOCS = [
+  { sourceType: 'file', displayName: 'Auraline Product Catalogue 2026.pdf', mimeType: 'application/pdf', byteSize: 2_412_544, pageCount: 18, chunkCount: 64, sourceUrl: null as string | null },
+  { sourceType: 'file', displayName: 'Shipping & Returns Policy.pdf',        mimeType: 'application/pdf', byteSize: 184_320,   pageCount: 3,  chunkCount: 11, sourceUrl: null as string | null },
+  { sourceType: 'file', displayName: 'Auraline FAQ.docx', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', byteSize: 41_984, pageCount: 1, chunkCount: 8, sourceUrl: null as string | null },
+  { sourceType: 'url',  displayName: 'Auraline Cosmetics — About', mimeType: 'text/html', byteSize: 18_022, pageCount: 1, chunkCount: 5, sourceUrl: 'https://auralinecosmetics.pk/about' },
+]
+
+// Unanswered = the bot's "I don't know"-style REPLY is what gets flagged (flagIfUnanswered
+// tests the assistant message). The Unanswered tab shows that reply; "View conversation"
+// reveals the question. So we seed a question + a matching uncertainty reply, flag the reply.
+// Each reply MUST match lib/ai/uncertainty.ts UNCERTAINTY_RE.
+const UNANSWERED_PAIRS: { q: string; a: string }[] = [
+  { q: 'Do you ship internationally to Dubai?',                          a: "I'm not sure about international shipping — I don't have that information right now. Let me connect you with our team." },
+  { q: 'Is this foundation halal certified?',                            a: "I don't know the certification details for that product. I can pass your question to the team to confirm." },
+  { q: 'Do you offer franchise opportunities?',                          a: "That's outside my knowledge. I'd recommend contacting our team directly about partnership options." },
+  { q: 'Can I return a product after 60 days?',                          a: "I don't have that information about returns beyond the standard window. Someone from the team can help you." },
+  { q: 'What is the full ingredient list for the vitamin C serum?',      a: "I'm unable to provide the complete ingredient list here. Our team can share the full details with you." },
+  { q: 'Do you have a physical branch in Multan?',                       a: "I can't help with branch locations at the moment — let me connect you with the team for the latest." },
+]
+
 // ── helpers ──────────────────────────────────────────────────────────────────
 const now = new Date()
 const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -203,6 +225,8 @@ async function main() {
   await db.insert(schema.bots).values({
     id: featuredBotId, orgId, clientUserId: clientId, name: FEATURED.name,
     embedKey: embedKey(), model: 'meta-llama/llama-3.3-70b-instruct', isActive: true,
+    // Guardrail ON + lead capture ON so the Settings tab reads right on camera (Agency plan).
+    widgetConfig: { strictMode: true, leadCaptureEnabled: true },
   })
   const otherBotIds: string[] = []
   for (const b of OTHER_BOTS) {
@@ -223,6 +247,31 @@ async function main() {
   const featuredLeads = buildLeads(featuredBotId, featured.convs.map(c => c.id as string), FEATURED.monthLeads, FEATURED.prevMonthLeads)
   await chunkedInsert(schema.leads, featuredLeads)
   console.log(`  ✓ featured bot: ${featured.convs.length} conversations, ${featured.msgs.length} messages, ${featuredLeads.length} leads`)
+
+  // 5a) Knowledge Base — seed "ready" documents so the KB tab is populated on camera.
+  const docRows = FEATURED_DOCS.map((d, i) => {
+    const created = randDate(new Date(now.getTime() - 21 * 24 * 60 * 60 * 1000), weekStart)
+    return {
+      id: randomUUID(), botId: featuredBotId, orgId,
+      sourceType: d.sourceType, sourceUrl: d.sourceUrl,
+      storageKey: d.sourceType === 'file' ? `${orgId}/${featuredBotId}/${randomUUID()}` : null,
+      displayName: d.displayName, mimeType: d.mimeType, byteSize: d.byteSize,
+      status: 'ready', pageCount: d.pageCount, chunkCount: d.chunkCount, version: 1,
+      createdAt: created, updatedAt: created, readyAt: new Date(created.getTime() + 30_000),
+    }
+  })
+  await chunkedInsert(schema.documents, docRows)
+
+  // 5b) Unanswered — seed question + bot uncertainty reply; flag the REPLY (matches product).
+  const recentConvIds = featured.convs.slice(0, UNANSWERED_PAIRS.length).map(c => c.id as string)
+  const unansweredRows: (typeof schema.messages.$inferInsert)[] = []
+  UNANSWERED_PAIRS.forEach((pair, i) => {
+    const askedAt = randDate(weekStart, now)
+    unansweredRows.push({ id: randomUUID(), conversationId: recentConvIds[i], role: 'user', content: pair.q, createdAt: askedAt })
+    unansweredRows.push({ id: randomUUID(), conversationId: recentConvIds[i], role: 'assistant', content: pair.a, flaggedUnanswered: true, createdAt: new Date(askedAt.getTime() + 4_000) })
+  })
+  await chunkedInsert(schema.messages, unansweredRows)
+  console.log(`  ✓ featured bot: ${docRows.length} knowledge-base docs (ready), ${UNANSWERED_PAIRS.length} unanswered questions, guardrail ON`)
 
   // 6) Other bots — lighter, current-month data for a believable agency dashboard
   let orgConvMonth = FEATURED.monthConvs
