@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { and, count, desc, eq, gte } from 'drizzle-orm'
+import { and, count, desc, eq, gte, sql } from 'drizzle-orm'
 import { ChevronLeft } from 'lucide-react'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
@@ -113,6 +113,15 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         content:        schema.messages.content,
         createdAt:      schema.messages.createdAt,
         conversationId: schema.messages.conversationId,
+        // The visitor's question = the most recent user message before this flagged reply.
+        question:       sql<string | null>`(
+          SELECT m2.content FROM ${schema.messages} m2
+          WHERE m2.conversation_id = ${schema.messages.conversationId}
+            AND m2.role = 'user'
+            AND m2.created_at < ${schema.messages.createdAt}
+          ORDER BY m2.created_at DESC
+          LIMIT 1
+        )`,
       })
       .from(schema.messages)
       .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
