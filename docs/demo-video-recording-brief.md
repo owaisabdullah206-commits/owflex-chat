@@ -77,7 +77,7 @@ These are quick **overview** shots — open the tab, let it sit, move on. Don't 
 
 | Clip file | What to capture | Pacing notes |
 |---|---|---|
-| `video/raw/admin-06-knowledge.mp4` | Open the bot's **Knowledge Base** tab — shows the 4 ready docs (3 files + 1 scraped URL, all "Ready" with chunk counts). Then **upload `Auraline-Cosmetics-Store-Guide.md`** live and let it process **Queued → Parsing → Ready**. | This is the RAG differentiator. Hold on the populated list 2s, then do the live upload. Upload on **production** admin (R2/QStash/Gemini must be live, or it stalls at Queued). |
+| `video/raw/admin-06-knowledge.mp4` | Go to the **"Noor Dental"** bot (the one just created). Open its **Knowledge Base** tab — empty after creation. **Upload `Noor-Dental-Clinic-Guide.md`** (`docs/demo-assets/`) and let it process **Queued → Parsing → Ready**. | This is the RAG differentiator — shows a bot getting trained right after creation. Hold on the Queued state 1s, then on Ready 2s. Upload on **production** admin (R2/QStash/Gemini must be live, or it stalls at Queued). |
 | `video/raw/admin-07-unanswered.mp4` | Open the **Unanswered** tab — shows the **Q&A pairs**: each visitor question ("Asked") with the bot's "I don't know" reply ("Bot") and a View conversation link. Slow scroll 2-3 rows. | Proves the bot is honest (no hallucinating) and the tool keeps improving. Pause on a full pair 2s. |
 | `video/raw/admin-08-guardrail.mp4` | Open the **Settings** tab — show the **"I don't know" guardrail toggle ON** ("Bot refuses questions outside its knowledge base"). Hover/pause on it. | Quick flash. Reassures SMBs the bot won't make things up. |
 
@@ -100,7 +100,7 @@ Record these as **4 separate clips**:
 ## Recording Order Checklist
 
 - [ ] Demo account seeded with realistic conversations + leads (✅ done — incl. KB docs, unanswered, guardrail)
-- [ ] `docs/demo-assets/Auraline-Cosmetics-Store-Guide.md` handy for the live KB upload
+- [ ] `docs/demo-assets/Noor-Dental-Clinic-Guide.md` handy for the live KB upload (admin-06)
 - [ ] Browser cleaned (incognito, 100% zoom, maximized, notifications off)
 - [ ] ScreenPal set to 1920×1080 @ 30fps, click-highlight on, mic OFF
 - [ ] Flow A: 5 clips (`admin-01` … `admin-05`)
