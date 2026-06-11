@@ -52,34 +52,26 @@ in the closing CTA, not in the footage. Seed it so nothing looks empty:
 ## FLOW A — Admin: Build a Bot (`admin.octively.com`)
 *Maps to Storyboard Scene 2. Dark UI.*
 
-Record these as **5 separate clips**:
+> ⚠️ **Two bots — read before recording.**
+> **Noor Dental** = the bot you create live. All of clips 2–6 stay on it (create → upload KB → embed → preview).
+> **Auraline Cosmetics** = the seeded bot. Used only for clips 7–8 (Unanswered + Guardrail) and the portal.
+>
+> **Recording order matters for clip 5 (live preview):** record clip 4 (KB upload) first and wait for
+> the doc to reach **Ready** status before recording clip 5. The bot needs the knowledge loaded so it
+> gives a real answer during the chat demo.
 
-> ⚠️ **Two bots, by design — read before recording.**
-> "Auraline Cosmetics" is already seeded with all the real data (KB docs, conversations, leads).
-> The *create* clips (`admin-02/03`) use a **throwaway bot named "Noor Dental"** just to capture
-> the creation motion. Switch to the seeded "Auraline Cosmetics" bot from `admin-04` onward.
-> In the final edit these stitch into one smooth flow — viewers won't notice the switch.
+Record these as **8 separate clips** (5 admin + 3 smart-features):
 
 | Clip file | What to capture | Which bot | Pacing notes |
 |---|---|---|---|
-| `video/raw/admin-01-dashboard.mp4` | Land on the admin dashboard (bots list / overview) — the 5 seeded bots are all visible. Sit still 2s, then move cursor toward "Create bot". | — (overview) | Establishing shot. Calm. |
-| `video/raw/admin-02-create-form.mp4` | Click **Create bot** → the form opens. Type **"Noor Dental"** slowly as the bot name. **Open the model dropdown** so **"Llama 3.3 70B"** (with its ⚡ Fast speed badge) is visible, then select it. | **Throwaway — "Noor Dental"** | Type at human speed. Let dropdown sit open 1.5s. Do NOT imply the model is "free". |
-| `video/raw/admin-03-create-success.mp4` | Click the Sky-Teal **Create bot** button → success state / toast appears. | **Throwaway — "Noor Dental"** | Hold on the success toast 2s. |
-| `video/raw/admin-04-embed-copy.mp4` | **Switch to the seeded "Auraline Cosmetics" bot.** Open its **Embed** view so the `<script ... data-key="...">` code block is fully visible. Click **Copy** → "Copied!" state. | **Seeded — Auraline Cosmetics** | Hold on the full code block 2s before copying. This is the hero shot. |
-| `video/raw/admin-05-widget-preview.mp4` | On the same "Auraline Cosmetics" bot, use the **built-in Live Preview** panel. Click the chat bubble → it opens → type one message → bot replies. | **Seeded — Auraline Cosmetics** | No external site needed. I'll caption it "Live on any website." |
-
----
-
-## FLOW A-2 — Admin: Smart Features (overview) (`admin.octively.com`)
-*Maps to new Storyboard beats in Scene 2. Dark UI. Record on the **seeded** Auraline Cosmetics bot.*
-
-These are quick **overview** shots — open the tab, let it sit, move on. Don't deep-dive each one.
-
-| Clip file | What to capture | Pacing notes |
-|---|---|---|
-| `video/raw/admin-06-knowledge.mp4` | Go to the **"Noor Dental"** bot (the one just created). Open its **Knowledge Base** tab — empty after creation. **Upload `Noor-Dental-Clinic-Guide.md`** (`docs/demo-assets/`) and let it process **Queued → Parsing → Ready**. | This is the RAG differentiator — shows a bot getting trained right after creation. Hold on the Queued state 1s, then on Ready 2s. Upload on **production** admin (R2/QStash/Gemini must be live, or it stalls at Queued). |
-| `video/raw/admin-07-unanswered.mp4` | Open the **Unanswered** tab — shows the **Q&A pairs**: each visitor question ("Asked") with the bot's "I don't know" reply ("Bot") and a View conversation link. Slow scroll 2-3 rows. | Proves the bot is honest (no hallucinating) and the tool keeps improving. Pause on a full pair 2s. |
-| `video/raw/admin-08-guardrail.mp4` | Open the **Settings** tab — show the **"I don't know" guardrail toggle ON** ("Bot refuses questions outside its knowledge base"). Hover/pause on it. | Quick flash. Reassures SMBs the bot won't make things up. |
+| `video/raw/admin-01-dashboard.mp4` | Land on the admin dashboard — all 5 seeded bots visible. Sit still 2s, move cursor toward **Create bot**. | — (overview) | Establishing shot. Calm. |
+| `video/raw/admin-02-create-form.mp4` | Click **Create bot** → form opens. Type **"Noor Dental"** slowly. Open the model dropdown so **"Llama 3.3 70B"** with ⚡ badge is visible, then select it. | **Noor Dental** | Type at human speed. Dropdown open 1.5s. Do NOT imply the model is "free". |
+| `video/raw/admin-03-create-success.mp4` | Click the Sky-Teal **Create bot** button → success toast appears. | **Noor Dental** | Hold on the toast 2s. |
+| `video/raw/admin-04-knowledge.mp4` | Open **Noor Dental's Knowledge Base** tab (empty after creation). **Upload `Noor-Dental-Clinic-Guide.md`** and let it process **Queued → Parsing → Ready**. | **Noor Dental** | RAG differentiator. Hold on Queued 1s, then on Ready 2s. **Record this before clip 5** so the bot has knowledge loaded for the chat. Upload on production (R2 + QStash + Gemini must be live). |
+| `video/raw/admin-05-embed-copy.mp4` | Open **Noor Dental's Embed** tab — the full `<script ... data-key="...">` code block is visible. Click **Copy** → "Copied!" state. | **Noor Dental** | Hold on the code block 2s before copying. This is the hero shot. |
+| `video/raw/admin-06-widget-preview.mp4` | Use **Noor Dental's built-in Live Preview** panel. Click the chat bubble → it opens → type one message about dental services → bot replies using the uploaded guide. | **Noor Dental** | Bot should answer from the KB (e.g. ask about a service or price). Pause on the reply 2s. I'll caption it "Live on any website." |
+| `video/raw/admin-07-unanswered.mp4` | **Switch to "Auraline Cosmetics".** Open its **Unanswered** tab — shows Q&A pairs: visitor question ("Asked") + bot reply ("Bot") + View link. Slow scroll 2–3 rows. | **Auraline Cosmetics** | Proves the bot is honest and the improvement loop works. Pause on a full pair 2s. |
+| `video/raw/admin-08-guardrail.mp4` | Still on **Auraline Cosmetics**. Open **Settings** tab — show the **"I don't know" guardrail toggle ON**. Hover and pause. | **Auraline Cosmetics** | Quick flash ~3s. Reassures SMBs the bot won't hallucinate. |
 
 ---
 
@@ -99,14 +91,14 @@ Record these as **4 separate clips**:
 
 ## Recording Order Checklist
 
-- [ ] Demo account seeded with realistic conversations + leads (✅ done — incl. KB docs, unanswered, guardrail)
-- [ ] `docs/demo-assets/Noor-Dental-Clinic-Guide.md` handy for the live KB upload (admin-06)
-- [ ] Browser cleaned (incognito, 100% zoom, maximized, notifications off)
-- [ ] ScreenPal set to 1920×1080 @ 30fps, click-highlight on, mic OFF
-- [ ] Flow A: 5 clips (`admin-01` … `admin-05`)
-- [ ] Flow A-2: 3 clips (`admin-06` knowledge · `admin-07` unanswered · `admin-08` guardrail) — on the **seeded** bot
-- [ ] Flow B: 4 clips (`portal-01` … `portal-04`)
-- [ ] All clips exported as MP4 into `video/raw/`
+- [ ] Demo account seeded (✅ done — Auraline has conversations, leads, unanswered, guardrail)
+- [ ] `docs/demo-assets/Noor-Dental-Clinic-Guide.md` ready to upload (admin-04)
+- [ ] Browser cleaned (incognito, 100% zoom, maximised, notifications off)
+- [ ] Windows Game Bar ready: `Win+Alt+R` to start/stop · 1080p / 30fps · mic OFF
+- [ ] **Noor Dental** clips — record in this order: `admin-02` → `admin-03` → `admin-04` (wait for Ready) → `admin-05` → `admin-06`
+- [ ] **Auraline** clips: `admin-01` (dashboard overview) · `admin-07` (unanswered) · `admin-08` (guardrail)
+- [ ] **Portal** clips (log in as Auraline client): `portal-01` … `portal-04`
+- [ ] All 12 clips renamed and dropped into `video/raw/`
 - [ ] Tell me when they're in — I start the Remotion build
 
 ---

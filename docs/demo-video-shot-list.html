@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Octively Demo — Shot List</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #1a1a1a;
+    background: #fff;
+    padding: 24px 20px 48px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .header {
+    border-bottom: 3px solid #0EA5E9;
+    padding-bottom: 14px;
+    margin-bottom: 24px;
+  }
+  .header h1 { font-size: 22px; font-weight: 800; color: #0EA5E9; }
+  .header p  { font-size: 13px; color: #555; margin-top: 4px; }
+
+  h2 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #0EA5E9;
+    margin: 28px 0 10px;
+  }
+
+  .prereq {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-left: 4px solid #0EA5E9;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .prereq p { font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #0369a1; }
+  .prereq li { font-size: 13px; margin-bottom: 5px; padding-left: 2px; list-style: none; }
+  .prereq li::before { content: "•  "; color: #0EA5E9; font-weight: 700; }
+
+  .warn {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-left: 4px solid #f97316;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #7c2d12;
+    margin-bottom: 12px;
+  }
+  .warn strong { color: #9a3412; }
+
+  .section-block {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 9px 14px;
+    margin: 22px 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #374151;
+  }
+  .section-block span {
+    font-size: 11px;
+    font-weight: 400;
+    color: #9ca3af;
+    margin-left: 6px;
+  }
+
+  .clip {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+  .clip-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 13px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .clip-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: #0EA5E9;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .clip-name {
+    font-size: 12px; font-weight: 700; color: #111;
+    font-family: 'Courier New', monospace;
+  }
+  .clip-bot {
+    margin-left: auto;
+    font-size: 11px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .bot-noor     { background: #dcfce7; color: #166534; }
+  .bot-auraline { background: #fef3c7; color: #92400e; }
+  .bot-portal   { background: #e0f2fe; color: #075985; }
+  .bot-overview { background: #f3f4f6; color: #4b5563; }
+
+  .clip-body { padding: 10px 13px; }
+  .clip-action { font-size: 14px; color: #1a1a1a; margin-bottom: 5px; }
+  .clip-tip {
+    font-size: 12px; color: #6b7280;
+    border-top: 1px dashed #e5e7eb;
+    padding-top: 6px; margin-top: 6px;
+  }
+  .clip-tip strong { color: #374151; }
+
+  .order-note {
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #78350f;
+    margin-bottom: 12px;
+  }
+
+  .recorder-box {
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 28px;
+  }
+  .recorder-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .recorder-box li { font-size: 13px; margin-bottom: 6px; list-style: none; padding-left: 2px; }
+  .recorder-box li::before { content: "→  "; color: #0EA5E9; font-weight: 700; }
+  .key {
+    display: inline-block;
+    background: #1a1a1a; color: #fff;
+    font-size: 12px; font-weight: 600;
+    padding: 1px 7px; border-radius: 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  @media print {
+    body { padding: 0; }
+    .clip { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Octively Demo — Shot List</h1>
+  <p>12 clips · Noor Dental = create/train/deploy · Auraline = unanswered/guardrail/portal</p>
+</div>
+
+<h2>Before you start</h2>
+<div class="prereq">
+  <p>Setup checklist</p>
+  <li>Log in as demo account — <strong>demo@octively.com</strong></li>
+  <li>Have <strong>Noor-Dental-Clinic-Guide.md</strong> ready to upload (clip 4)</li>
+  <li>Incognito window · 100% zoom · maximised · notifications OFF</li>
+  <li>Game Bar set to 1080p / 30fps · mic OFF (see recorder tip at bottom)</li>
+  <li>Move the mouse <strong>slowly</strong> · pause ~2 s on every key screen</li>
+  <li>Start each clip ~1 s before the action, end ~1 s after</li>
+</div>
+
+<div class="warn">
+  <strong>Two bots:</strong> Noor Dental for clips 1–6 (create, train, deploy). Auraline Cosmetics for clips 7–8 and the portal.
+</div>
+
+<div class="order-note">
+  <strong>Record clip 4 before clips 5 and 6.</strong> The KB must reach "Ready" before you demo the embed and live preview — the bot needs the dental guide loaded to answer questions.
+</div>
+
+<!-- Admin Flow -->
+<div class="section-block">Admin dashboard <span>admin.octively.com · dark UI</span></div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">1</div>
+    <div class="clip-name">admin-01-dashboard.mp4</div>
+    <div class="clip-bot bot-overview">Overview</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Land on the dashboard. All 5 seeded bots are visible. Sit still 2 s, then slowly move the cursor toward <strong>Create bot</strong>.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Establishing shot. Don't click yet.</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">2</div>
+    <div class="clip-name">admin-02-create-form.mp4</div>
+    <div class="clip-bot bot-noor">Noor Dental</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Click <strong>Create bot</strong> → form opens. Type <strong>"Noor Dental"</strong> slowly. Open the model dropdown — let <strong>"Llama 3.3 70B" ⚡</strong> sit visible for 1.5 s, then select it.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Type at human speed. Do NOT imply the model is "free".</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">3</div>
+    <div class="clip-name">admin-03-create-success.mp4</div>
+    <div class="clip-bot bot-noor">Noor Dental</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Click the Sky-Teal <strong>Create bot</strong> button → success toast appears.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Hold on the toast 2 s before ending the clip.</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">4</div>
+    <div class="clip-name">admin-04-knowledge.mp4</div>
+    <div class="clip-bot bot-noor">Noor Dental</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Open <strong>Noor Dental's Knowledge Base</strong> tab (empty). Upload <strong>Noor-Dental-Clinic-Guide.md</strong> and let it go <strong>Queued → Parsing → Ready</strong>.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Hold on Queued 1 s, then on Ready 2 s. Wait until Ready before recording clips 5 and 6. Needs production (R2 + QStash + Gemini live).</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">5</div>
+    <div class="clip-name">admin-05-embed-copy.mp4</div>
+    <div class="clip-bot bot-noor">Noor Dental</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Open <strong>Noor Dental's Embed</strong> tab. The full <code>&lt;script … data-key="…"&gt;</code> code block is visible. Click <strong>Copy</strong> → "Copied!" state.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Hold on the code block 2 s before copying. This is the hero shot.</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">6</div>
+    <div class="clip-name">admin-06-widget-preview.mp4</div>
+    <div class="clip-bot bot-noor">Noor Dental</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Open <strong>Noor Dental's Live Preview</strong> panel. Click the chat bubble → type a question about dental services (e.g. "How much is teeth whitening?") → bot replies using the uploaded guide.</div>
+    <div class="clip-tip"><strong>Tip:</strong> The bot should answer from the KB. Pause on the reply 2 s. I'll caption it "Live on any website."</div>
+  </div>
+</div>
+
+<!-- Smart features - Auraline -->
+<div class="section-block">Smart features <span>admin.octively.com · switch to Auraline Cosmetics</span></div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">7</div>
+    <div class="clip-name">admin-07-unanswered.mp4</div>
+    <div class="clip-bot bot-auraline">Auraline Cosmetics</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action"><strong>Switch to "Auraline Cosmetics".</strong> Open the <strong>Unanswered</strong> tab — Q&A pairs: visitor question + bot reply + View link. Slow-scroll 2–3 rows.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Pause on a full pair 2 s. Shows the improvement loop.</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">8</div>
+    <div class="clip-name">admin-08-guardrail.mp4</div>
+    <div class="clip-bot bot-auraline">Auraline Cosmetics</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Open <strong>Settings</strong> → show the <strong>"I don't know" guardrail toggle — ON</strong>. Hover and pause.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Quick ~3 s. Reassures clients the bot won't hallucinate.</div>
+  </div>
+</div>
+
+<!-- Portal -->
+<div class="section-block">Client portal <span>app.octively.com · log in as Auraline client · light UI</span></div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">9</div>
+    <div class="clip-name">portal-01-dashboard.mp4</div>
+    <div class="clip-bot bot-portal">Portal</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Portal landing — <strong>stat cards</strong> (Conversations / Leads / This week) and welcome header. Sit still 2.5 s.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Let the numbers breathe.</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">10</div>
+    <div class="clip-name">portal-02-conversations.mp4</div>
+    <div class="clip-bot bot-portal">Portal</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Navigate to <strong>Conversations</strong>. Slow-scroll the list. Open one conversation.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Pause on the open conversation 2 s.</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">11</div>
+    <div class="clip-name">portal-03-leads-table.mp4</div>
+    <div class="clip-bot bot-portal">Portal</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Navigate to <strong>Leads</strong> — names, phone numbers, timestamps. Slow-scroll a few rows.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Pause on the full table 2 s. This proves the value.</div>
+  </div>
+</div>
+
+<div class="clip">
+  <div class="clip-header">
+    <div class="clip-num">12</div>
+    <div class="clip-name">portal-04-export-csv.mp4</div>
+    <div class="clip-bot bot-portal">Portal</div>
+  </div>
+  <div class="clip-body">
+    <div class="clip-action">Click <strong>Export CSV</strong> → download happens. Show the browser download chip.</div>
+    <div class="clip-tip"><strong>Tip:</strong> Hold on the click + download 2 s.</div>
+  </div>
+</div>
+
+<!-- Recorder tip -->
+<div class="recorder-box">
+  <h3>Recording on Windows — Xbox Game Bar (built-in, no install)</h3>
+  <li>Press <span class="key">Win + G</span> → Settings → set <strong>1920×1080 / 30fps</strong> once.</li>
+  <li>Press <span class="key">Win + Alt + R</span> to start recording. Same shortcut to stop.</li>
+  <li>Files save automatically to <strong>Videos\Captures\</strong> as MP4.</li>
+  <li>Make sure the browser window is focused before pressing start.</li>
+  <li>Mic is OFF by default — leave it that way.</li>
+  <li>Rename each file immediately: <code>admin-01-dashboard.mp4</code> etc.</li>
+</div>
+
+</body>
+</html>
