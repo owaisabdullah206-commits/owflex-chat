@@ -54,22 +54,19 @@ in the closing CTA, not in the footage. Seed it so nothing looks empty:
 
 Record these as **5 separate clips**:
 
-| Clip file | What to capture | Pacing notes |
-|---|---|---|
-| `video/raw/admin-01-dashboard.mp4` | Land on the admin dashboard (bots list / overview). Sit still 2s, then move cursor toward "Create bot". | Establishing shot. Calm. |
-| `video/raw/admin-02-create-form.mp4` | Click **Create bot** → the form opens. Type the bot name slowly. **Open the model dropdown** so the option **"Llama 3.3 70B"** (with its ⚡ Fast speed badge) is visible, then select it. | Type at human speed, not instant paste. Let the dropdown sit open 1.5s. Do NOT imply the model is "free" — "free" belongs to the pricing plan in the CTA, not the model. |
-| `video/raw/admin-03-create-success.mp4` | Click the Sky-Teal **Create bot** button → success state / toast appears. | Hold on the success toast 2s. |
-| `video/raw/admin-04-embed-copy.mp4` | Open the bot's **Embed** view so the `<script ... data-key="...">` code block is fully visible. Click the **Copy** button → "Copied!" state. | Hold on the full code block 2s before copying. This is the hero shot. |
-| `video/raw/admin-05-widget-preview.mp4` | **Use the dashboard's built-in Live Preview** (the `preview · Auraline Cosmetics` panel — it runs the *real* `/embed.js` widget in a mini browser frame). Click the chat bubble → it opens → type one message → bot replies. | No external site needed — this is the genuine widget. I'll caption it "Live on any website." |
+> ⚠️ **Two bots, by design — read before recording.**
+> "Auraline Cosmetics" is already seeded with all the real data (KB docs, conversations, leads).
+> The *create* clips (`admin-02/03`) use a **throwaway bot named "Noor Dental"** just to capture
+> the creation motion. Switch to the seeded "Auraline Cosmetics" bot from `admin-04` onward.
+> In the final edit these stitch into one smooth flow — viewers won't notice the switch.
 
-**Bot name to use:** **"Auraline Cosmetics"** (the featured bot the seed script links to the client portal).
-
-> ⚠️ **Two bots, by design.** The *create* clips (`admin-02/03`) make a **fresh** bot to show the
-> "build in 60s" story. Everything that needs real data — **embed, live preview, knowledge base,
-> unanswered, guardrail** — must be recorded on the **already-seeded "Auraline Cosmetics"** bot (the
-> one with documents, conversations, and leads). In the final edit these stitch into one smooth flow;
-> viewers won't notice it's technically two bots. If a duplicate name in the list looks odd during the
-> create clip, name the throwaway anything (e.g. "Test Bot") — I only need the create *motion*, not the name.
+| Clip file | What to capture | Which bot | Pacing notes |
+|---|---|---|---|
+| `video/raw/admin-01-dashboard.mp4` | Land on the admin dashboard (bots list / overview) — the 5 seeded bots are all visible. Sit still 2s, then move cursor toward "Create bot". | — (overview) | Establishing shot. Calm. |
+| `video/raw/admin-02-create-form.mp4` | Click **Create bot** → the form opens. Type **"Noor Dental"** slowly as the bot name. **Open the model dropdown** so **"Llama 3.3 70B"** (with its ⚡ Fast speed badge) is visible, then select it. | **Throwaway — "Noor Dental"** | Type at human speed. Let dropdown sit open 1.5s. Do NOT imply the model is "free". |
+| `video/raw/admin-03-create-success.mp4` | Click the Sky-Teal **Create bot** button → success state / toast appears. | **Throwaway — "Noor Dental"** | Hold on the success toast 2s. |
+| `video/raw/admin-04-embed-copy.mp4` | **Switch to the seeded "Auraline Cosmetics" bot.** Open its **Embed** view so the `<script ... data-key="...">` code block is fully visible. Click **Copy** → "Copied!" state. | **Seeded — Auraline Cosmetics** | Hold on the full code block 2s before copying. This is the hero shot. |
+| `video/raw/admin-05-widget-preview.mp4` | On the same "Auraline Cosmetics" bot, use the **built-in Live Preview** panel. Click the chat bubble → it opens → type one message → bot replies. | **Seeded — Auraline Cosmetics** | No external site needed. I'll caption it "Live on any website." |
 
 ---
 
