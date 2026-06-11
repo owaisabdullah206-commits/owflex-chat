@@ -31,7 +31,7 @@ function LoginContent() {
         const isCredErr = msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('credential')
         setError(
           isCredErr
-            ? 'Email or password is incorrect. If you signed in with Google, use the button below.'
+            ? 'Email or password is incorrect.'
             : (msg || 'Sign in failed. Please try again.')
         )
       } else {
@@ -42,10 +42,6 @@ function LoginContent() {
     } finally {
       setPending(false)
     }
-  }
-
-  async function handleGoogle() {
-    await authClient.signIn.social({ provider: 'google', callbackURL: '/portal' })
   }
 
   return (
@@ -132,19 +128,6 @@ function LoginContent() {
                 {pending ? 'Signing in…' : 'Sign in'}
               </Button>
             </form>
-
-            <div className="relative my-5">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[var(--hairline)]" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-[var(--surface)] px-2 text-[var(--ink-subtle)]">or</span>
-              </div>
-            </div>
-
-            <Button type="button" variant="secondary" className="w-full" onClick={handleGoogle}>
-              Continue with Google
-            </Button>
 
             <p className="text-xs text-center text-[var(--ink-faint)] mt-5">
               Access is by invitation only
