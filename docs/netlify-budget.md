@@ -44,4 +44,5 @@ At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credi
 | 2026-05-30 | 11       | ~15          | fix: add Sanity vars to SECRETS_SCAN_OMIT_KEYS in netlify.toml (permanent fix) |
 | 2026-06-09 | 12       | 0 (failed)   | FAILED — secrets scanner blocked BREVO_FROM_EMAIL + BREVO_DIGEST_EMAIL |
 | 2026-06-09 | 13       | ~15          | feat: 4 free tools + /tools hub + directory fixes + bot-form links (added Brevo emails to SECRETS_SCAN_OMIT_KEYS) |
+| 2026-06-11 | 14       | ~15          | feat: domain-lock, lead email, reply language, WhatsApp button, buyer-segment, CSV export gate, testimonials, VPS migration docs, env audit |
 
