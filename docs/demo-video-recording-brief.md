@@ -71,7 +71,7 @@ Record these as **8 separate clips** (5 admin + 3 smart-features):
 | `video/raw/admin-05-embed-copy.mp4` | Open **Noor Dental's Embed** tab — the full `<script ... data-key="...">` code block is visible. Click **Copy** → "Copied!" state. | **Noor Dental** | Hold on the code block 2s before copying. This is the hero shot. |
 | `video/raw/admin-06-widget-preview.mp4` | Use **Noor Dental's built-in Live Preview** panel. Click the chat bubble → it opens → type one message about dental services → bot replies using the uploaded guide. | **Noor Dental** | Bot should answer from the KB (e.g. ask about a service or price). Pause on the reply 2s. I'll caption it "Live on any website." |
 | `video/raw/admin-07-unanswered.mp4` | **Switch to "Auraline Cosmetics".** Open its **Unanswered** tab — shows Q&A pairs: visitor question ("Asked") + bot reply ("Bot") + View link. Slow scroll 2–3 rows. | **Auraline Cosmetics** | Proves the bot is honest and the improvement loop works. Pause on a full pair 2s. |
-| `video/raw/admin-08-guardrail.mp4` | Still on **Auraline Cosmetics**. Open **Settings** tab — show the **"I don't know" guardrail toggle ON**. Hover and pause. | **Auraline Cosmetics** | Quick flash ~3s. Reassures SMBs the bot won't hallucinate. |
+| `video/raw/admin-08-settings.mp4` | Still on **Auraline Cosmetics**. Open **Settings** tab. Show two things: **① Model selector** — scroll to it, open the dropdown so **"Llama 3.3 70B"** is visible with its ⚡ speed badge, pause 1.5s (don't change it). **② Guardrail toggle** — scroll down to the "I don't know" guardrail, show it **ON**, hover and pause 2s. | **Auraline Cosmetics** | Two beats in one clip. Pause on the model dropdown 1.5s, then the guardrail toggle 2s. Rename file to `admin-08-settings.mp4`. |
 
 ---
 
@@ -89,6 +89,35 @@ Record these as **4 separate clips**:
 
 ---
 
+## Sensitive Data — What to Hide
+
+Two approaches. Use both together:
+
+**A. Handle during recording (you do this):**
+These elements contain live credentials or real personal data that must not appear in the raw clip at all.
+
+| Clip | What to hide | How |
+|---|---|---|
+| Portal login (before portal-01) | Email + password fields while typing | Start recording **after** you've logged in — land on the portal dashboard already signed in, then hit record. |
+| `admin-02` create form | Store URL field | Type a **fake URL** — `https://noordentallahore.pk` is fine, it's fictional. |
+| `admin-05` embed copy | The `data-key="…"` value in the script tag | Before recording, switch the embed key display to a test bot or accept that I'll blur it in post (see B). |
+
+**B. I handle in post via Remotion blur overlays (nothing for you to do):**
+Record these clips naturally — I add a frosted-glass blur box over the sensitive region in the final edit.
+
+| Clip | What I blur |
+|---|---|
+| `admin-05-embed-copy` | The `data-key` value in the embed script |
+| `admin-07-unanswered` | Any real visitor questions that contain personal info |
+| `portal-01-dashboard` | Client name / email in the welcome header |
+| `portal-02-conversations` | Visitor names and message content in the conversation list and open thread |
+| `portal-03-leads-table` | All name, phone, email, and notes columns |
+| `portal-04-export-csv` | Browser download chip if it shows the filename with account info |
+
+> **Rule of thumb:** if it's a real name, real phone number, real email address, or a private key — it gets blurred. The numbers (589 conversations, 47 leads) stay visible because they prove value without revealing anyone's identity.
+
+---
+
 ## Recording Order Checklist
 
 - [ ] Demo account seeded (✅ done — Auraline has conversations, leads, unanswered, guardrail)
@@ -96,7 +125,7 @@ Record these as **4 separate clips**:
 - [ ] Browser cleaned (incognito, 100% zoom, maximised, notifications off)
 - [ ] Windows Game Bar ready: `Win+Alt+R` to start/stop · 1080p / 30fps · mic OFF
 - [ ] **Noor Dental** clips — record in this order: `admin-02` → `admin-03` → `admin-04` (wait for Ready) → `admin-05` → `admin-06`
-- [ ] **Auraline** clips: `admin-01` (dashboard overview) · `admin-07` (unanswered) · `admin-08` (guardrail)
+- [ ] **Auraline** clips: `admin-01` (dashboard overview) · `admin-07` (unanswered) · `admin-08-settings` (model selector + guardrail)
 - [ ] **Portal** clips (log in as Auraline client): `portal-01` … `portal-04`
 - [ ] All 12 clips renamed and dropped into `video/raw/`
 - [ ] Tell me when they're in — I start the Remotion build

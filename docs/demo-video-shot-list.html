@@ -282,12 +282,15 @@
 <div class="clip">
   <div class="clip-header">
     <div class="clip-num">8</div>
-    <div class="clip-name">admin-08-guardrail.mp4</div>
+    <div class="clip-name">admin-08-settings.mp4</div>
     <div class="clip-bot bot-auraline">Auraline Cosmetics</div>
   </div>
   <div class="clip-body">
-    <div class="clip-action">Open <strong>Settings</strong> → show the <strong>"I don't know" guardrail toggle — ON</strong>. Hover and pause.</div>
-    <div class="clip-tip"><strong>Tip:</strong> Quick ~3 s. Reassures clients the bot won't hallucinate.</div>
+    <div class="clip-action">Open <strong>Settings</strong> tab. Two beats:<br><br>
+      <strong>① Model selector</strong> — scroll to it, open the dropdown so <strong>"Llama 3.3 70B" ⚡</strong> is visible. Pause 1.5 s. Don't change it.<br>
+      <strong>② Guardrail toggle</strong> — scroll down to the "I don't know" guardrail, show it <strong>ON</strong>. Hover and pause 2 s.
+    </div>
+    <div class="clip-tip"><strong>Tip:</strong> Rename the file <code>admin-08-settings.mp4</code>. Pause on the model dropdown 1.5 s, then the guardrail 2 s.</div>
   </div>
 </div>
 
@@ -340,6 +343,27 @@
     <div class="clip-action">Click <strong>Export CSV</strong> → download happens. Show the browser download chip.</div>
     <div class="clip-tip"><strong>Tip:</strong> Hold on the click + download 2 s.</div>
   </div>
+</div>
+
+<!-- Sensitive data -->
+<div class="section-block" style="margin-top:28px;">Sensitive data — what to hide</div>
+
+<div style="background:#fdf2f8;border:1px solid #f0abfc;border-left:4px solid #a855f7;border-radius:8px;padding:12px 16px;margin-bottom:10px;">
+  <p style="font-size:13px;font-weight:700;color:#6b21a8;margin-bottom:8px;">A — You handle during recording</p>
+  <div style="font-size:13px;color:#1a1a1a;margin-bottom:4px;"><strong>Portal login:</strong> Start recording <em>after</em> you're already logged in. Don't capture the email/password being typed.</div>
+  <div style="font-size:13px;color:#1a1a1a;margin-bottom:4px;"><strong>Clip 2 (Store URL):</strong> Use the fictional URL <code>https://noordentallahore.pk</code> — no real client data.</div>
+  <div style="font-size:13px;color:#1a1a1a;"><strong>Clip 5 (Embed key):</strong> Record naturally — I'll blur the <code>data-key</code> value in post.</div>
+</div>
+
+<div style="background:#f0fdf4;border:1px solid #86efac;border-left:4px solid #22c55e;border-radius:8px;padding:12px 16px;margin-bottom:10px;">
+  <p style="font-size:13px;font-weight:700;color:#166534;margin-bottom:8px;">B — I blur in post (nothing for you to do)</p>
+  <div style="font-size:13px;color:#1a1a1a;line-height:1.7;">
+    Clip 5 — embed <code>data-key</code> value<br>
+    Clip 7 — visitor questions with personal info<br>
+    Clips 9–11 — client name/email in header, conversation content, all leads columns (name, phone, email, notes)<br>
+    Clip 12 — download chip if it shows account info
+  </div>
+  <p style="font-size:12px;color:#4b5563;margin-top:8px;"><strong>Rule:</strong> real names, phones, emails, private keys = blurred. Stats (589 conversations, 47 leads) stay visible.</p>
 </div>
 
 <!-- Recorder tip -->
