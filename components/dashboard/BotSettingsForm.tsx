@@ -510,7 +510,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
             style={{ fontFamily: 'var(--font-mono)' }}
           >
-            catalog_store
+            Catalog & Store
           </p>
 
           {/* Store URL */}
@@ -578,7 +578,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             <div>
               <p className="text-sm text-[var(--ink)]">Product Recommendation Cards</p>
               <p className="text-xs text-[var(--ink-muted)]">
-                Bot surfaces clickable product cards (image, name, price, link) when recommending items from your catalog.
+                Surfaces clickable product cards (image, name, price, link) when recommending items. Requires Shopify or WooCommerce product data uploaded in the Knowledge Base.
               </p>
             </div>
             <Switch
@@ -665,6 +665,56 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
           </div>
         </div>
+
+        {/* ── Usage & Limits (pro / agency / enterprise) ── */}
+        {!isStarterOrFree && (
+          <div>
+            <p className="text-xs text-[var(--ink-muted)] mb-3">
+              Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="convLimit" className="text-xs text-[var(--ink-muted)]">Max conversations / month</Label>
+                <Input
+                  id="convLimit"
+                  type="number"
+                  min={1}
+                  value={convLimit}
+                  onChange={(e) => { setConvLimit(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="leadLimit" className="text-xs text-[var(--ink-muted)]">Max leads / month</Label>
+                <Input
+                  id="leadLimit"
+                  type="number"
+                  min={1}
+                  value={leadLimit}
+                  onChange={(e) => { setLeadLimit(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="creditBudget" className="text-xs text-[var(--ink-muted)]">Credit budget / month</Label>
+                <Input
+                  id="creditBudget"
+                  type="number"
+                  min={1}
+                  value={creditBudget}
+                  onChange={(e) => { setCreditBudget(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Toggles */}
         <div className="border-t border-[var(--hairline)] divide-y divide-[var(--hairline)]">
@@ -762,6 +812,47 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
               onCheckedChange={(v) => { setTooltipEnabled(v); markDirty() }}
               disabled={isPending} />
           </div>
+
+          {/* Branding footer — hidden for free (forced on), toggle for all paid, customize for agency+ */}
+          {!isFreePlan && (
+          <div className="py-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-[var(--ink)]">Branding footer</p>
+                <p className="text-xs text-[var(--ink-muted)]">
+                  {(orgPlan === 'agency' || orgPlan === 'enterprise')
+                    ? 'Customizable link at the bottom of the widget. Disable to remove it entirely.'
+                    : 'Show a small "Powered by Octively" link at the bottom of the widget. Disable to hide it.'}
+                </p>
+              </div>
+              <Switch
+                checked={brandingEnabled}
+                onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
+                disabled={isPending}
+              />
+            </div>
+            {brandingEnabled && (orgPlan === 'agency' || orgPlan === 'enterprise') && (
+              <div className="space-y-2">
+                <Input
+                  value={brandingText}
+                  onChange={(e) => { setBrandingText(e.target.value); markDirty() }}
+                  maxLength={60}
+                  placeholder="Powered by Octively"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+                <Input
+                  value={brandingUrl}
+                  onChange={(e) => { setBrandingUrl(e.target.value); markDirty() }}
+                  type="url"
+                  placeholder="https://octively.com"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+            )}
+          </div>
+          )}
         </div>
 
 
@@ -788,7 +879,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1"
             style={{ fontFamily: 'var(--font-mono)' }}
           >
-            integrations
+            Integrations
           </p>
           <p className="text-xs text-[var(--ink-muted)] mb-3">
             POST new leads to a URL — pipe directly to Zapier, Make, n8n, or your CRM.
@@ -831,62 +922,6 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           </div>
         </div>
 
-        {/* ── Usage & Limits (pro / agency / enterprise) ── */}
-        {!isStarterOrFree && (
-          <div className="pt-6 mt-2 border-t border-[var(--hairline)]">
-            <p
-              className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1"
-              style={{ fontFamily: 'var(--font-mono)' }}
-            >
-              usage limits
-            </p>
-            <p className="text-xs text-[var(--ink-muted)] mb-3">
-              Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="convLimit" className="text-xs text-[var(--ink-muted)]">Max conversations / month</Label>
-                <Input
-                  id="convLimit"
-                  type="number"
-                  min={1}
-                  value={convLimit}
-                  onChange={(e) => { setConvLimit(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="leadLimit" className="text-xs text-[var(--ink-muted)]">Max leads / month</Label>
-                <Input
-                  id="leadLimit"
-                  type="number"
-                  min={1}
-                  value={leadLimit}
-                  onChange={(e) => { setLeadLimit(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="creditBudget" className="text-xs text-[var(--ink-muted)]">Credit budget / month</Label>
-                <Input
-                  id="creditBudget"
-                  type="number"
-                  min={1}
-                  value={creditBudget}
-                  onChange={(e) => { setCreditBudget(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Submit */}
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit" disabled={isPending}
@@ -909,45 +944,6 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           {saved  && <span className="text-xs text-[var(--success-text)]">Saved — widget updates within 5 minutes</span>}
           {error  && <span className="text-xs text-[var(--error-text)]">{error}</span>}
         </div>
-
-        {/* Attribution — agency/enterprise white-label only, intentionally low-visibility */}
-        {(orgPlan === 'agency' || orgPlan === 'enterprise') && (
-          <div className="pt-6 mt-2 border-t border-[var(--hairline)]">
-            <div className="flex items-center justify-between">
-              <span
-                className="text-[10px] text-[var(--ink-subtle)]"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                attribution_footer
-              </span>
-              <Switch
-                checked={brandingEnabled}
-                onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
-                disabled={isPending}
-              />
-            </div>
-            {brandingEnabled && (
-              <div className="mt-3 space-y-2">
-                <Input
-                  value={brandingText}
-                  onChange={(e) => { setBrandingText(e.target.value); markDirty() }}
-                  maxLength={60}
-                  placeholder="Powered by My Agency"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-                <Input
-                  value={brandingUrl}
-                  onChange={(e) => { setBrandingUrl(e.target.value); markDirty() }}
-                  type="url"
-                  placeholder="https://myagency.com"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-            )}
-          </div>
-        )}
       </form>
 
       {/* ── Right: live preview ── */}
