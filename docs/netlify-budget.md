@@ -47,4 +47,5 @@ At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credi
 | 2026-06-09 | 13       | ~15          | feat: 4 free tools + /tools hub + directory fixes + bot-form links (added Brevo emails to SECRETS_SCAN_OMIT_KEYS) |
 | 2026-06-11 | 14       | ~15          | feat: domain-lock, lead email, reply language, WhatsApp button, buyer-segment, CSV export gate, testimonials, VPS migration docs, env audit |
 | 2026-06-11 | 15       | ~15          | fix: per-subdomain session cookies (admin/portal no longer share), remove Google login from portal |
+| 2026-06-12 | 16       | ~15          | fix: CSP allows GTM/GA4 scripts; deduplicate blog post JSON-LD via single @graph block |
 
