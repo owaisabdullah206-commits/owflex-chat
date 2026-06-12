@@ -1,9 +1,9 @@
 # Netlify Build Budget
 
 ## Credit System (free plan: 300 credits/month, resets 24th of each month)
-## Current cycle: May 24 – Jun 23 · 62 credits remaining BEFORE deploy #16 · 11 days left
+## Current cycle: May 24 – Jun 23 · ~32 credits remaining BEFORE deploy #17 · 11 days left
 ## Breakdown (per Netlify billing, Jun 12): deploys 165cr (11 deploys) · compute 51.1cr · requests 8.2cr · bandwidth 13.7cr = 238cr used
-## After deploy #16: ~47cr remaining. Ongoing burn ~3.8cr/day → ~42cr over 11 days. ~5cr buffer. NO MORE DEPLOYS this cycle.
+## After deploy #17: ~17cr remaining. Ongoing burn ~3.8cr/day → ~42cr over 11 days. OVER BUDGET — monitor closely.
 ## NOTE: compute (51.1cr) is the biggest non-deploy cost — SSR requests burn it continuously.
 
 | Resource              | Cost               | With 300 credits     |
@@ -48,4 +48,5 @@ At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credi
 | 2026-06-11 | 14       | ~15          | feat: domain-lock, lead email, reply language, WhatsApp button, buyer-segment, CSV export gate, testimonials, VPS migration docs, env audit |
 | 2026-06-11 | 15       | ~15          | fix: per-subdomain session cookies (admin/portal no longer share), remove Google login from portal |
 | 2026-06-12 | 16       | ~15          | fix: CSP allows GTM/GA4 scripts; deduplicate blog post JSON-LD via single @graph block |
+| 2026-06-12 | 17       | ~15          | feat: per-bot usage tab, fix embed-preview 404, tidy marketing routes to (marketing) group |
 
