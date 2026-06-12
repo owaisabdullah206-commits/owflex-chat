@@ -41,6 +41,7 @@ const SHIPPED = [
   'WhatsApp continue button: visitors move the chat to WhatsApp in one tap',
   'Domain lock by default: every bot is tied to its Store URL so a copied embed key cannot be reused elsewhere',
   'Over-limit leads banner: leads past your plan limit are saved and surfaced with an upgrade prompt',
+  'Per-bot usage tab: conversations, messages, tokens, credits, and cost at a glance with model breakdown',
 ]
 
 const IN_PROGRESS = [

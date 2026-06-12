@@ -1,4 +1,4 @@
-import { and, avg, count, desc, eq, gte, isNotNull, ne, sql } from 'drizzle-orm'
+import { and, avg, count, desc, eq, gte, isNotNull, ne, sql, sum } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
 export async function getBotAnalytics(botId: string, days = 30) {
@@ -130,5 +130,86 @@ export async function getBotRatingSummary(botId: string, days = 30) {
   return {
     thumbsUp:   Number(result?.thumbsUp ?? 0),
     thumbsDown: Number(result?.thumbsDown ?? 0),
+  }
+}
+
+// ── Per-bot monthly usage stats ───────────────────────────────────────────────
+
+export async function getBotUsage(botId: string) {
+  const now = new Date()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+
+  const [convRow, msgRow, tokenRow, costRow, creditRow, leadRow, modelRows] = await Promise.all([
+    // Conversations this month
+    db
+      .select({ count: count() })
+      .from(schema.conversations)
+      .where(and(eq(schema.conversations.botId, botId), gte(schema.conversations.startedAt, monthStart))),
+
+    // Messages this month
+    db
+      .select({ total: sql<number>`COALESCE(SUM(${schema.conversations.messageCount}), 0)::int` })
+      .from(schema.conversations)
+      .where(and(eq(schema.conversations.botId, botId), gte(schema.conversations.startedAt, monthStart))),
+
+    // Tokens this month (via messages → conversations join)
+    db
+      .select({ total: sql<number>`COALESCE(SUM(${schema.messages.tokensUsed}), 0)::int` })
+      .from(schema.messages)
+      .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
+      .where(and(eq(schema.conversations.botId, botId), gte(schema.messages.createdAt, monthStart))),
+
+    // Cost this month (USD)
+    db
+      .select({ total: sql<string>`COALESCE(SUM(${schema.messages.costUsd}), 0)` })
+      .from(schema.messages)
+      .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
+      .where(and(eq(schema.conversations.botId, botId), gte(schema.messages.createdAt, monthStart))),
+
+    // Credits used this month (from routing decisions)
+    db
+      .select({ total: sql<number>`COALESCE(SUM(${schema.routingDecisions.creditCost}), 0)::int` })
+      .from(schema.routingDecisions)
+      .where(and(eq(schema.routingDecisions.botId, botId), gte(schema.routingDecisions.createdAt, monthStart))),
+
+    // Leads this month
+    db
+      .select({ count: count() })
+      .from(schema.leads)
+      .where(and(eq(schema.leads.botId, botId), gte(schema.leads.capturedAt, monthStart), eq(schema.leads.hiddenByLimit, false))),
+
+    // Model breakdown — how many messages per model
+    db
+      .select({
+        model: schema.messages.modelUsed,
+        messages: count(),
+        tokens: sql<number>`COALESCE(SUM(${schema.messages.tokensUsed}), 0)::int`,
+        cost: sql<string>`COALESCE(SUM(${schema.messages.costUsd}), 0)`,
+      })
+      .from(schema.messages)
+      .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
+      .where(and(
+        eq(schema.conversations.botId, botId),
+        gte(schema.messages.createdAt, monthStart),
+        isNotNull(schema.messages.modelUsed),
+      ))
+      .groupBy(schema.messages.modelUsed)
+      .orderBy(sql`count(*) DESC`)
+      .limit(10),
+  ])
+
+  return {
+    conversations: convRow[0]?.count ?? 0,
+    messages: msgRow[0]?.total ?? 0,
+    tokens: tokenRow[0]?.total ?? 0,
+    costUsd: parseFloat(costRow[0]?.total ?? '0'),
+    creditsUsed: creditRow[0]?.total ?? 0,
+    leads: leadRow[0]?.count ?? 0,
+    modelBreakdown: modelRows.map((r) => ({
+      model: r.model ?? 'unknown',
+      messages: r.messages,
+      tokens: r.tokens,
+      costUsd: parseFloat(r.cost ?? '0'),
+    })),
   }
 }

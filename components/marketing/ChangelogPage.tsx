@@ -17,6 +17,7 @@ const RELEASES = [
       'WhatsApp continue button: add a WhatsApp number in settings and the widget shows a “Continue on WhatsApp” button so visitors can move the chat to WhatsApp in one tap',
       'Domain lock by default: every bot is tied to its Store URL, so a copied embed key cannot be used to run your bot (and spend your credits) on someone else’s website',
       'Over-limit leads banner: leads captured past your plan limit are saved and surfaced with an upgrade prompt instead of being silently dropped',
+      'Per-bot usage tab: conversations, messages, tokens, credits, and cost at a glance with model breakdown — see exactly how each bot is consuming resources',
     ],
   },
   {

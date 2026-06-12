@@ -25,9 +25,10 @@ import { RefreshButton } from '@/components/shared/RefreshButton'
 import { BotTabSelect } from '@/components/dashboard/BotTabSelect'
 import { ClientStatusCard } from '@/components/dashboard/ClientStatusCard'
 import { BotAnalyticsTab } from '@/components/dashboard/BotAnalyticsTab'
-import { getBotAnalytics, getPageBreakdown, getBotRatingSummary } from '@/lib/db/queries/analytics'
+import { BotUsageTab } from '@/components/dashboard/BotUsageTab'
+import { getBotAnalytics, getPageBreakdown, getBotRatingSummary, getBotUsage } from '@/lib/db/queries/analytics'
 import { UpgradeCTA } from '@/components/dashboard/UpgradeCTA'
-const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Settings', 'Knowledge Base', 'Unanswered'] as const
+const TABS = ['Overview', 'Conversations', 'Leads', 'Analytics', 'Usage', 'Settings', 'Knowledge Base', 'Unanswered'] as const
 
 interface BotDetailPageProps {
   params: Promise<{ id: string }>
@@ -81,7 +82,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     to: toStr ? new Date(toStr) : undefined,
   }
 
-  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, unansweredMessages, clientRows, inviteRows, analyticsData, pageBreakdown, ratingSummary] = await Promise.all([
+  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, unansweredMessages, clientRows, inviteRows, analyticsData, pageBreakdown, ratingSummary, usageData] = await Promise.all([
     searchConversations(bot.id, convFilters),
     db
       .select({
@@ -157,6 +158,9 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     })),
     getPageBreakdown(bot.id, 30).catch(() => [] as { pageUrl: string; conversations: number; messages: number; escalated: number; escalationPct: number }[]),
     getBotRatingSummary(bot.id, 30).catch(() => ({ thumbsUp: 0, thumbsDown: 0 })),
+    getBotUsage(bot.id).catch(() => ({
+      conversations: 0, messages: 0, tokens: 0, costUsd: 0, creditsUsed: 0, leads: 0, modelBreakdown: [],
+    })),
   ])
 
   const clientUser = clientRows[0] ?? null
@@ -333,6 +337,15 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               plan={bot.orgPlan}
               pageBreakdown={pageBreakdown}
               ratingSummary={ratingSummary}
+            />
+          )}
+
+          {activeTab === 'usage' && (
+            <BotUsageTab
+              data={usageData}
+              convLimit={bot.monthlyConvLimit}
+              leadLimit={bot.monthlyLeadLimit}
+              creditBudget={bot.monthlyCreditBudget}
             />
           )}
 
