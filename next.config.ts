@@ -3,19 +3,21 @@ import type { NextConfig } from "next";
 // Content-Security-Policy
 // - default-src 'self': only our own origin by default
 // - script-src 'self' 'unsafe-inline': Next.js inline hydration scripts require unsafe-inline
+//   + *.googletagmanager.com: GTM container (gtm.js) + GA4 gtag.js loaded by @next/third-parties
 // - style-src 'self' 'unsafe-inline': Tailwind/shadcn inject inline styles
 // - img-src 'self' data: blob: https:: allow CDN images in product cards + OG images
 // - connect-src 'self' https:: allow API calls + Upstash/Resend/LiteLLM in browser
+//   + *.google-analytics.com + *.analytics.google.com: GA4 event collection endpoints
 // - frame-src 'none': no iframes served from our domain
 // - object-src 'none': block Flash and plugins
 // - base-uri 'self': prevent base-tag hijacking
 // - form-action 'self': form submissions only to same origin
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
-  "connect-src 'self' https:",
+  "connect-src 'self' https: https://*.google-analytics.com https://*.analytics.google.com",
   "frame-src 'none'",
   "object-src 'none'",
   "base-uri 'self'",

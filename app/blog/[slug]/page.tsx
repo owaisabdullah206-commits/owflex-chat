@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import BlogPostView from '@/components/marketing/BlogPostView'
-import { JsonLd, articleSchema, breadcrumbSchema, faqSchema } from '@/components/shared/JsonLd'
+import { JsonLd, blogPostSchema } from '@/components/shared/JsonLd'
 import { getPost, getPosts, getPostSlugs } from '@/sanity/lib/queries'
 import { urlForImage } from '@/sanity/lib/image'
 
@@ -44,16 +44,15 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   return (
     <>
       <JsonLd
-        schema={articleSchema({
+        schema={blogPostSchema({
           title: post.title,
           description: post.description,
           slug: post.slug,
           datePublished: post.publishedAt,
           dateModified: post._updatedAt,
+          faq: post.faq,
         })}
       />
-      <JsonLd schema={breadcrumbSchema(post.title, `/blog/${post.slug}`)} />
-      {post.faq && post.faq.length > 0 && <JsonLd schema={faqSchema(post.faq)} />}
       <BlogPostView post={post} relatedPosts={relatedPosts} />
     </>
   )

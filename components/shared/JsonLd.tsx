@@ -61,7 +61,7 @@ export function breadcrumbSchema(label: string, path: string) {
   }
 }
 
-// Article schema — rendered on each blog post.
+// Article schema — rendered on each blog post (standalone, no FAQ).
 export function articleSchema(opts: {
   title: string
   description: string
@@ -83,7 +83,7 @@ export function articleSchema(opts: {
   }
 }
 
-// FAQPage schema — rendered on blog posts and guide page when FAQ items are present.
+// FAQPage schema — rendered on guide page and other non-blog pages.
 export function faqSchema(faqs: Array<{ question: string; answer: string }>) {
   return {
     '@context': 'https://schema.org',
@@ -94,6 +94,53 @@ export function faqSchema(faqs: Array<{ question: string; answer: string }>) {
       acceptedAnswer: { '@type': 'Answer', text: faq.answer },
     })),
   }
+}
+
+// Combined blog post schema — merges Article + BreadcrumbList + FAQPage into a
+// single @graph block so only one <script type="application/ld+json"> tag is
+// emitted. This prevents Google from detecting the FAQ schema twice via the
+// Next.js RSC payload and the explicit JSON-LD block.
+export function blogPostSchema(opts: {
+  title: string
+  description: string
+  slug: string
+  datePublished: string
+  dateModified?: string
+  faq?: Array<{ question: string; answer: string }>
+}) {
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: opts.title, item: `${SITE_URL}/blog/${opts.slug}` },
+      ],
+    },
+    {
+      '@type': 'Article',
+      headline: opts.title,
+      description: opts.description,
+      url: `${SITE_URL}/blog/${opts.slug}`,
+      datePublished: opts.datePublished,
+      dateModified: opts.dateModified ?? opts.datePublished,
+      author: { '@type': 'Organization', name: 'Octively', url: SITE_URL },
+      publisher: { '@id': `${SITE_URL}#organization` },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/blog/${opts.slug}` },
+    },
+  ]
+
+  if (opts.faq && opts.faq.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      mainEntity: opts.faq.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+      })),
+    })
+  }
+
+  return { '@context': 'https://schema.org', '@graph': graph }
 }
 
 // SoftwareApplication schema — rendered on the pricing page.
