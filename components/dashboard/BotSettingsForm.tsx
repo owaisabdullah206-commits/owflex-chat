@@ -131,6 +131,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [convLimit, setConvLimit]               = useState<string>(initial.monthlyConvLimit?.toString() ?? '')
   const [leadLimit, setLeadLimit]               = useState<string>(initial.monthlyLeadLimit?.toString() ?? '')
   const [creditBudget, setCreditBudget]         = useState<string>(initial.monthlyCreditBudget?.toString() ?? '')
+  const usageLimitsEnabled = convLimit !== '' || leadLimit !== '' || creditBudget !== ''
 
   const isFreePlan      = orgPlan === 'free'
   const isStarterOrFree = orgPlan === 'free' || orgPlan === 'starter'
@@ -803,10 +804,28 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             )}
           </div>
           )}
+
+          {/* Usage & Limits toggle — pro / agency / enterprise only */}
+          {!isStarterOrFree && (
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Usage & Limits</p>
+              <p className="text-xs text-[var(--ink-muted)]">Set per-bot monthly caps for conversations, leads, and credits</p>
+            </div>
+            <Switch
+              checked={usageLimitsEnabled}
+              onCheckedChange={(v) => {
+                if (!v) { setConvLimit(''); setLeadLimit(''); setCreditBudget('') }
+                markDirty()
+              }}
+              disabled={isPending}
+            />
+          </div>
+          )}
         </div>
 
-        {/* ── Usage & Limits (pro / agency / enterprise) ── */}
-        {!isStarterOrFree && (
+        {/* ── Usage & Limits inputs (pro / agency / enterprise) ── */}
+        {!isStarterOrFree && usageLimitsEnabled && (
           <div>
             <p className="text-xs text-[var(--ink-muted)] mb-3">
               Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.
