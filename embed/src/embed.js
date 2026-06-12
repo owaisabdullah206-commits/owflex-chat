@@ -1,5 +1,7 @@
 (function(){try{
-var sc=document.currentScript,k=sc&&sc.dataset&&sc.dataset.key;if(!k)return;
+var sc=document.currentScript;
+if(!sc){var ss=document.querySelectorAll('script[data-key]');sc=ss.length?ss[ss.length-1]:null;}
+var k=sc&&sc.dataset&&sc.dataset.key;if(!k)return;
 var bu=sc.src?new URL(sc.src).origin:"";
 var EMS=86400000;
 var _ls=localStorage.getItem("_of"),_lx=parseInt(localStorage.getItem("_of_exp")||"0",10);
@@ -82,7 +84,7 @@ var css=
 "#oC:hover{color:#fff;background:rgba(255,255,255,.18)}"+
 
 /* ── Messages ── */
-"#oM{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.1) transparent}"+
+"#oM{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.1) transparent}"+
 
 /* ── Bubbles ── */
 ".u,.b{max-width:82%;padding:9px 13px;border-radius:"+msgBr+";font-size:13px;line-height:1.6;word-break:break-word;animation:ofIn .22s ease}"+

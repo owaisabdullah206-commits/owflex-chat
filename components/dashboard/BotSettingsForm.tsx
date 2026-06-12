@@ -144,6 +144,43 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
 
   function markDirty() { setIsDirty(true) }
 
+  function handleDiscard() {
+    setName(initial.name)
+    setSystemPrompt(initial.systemPrompt)
+    setModel(initial.model)
+    setSmartRouting(initial.smartRoutingEnabled)
+    setLightModel(initial.routingLightModel ?? initial.model)
+    setStrongModel(initial.routingStrongModel ?? 'anthropic/claude-haiku-4-5-20251001')
+    setPrimaryColor(initial.primaryColor)
+    setPosition(initial.position)
+    setWelcomeMessage(initial.welcomeMessage)
+    setLeadCapture(initial.leadCaptureEnabled)
+    setCollectLeadBefore(initial.collectLeadBefore)
+    setStrictMode(initial.strictMode)
+    setTriggerIcon(initial.triggerIcon as TriggerIconId)
+    setBorderRadius(initial.borderRadius)
+    setTooltipEnabled(initial.tooltipEnabled)
+    setTooltipMessages(initial.tooltipMessages.join('\n'))
+    setBrandingEnabled(initial.brandingEnabled)
+    setBrandingText(initial.brandingText)
+    setBrandingUrl(initial.brandingUrl)
+    setHandoffEnabled(initial.handoffEnabled)
+    setHandoffNotifyTarget(initial.handoffNotifyTarget)
+    setStoreUrl(initial.storeUrl)
+    setStoreCurrency(initial.storeCurrency)
+    setProductRecs(initial.productRecommendationsEnabled)
+    setLanguage(initial.language)
+    setWhatsappNumber(initial.whatsappNumber)
+    setPreviewTheme(initial.theme)
+    setWebhookUrl(initial.webhookUrl)
+    setConvLimit(initial.monthlyConvLimit?.toString() ?? '')
+    setLeadLimit(initial.monthlyLeadLimit?.toString() ?? '')
+    setCreditBudget(initial.monthlyCreditBudget?.toString() ?? '')
+    setIsDirty(false)
+    setSaved(false)
+    setError(null)
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaved(false)
@@ -252,12 +289,6 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* ── Left: form ── */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {isDirty && (
-          <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 border-l-2 border-l-amber-400 px-3 py-2">
-            You have unsaved changes
-          </div>
-        )}
-
         {/* Bot Name */}
         <div className="space-y-1.5">
           <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Bot Name</Label>
@@ -863,6 +894,18 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             {isPending && <OctivelySpinner size={16} color="white" duration={4} />}
             {isPending ? 'Saving…' : 'Save Changes'}
           </Button>
+          {isDirty && !saved && (
+            <span className="text-[11px] text-amber-400 flex items-center gap-1.5">
+              You have unsaved changes
+              <button
+                type="button"
+                onClick={handleDiscard}
+                className="text-[var(--ink-muted)] hover:text-[var(--ink)] underline underline-offset-2 transition-colors"
+              >
+                Discard
+              </button>
+            </span>
+          )}
           {saved  && <span className="text-xs text-[var(--success-text)]">Saved — widget updates within 5 minutes</span>}
           {error  && <span className="text-xs text-[var(--error-text)]">{error}</span>}
         </div>
@@ -909,6 +952,39 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
 
       {/* ── Right: live preview ── */}
       <div className="hidden lg:block">
+        {/* Top action bar: save + unsaved indicator */}
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">Live Preview</p>
+          <div className="flex items-center gap-2">
+            {isDirty && (
+              <span className="text-[11px] text-amber-400 flex items-center gap-1.5">
+                Unsaved changes
+                <button
+                  type="button"
+                  onClick={handleDiscard}
+                  className="text-[var(--ink-muted)] hover:text-[var(--ink)] underline underline-offset-2 transition-colors"
+                >
+                  Discard
+                </button>
+              </span>
+            )}
+            {saved && (
+              <span className="text-[11px] text-[var(--success-text)]">Saved</span>
+            )}
+            <Button
+              type="button"
+              disabled={isPending}
+              onClick={() => {
+                const form = document.querySelector('form')
+                if (form) form.requestSubmit()
+              }}
+              className="h-7 px-3 text-xs bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white inline-flex items-center gap-1.5"
+            >
+              {isPending && <OctivelySpinner size={12} color="white" duration={4} />}
+              {isPending ? 'Saving…' : 'Save'}
+            </Button>
+          </div>
+        </div>
         <LiveBotPreview
           embedKey={embedKey}
           botName={name}
@@ -922,6 +998,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           brandingEnabled={brandingEnabled}
           brandingText={brandingText.trim() || 'Powered by Octively'}
           theme={previewTheme}
+          whatsappNumber={whatsappNumber.replace(/[^0-9]/g, '')}
           onToggleTheme={() => { setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark'); markDirty() }}
         />
       </div>
@@ -944,6 +1021,7 @@ function LiveBotPreview({
   brandingEnabled,
   brandingText,
   theme,
+  whatsappNumber,
   onToggleTheme,
 }: {
   embedKey: string
@@ -958,6 +1036,7 @@ function LiveBotPreview({
   brandingEnabled: boolean
   brandingText: string
   theme: 'dark' | 'light'
+  whatsappNumber: string
   onToggleTheme: () => void
 }) {
   const isDark = theme === 'dark'
@@ -974,28 +1053,25 @@ function LiveBotPreview({
 
   return (
     <div className="sticky top-20">
-      {/* Header bar */}
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">Live Preview</p>
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            onClick={onToggleTheme}
-            className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] px-2 py-1 rounded border border-[var(--hairline)] transition-colors cursor-pointer"
-          >
-            {isDark ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
-            {isDark ? 'Light' : 'Dark'}
-          </button>
-          <a
-            href={`/embed-test?key=${embedKey}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-xs text-[var(--of-primary)] px-2 py-1 rounded border border-[var(--of-primary)]/30 bg-[var(--of-primary)]/10 hover:bg-[var(--of-primary)]/15 transition-colors"
-          >
-            <ExternalLink className="h-3 w-3" />
-            Test live
-          </a>
-        </div>
+      {/* Controls bar */}
+      <div className="flex items-center justify-end gap-1.5 mb-3">
+        <button
+          type="button"
+          onClick={onToggleTheme}
+          className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)] hover:text-[var(--ink)] px-2 py-1 rounded border border-[var(--hairline)] transition-colors cursor-pointer"
+        >
+          {isDark ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
+          {isDark ? 'Light' : 'Dark'}
+        </button>
+        <a
+          href={`/embed-test?key=${embedKey}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-xs text-[var(--of-primary)] px-2 py-1 rounded border border-[var(--of-primary)]/30 bg-[var(--of-primary)]/10 hover:bg-[var(--of-primary)]/15 transition-colors"
+        >
+          <ExternalLink className="h-3 w-3" />
+          Test live
+        </a>
       </div>
 
       {/* Chat window */}
@@ -1096,6 +1172,27 @@ function LiveBotPreview({
             </svg>
           </div>
         </div>
+
+        {/* WhatsApp continue strip */}
+        {whatsappNumber && (
+          <a
+            href={`https://wa.me/${whatsappNumber}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 py-2 text-xs font-semibold no-underline"
+            style={{
+              borderTop: `1px solid ${c.hairline}`,
+              backgroundColor: isDark ? '#0f172a' : '#fafafa',
+              color: isDark ? '#4ade80' : '#075E54',
+              fontSize: '12.5px',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
+              <path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.413c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+            </svg>
+            Continue on WhatsApp
+          </a>
+        )}
 
         {/* Branding footer */}
         {brandingEnabled && (
