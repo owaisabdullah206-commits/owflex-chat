@@ -666,56 +666,6 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           </div>
         </div>
 
-        {/* ── Usage & Limits (pro / agency / enterprise) ── */}
-        {!isStarterOrFree && (
-          <div>
-            <p className="text-xs text-[var(--ink-muted)] mb-3">
-              Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="convLimit" className="text-xs text-[var(--ink-muted)]">Max conversations / month</Label>
-                <Input
-                  id="convLimit"
-                  type="number"
-                  min={1}
-                  value={convLimit}
-                  onChange={(e) => { setConvLimit(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="leadLimit" className="text-xs text-[var(--ink-muted)]">Max leads / month</Label>
-                <Input
-                  id="leadLimit"
-                  type="number"
-                  min={1}
-                  value={leadLimit}
-                  onChange={(e) => { setLeadLimit(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="creditBudget" className="text-xs text-[var(--ink-muted)]">Credit budget / month</Label>
-                <Input
-                  id="creditBudget"
-                  type="number"
-                  min={1}
-                  value={creditBudget}
-                  onChange={(e) => { setCreditBudget(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Toggles */}
         <div className="border-t border-[var(--hairline)] divide-y divide-[var(--hairline)]">
           {/* Lead Capture */}
@@ -854,6 +804,56 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           </div>
           )}
         </div>
+
+        {/* ── Usage & Limits (pro / agency / enterprise) ── */}
+        {!isStarterOrFree && (
+          <div>
+            <p className="text-xs text-[var(--ink-muted)] mb-3">
+              Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="convLimit" className="text-xs text-[var(--ink-muted)]">Max conversations / month</Label>
+                <Input
+                  id="convLimit"
+                  type="number"
+                  min={1}
+                  value={convLimit}
+                  onChange={(e) => { setConvLimit(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="leadLimit" className="text-xs text-[var(--ink-muted)]">Max leads / month</Label>
+                <Input
+                  id="leadLimit"
+                  type="number"
+                  min={1}
+                  value={leadLimit}
+                  onChange={(e) => { setLeadLimit(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="creditBudget" className="text-xs text-[var(--ink-muted)]">Credit budget / month</Label>
+                <Input
+                  id="creditBudget"
+                  type="number"
+                  min={1}
+                  value={creditBudget}
+                  onChange={(e) => { setCreditBudget(e.target.value); markDirty() }}
+                  placeholder="No limit"
+                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
 
         {tooltipEnabled && (
