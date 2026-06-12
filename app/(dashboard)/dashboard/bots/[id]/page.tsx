@@ -159,7 +159,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     getPageBreakdown(bot.id, 30).catch(() => [] as { pageUrl: string; conversations: number; messages: number; escalated: number; escalationPct: number }[]),
     getBotRatingSummary(bot.id, 30).catch(() => ({ thumbsUp: 0, thumbsDown: 0 })),
     getBotUsage(bot.id).catch(() => ({
-      conversations: 0, messages: 0, tokens: 0, costUsd: 0, creditsUsed: 0, leads: 0, modelBreakdown: [],
+      conversations: 0, messages: 0, tokens: 0, avgLatencyMs: 0, creditsUsed: 0, leads: 0, modelBreakdown: [],
     })),
   ])
 

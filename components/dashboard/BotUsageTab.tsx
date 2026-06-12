@@ -2,14 +2,13 @@ interface ModelBreakdownRow {
   model: string
   messages: number
   tokens: number
-  costUsd: number
 }
 
 interface BotUsageData {
   conversations: number
   messages: number
   tokens: number
-  costUsd: number
+  avgLatencyMs: number
   creditsUsed: number
   leads: number
   modelBreakdown: ModelBreakdownRow[]
@@ -78,8 +77,8 @@ function MetricCard({
 }
 
 export function BotUsageTab({ data, convLimit, leadLimit, creditBudget }: BotUsageTabProps) {
-  const formatCost = (usd: number) =>
-    usd < 0.01 ? '<$0.01' : `$${usd.toFixed(2)}`
+  const formatLatency = (ms: number) =>
+    ms === 0 ? '—' : ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`
 
   const formatTokens = (n: number) => {
     if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
@@ -96,7 +95,7 @@ export function BotUsageTab({ data, convLimit, leadLimit, creditBudget }: BotUsa
         <MetricCard label="leads" value={data.leads} limit={leadLimit} />
         <MetricCard label="tokens" value={data.tokens} suffix="used" />
         <MetricCard label="credits_used" value={data.creditsUsed} limit={creditBudget} />
-        <MetricCard label="cost_usd" value={formatCost(data.costUsd)} />
+        <MetricCard label="avg_latency" value={formatLatency(data.avgLatencyMs)} />
       </div>
 
       {/* Model breakdown */}
@@ -115,7 +114,6 @@ export function BotUsageTab({ data, convLimit, leadLimit, creditBudget }: BotUsa
                   <th className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>model</th>
                   <th className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] text-right" style={{ fontFamily: 'var(--font-mono)' }}>messages</th>
                   <th className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] text-right hidden sm:table-cell" style={{ fontFamily: 'var(--font-mono)' }}>tokens</th>
-                  <th className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.05em] text-[var(--ink-subtle)] text-right" style={{ fontFamily: 'var(--font-mono)' }}>cost</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,7 +122,6 @@ export function BotUsageTab({ data, convLimit, leadLimit, creditBudget }: BotUsa
                     <td className="px-4 py-2.5 text-[12px] text-[var(--ink)]" style={{ fontFamily: 'var(--font-mono)' }}>{row.model}</td>
                     <td className="px-4 py-2.5 text-[12px] text-[var(--ink-muted)] text-right" style={{ fontFamily: 'var(--font-mono)' }}>{row.messages.toLocaleString()}</td>
                     <td className="px-4 py-2.5 text-[12px] text-[var(--ink-muted)] text-right hidden sm:table-cell" style={{ fontFamily: 'var(--font-mono)' }}>{formatTokens(row.tokens)}</td>
-                    <td className="px-4 py-2.5 text-[12px] text-[var(--ink-muted)] text-right" style={{ fontFamily: 'var(--font-mono)' }}>{formatCost(row.costUsd)}</td>
                   </tr>
                 ))}
               </tbody>

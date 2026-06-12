@@ -139,7 +139,7 @@ export async function getBotUsage(botId: string) {
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const [convRow, msgRow, tokenRow, costRow, creditRow, leadRow, modelRows] = await Promise.all([
+  const [convRow, msgRow, tokenRow, latencyRow, creditRow, leadRow, modelRows] = await Promise.all([
     // Conversations this month
     db
       .select({ count: count() })
@@ -159,9 +159,9 @@ export async function getBotUsage(botId: string) {
       .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
       .where(and(eq(schema.conversations.botId, botId), gte(schema.messages.createdAt, monthStart))),
 
-    // Cost this month (USD)
+    // Avg latency this month (ms)
     db
-      .select({ total: sql<string>`COALESCE(SUM(${schema.messages.costUsd}), 0)` })
+      .select({ avgMs: sql<number>`COALESCE(ROUND(AVG(${schema.messages.latencyMs})::numeric), 0)::int` })
       .from(schema.messages)
       .innerJoin(schema.conversations, eq(schema.messages.conversationId, schema.conversations.id))
       .where(and(eq(schema.conversations.botId, botId), gte(schema.messages.createdAt, monthStart))),
@@ -202,7 +202,7 @@ export async function getBotUsage(botId: string) {
     conversations: convRow[0]?.count ?? 0,
     messages: msgRow[0]?.total ?? 0,
     tokens: tokenRow[0]?.total ?? 0,
-    costUsd: parseFloat(costRow[0]?.total ?? '0'),
+    avgLatencyMs: latencyRow[0]?.avgMs ?? 0,
     creditsUsed: creditRow[0]?.total ?? 0,
     leads: leadRow[0]?.count ?? 0,
     modelBreakdown: modelRows.map((r) => ({
