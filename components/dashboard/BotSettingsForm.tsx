@@ -995,6 +995,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           brandingText={brandingText.trim() || 'Powered by Octively'}
           theme={previewTheme}
           whatsappNumber={whatsappNumber.replace(/[^0-9]/g, '')}
+          collectLeadBefore={collectLeadBefore}
           onToggleTheme={() => { setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark'); markDirty() }}
         />
       </div>
@@ -1018,6 +1019,7 @@ function LiveBotPreview({
   brandingText,
   theme,
   whatsappNumber,
+  collectLeadBefore,
   onToggleTheme,
 }: {
   embedKey: string
@@ -1033,6 +1035,7 @@ function LiveBotPreview({
   brandingText: string
   theme: 'dark' | 'light'
   whatsappNumber: string
+  collectLeadBefore: boolean
   onToggleTheme: () => void
 }) {
   const isDark = theme === 'dark'
@@ -1046,11 +1049,42 @@ function LiveBotPreview({
   const firstTip    = tooltipMessages[0] || 'Need help? Ask me!'
   const br          = `${borderRadius}px`
   const innerBr     = `${Math.max(4, borderRadius - 4)}px`
+  const [previewMode, setPreviewMode] = useState<'form' | 'chat'>(collectLeadBefore ? 'form' : 'chat')
+  const showLeadForm = collectLeadBefore && previewMode === 'form'
 
   return (
     <div className="sticky top-20">
       {/* Controls bar */}
-      <div className="flex items-center justify-end gap-1.5 mb-3">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-1.5">
+          {collectLeadBefore && (
+            <div className="flex rounded border border-[var(--hairline)] overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setPreviewMode('form')}
+                className={`text-[10px] px-2 py-1 transition-colors cursor-pointer ${
+                  previewMode === 'form'
+                    ? 'bg-[var(--of-primary)] text-white'
+                    : 'text-[var(--ink-muted)] hover:text-[var(--ink)]'
+                }`}
+              >
+                Lead Form
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode('chat')}
+                className={`text-[10px] px-2 py-1 transition-colors cursor-pointer ${
+                  previewMode === 'chat'
+                    ? 'bg-[var(--of-primary)] text-white'
+                    : 'text-[var(--ink-muted)] hover:text-[var(--ink)]'
+                }`}
+              >
+                Chat
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={onToggleTheme}
@@ -1068,6 +1102,7 @@ function LiveBotPreview({
           <ExternalLink className="h-3 w-3" />
           Test live
         </a>
+        </div>
       </div>
 
       {/* Chat window */}
@@ -1084,71 +1119,100 @@ function LiveBotPreview({
           <LiveIndicator label="Online" color="white" style={{ fontSize: 10, opacity: 0.85 }} />
         </div>
 
-        {/* Messages */}
-        <div className="p-3 space-y-3" style={{ minHeight: '340px', backgroundColor: c.bg }}>
-          {/* Bot bubble */}
-          <div className="flex gap-2 items-end">
-            <div
-              className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
+        {/* Messages or Lead Form */}
+        {showLeadForm ? (
+          <div className="p-4 space-y-3" style={{ minHeight: '340px', backgroundColor: c.bg }}>
+            <div>
+              <p className="text-sm font-bold mb-1" style={{ color: c.ink }}>Before we start</p>
+              <p className="text-xs" style={{ color: c.inkMuted }}>Share your details so we can follow up if needed.</p>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: c.inkMuted }}>Name <span style={{ color: '#ef4444' }}>*</span></label>
+              <div className="h-8 px-3 flex items-center text-xs" style={{ border: `1.5px solid ${c.hairline}`, borderRadius: '6px', color: c.inkMuted, backgroundColor: c.surface }}>Your name</div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: c.inkMuted }}>Email <span style={{ color: '#ef4444' }}>*</span></label>
+              <div className="h-8 px-3 flex items-center text-xs" style={{ border: `1.5px solid ${c.hairline}`, borderRadius: '6px', color: c.inkMuted, backgroundColor: c.surface }}>you@example.com</div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: c.inkMuted }}>Phone <span style={{ color: c.inkMuted, fontWeight: 400 }}>(optional)</span></label>
+              <div className="h-8 px-3 flex items-center text-xs" style={{ border: `1.5px solid ${c.hairline}`, borderRadius: '6px', color: c.inkMuted, backgroundColor: c.surface }}>+1 (555) 000-0000</div>
+            </div>
+            <button
+              type="button"
+              className="w-full h-9 text-white text-xs font-semibold rounded-lg cursor-default"
               style={{ backgroundColor: primaryColor }}
             >
-              <TriggerIcon className="h-3 w-3 text-white" />
+              Start chatting →
+            </button>
+          </div>
+        ) : (
+          <div className="p-3 space-y-3" style={{ minHeight: '340px', backgroundColor: c.bg }}>
+            {/* Bot bubble */}
+            <div className="flex gap-2 items-end">
+              <div
+                className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
+                style={{ backgroundColor: primaryColor }}
+              >
+                <TriggerIcon className="h-3 w-3 text-white" />
+              </div>
+              <div
+                className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+                style={{
+                  backgroundColor: c.surface,
+                  color: c.ink,
+                  border: `1px solid ${c.hairline}`,
+                  borderRadius: innerBr,
+                  borderBottomLeftRadius: '4px',
+                }}
+              >
+                {displayMsg}
+              </div>
             </div>
-            <div
-              className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
-              style={{
-                backgroundColor: c.surface,
-                color: c.ink,
-                border: `1px solid ${c.hairline}`,
-                borderRadius: innerBr,
-                borderBottomLeftRadius: '4px',
-              }}
-            >
-              {displayMsg}
+
+            {/* User bubble */}
+            <div className="flex justify-end">
+              <div
+                className="text-white text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+                style={{
+                  backgroundColor: primaryColor,
+                  borderRadius: innerBr,
+                  borderBottomRightRadius: '4px',
+                }}
+              >
+                Tell me about your services.
+              </div>
+            </div>
+
+            {/* Second bot bubble */}
+            <div className="flex gap-2 items-end">
+              <div
+                className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
+                style={{ backgroundColor: primaryColor }}
+              >
+                <TriggerIcon className="h-3 w-3 text-white" />
+              </div>
+              <div
+                className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
+                style={{
+                  backgroundColor: c.surface,
+                  color: c.ink,
+                  border: `1px solid ${c.hairline}`,
+                  borderRadius: innerBr,
+                  borderBottomLeftRadius: '4px',
+                }}
+              >
+                Sure! We offer…
+                <span style={{ color: c.inkMuted }}>
+                  {' '}(answer will appear here based on your knowledge base)
+                </span>
+              </div>
             </div>
           </div>
+        )}
 
-          {/* User bubble */}
-          <div className="flex justify-end">
-            <div
-              className="text-white text-xs px-3 py-2 max-w-[80%] leading-relaxed"
-              style={{
-                backgroundColor: primaryColor,
-                borderRadius: innerBr,
-                borderBottomRightRadius: '4px',
-              }}
-            >
-              Tell me about your services.
-            </div>
-          </div>
-
-          {/* Second bot bubble */}
-          <div className="flex gap-2 items-end">
-            <div
-              className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
-              style={{ backgroundColor: primaryColor }}
-            >
-              <TriggerIcon className="h-3 w-3 text-white" />
-            </div>
-            <div
-              className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
-              style={{
-                backgroundColor: c.surface,
-                color: c.ink,
-                border: `1px solid ${c.hairline}`,
-                borderRadius: innerBr,
-                borderBottomLeftRadius: '4px',
-              }}
-            >
-              Sure! We offer…
-              <span style={{ color: c.inkMuted }}>
-                {' '}(answer will appear here based on your knowledge base)
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Input bar */}
+        {/* Input bar — hidden when lead form is active */}
+        {!showLeadForm && (
         <div
           className="px-3 py-2.5 flex items-center gap-2"
           style={{ borderTop: `1px solid ${c.hairline}`, backgroundColor: c.surface }}
@@ -1168,6 +1232,7 @@ function LiveBotPreview({
             </svg>
           </div>
         </div>
+        )}
 
         {/* WhatsApp continue strip */}
         {whatsappNumber && (
