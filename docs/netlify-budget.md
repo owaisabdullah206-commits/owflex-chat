@@ -1,10 +1,10 @@
 # Netlify Build Budget
 
 ## Credit System (free plan: 300 credits/month, resets 24th of each month)
-## Current cycle: May 24 – Jun 23 · ~50 credits remaining (CRITICAL) · 12 deploys used (10 confirmed + #14 + #15 pending)
-## Breakdown (per Netlify billing, Jun 11): deploys 150cr · compute 48.9cr · requests 7.7cr · bandwidth 12.7cr = 219.3cr used
-## CRITICAL: ~50cr left, 12 days of traffic will consume ~45cr. NO MORE DEPLOYS before Jun 23 reset.
-## NOTE: compute (48.9cr, 4.89 GB-hrs) is the budget killer — each SSR request burns it.
+## Current cycle: May 24 – Jun 23 · 62 credits remaining BEFORE deploy #16 · 11 days left
+## Breakdown (per Netlify billing, Jun 12): deploys 165cr (11 deploys) · compute 51.1cr · requests 8.2cr · bandwidth 13.7cr = 238cr used
+## After deploy #16: ~47cr remaining. Ongoing burn ~3.8cr/day → ~42cr over 11 days. ~5cr buffer. NO MORE DEPLOYS this cycle.
+## NOTE: compute (51.1cr) is the biggest non-deploy cost — SSR requests burn it continuously.
 
 | Resource              | Cost               | With 300 credits     |
 |-----------------------|--------------------|----------------------|
