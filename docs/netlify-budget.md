@@ -49,4 +49,5 @@ At early stage (~100K requests + 0.5 GB bandwidth + 1 GB-hr compute ≈ 40 credi
 | 2026-06-11 | 15       | ~15          | fix: per-subdomain session cookies (admin/portal no longer share), remove Google login from portal |
 | 2026-06-12 | 16       | ~15          | fix: CSP allows GTM/GA4 scripts; deduplicate blog post JSON-LD via single @graph block |
 | 2026-06-12 | 17       | ~15          | feat: per-bot usage tab, fix embed-preview 404, tidy marketing routes to (marketing) group |
+| 2026-06-12 | 18       | ~15          | feat: embed trigger reliability, branding toggle, Form/Chat preview toggle, unsaved changes, discard |
 
