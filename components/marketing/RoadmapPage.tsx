@@ -51,7 +51,9 @@ const IN_PROGRESS = [
 ]
 
 const PLANNED = [
-  { title: 'WhatsApp Business API channel', desc: 'Run your client\'s bot on their WhatsApp Business number, not just their website. The same knowledge base and lead capture, on the channel Pakistani customers actually use.' },
+  { title: 'WhatsApp Business API channel', desc: 'Run your client\'s bot on their WhatsApp Business number, not just their website. Same knowledge base, lead capture, and product recommendations, plus tap-to-reply button and list menus, all on the channel Pakistani customers actually use. Connects directly to Meta with no per-message markup; offered as a paid add-on.' },
+  { title: 'WhatsApp broadcasts & templates', desc: 'The marketing layer on top of the WhatsApp channel: outbound template campaigns and drip sequences, metered per message at Meta\'s rate. Comes after the reply channel ships.' },
+  { title: 'Voice input', desc: 'Visitors speak to the bot instead of typing — tap the mic, ask out loud, get the same grounded answer. Handy on mobile and for low-typing audiences.' },
   { title: 'PayFast (PKR) + Lemon Squeezy (USD) billing', desc: 'Self-serve plan upgrades and credit top-ups via PayFast for Pakistani developers and Lemon Squeezy for international payments — no WhatsApp message required.' },
   { title: 'Embed key rotation', desc: 'Rotate a compromised embed key with a 24-hour grace window — deployed widgets stay live while you push the updated key to production.' },
   { title: 'Hybrid RAG — vector + full-text', desc: 'Combine cosine similarity with BM25 (Postgres tsvector) and re-rank the union. Exact product names and SKUs surface reliably even when embedding scores are low.' },

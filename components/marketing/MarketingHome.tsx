@@ -6,6 +6,7 @@ import {
   MessageSquare, Zap, Monitor, Palette, Cpu, Globe,
   Code2, UserPlus, BarChart3, Check, ArrowRight, ArrowUpRight,
   MessageSquareX, Clock, PackageX, Shield, Sparkles,
+  MessageCircle, Mic,
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
@@ -1267,6 +1268,106 @@ function FeatureBento() {
   )
 }
 
+// ─── Upcoming / Roadmap Strip ─────────────────────────────────────────────────
+
+const UPCOMING = [
+  {
+    Icon: MessageCircle,
+    title: 'WhatsApp Business API channel',
+    desc: "Run your client's bot on their WhatsApp Business number, not just their website. Same knowledge base, lead capture, and product recommendations, plus tap-to-reply buttons, on the channel Pakistani customers actually use.",
+  },
+  {
+    Icon: Mic,
+    title: 'Voice input',
+    desc: 'Let visitors speak to the bot instead of typing. Tap the mic, ask out loud, get the same grounded answer, handy on mobile and for low-typing audiences.',
+  },
+]
+
+function UpcomingStrip() {
+  return (
+    <section style={{ paddingBlock: 80, borderTop: '1px solid var(--hairline)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <Reveal style={{ marginBottom: 36, maxWidth: 720 }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              color: 'var(--of-primary)',
+              fontWeight: 500,
+            }}
+          >
+            On the roadmap
+          </span>
+          <h2 style={{ marginTop: 10, fontSize: 'clamp(24px, 2.8vw, 34px)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+            Coming next
+          </h2>
+          <p style={{ marginTop: 14, color: 'var(--ink-subtle)', fontSize: 16, lineHeight: 1.6 }}>
+            What we&apos;re building next, in the open. Track everything on the{' '}
+            <Link href="/roadmap" style={{ color: 'var(--of-primary)', textDecoration: 'none' }}>public roadmap</Link>.
+          </p>
+        </Reveal>
+        <Reveal>
+          <div
+            className="mkt-upcoming-grid"
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}
+          >
+            {UPCOMING.map(({ Icon, title, desc }) => (
+              <div
+                key={title}
+                style={{
+                  position: 'relative',
+                  padding: 24,
+                  border: '1px solid var(--hairline)',
+                  borderRadius: 14,
+                  background: 'var(--surface)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <span
+                    style={{
+                      display: 'grid',
+                      placeItems: 'center',
+                      width: 40,
+                      height: 40,
+                      borderRadius: 10,
+                      background: 'rgba(14,165,233,0.08)',
+                      border: '1px solid rgba(14,165,233,0.18)',
+                    }}
+                  >
+                    <Icon size={19} style={{ color: 'var(--of-primary)' }} />
+                  </span>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: 10.5,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: 'var(--of-primary)',
+                      background: 'rgba(14,165,233,0.08)',
+                      border: '1px solid rgba(14,165,233,0.18)',
+                      borderRadius: 999,
+                      padding: '4px 9px',
+                    }}
+                  >
+                    <Clock size={11} /> Coming soon
+                  </span>
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 650, letterSpacing: '-0.01em', marginBottom: 7, color: 'var(--ink)' }}>{title}</h3>
+                <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ink-muted)', margin: 0 }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
 // ─── Pricing Teaser ───────────────────────────────────────────────────────────
 
 function PricingTeaser() {
@@ -1907,6 +2008,7 @@ export default function MarketingHome() {
       <OpportunityStrip />
       <HowItWorks />
       <FeatureBento />
+      <UpcomingStrip />
       <PricingTeaser />
       <Testimonials dark={true} />
       <MarketingFAQ items={HOME_FAQS} />

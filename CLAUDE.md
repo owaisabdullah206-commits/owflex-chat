@@ -141,7 +141,7 @@ Read `DESIGN.md` before building any UI component. Read it fresh — do not rely
 
 - No visual drag-and-drop flow builder
 - No social media channel integrations
-- No voice or audio features
+- No voice or audio features until validated by demand — may be marketed as "upcoming" (voice input is on the public roadmap), but do not build it before a paying customer asks
 - No ONNX local embeddings until Phase 3 (use Gemini API free tier first)
 - No RabbitMQ — use BullMQ on Redis when a queue is needed
 - No React Query or SWR — Next.js server components + server actions only
