@@ -6,10 +6,15 @@ import {
   MessageSquare, Zap, Monitor, Palette, Cpu, Globe,
   Code2, UserPlus, BarChart3, Check, ArrowRight, ArrowUpRight,
   MessageSquareX, Clock, PackageX, Shield, Sparkles,
-  Mic, TrendingUp, BookOpen,
+  Mic, TrendingUp, BookOpen, Play,
 } from 'lucide-react'
 import { urlForImage } from '@/sanity/lib/image'
 import type { SanityPost } from '@/sanity/lib/queries'
+import { trackGAEvent } from '@/lib/analytics'
+
+// 60-second demo video. Swappable via env without a redeploy; falls back to the
+// published YouTube link so it works even when the env var is unset.
+const DEMO_VIDEO_URL = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || 'https://youtu.be/0wyt4N_RNsE'
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
 import { useDarkMode } from './useDarkMode'
@@ -1981,12 +1986,15 @@ function HeroLeadCopy() {
         >
           Start free <ArrowRight size={16} />
         </Link>
-        <Link
-          href="/guide"
+        <a
+          href={DEMO_VIDEO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackGAEvent('demo_video_click', { location: 'hero' })}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 7,
             padding: '13px 22px',
             borderRadius: 10,
             fontSize: 15,
@@ -1997,8 +2005,8 @@ function HeroLeadCopy() {
             transition: 'border-color .15s',
           }}
         >
-          Watch 60-sec demo
-        </Link>
+          <Play size={15} style={{ color: 'var(--of-primary)' }} /> Watch 60-sec demo
+        </a>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 14, color: 'var(--ink-muted)', fontSize: 13, marginTop: 4 }}>
         <span style={{ fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 6 }}>
