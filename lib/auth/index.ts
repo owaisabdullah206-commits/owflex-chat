@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { createAuthMiddleware } from 'better-auth/api'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { Redis } from '@upstash/redis'
 import { eq } from 'drizzle-orm'
@@ -156,6 +157,43 @@ export const auth = betterAuth({
     // 5-minute cache: reduces DB load while keeping the stale-session window
     // short enough that a BETTER_AUTH_SECRET rotation clears sessions quickly.
     cookieCache: { enabled: true, maxAge: 60 * 5 },
+  },
+
+  // UI-hint cookie for the marketing site. octively.com has its OWN session cookie,
+  // separate from admin./app. subdomains (see the note below), so it cannot read the
+  // dashboard/portal session. On login we drop a tiny non-sensitive flag scoped to
+  // .octively.com (oct_dev / oct_client) that the marketing nav reads to show the
+  // right button; cleared on sign-out. It never carries the real session token.
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      try {
+        const host = ctx.headers?.get('host') ?? ''
+        // Only on the production octively.com domain family — the parent-domain
+        // cookie is shared across subdomains there. Dev/preview hosts fall back to
+        // useSession (same-origin), so we skip them.
+        if (!host.endsWith('octively.com')) return
+        const opts = {
+          domain: '.octively.com',
+          path: '/',
+          sameSite: 'lax' as const,
+          secure: true,
+          httpOnly: false, // read by the marketing nav (UI hint only)
+          maxAge: 60 * 60 * 24 * 30,
+        }
+        const newSession = ctx.context.newSession
+        if (newSession) {
+          const role = (newSession.user as { role?: string }).role === 'client' ? 'client' : 'developer'
+          ctx.setCookie(role === 'client' ? 'oct_client' : 'oct_dev', '1', opts)
+          return
+        }
+        if (ctx.path.startsWith('/sign-out')) {
+          // Clear only the hint for the subdomain that signed out.
+          ctx.setCookie(host.startsWith('app.') ? 'oct_client' : 'oct_dev', '', { ...opts, maxAge: 0 })
+        }
+      } catch (err) {
+        console.error('[auth] hint-cookie hook failed:', err)
+      }
+    }),
   },
 
   // Each subdomain gets its own scoped session cookie (admin.octively.com vs app.octively.com).

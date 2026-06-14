@@ -378,6 +378,20 @@ select option {
 }
 .mkt-prob-card:hover .mkt-prob-accent { transform: scaleX(1); }
 
+/* Blog teaser cards — hover lift */
+.mkt-blog-card {
+  transition: transform .2s var(--ease-out, ease), box-shadow .2s var(--ease-out, ease), border-color .2s var(--ease-out, ease);
+  will-change: transform;
+}
+.mkt-blog-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(2, 6, 23, .06);
+  border-color: rgba(14, 165, 233, .3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt-blog-card, .mkt-blog-card:hover { transition: none; transform: none; }
+}
+
 /* Opportunity tiles — hover lift */
 .mkt-opp-tile {
   transition: transform .2s var(--ease-out, ease), box-shadow .2s var(--ease-out, ease);

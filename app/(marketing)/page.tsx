@@ -1,12 +1,10 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
 import MarketingHome from '@/components/marketing/MarketingHome'
 import { LandingPreloader } from '@/components/marketing/LandingPreloader'
 import { JsonLd, faqSchema } from '@/components/shared/JsonLd'
+import { getPosts } from '@/sanity/lib/queries'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   description:
@@ -49,13 +47,12 @@ const HOME_FAQ_SCHEMA = faqSchema([
 ])
 
 export default async function Home() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (session) redirect('/dashboard')
+  const posts = (await getPosts()).slice(0, 3)
   return (
     <>
       <JsonLd schema={HOME_FAQ_SCHEMA} />
       <LandingPreloader />
-      <MarketingHome />
+      <MarketingHome posts={posts} />
     </>
   )
 }

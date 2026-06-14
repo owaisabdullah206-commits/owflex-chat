@@ -6,8 +6,10 @@ import {
   MessageSquare, Zap, Monitor, Palette, Cpu, Globe,
   Code2, UserPlus, BarChart3, Check, ArrowRight, ArrowUpRight,
   MessageSquareX, Clock, PackageX, Shield, Sparkles,
-  Mic, TrendingUp,
+  Mic, TrendingUp, BookOpen,
 } from 'lucide-react'
+import { urlForImage } from '@/sanity/lib/image'
+import type { SanityPost } from '@/sanity/lib/queries'
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
 import { useDarkMode } from './useDarkMode'
@@ -2042,7 +2044,85 @@ const HOME_FAQS: FAQItem[] = [
 
 // ─── Root Component ───────────────────────────────────────────────────────────
 
-export default function MarketingHome() {
+// ─── Blog Teaser (latest insights) ────────────────────────────────────────────
+
+function blogDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
+function BlogTeaserCard({ post }: { post: SanityPost }) {
+  const cover = post.coverImage ? urlForImage(post.coverImage, 600) : null
+  const tag = post.tags?.[0] ?? post.keyword
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="mkt-blog-card"
+      style={{
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        border: '1px solid var(--hairline)', borderRadius: 14,
+        background: 'var(--surface)', textDecoration: 'none', color: 'inherit',
+      }}
+    >
+      {cover ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={cover} alt={post.title} loading="lazy" style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover', borderBottom: '1px solid var(--hairline)' }} />
+      ) : (
+        <div style={{ aspectRatio: '16 / 9', background: 'linear-gradient(135deg, var(--of-primary-soft), var(--surface-2))', borderBottom: '1px solid var(--hairline)', display: 'grid', placeItems: 'center' }}>
+          <MessageSquare size={30} style={{ color: 'var(--of-primary)', opacity: 0.5 }} />
+        </div>
+      )}
+      <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        {tag && (
+          <span style={{ alignSelf: 'flex-start', fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 8px', background: 'var(--of-primary-soft)', color: 'var(--of-primary)', borderRadius: 5, marginBottom: 12 }}>{tag}</span>
+        )}
+        <h3 style={{ fontSize: 16.5, fontWeight: 600, letterSpacing: '-0.01em', lineHeight: 1.35, color: 'var(--ink)', margin: '0 0 8px' }}>{post.title}</h3>
+        <p style={{ fontSize: 13.5, color: 'var(--ink-muted)', lineHeight: 1.6, margin: '0 0 16px', flex: 1 }}>{post.description}</p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--ink-subtle)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><BookOpen size={11} /> {blogDate(post.publishedAt)}</span>
+            {post.readingMinutes && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Clock size={11} /> {post.readingMinutes} min</span>
+            )}
+          </div>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'var(--of-primary)', fontWeight: 500 }}>Read <ArrowRight size={13} /></span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function BlogTeaser({ posts }: { posts: SanityPost[] }) {
+  if (!posts || posts.length === 0) return null
+  return (
+    <section style={{ paddingBlock: 80, borderTop: '1px solid var(--hairline)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
+        <Reveal style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, gap: 24, flexWrap: 'wrap' }}>
+          <div style={{ maxWidth: 620 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--of-primary)', fontWeight: 500 }}>
+              Latest insights
+            </span>
+            <h2 style={{ marginTop: 10, fontSize: 'clamp(24px, 2.8vw, 34px)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              Guides, news, and playbooks
+            </h2>
+            <p style={{ marginTop: 12, color: 'var(--ink-muted)', fontSize: 16, lineHeight: 1.6 }}>
+              Practical writing on building chatbots for clients, pricing the work, and running it as a freelancer or agency.
+            </p>
+          </div>
+          <Link href="/blog" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, color: 'var(--of-primary)', textDecoration: 'none', fontWeight: 500, flexShrink: 0 }}>
+            View all posts <ArrowUpRight size={14} />
+          </Link>
+        </Reveal>
+        <Reveal>
+          <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 18, alignItems: 'stretch' }}>
+            {posts.map((p) => <BlogTeaserCard key={p._id} post={p} />)}
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+export default function MarketingHome({ posts = [] }: { posts?: SanityPost[] }) {
   const { dark: darkMode, toggleDark } = useDarkMode()
 
   return (
@@ -2092,6 +2172,7 @@ export default function MarketingHome() {
       <PricingTeaser />
       <Testimonials dark={true} />
       <MarketingFAQ items={HOME_FAQS} />
+      <BlogTeaser posts={posts} />
       <CTABanner />
       <MarketingFooter />
     </div>

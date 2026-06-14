@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Moon, Sun, Menu, X } from 'lucide-react'
+import { ArrowRight, Moon, Sun, Menu, X, LayoutDashboard } from 'lucide-react'
 import { OctivelyMark } from '@/components/brand/OctivelyMark'
+import { useSession } from '@/lib/auth/client'
 
 const NAV_LINKS = [
   { label: 'Product',   href: '/'          },
@@ -24,6 +25,28 @@ export function MarketingNav({
 }) {
   const [scrolled,  setScrolled]  = useState(false)
   const [menuOpen,  setMenuOpen]  = useState(false)
+
+  // Auth-aware nav: logged-in developers see a Dashboard button, clients a portal
+  // link, signed-out visitors the Sign in + Start free pair.
+  //
+  // Two signals, because octively.com has its own session cookie separate from the
+  // admin./app. subdomains (so useSession is empty here in production):
+  //   1. useSession — works locally / same-origin.
+  //   2. oct_dev / oct_client hint cookies (set at login on .octively.com by the
+  //      auth after-hook) — works cross-subdomain in production.
+  // When both a developer and a client session exist, prefer the developer Dashboard.
+  const { data: session } = useSession()
+  const [hint, setHint] = useState<{ dev: boolean; client: boolean }>({ dev: false, client: false })
+  useEffect(() => {
+    const c = typeof document !== 'undefined' ? document.cookie : ''
+    setHint({ dev: /(?:^|;\s*)oct_dev=1/.test(c), client: /(?:^|;\s*)oct_client=1/.test(c) })
+  }, [])
+  const sessionRole = (session?.user as { role?: string } | undefined)?.role
+  const isDev    = sessionRole === 'developer' || hint.dev
+  const isClient = sessionRole === 'client' || hint.client
+  const loggedIn = !!session || isDev || isClient
+  const appDest  = isDev ? '/dashboard' : '/portal'
+  const appLabel = isDev ? 'Dashboard' : 'Client portal'
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -177,48 +200,75 @@ export function MarketingNav({
               {dark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            {/* Sign in */}
-            <Link
-              href="/dashboard/login"
-              className="mkt-nav-sign-in"
-              style={{
-                height: 34, padding: '0 14px',
-                display: 'inline-flex', alignItems: 'center',
-                fontSize: 14, fontWeight: 500,
-                color: 'var(--ink)',
-                textDecoration: 'none',
-                borderRadius: 8,
-                transition: 'background-color .15s',
-                letterSpacing: '-0.01em',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              Sign in
-            </Link>
+            {loggedIn ? (
+              /* Logged in: single Dashboard (developer) / Client portal (client) button */
+              <Link
+                href={appDest}
+                className="mkt-nav-start-free"
+                style={{
+                  height: 36, padding: '0 16px',
+                  display: 'inline-flex', alignItems: 'center', gap: 7,
+                  fontSize: 14, fontWeight: 600,
+                  color: 'white',
+                  background: 'var(--of-primary)',
+                  borderRadius: 999,
+                  textDecoration: 'none',
+                  letterSpacing: '-0.01em',
+                  border: '1px solid transparent',
+                  boxShadow: '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                  transition: 'background-color .15s, box-shadow .15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--of-primary-hover)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(14,165,233,0.45), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'var(--of-primary)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+              >
+                <LayoutDashboard size={14} /> {appLabel}
+              </Link>
+            ) : (
+              <>
+                {/* Sign in */}
+                <Link
+                  href="/dashboard/login"
+                  className="mkt-nav-sign-in"
+                  style={{
+                    height: 34, padding: '0 14px',
+                    display: 'inline-flex', alignItems: 'center',
+                    fontSize: 14, fontWeight: 500,
+                    color: 'var(--ink)',
+                    textDecoration: 'none',
+                    borderRadius: 8,
+                    transition: 'background-color .15s',
+                    letterSpacing: '-0.01em',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-2)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Sign in
+                </Link>
 
-            {/* Start free CTA */}
-            <Link
-              href="/dashboard/signup"
-              className="mkt-nav-start-free"
-              style={{
-                height: 36, padding: '0 16px',
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                fontSize: 14, fontWeight: 600,
-                color: 'white',
-                background: 'var(--of-primary)',
-                borderRadius: 999,
-                textDecoration: 'none',
-                letterSpacing: '-0.01em',
-                border: '1px solid transparent',
-                boxShadow: '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
-                transition: 'background-color .15s, box-shadow .15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'var(--of-primary-hover)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(14,165,233,0.45), inset 0 1px 0 rgba(255,255,255,0.15)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--of-primary)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)' }}
-            >
-              Start free <ArrowRight size={14} />
-            </Link>
+                {/* Start free CTA */}
+                <Link
+                  href="/dashboard/signup"
+                  className="mkt-nav-start-free"
+                  style={{
+                    height: 36, padding: '0 16px',
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    fontSize: 14, fontWeight: 600,
+                    color: 'white',
+                    background: 'var(--of-primary)',
+                    borderRadius: 999,
+                    textDecoration: 'none',
+                    letterSpacing: '-0.01em',
+                    border: '1px solid transparent',
+                    boxShadow: '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                    transition: 'background-color .15s, box-shadow .15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--of-primary-hover)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(14,165,233,0.45), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--of-primary)'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(14,165,233,0.35), inset 0 1px 0 rgba(255,255,255,0.15)' }}
+                >
+                  Start free <ArrowRight size={14} />
+                </Link>
+              </>
+            )}
 
             {/* Hamburger — mobile only */}
             <button
@@ -306,33 +356,52 @@ export function MarketingNav({
               padding: '20px', borderTop: '1px solid var(--hairline)',
               display: 'flex', flexDirection: 'column', gap: 10, flexShrink: 0,
             }}>
-              <Link
-                href="/dashboard/login"
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  height: 42, borderRadius: 8,
-                  border: '1px solid var(--hairline)', background: 'transparent',
-                  fontSize: 15, fontWeight: 500, color: 'var(--ink)',
-                  textDecoration: 'none', letterSpacing: '-0.01em',
-                }}
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/dashboard/signup"
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  height: 42, borderRadius: 999,
-                  background: 'var(--of-primary)', border: '1px solid transparent',
-                  fontSize: 15, fontWeight: 600, color: 'white',
-                  textDecoration: 'none', letterSpacing: '-0.01em',
-                  boxShadow: '0 1px 4px rgba(14,165,233,0.35)',
-                }}
-              >
-                Start free <ArrowRight size={14} />
-              </Link>
+              {loggedIn ? (
+                <Link
+                  href={appDest}
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                    height: 42, borderRadius: 999,
+                    background: 'var(--of-primary)', border: '1px solid transparent',
+                    fontSize: 15, fontWeight: 600, color: 'white',
+                    textDecoration: 'none', letterSpacing: '-0.01em',
+                    boxShadow: '0 1px 4px rgba(14,165,233,0.35)',
+                  }}
+                >
+                  <LayoutDashboard size={15} /> {appLabel}
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/dashboard/login"
+                    onClick={() => setMenuOpen(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      height: 42, borderRadius: 8,
+                      border: '1px solid var(--hairline)', background: 'transparent',
+                      fontSize: 15, fontWeight: 500, color: 'var(--ink)',
+                      textDecoration: 'none', letterSpacing: '-0.01em',
+                    }}
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/dashboard/signup"
+                    onClick={() => setMenuOpen(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                      height: 42, borderRadius: 999,
+                      background: 'var(--of-primary)', border: '1px solid transparent',
+                      fontSize: 15, fontWeight: 600, color: 'white',
+                      textDecoration: 'none', letterSpacing: '-0.01em',
+                      boxShadow: '0 1px 4px rgba(14,165,233,0.35)',
+                    }}
+                  >
+                    Start free <ArrowRight size={14} />
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </>
