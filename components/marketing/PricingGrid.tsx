@@ -728,7 +728,7 @@ export default function PricingGrid() {
                             )}
                           </div>
                           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 6 }}>
-                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em' }}>{display}</span>
+                            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 600, letterSpacing: '-0.02em' }}><CurrencyText text={display} symbolSize={11} /></span>
                             {suffix && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--ink-muted)' }}>{suffix}</span>}
                           </div>
                         </th>

@@ -598,25 +598,28 @@ function ProblemStrip() {
           {items.map(({ Icon, h, p }, i) => (
             <Reveal key={i} delay={i * 80}>
               <div
+                className="mkt-prob-card"
                 style={{
+                  position: 'relative',
+                  overflow: 'hidden',
                   background: 'var(--surface)',
                   border: '1px solid var(--hairline)',
-                  borderRadius: 12,
+                  borderRadius: 14,
                   padding: 24,
                   height: '100%',
-                  transition: 'border-color .2s, box-shadow .2s',
                 }}
               >
+                <span className="mkt-prob-accent" aria-hidden />
                 <div
                   style={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 10,
-                    background: 'var(--surface)',
-                    border: '1px solid var(--hairline)',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 11,
+                    background: 'var(--of-primary-soft)',
+                    border: '1px solid rgba(14,165,233,.2)',
                     display: 'grid',
                     placeItems: 'center',
-                    color: 'var(--of-primary)',
+                    color: 'var(--of-primary-deep)',
                     marginBottom: 16,
                   }}
                 >
@@ -637,9 +640,9 @@ function ProblemStrip() {
 
 function OpportunityStrip() {
   const tiles = [
-    { num: '50,000', suffix: '', label: 'A website you already build', sub: 'one-time project' },
-    { num: '10,000', suffix: '/ mo', label: 'An AI chatbot you add on', sub: 'monthly retainer', accent: true },
-    { num: '120,000', suffix: '/ yr', label: 'New recurring income', sub: 'per client, 70%+ margin' },
+    { num: '50,000', suffix: '', label: 'A website you already build', sub: 'one-time project', tag: 'You already do this' },
+    { num: '10,000', suffix: '/ mo', label: 'An AI chatbot you add on', sub: 'monthly retainer', accent: true, tag: '+ Add on' },
+    { num: '120,000', suffix: '/ yr', label: 'New recurring income', sub: 'per client, 70%+ margin', tag: '= New income' },
   ]
   return (
     <section style={{ paddingBlock: 80, borderBottom: '1px solid var(--hairline)' }}>
@@ -676,10 +679,11 @@ function OpportunityStrip() {
 
         {/* Tiles with arrows between them — mkt-opp-grid collapses to 1fr on mobile */}
         <div className="mkt-opp-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'center' }}>
-          {tiles.map(({ num, suffix, label, sub, accent }, i) => (
+          {tiles.map(({ num, suffix, label, sub, accent, tag }, i) => (
             <>
               <Reveal key={i} delay={i * 80}>
                 <div
+                  className="mkt-opp-tile"
                   style={{
                     background: accent ? 'var(--of-primary-soft)' : 'var(--surface)',
                     border: `1px solid ${accent ? 'rgba(14,165,233,.4)' : 'var(--hairline)'}`,
@@ -688,19 +692,17 @@ function OpportunityStrip() {
                     height: '100%',
                   }}
                 >
-                  {accent && (
-                    <div style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 10,
-                      fontWeight: 600,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      color: 'var(--of-primary)',
-                      marginBottom: 10,
-                    }}>
-                      + add on
-                    </div>
-                  )}
+                  <div style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: accent ? 'var(--of-primary)' : 'var(--ink-subtle)',
+                    marginBottom: 10,
+                  }}>
+                    {tag}
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
                     <div style={{
                       fontFamily: 'var(--font-mono)',
@@ -761,9 +763,12 @@ function OpportunityStrip() {
           ))}
         </div>
         <Reveal delay={260}>
-          <p style={{ marginTop: 24, color: 'var(--ink-muted)', fontSize: 15, lineHeight: 1.6, maxWidth: 720 }}>
-            Octively costs you Rs2,500 to Rs7,500 a month. On a Rs10,000 retainer, that is a 50 to 75 percent margin.
-          </p>
+          <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'flex-start', gap: 11, padding: '14px 18px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 12, maxWidth: 740 }}>
+            <span style={{ color: 'var(--of-primary)', marginTop: 1, flexShrink: 0, display: 'grid' }} aria-hidden><Sparkles size={16} /></span>
+            <p style={{ color: 'var(--ink-muted)', fontSize: 15, lineHeight: 1.6, margin: 0 }}>
+              Octively costs you ₨2,500 to ₨7,500 a month. On a ₨10,000 retainer, that is a 50 to 75 percent margin.
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>
@@ -851,8 +856,9 @@ function HowItWorks() {
           {steps.map(({ Icon, n, h, p }, i) => (
             <>
               <Reveal key={i} delay={i * 100}>
-                <div style={{ padding: '0 28px 0 0' }}>
+                <div className="mkt-step-col" style={{ padding: '0 28px 0 0' }}>
                   <div
+                    className="mkt-step-icon"
                     style={{
                       width: 44,
                       height: 44,

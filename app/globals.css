@@ -360,6 +360,51 @@ select option {
   .mkt-upcoming-card:hover { transition: none; transform: none; }
 }
 
+/* Problem cards — hover lift + top accent wipe */
+.mkt-prob-card {
+  transition: transform .2s var(--ease-out, ease), box-shadow .2s var(--ease-out, ease), border-color .2s var(--ease-out, ease);
+  will-change: transform;
+}
+.mkt-prob-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(2, 6, 23, .06);
+  border-color: rgba(14, 165, 233, .3);
+}
+.mkt-prob-accent {
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--of-primary);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .28s var(--ease-out, ease);
+}
+.mkt-prob-card:hover .mkt-prob-accent { transform: scaleX(1); }
+
+/* Opportunity tiles — hover lift */
+.mkt-opp-tile {
+  transition: transform .2s var(--ease-out, ease), box-shadow .2s var(--ease-out, ease);
+  will-change: transform;
+}
+.mkt-opp-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(2, 6, 23, .06);
+}
+
+/* How-it-works — icon tile lifts on column hover */
+.mkt-step-icon {
+  transition: transform .2s var(--ease-out, ease), box-shadow .2s var(--ease-out, ease);
+  will-change: transform;
+}
+.mkt-step-col:hover .mkt-step-icon {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(14, 165, 233, .18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mkt-prob-card, .mkt-prob-card:hover,
+  .mkt-prob-accent,
+  .mkt-opp-tile, .mkt-opp-tile:hover,
+  .mkt-step-icon, .mkt-step-col:hover .mkt-step-icon { transition: none; transform: none; }
+}
+
 .mkt-grid-bg {
   background-image:
     linear-gradient(rgba(12,10,9,.06) 1px, transparent 1px),
