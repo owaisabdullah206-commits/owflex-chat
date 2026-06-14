@@ -694,7 +694,7 @@ function OpportunityStrip() {
                   className={`mkt-opp-tile${win ? ' mkt-opp-win' : ''}`}
                   style={{
                     background: win
-                      ? 'linear-gradient(150deg, var(--of-primary) 0%, var(--of-primary-deep) 100%)'
+                      ? 'linear-gradient(150deg, var(--of-primary) 0%, var(--of-primary-hover) 100%)'
                       : accent ? 'var(--of-primary-soft)' : 'var(--surface)',
                     border: `1px solid ${win ? 'transparent' : accent ? 'rgba(14,165,233,.4)' : 'var(--hairline)'}`,
                     borderRadius: 16,
@@ -898,7 +898,7 @@ function HowItWorks() {
                         width: 46,
                         height: 46,
                         borderRadius: 13,
-                        background: 'linear-gradient(140deg, var(--of-primary), var(--of-primary-deep))',
+                        background: 'linear-gradient(140deg, var(--of-primary), var(--of-primary-hover))',
                         color: '#fff',
                         display: 'grid',
                         placeItems: 'center',
