@@ -6,7 +6,7 @@ import {
   MessageSquare, Zap, Monitor, Palette, Cpu, Globe,
   Code2, UserPlus, BarChart3, Check, ArrowRight, ArrowUpRight,
   MessageSquareX, Clock, PackageX, Shield, Sparkles,
-  Mic,
+  Mic, TrendingUp,
 } from 'lucide-react'
 import MarketingFooter from './MarketingFooter'
 import { MarketingNav } from './MarketingNav'
@@ -640,9 +640,9 @@ function ProblemStrip() {
 
 function OpportunityStrip() {
   const tiles = [
-    { num: '50,000', suffix: '', label: 'A website you already build', sub: 'one-time project', tag: 'You already do this' },
-    { num: '10,000', suffix: '/ mo', label: 'An AI chatbot you add on', sub: 'monthly retainer', accent: true, tag: '+ Add on' },
-    { num: '120,000', suffix: '/ yr', label: 'New recurring income', sub: 'per client, 70%+ margin', tag: '= New income' },
+    { num: '50,000', suffix: '', label: 'A website you already build', sub: 'one-time project', tag: 'You already do this', Icon: Globe },
+    { num: '10,000', suffix: '/ mo', label: 'An AI chatbot you add on', sub: 'monthly retainer', accent: true, tag: '+ Add on', Icon: MessageSquare },
+    { num: '120,000', suffix: '/ yr', label: 'New recurring income', sub: 'per client, 70%+ margin', win: true, tag: '= New income', Icon: TrendingUp },
   ]
   return (
     <section style={{ paddingBlock: 80, borderBottom: '1px solid var(--hairline)' }}>
@@ -679,57 +679,72 @@ function OpportunityStrip() {
 
         {/* Tiles with arrows between them — mkt-opp-grid collapses to 1fr on mobile */}
         <div className="mkt-opp-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'center' }}>
-          {tiles.map(({ num, suffix, label, sub, accent, tag }, i) => (
+          {tiles.map(({ num, suffix, label, sub, accent, win, tag, Icon }, i) => {
+            // win = filled gradient "payoff" tile (white text). accent = soft fill (fixed dark
+            // text, since theme --ink flips light in dark mode and would vanish on the light fill).
+            const numColor    = win ? '#fff' : accent ? 'var(--of-primary-deep)' : 'var(--ink)'
+            const tagColor    = win ? 'rgba(255,255,255,.85)' : accent ? 'var(--of-primary)' : 'var(--ink-subtle)'
+            const suffixColor = win ? 'rgba(255,255,255,.82)' : accent ? 'var(--of-primary)' : 'var(--ink-muted)'
+            const labelColor  = win ? '#fff' : accent ? '#0C0A09' : 'var(--ink)'
+            const subColor    = win ? 'rgba(255,255,255,.72)' : accent ? '#57534E' : 'var(--ink-subtle)'
+            return (
             <>
               <Reveal key={i} delay={i * 80}>
                 <div
-                  className="mkt-opp-tile"
+                  className={`mkt-opp-tile${win ? ' mkt-opp-win' : ''}`}
                   style={{
-                    background: accent ? 'var(--of-primary-soft)' : 'var(--surface)',
-                    border: `1px solid ${accent ? 'rgba(14,165,233,.4)' : 'var(--hairline)'}`,
-                    borderRadius: 14,
-                    padding: '28px 24px',
+                    background: win
+                      ? 'linear-gradient(150deg, var(--of-primary) 0%, var(--of-primary-deep) 100%)'
+                      : accent ? 'var(--of-primary-soft)' : 'var(--surface)',
+                    border: `1px solid ${win ? 'transparent' : accent ? 'rgba(14,165,233,.4)' : 'var(--hairline)'}`,
+                    borderRadius: 16,
+                    padding: '24px 22px',
                     height: '100%',
+                    boxShadow: win ? '0 16px 40px rgba(14,165,233,.28)' : undefined,
                   }}
                 >
-                  <div style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    color: accent ? 'var(--of-primary)' : 'var(--ink-subtle)',
-                    marginBottom: 10,
-                  }}>
-                    {tag}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 16 }}>
+                    <span style={{
+                      width: 34, height: 34, borderRadius: 9, flexShrink: 0,
+                      display: 'grid', placeItems: 'center',
+                      background: win ? 'rgba(255,255,255,.18)' : 'var(--of-primary-soft)',
+                      color: win ? '#fff' : 'var(--of-primary-deep)',
+                      border: win ? '1px solid rgba(255,255,255,.25)' : '1px solid rgba(14,165,233,.18)',
+                    }}>
+                      <Icon size={16} />
+                    </span>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 600,
+                      letterSpacing: '0.08em', textTransform: 'uppercase', color: tagColor,
+                    }}>
+                      {tag}
+                    </span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
                     <div style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: 'clamp(28px, 3vw, 38px)',
+                      fontSize: 'clamp(30px, 3.2vw, 40px)',
                       fontWeight: 700,
                       letterSpacing: '-0.03em',
-                      color: accent ? 'var(--of-primary-deep)' : 'var(--ink)',
+                      color: numColor,
                       lineHeight: 1,
                     }}>
-                      <span style={{ fontSize: '0.52em', fontWeight: 600, verticalAlign: '0.1em' }}>₨</span>
+                      <span style={{ fontSize: '0.5em', fontWeight: 600, verticalAlign: '0.12em' }}>₨</span>
                       {num}
                     </div>
                     {suffix && (
                       <span style={{
                         fontFamily: 'var(--font-mono)',
                         fontSize: 13,
-                        color: accent ? 'var(--of-primary)' : 'var(--ink-muted)',
+                        color: suffixColor,
                         fontWeight: 500,
                       }}>
                         {suffix}
                       </span>
                     )}
                   </div>
-                  {/* The accent card keeps a fixed light fill in both themes, so its text
-                      uses fixed dark colors — theme --ink goes light in dark mode and would vanish. */}
-                  <p style={{ color: accent ? '#0C0A09' : 'var(--ink)', fontSize: 14, fontWeight: 600, margin: '10px 0 2px', lineHeight: 1.4 }}>{label}</p>
-                  <p style={{ color: accent ? '#57534E' : 'var(--ink-subtle)', fontSize: 12, margin: 0 }}>{sub}</p>
+                  <p style={{ color: labelColor, fontSize: 14, fontWeight: 600, margin: '12px 0 2px', lineHeight: 1.4 }}>{label}</p>
+                  <p style={{ color: subColor, fontSize: 12, margin: 0 }}>{sub}</p>
                 </div>
               </Reveal>
               {i < 2 && (
@@ -760,7 +775,8 @@ function OpportunityStrip() {
                 </>
               )}
             </>
-          ))}
+            )
+          })}
         </div>
         <Reveal delay={260}>
           <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'flex-start', gap: 11, padding: '14px 18px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 12, maxWidth: 740 }}>
@@ -852,48 +868,62 @@ function HowItWorks() {
           </a>
         </Reveal>
         {/* 1fr auto 1fr auto 1fr — arrows are real grid cells, no absolute positioning */}
-        <div className="mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'start' }}>
+        <div className="mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'center' }}>
           {steps.map(({ Icon, n, h, p }, i) => (
             <>
               <Reveal key={i} delay={i * 100}>
-                <div className="mkt-step-col" style={{ padding: '0 28px 0 0' }}>
-                  <div
-                    className="mkt-step-icon"
-                    style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 12,
-                      background: 'var(--of-primary-soft)',
-                      color: 'var(--of-primary-deep)',
-                      display: 'grid',
-                      placeItems: 'center',
-                      marginBottom: 18,
-                      border: '1px solid rgba(14,165,233,.2)',
-                    }}
-                  >
-                    <Icon size={20} />
+                <div
+                  className="mkt-step-card"
+                  style={{
+                    position: 'relative',
+                    overflow: 'hidden',
+                    background: 'var(--surface)',
+                    border: '1px solid var(--hairline)',
+                    borderRadius: 16,
+                    padding: '24px 22px',
+                    height: '100%',
+                  }}
+                >
+                  {/* Ghost numeral — editorial weight behind the content */}
+                  <span aria-hidden style={{
+                    position: 'absolute', top: -14, right: 6, pointerEvents: 'none',
+                    fontFamily: 'var(--font-mono)', fontSize: 92, fontWeight: 700,
+                    lineHeight: 1, letterSpacing: '-0.05em',
+                    color: 'var(--of-primary)', opacity: 0.07,
+                  }}>{n}</span>
+                  <div style={{ position: 'relative' }}>
+                    <div
+                      className="mkt-step-icon"
+                      style={{
+                        width: 46,
+                        height: 46,
+                        borderRadius: 13,
+                        background: 'linear-gradient(140deg, var(--of-primary), var(--of-primary-deep))',
+                        color: '#fff',
+                        display: 'grid',
+                        placeItems: 'center',
+                        marginBottom: 18,
+                        boxShadow: '0 8px 18px rgba(14,165,233,.30)',
+                      }}
+                    >
+                      <Icon size={20} />
+                    </div>
+                    <div style={{
+                      fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600,
+                      color: 'var(--of-primary)', marginBottom: 6, letterSpacing: '0.08em',
+                    }}>
+                      STEP {n}
+                    </div>
+                    <h3 style={{ fontSize: 18, marginBottom: 8, marginTop: 0, fontWeight: 600 }}>{h}</h3>
+                    <p style={{ color: 'var(--ink-subtle)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>{p}</p>
                   </div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 11,
-                      color: 'var(--ink-muted)',
-                      marginBottom: 6,
-                      letterSpacing: '0.06em',
-                    }}
-                  >
-                    STEP {n}
-                  </div>
-                  <h3 style={{ fontSize: 19, marginBottom: 8, marginTop: 0, fontWeight: 600 }}>{h}</h3>
-                  <p style={{ color: 'var(--ink-subtle)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>{p}</p>
                 </div>
               </Reveal>
               {i < steps.length - 1 && (
                 <>
                   {/* Desktop: horizontal → arrow — paddingTop 11 centers it on the 44px icon box */}
                   <div key={`sep-h-${i}`} className="mkt-sep-h" style={{
-                    alignItems: 'flex-start',
-                    paddingTop: 11,
+                    alignItems: 'center',
                     paddingInline: 12,
                     color: 'var(--of-primary)',
                     opacity: 0.65,
