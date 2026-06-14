@@ -339,6 +339,27 @@ select option {
   color: var(--ink);
 }
 
+/* Upcoming roadmap cards — hover lift + watermark bloom */
+.mkt-upcoming-card {
+  transition: transform .22s var(--ease-out, ease), box-shadow .22s var(--ease-out, ease), border-color .22s var(--ease-out, ease);
+  will-change: transform;
+}
+.mkt-upcoming-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(2, 6, 23, .07);
+  border-color: rgba(14, 165, 233, .35);
+}
+.mkt-upcoming-card .mkt-up-mark {
+  transition: opacity .25s var(--ease-out, ease), transform .25s var(--ease-out, ease);
+}
+.mkt-upcoming-card:hover .mkt-up-mark {
+  opacity: .13;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt-upcoming-card,
+  .mkt-upcoming-card:hover { transition: none; transform: none; }
+}
+
 .mkt-grid-bg {
   background-image:
     linear-gradient(rgba(12,10,9,.06) 1px, transparent 1px),
@@ -384,6 +405,7 @@ select option {
   .mkt-bento               { grid-template-columns: 1fr !important; }
   .mkt-bento > *           { grid-column: span 1 !important; grid-row: span 1 !important; }
   .mkt-upcoming-grid       { grid-template-columns: 1fr !important; }
+  .mkt-upcoming-card       { padding: 22px !important; }
   .mkt-logobar-label       { display: none !important; }
   .mkt-logobar-wrap        { flex-direction: column !important; gap: 16px !important; }
   .mkt-step-connector-v    { display: none !important; }

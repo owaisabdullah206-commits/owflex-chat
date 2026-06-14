@@ -293,40 +293,16 @@ const QUOTES_ROW_2 = [
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function CurrencyToggle({ currency, setCurrency }: { currency: Currency; setCurrency: (c: Currency) => void }) {
+// Renders a price string with the leading ₨ / $ glyph shrunk so it doesn't
+// overpower the number (the ₨ glyph is wide — "Rs" — in JetBrains Mono).
+function CurrencyText({ text, symbolSize }: { text: string; symbolSize: number | string }) {
+  const hasSym = text.startsWith('₨') || text.startsWith('$')
+  if (!hasSym) return <>{text}</>
   return (
-    <div
-      role="tablist"
-      style={{
-        display: 'inline-flex',
-        padding: 3,
-        gap: 2,
-        background: 'var(--surface-2)',
-        border: '1px solid var(--hairline)',
-        borderRadius: 999,
-      }}
-    >
-      {(['PKR', 'USD'] as const).map((k) => (
-        <button
-          key={k}
-          onClick={() => setCurrency(k)}
-          style={{
-            padding: '5px 12px',
-            borderRadius: 999,
-            border: 0,
-            background: currency === k ? 'var(--surface)' : 'transparent',
-            color: currency === k ? 'var(--ink)' : 'var(--ink-subtle)',
-            fontSize: 12,
-            fontWeight: currency === k ? 500 : 400,
-            cursor: 'pointer',
-            fontFamily: 'var(--font-mono)',
-            transition: 'all .15s',
-          }}
-        >
-          {k === 'PKR' ? '₨ PKR' : '$ USD'}
-        </button>
-      ))}
-    </div>
+    <>
+      <span style={{ fontSize: symbolSize }}>{text[0]}</span>
+      {text.slice(1)}
+    </>
   )
 }
 
@@ -403,7 +379,7 @@ function FeatureList({ items, dark, dense }: { items: readonly string[]; dark?: 
 function CompareCell({ v }: { v: boolean | string }) {
   if (v === true) return <Check size={16} style={{ color: 'var(--of-success)' }} />
   if (v === false) return <span style={{ color: 'var(--ink-muted)', opacity: 0.45 }}><Minus size={16} /></span>
-  return <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink)' }}>{v}</span>
+  return <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink)' }}><CurrencyText text={v} symbolSize="0.78em" /></span>
 }
 
 // ─── Plan cards, Traditional layout ─────────────────────────────────────────
@@ -539,7 +515,6 @@ export default function PricingGrid() {
       <MarketingNav
         dark={darkMode}
         onToggleDark={toggleDark}
-        slot={<CurrencyToggle currency={currency} setCurrency={setCurrency} />}
       />
 
       {/* Pricing Header */}
@@ -678,7 +653,7 @@ export default function PricingGrid() {
                       </span>
                     )}
                     <div style={{ fontSize: 13.5, fontWeight: 600 }}>{p.name}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em' }}>{display}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 600, letterSpacing: '-0.02em' }}><CurrencyText text={display} symbolSize={16} /></div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12.5, color: 'var(--ink-subtle)' }}>
                       ${p.value} in credits
                       {p.bonus && (
