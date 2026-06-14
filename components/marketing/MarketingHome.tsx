@@ -678,7 +678,7 @@ function OpportunityStrip() {
         </Reveal>
 
         {/* Tiles with arrows between them — mkt-opp-grid collapses to 1fr on mobile */}
-        <div className="mkt-opp-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'center' }}>
+        <div className="mkt-opp-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'stretch' }}>
           {tiles.map(({ num, suffix, label, sub, accent, win, tag, Icon }, i) => {
             // win = filled gradient "payoff" tile (white text). accent = soft fill (fixed dark
             // text, since theme --ink flips light in dark mode and would vanish on the light fill).
@@ -779,7 +779,7 @@ function OpportunityStrip() {
           })}
         </div>
         <Reveal delay={260}>
-          <div style={{ marginTop: 24, display: 'inline-flex', alignItems: 'flex-start', gap: 11, padding: '14px 18px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 12, maxWidth: 740 }}>
+          <div style={{ marginTop: 24, display: 'flex', alignItems: 'flex-start', gap: 11, padding: '16px 20px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 12 }}>
             <span style={{ color: 'var(--of-primary)', marginTop: 1, flexShrink: 0, display: 'grid' }} aria-hidden><Sparkles size={16} /></span>
             <p style={{ color: 'var(--ink-muted)', fontSize: 15, lineHeight: 1.6, margin: 0 }}>
               Octively costs you ₨2,500 to ₨7,500 a month. On a ₨10,000 retainer, that is a 50 to 75 percent margin.
@@ -868,7 +868,7 @@ function HowItWorks() {
           </a>
         </Reveal>
         {/* 1fr auto 1fr auto 1fr — arrows are real grid cells, no absolute positioning */}
-        <div className="mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'center' }}>
+        <div className="mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'stretch' }}>
           {steps.map(({ Icon, n, h, p }, i) => (
             <>
               <Reveal key={i} delay={i * 100}>
