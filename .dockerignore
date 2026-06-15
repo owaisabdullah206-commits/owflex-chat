@@ -1,0 +1,25 @@
+# Regenerated inside the image
+node_modules
+**/node_modules
+.next
+embed/node_modules
+
+# Secrets — never bake into the image (NEXT_PUBLIC_* come via build args)
+.env
+.env.*
+
+# VCS / CI / editor
+.git
+.github
+.vscode
+.claude
+
+# Not needed at runtime (reduces build context)
+docs
+social-media-posts
+video
+specs
+history
+*.log
+npm-debug.log*
+.DS_Store

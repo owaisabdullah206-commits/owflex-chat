@@ -62,6 +62,12 @@ const studioHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  // Standalone output is only for the Docker/VPS build (the Dockerfile sets
+  // DOCKER_BUILD=1). Vercel/Netlify use their own output, so leave it undefined there.
+  output: process.env.DOCKER_BUILD ? 'standalone' : undefined,
+  // Native, server-only packages must not be bundled by the compiler. Only loaded at
+  // runtime when EMBEDDING_PROVIDER=onnx (VPS); listing them here is harmless elsewhere.
+  serverExternalPackages: ['@huggingface/transformers', 'onnxruntime-node'],
   outputFileTracingIncludes: {
     // Include the built embed widget so the /embed.js route handler can readFileSync it on Vercel
     '/embed.js': ['./public/embed.js'],

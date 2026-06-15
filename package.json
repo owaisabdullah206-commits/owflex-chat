@@ -23,6 +23,7 @@
     "@getbrevo/brevo": "^5.0.4",
     "@google/generative-ai": "^0.24.1",
     "@gsap/react": "^2.1.2",
+    "@huggingface/transformers": "^4.2.0",
     "@neondatabase/serverless": "^1.1.0",
     "@next/third-parties": "^16.2.6",
     "@radix-ui/react-alert-dialog": "^1.1.15",
