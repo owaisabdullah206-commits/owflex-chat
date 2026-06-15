@@ -1,0 +1,28 @@
+IMAGE PROMPT:
+Receipt-style dark card. A list of "free" plans with tiny message caps, each struck through in cold grey: "Chatbase: 50/mo", "Tidio: 50/mo (AI is paid)", "Denser: 20/mo", "Most others: 7-day trial". Below a thin divider, one row in glowing electric teal, NOT struck through, with a checkmark: "200 conversations/mo. No card." Monospace font. The teal row should feel like relief after the strikethroughs. No photos, pure graphic.
+---
+
+Most "free" AI chatbots give you 20 messages a month, then ask for a card.
+
+I checked the popular ones before building mine.
+
+Chatbase: 50 messages a month.
+Tidio: 50, and the AI is a paid add-on.
+Denser: 20.
+Most of the rest: a 7-day trial, then a bill.
+
+For a small business site, 20 to 50 messages is gone in the first week.
+
+So the free plan on what I am building works differently:
+👉 1 bot
+👉 200 conversations a month
+👉 A real knowledge base, so it answers from your own content
+👉 No credit card
+
+The point is not to give everything away.
+
+It is to let a freelancer test a real bot on a real client site before paying anything. You only move to a paid plan when you need more bots or want to drop the branding.
+
+If you have tried free chatbot tools, what made you stop using them?
+
+#Freelancing #AIChatbot #Pakistan #FreeTools #SaaS

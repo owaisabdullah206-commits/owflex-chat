@@ -1,5 +1,12 @@
 IMAGE PROMPT:
-Dark background. Three stacked horizontal bars, growing in width like a loading bar. Bar 1 (shortest, grey): "₨50,000 — once". Bar 2 (medium, teal-tinted): "₨10,000 × 12". Bar 3 (fullwidth, bright teal, glowing): "₨120,000 / year". Each bar has a subtle glow effect — the last one is almost blinding white-teal. The progression feels like power building. Numbers in bold monospace font, right-aligned. Style: data visualization meets a neon sign. No photos. The image should feel like money accumulating in real time.
+Square 1:1 (1080x1080), built to stop the scroll. Deep charcoal-black background (#0C0A09) with a sky-teal glow rising from the bottom edge.
+The hook is a contrast between dead money and growing money:
+LEFT, small and greyed-out, almost forgotten: a single flat banknote lying on its side, dim, with a tiny label "₨50,000 once".
+RIGHT, dominating the frame: twelve glowing sky-teal blocks stacked into a tower that climbs month by month, each block brighter than the one below, the whole stack throwing a teal glow upward like it is still growing. Crowning the tower, one massive bold number in the top third: "₨120,000", and just under it, smaller, "/ year".
+Tiny muted-grey caption along the bottom: "same client. setup once."
+Brand colors only: sky-teal #0EA5E9 into a deeper #0284C7, charcoal background, crisp white numbers in bold monospace. Style: cinematic fintech poster meets a neon sign, dramatic glow, high contrast, flat vector shapes, generous negative space. No photos, no logos, no watermark.
+The feeling: the recurring stack is alive and climbing while the one-time fee just sits there, flat and finished.
+(Image models distort small text. If the numbers come out wrong, generate the scene clean and overlay "₨120,000", "/ year", and "₨50,000 once" in an editor for crisp type.)
 ---
 
 You built a website for a client. They paid ₨50,000.
@@ -17,23 +24,32 @@ You add an AI chatbot.
 It captures leads, answers questions, runs 24/7.
 
 You charge ₨10,000/month to manage it.
-The tool costs you ₨2,500/month.
-You keep ₨7,500.
+That is ₨120,000 a year. From one client.
 
-One client. ₨90,000/year. From work you do once at setup.
+The tool is affordable. The Starter plan is ₨2,500/month and covers 2 client bots.
+So each client's bot costs you about ₨1,250.
 
-Now multiply by 5 clients.
-₨450,000/year in recurring income.
-From clients you already have.
+You keep around ₨8,750 a month, per client.
+That is over ₨100,000 a year, from one client.
+
+Setup happens once. The billing repeats every month.
+
+Now picture 5 clients.
+That is over ₨500,000 a year you keep, from clients you already have.
 
 No cold outreach.
 No Upwork bids.
 No new proposals.
 
-The hardest part is not building the chatbot.
-The hardest part is asking the client: "Can I show you something that might help your business?"
+Building the chatbot is the easy part. The tool does that for you.
 
-That's one WhatsApp message.
+The part that stops most freelancers is not technical at all.
+It is sending that first message to the client.
+
+And that message is short:
+"Can I show you something that might help your business?"
+
+One WhatsApp text. That is the only thing between you and a monthly retainer.
 
 If you have web design or digital marketing clients right now, this is worth trying.
 

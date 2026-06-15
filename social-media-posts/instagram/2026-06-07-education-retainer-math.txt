@@ -1,11 +1,20 @@
-FORMAT: Feed post or carousel (carousel works best — one number per slide)
+FORMAT: Instagram carousel, 3 slides, one number per slide.
 
-IMAGE PROMPT (3 carousel slides — 1:1 square each):
-Slide 1: Pure black background. Centered: "₨50,000" in cold white — massive, fills 60% of slide. Subtitle below: "ek baar. phir khatam." in small grey. Top-left corner: tiny "1/3" in grey. A faint horizontal line appears at the bottom — like something is loading. Feels heavy, final.
+IMAGE PROMPT (3 carousel slides):
+SHARED THEME (apply to all 3 slides, identical so the carousel feels like one set):
+- Aspect ratio: 4:5 portrait, exactly 1080x1350 px on every slide (Instagram crops a carousel to the first slide's ratio, so all three must match).
+- Background: deep charcoal-black #0C0A09 on all slides. The background never changes. Progression comes from the sky-teal glow getting brighter slide to slide, not from flipping the background.
+- Accent: sky-teal #0EA5E9 into a deeper #0284C7. Big numbers in bold monospace. Subtitles in small muted grey. Slide counter in the top-left corner in tiny grey mono.
+- Style: cinematic fintech poster, flat vector, high contrast, generous negative space, no photos, no logos.
+- Keep the layout identical across slides: number centered, subtitle directly under it, counter top-left.
 
-Slide 2: Deep teal-black gradient background. Centered: "+₨10,000" in bright white — same massive size. Below: "/mo" in electric teal — slightly smaller but glowing. Subtitle: "wahi client. har mahine." A looping circular arrow (teal) orbits the number slowly (use static version — arrow curving around the number). Top-left: "2/3". The mood shifts — this feels alive.
+Slide 1 ("1/3"): "₨50,000" in cold white, centered, fills about 55% of the frame, with a single diagonal strikethrough. Subtitle: "ek baar. phir khatam." Almost no teal glow. This is the dead, finished number.
 
-Slide 3: Full electric teal background — almost blinding. Centered: "₨120,000" in pure black, bold, enormous. Below: "/yr" in slightly smaller black. Subtitle in black: "same client. zero new sales." Bottom center: "octively.com" in small black monospace. Top-left: "3/3". This slide should feel like a reveal — the contrast from dark slides makes this one punch. Save-worthy.
+Slide 2 ("2/3"): "₨10,000" in white with a soft sky-teal glow, same size and position as slide 1. Just under it, smaller, in sky-teal: "/mo". A thin teal loop arrow curves around the number (static). Subtitle: "wahi client. har mahine." Medium teal glow. This one feels alive.
+
+Slide 3 ("3/3"): "₨120,000" centered, enormous, in bright sky-teal with the strongest glow of the three. Just under it, smaller: "/yr". Subtitle: "same client. zero new sales." Bottom center, small grey mono: "octively.com". Same charcoal background as the others, but the teal glow is at its peak so this slide reads as the payoff.
+
+(Image models distort small text. If the numbers come out wrong, generate each slide clean and overlay "₨50,000", "₨10,000/mo", "₨120,000/yr" in an editor for crisp type.)
 ---
 
 ₨50,000 website project. Done in 4 weeks. Never repeats.
@@ -16,7 +25,11 @@ vs.
 
 Same client. No new sales call. No new proposal.
 
-5 clients on a monthly service = ₨600,000/year.
+5 clients on a monthly service = ₨600,000/year billed.
+
+The tool is affordable. One plan covers 2 client bots, so it is about ₨1,250 per client.
+You keep most of it. Well over ₨500,000 a year, yours.
+
 That's more than most one-time projects combined.
 
 The freelancers I know who earn consistently aren't getting more clients.

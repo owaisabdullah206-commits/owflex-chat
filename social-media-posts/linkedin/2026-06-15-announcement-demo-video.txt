@@ -1,0 +1,25 @@
+MEDIA: Upload the 60-second demo video directly to LinkedIn (native video gets more reach than a YouTube link). Keep the YouTube link for the first comment. Thumbnail: the FREE white-label AI chatbot thumbnail.
+
+VIDEO: https://youtu.be/0wyt4N_RNsE
+---
+
+I spent the last few weeks building this. Here is the 60-second version.
+
+I kept describing it in posts. Easier to just show it.
+
+In 60 seconds:
+👉 Build a bot and train it on a website or a PDF
+👉 Drop one script tag on the client's site
+👉 The client logs into their own portal to see conversations and leads
+
+That last part is the whole point.
+
+The client stops asking "any update?" because the answer is one click away.
+
+It is called Octively. Free plan for your first bot, no credit card.
+
+I am still early and still talking to freelancers and agencies to check I am solving the right problem, not the one I assumed.
+
+Watch the 60 seconds and tell me honestly: would this be useful for your clients, or am I missing something?
+
+#BuildingInPublic #Freelancing #Pakistan #AIChatbot #ClientPortal

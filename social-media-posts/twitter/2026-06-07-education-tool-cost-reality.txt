@@ -4,10 +4,10 @@ Dark card, receipt-style layout. Three line items stacked like a bill. Item 1: "
 
 Tools in this space:
 
-Stammer.ai — $197/mo — ₨56,000
-ConvoCore — $220/mo — ₨62,700
+Stammer.ai: $197/mo (₨56,000)
+ConvoCore: $220/mo (₨62,700)
 
-What I'm building — ₨2,500/mo
+What I'm building: ₨2,500/mo
 
 Same category.
 20x cheaper.
