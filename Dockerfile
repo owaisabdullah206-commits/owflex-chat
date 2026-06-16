@@ -9,12 +9,15 @@ ARG NODE_VERSION=22-slim
 # present for `npm ci` to resolve it.
 FROM node:${NODE_VERSION} AS deps
 WORKDIR /app
-# node:22-slim ships with npm 10; lock file is generated with npm 11.
-# Upgrade to match so npm ci resolves the lock file correctly.
+# node:22-slim ships with npm 10; upgrade to match the lock file generator (npm 11).
 RUN npm install -g npm@11 --quiet
 COPY package.json package-lock.json* ./
 COPY embed/package.json ./embed/package.json
-RUN npm ci --no-audit --no-fund
+# npm ci fails on cross-platform optional deps (e.g. @rolldown/binding-wasm32-wasi pins
+# @emnapi/core@1.10.0 exactly, but that entry is never written to the lock file on a
+# linux-x64 machine because wasm32 optionals are skipped). npm install resolves them at
+# install time and skips platform-incompatible optionals cleanly.
+RUN npm install --no-audit --no-fund
 
 # ── builder ───────────────────────────────────────────────────────────────────
 FROM node:${NODE_VERSION} AS builder
