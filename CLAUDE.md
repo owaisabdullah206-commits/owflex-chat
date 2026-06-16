@@ -262,37 +262,26 @@ npm run build:embed   # rebuilds embed/dist/embed.min.js (the file actually serv
 ### Git Remotes
 
 ```
-origin   https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas.git  ← GitHub backup / open source
-vercel   https://github.com/owaisabdullah206-commits/owflex-chat.git  ← Vercel dev/preview + Netlify production
+origin   https://github.com/MrOwaisAbdullah/Owflex-Chatbot-Saas.git  ← primary remote (Dokploy watches this)
+vercel   https://github.com/owaisabdullah206-commits/owflex-chat.git  ← Netlify backup (not needed for VPS deploys)
 ```
 
-⚠️ **Netlify watches the `vercel` remote** (`owaisabdullah206-commits/owflex-chat`) — confirmed in build logs.
-Pushing to `origin` alone does NOT trigger Netlify.
+Dokploy is connected to the `origin` remote. GitHub Actions on `origin` builds the Docker image and
+triggers the Dokploy deploy on every push to `master`. No `release` branch needed.
 
-**Development push (every commit):**
+**Push (every commit):**
 ```bash
-git push origin master && git push vercel master
-# Does NOT trigger Netlify — Netlify only watches the `release` branch on the vercel remote
+git push origin master   # triggers GitHub Actions → GHCR build → Dokploy deploy
 ```
 
-**Production release to Netlify (explicit, intentional):**
-```bash
-# ⚠️ Check docs/netlify-budget.md FIRST — confirm build count < 40 this month
-git checkout release && git merge master
-git push vercel release   # ← triggers Netlify build
-git push origin release   # ← keeps GitHub in sync
-git checkout master
-# Then record the push in docs/netlify-budget.md (date + build # + what changed)
-```
+The `vercel` remote and `release` branch are no longer part of the standard workflow.
+If Netlify is still in use for a separate surface, push to `vercel` separately and update `docs/netlify-budget.md`.
 
 ### Netlify Build Budget — 300 credits/month
 
-- Each production deploy costs **15 credits**. Max 20 deploys/month, but traffic also burns credits.
-- **Safe limit: 10 deploys/month** (leaves 150 credits for web requests, bandwidth, compute).
-- Full tracking log: `docs/netlify-budget.md` — READ IT before every production push, UPDATE IT after.
-- Only push to `release` for **user-facing changes** (features, bug fixes, content). Never for:
-  docs-only edits, CLAUDE.md changes, `.env.example` tweaks, or anything non-functional.
-- If 10+ deploys in a month → batch remaining changes and release together next cycle.
+- Only relevant if Netlify is still serving a surface (currently near budget limit — see `docs/netlify-budget.md`).
+- Each production deploy costs **15 credits**. Safe limit: 10 deploys/month.
+- Full tracking log: `docs/netlify-budget.md` — read before pushing to `vercel`, update after.
 
 ### Changelog + Roadmap Sync Rule
 

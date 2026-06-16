@@ -1,21 +1,24 @@
 name: Build and deploy
 
-# Builds the Docker image off-box and triggers a Dokploy deploy.
-# release = production (Netlify-era discipline kept: master = dev, release = prod).
+# Dokploy is connected to origin (MrOwaisAbdullah/Owflex-Chatbot-Saas).
+# Every push to master builds the image and deploys to the VPS automatically.
+# No release branch needed — master is production.
 on:
   push:
-    branches: [release]
+    branches: [master]
   workflow_dispatch:
 
 env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/owflex-chat
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      sha: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
 
@@ -50,6 +53,10 @@ jobs:
             NEXT_PUBLIC_GA_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
             NEXT_PUBLIC_GTM_ID=${{ secrets.NEXT_PUBLIC_GTM_ID }}
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger Dokploy deploy
         run: |
           curl -fsSL -X POST "${{ secrets.DOKPLOY_URL }}/api/application.deploy" \
