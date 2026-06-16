@@ -5,7 +5,7 @@ import { Resend } from 'resend'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY ?? 'not-configured')
 
 export async function acceptHandoff(conversationId: string): Promise<{ error?: string }> {
   const user = await requireDeveloper()

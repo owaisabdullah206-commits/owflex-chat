@@ -3,7 +3,9 @@ import { BrevoClient } from '@getbrevo/brevo'
 
 // Resend — auth, invites, critical system emails
 // Free: 3,000/month · 100/day
-export const resend = new Resend(process.env.RESEND_API_KEY)
+// Fallback prevents a throw at module evaluation during `next build` (no env vars in Docker builder).
+// Actual sends will fail with 401 if RESEND_API_KEY is not set at runtime.
+export const resend = new Resend(process.env.RESEND_API_KEY ?? 'not-configured')
 
 // Brevo — digest, usage nudges, marketing emails
 // Free: 9,000/month · 300/day
