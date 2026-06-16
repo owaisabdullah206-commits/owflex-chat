@@ -5,12 +5,23 @@ import { ArrowRight, Check } from 'lucide-react'
 import { MarketingNav } from './MarketingNav'
 import MarketingFooter from './MarketingFooter'
 import { useDarkMode } from './useDarkMode'
+import { APP_VERSION } from '@/lib/version'
 
 const RELEASES = [
   {
-    version: 'v1.2.0',
+    version: 'v1.3.0',
     date: 'June 2026',
     tag: 'Latest',
+    items: [
+      'Lead pipeline: set every lead to New, Contacted, Won, or Lost straight from the dashboard or the client portal, with a live counts-per-stage summary so you can see what actually converted, not just how many leads came in',
+      'Slack lead alerts: paste a Slack Incoming Webhook URL into bot settings and every new lead posts a formatted message to your channel the moment it lands',
+      'Embed key rotation: rotate a compromised embed key in one click; the old key keeps working for a 24-hour grace window so deployed widgets stay live while you push the new key to production',
+    ],
+  },
+  {
+    version: 'v1.2.0',
+    date: 'June 2026',
+    tag: 'Notifications',
     items: [
       'Instant lead notification email: the moment a visitor leaves their details, the bot owner gets an email with the name, email, phone, and a link to the conversation, so no lead sits unseen',
       'Reply language control per bot: pick Auto (mirror the visitor), English, Urdu, or Roman Urdu in bot settings and every reply follows that choice',
@@ -192,7 +203,7 @@ export default function ChangelogPage() {
           </p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 20, padding: '5px 12px', border: '1px solid var(--hairline)', borderRadius: 999, fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--ink-muted)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)', display: 'inline-block' }} />
-            Current: v1.2.0
+            Current: {APP_VERSION}
           </div>
         </div>
       </section>

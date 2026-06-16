@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Search } from 'lucide-react'
 import { LeadsTable } from './LeadsTable'
+import { LeadPipelineSummary } from '@/components/shared/LeadPipelineSummary'
 
 interface Lead {
   id: string
@@ -11,6 +12,7 @@ interface Lead {
   phone: string | null
   capturedAt: Date
   conversationId: string | null
+  status: string | null
   botName?: string
 }
 
@@ -107,6 +109,8 @@ export function LeadsSearch({ leads, showBot = false }: LeadsSearchProps) {
           {filtered.length} / {leads.length}
         </span>
       </div>
+
+      <LeadPipelineSummary leads={filtered} className="mb-4" />
 
       {filtered.length === 0 ? (
         <div className="border border-[var(--hairline)] bg-[var(--surface)] px-4 py-10 text-center">

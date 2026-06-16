@@ -57,6 +57,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       routingLightModel:   schema.bots.routingLightModel,
       routingStrongModel:  schema.bots.routingStrongModel,
       webhookUrl:           schema.bots.webhookUrl,
+      slackWebhookUrl:      schema.bots.slackWebhookUrl,
       monthlyConvLimit:     schema.bots.monthlyConvLimit,
       monthlyLeadLimit:     schema.bots.monthlyLeadLimit,
       monthlyCreditBudget:  schema.bots.monthlyCreditBudget,
@@ -92,6 +93,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
         phone: schema.leads.phone,
         capturedAt: schema.leads.capturedAt,
         conversationId: schema.leads.conversationId,
+        status: schema.leads.status,
       })
       .from(schema.leads)
       .where(and(eq(schema.leads.botId, bot.id), eq(schema.leads.hiddenByLimit, false)))
@@ -260,7 +262,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                 >
                   embed_script
                 </p>
-                <EmbedCodeBlock embedKey={bot.embedKey} />
+                <EmbedCodeBlock embedKey={bot.embedKey} botId={bot.id} />
                 <p className="text-xs text-[var(--ink-muted)] mt-2" style={{ fontFamily: 'var(--font-mono)' }}>
                   paste before{' '}
                   <code className="px-1 py-0.5 bg-[var(--surface-2)] text-[var(--ink)]">
@@ -395,6 +397,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                       }
                     })(),
                     webhookUrl:           bot.webhookUrl ?? '',
+                    slackWebhookUrl:      bot.slackWebhookUrl ?? '',
                     monthlyConvLimit:     bot.monthlyConvLimit ?? null,
                     monthlyLeadLimit:     bot.monthlyLeadLimit ?? null,
                     monthlyCreditBudget:  bot.monthlyCreditBudget ?? null,

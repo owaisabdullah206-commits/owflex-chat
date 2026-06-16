@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { and, eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
+import { embedKeyMatch } from '@/lib/bots/embed-key'
 import { getLeadsRatelimit } from '@/lib/ratelimit'
 
 const bodySchema = z.object({
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
     .where(
       and(
         eq(schema.messages.id, messageId),
-        eq(schema.bots.embedKey, embedKey),
+        embedKeyMatch(embedKey),
         eq(schema.bots.isActive, true),
       ),
     )

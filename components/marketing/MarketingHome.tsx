@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { APP_VERSION } from '@/lib/version'
 import {
   MessageSquare, Zap, Monitor, Palette, Cpu, Globe,
   Code2, UserPlus, BarChart3, Check, ArrowRight, ArrowUpRight,
@@ -1950,7 +1951,7 @@ function HeroLeadCopy() {
         }}
       >
         <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-primary)' }} />
-        v1.1.0 · Now in beta
+        {APP_VERSION} · Now in beta
       </span>
       <h1
         style={{

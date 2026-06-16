@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { and, eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
+import { embedKeyMatch } from '@/lib/bots/embed-key'
 
 const querySchema = z.object({
   key: z.string().min(1),
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest) {
     })
     .from(schema.bots)
     .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
-    .where(and(eq(schema.bots.embedKey, parsed.data.key), eq(schema.bots.isActive, true)))
+    .where(and(embedKeyMatch(parsed.data.key), eq(schema.bots.isActive, true)))
     .limit(1)
 
   if (!bot) {

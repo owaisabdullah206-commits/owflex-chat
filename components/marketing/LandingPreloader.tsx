@@ -16,6 +16,7 @@
  */
 
 import { useEffect, useState } from 'react'
+import { APP_VERSION } from '@/lib/version'
 
 // ─── Geometry — matches compass-loaders.jsx exactly ─────────────────────────
 const G = { hub: 6, near: 14, far: 46, halfBase: 4 }
@@ -288,7 +289,7 @@ export function LandingPreloader() {
             opacity:       0.45,
             animation:     'oct-lp-in .8s cubic-bezier(.22,.61,.36,1) .4s both',
           }}>
-            v1.1.0
+            {APP_VERSION}
           </div>
         </div>
       </div>

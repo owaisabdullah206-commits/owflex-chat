@@ -1,6 +1,8 @@
 import { MessageSquare } from 'lucide-react'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 import { formatPhone } from '@/lib/utils/phone'
+import { LeadStatusSelect } from '@/components/shared/LeadStatusSelect'
+import { toLeadStatus } from '@/lib/leads/status'
 
 interface Lead {
   id: string
@@ -10,6 +12,7 @@ interface Lead {
   notes: string | null
   capturedAt: Date
   conversationId: string | null
+  status: string | null
 }
 
 interface LeadCardProps {
@@ -37,15 +40,18 @@ export function LeadCard({ lead }: LeadCardProps) {
         <RelativeTime date={lead.capturedAt} className="text-[10px] text-[var(--ink-subtle)] shrink-0 mt-0.5" />
       </div>
 
-      {lead.conversationId && (
-        <a
-          href={`/portal/conversations/${lead.conversationId}`}
-          className="inline-flex items-center gap-1 text-xs text-[var(--of-primary-text-light)] mt-2 hover:underline min-h-[44px] sm:min-h-0"
-        >
-          <MessageSquare className="h-3 w-3" />
-          View chat
-        </a>
-      )}
+      <div className="flex items-center justify-between gap-2 mt-2">
+        <LeadStatusSelect leadId={lead.id} status={toLeadStatus(lead.status)} apiBase="/api/portal/leads" />
+        {lead.conversationId && (
+          <a
+            href={`/portal/conversations/${lead.conversationId}`}
+            className="inline-flex items-center gap-1 text-xs text-[var(--of-primary-text-light)] hover:underline min-h-[44px] sm:min-h-0"
+          >
+            <MessageSquare className="h-3 w-3" />
+            View chat
+          </a>
+        )}
+      </div>
     </div>
   )
 }

@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 import { formatPhone } from '@/lib/utils/phone'
+import { LeadStatusSelect } from '@/components/shared/LeadStatusSelect'
+import { toLeadStatus } from '@/lib/leads/status'
 
 interface Lead {
   id: string
@@ -12,6 +14,7 @@ interface Lead {
   phone: string | null
   capturedAt: Date
   conversationId: string | null
+  status: string | null
   botName?: string
 }
 
@@ -48,6 +51,7 @@ export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
             <th className={thClass}>email</th>
             <th className={thClass}>phone</th>
             {showBot && <th className={thClass}>bot</th>}
+            <th className={thClass}>status</th>
             <th className={thClass}>
               <button
                 onClick={() => setSortAsc(!sortAsc)}
@@ -69,6 +73,9 @@ export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
               {showBot && (
                 <td className={`${tdClass} text-[var(--ink-muted)]`}>{lead.botName ?? '—'}</td>
               )}
+              <td className={tdClass}>
+                <LeadStatusSelect leadId={lead.id} status={toLeadStatus(lead.status)} apiBase="/api/v1/leads" />
+              </td>
               <td className={`${tdClass} text-[var(--ink-subtle)]`}>
                 <RelativeTime date={lead.capturedAt} />
               </td>

@@ -27,6 +27,7 @@ export default async function LeadsPage() {
             phone: schema.leads.phone,
             capturedAt: schema.leads.capturedAt,
             conversationId: schema.leads.conversationId,
+            status: schema.leads.status,
             botName: schema.bots.name,
           })
           .from(schema.leads)

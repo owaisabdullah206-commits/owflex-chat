@@ -5,6 +5,9 @@ import { Search } from 'lucide-react'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 import { LeadCard } from '@/components/portal/LeadCard'
 import { formatPhone } from '@/lib/utils/phone'
+import { LeadStatusSelect } from '@/components/shared/LeadStatusSelect'
+import { LeadPipelineSummary } from '@/components/shared/LeadPipelineSummary'
+import { toLeadStatus } from '@/lib/leads/status'
 
 interface Lead {
   id: string
@@ -14,6 +17,7 @@ interface Lead {
   notes: string | null
   capturedAt: Date
   conversationId: string | null
+  status: string | null
 }
 
 interface LeadsSearchProps {
@@ -43,6 +47,8 @@ export function LeadsSearch({ leads }: LeadsSearchProps) {
         />
       </div>
 
+      <LeadPipelineSummary leads={filtered} className="mb-4" />
+
       {filtered.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-sm text-[var(--ink-muted)]">
@@ -57,7 +63,7 @@ export function LeadsSearch({ leads }: LeadsSearchProps) {
             <table className="w-full text-sm">
               <thead className="border-b border-[var(--hairline)]">
                 <tr>
-                  {['Name', 'Email', 'Phone', 'Date', 'Chat'].map((h) => (
+                  {['Name', 'Email', 'Phone', 'Status', 'Date', 'Chat'].map((h) => (
                     <th
                       key={h}
                       className="text-left px-4 py-3 text-xs font-medium uppercase tracking-wide text-[var(--ink-subtle)]"
@@ -73,6 +79,9 @@ export function LeadsSearch({ leads }: LeadsSearchProps) {
                     <td className="px-4 py-3 text-[var(--ink)] font-medium">{lead.name ?? '—'}</td>
                     <td className="px-4 py-3 text-[var(--ink-muted)]">{lead.email ?? '—'}</td>
                     <td className="px-4 py-3 text-[var(--ink-muted)]">{formatPhone(lead.phone)}</td>
+                    <td className="px-4 py-3">
+                      <LeadStatusSelect leadId={lead.id} status={toLeadStatus(lead.status)} apiBase="/api/portal/leads" />
+                    </td>
                     <td className="px-4 py-3 text-[var(--ink-subtle)] text-xs whitespace-nowrap">
                       <RelativeTime date={lead.capturedAt} />
                     </td>

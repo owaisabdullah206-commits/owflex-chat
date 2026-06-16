@@ -109,6 +109,11 @@ export const bots = pgTable('bots', {
   monthlyLeadLimit:    integer('monthly_lead_limit'),
   // Outbound lead webhook — POST to this URL when a lead is captured (null = disabled)
   webhookUrl:          text('webhook_url'),
+  // Slack Incoming Webhook URL — post a formatted lead message on capture (null = disabled)
+  slackWebhookUrl:     text('slack_webhook_url'),
+  // Embed key rotation: the prior key stays valid until embedKeyRotatedAt + 24h grace
+  previousEmbedKey:    varchar('previous_embed_key', { length: 64 }),
+  embedKeyRotatedAt:   tsz('embed_key_rotated_at'),
   // Per-bot credit budget (null = no bot-level cap, draws from org pool freely)
   monthlyCreditBudget: integer('monthly_credit_budget'),
   // Allowed model IDs (null = all models the org plan permits)
@@ -168,6 +173,9 @@ export const leads = pgTable('leads', {
   capturedAt:     tsz('captured_at').defaultNow().notNull(),
   // When the org is over its monthly lead limit, leads are still saved but hidden from all views
   hiddenByLimit:  boolean('hidden_by_limit').notNull().default(false),
+  // Pipeline stage — set by the developer or end-client to track conversion.
+  // 'new' | 'contacted' | 'won' | 'lost'
+  status:         varchar('status', { length: 20 }).notNull().default('new'),
 }, (t) => [
   index('leads_bot_id_idx').on(t.botId),
 ])

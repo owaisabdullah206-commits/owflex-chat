@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { and, count, eq, gte, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
+import { embedKeyMatch } from '@/lib/bots/embed-key'
 import { getLeadsRatelimit } from '@/lib/ratelimit'
 import { PLAN_LIMITS } from '@/lib/limits'
 import { checkAndWarnUsage } from '@/lib/credits/usage-warnings'
@@ -63,12 +64,13 @@ export async function POST(req: NextRequest) {
         leadsThisMonth:   schema.organizations.leadsThisMonth,
         ownerEmail:       schema.users.email,
         webhookUrl:       schema.bots.webhookUrl,
+        slackWebhookUrl:  schema.bots.slackWebhookUrl,
         monthlyLeadLimit: schema.bots.monthlyLeadLimit,
       })
       .from(schema.bots)
       .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
       .innerJoin(schema.users, eq(schema.organizations.ownerId, schema.users.id))
-      .where(and(eq(schema.bots.embedKey, embedKey), eq(schema.bots.isActive, true)))
+      .where(and(embedKeyMatch(embedKey), eq(schema.bots.isActive, true)))
       .limit(1)
 
     if (!bot) {
@@ -159,6 +161,18 @@ export async function POST(req: NextRequest) {
           notes: notes ?? null,
         },
         capturedAt: new Date().toISOString(),
+      })
+    }
+
+    // Non-blocking Slack notification — fire-and-forget, only for visible leads
+    if (bot.slackWebhookUrl && !hiddenByLimit) {
+      const { fireSlackLeadNotification } = await import('@/lib/webhooks/slack')
+      void fireSlackLeadNotification(bot.slackWebhookUrl, {
+        botName: bot.name,
+        name:    name  ?? null,
+        email:   email ?? null,
+        phone:   phone ?? null,
+        notes:   notes ?? null,
       })
     }
 

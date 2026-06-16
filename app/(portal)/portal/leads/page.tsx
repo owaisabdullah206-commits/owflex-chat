@@ -52,6 +52,7 @@ export default async function LeadsPage({
           notes: schema.leads.notes,
           capturedAt: schema.leads.capturedAt,
           conversationId: schema.leads.conversationId,
+          status: schema.leads.status,
         })
         .from(schema.leads)
         .innerJoin(schema.bots, eq(schema.leads.botId, schema.bots.id))

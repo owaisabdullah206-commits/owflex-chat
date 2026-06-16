@@ -42,6 +42,9 @@ const SHIPPED = [
   'Domain lock by default: every bot is tied to its Store URL so a copied embed key cannot be reused elsewhere',
   'Over-limit leads banner: leads past your plan limit are saved and surfaced with an upgrade prompt',
   'Per-bot usage tab: conversations, messages, tokens, credits, and cost at a glance with model breakdown',
+  'Lead pipeline: tag every lead New, Contacted, Won, or Lost from the dashboard or client portal, with counts per stage',
+  'Slack lead alerts: new leads posted to a Slack channel via Incoming Webhook',
+  'Embed key rotation: rotate a compromised key with a 24-hour grace window so live widgets keep working',
 ]
 
 const IN_PROGRESS = [
@@ -55,7 +58,6 @@ const PLANNED = [
   { title: 'WhatsApp broadcasts & templates', desc: 'The marketing layer on top of the WhatsApp channel: outbound template campaigns and drip sequences, metered per message at Meta\'s rate. Comes after the reply channel ships.' },
   { title: 'Voice input', desc: 'Visitors speak to the bot instead of typing — tap the mic, ask out loud, get the same grounded answer. Handy on mobile and for low-typing audiences.' },
   { title: 'PayFast (PKR) + Lemon Squeezy (USD) billing', desc: 'Self-serve plan upgrades and credit top-ups via PayFast for Pakistani developers and Lemon Squeezy for international payments — no WhatsApp message required.' },
-  { title: 'Embed key rotation', desc: 'Rotate a compromised embed key with a 24-hour grace window — deployed widgets stay live while you push the updated key to production.' },
   { title: 'Hybrid RAG — vector + full-text', desc: 'Combine cosine similarity with BM25 (Postgres tsvector) and re-rank the union. Exact product names and SKUs surface reliably even when embedding scores are low.' },
   { title: 'Custom portal subdomain', desc: 'Serve your client portal from portal.youragency.com instead of app.octively.com.' },
   { title: 'Full REST API access', desc: 'Programmatic CRUD for bots, conversations, and leads. Lead webhooks are already live — this adds the full read/write API surface.' },

@@ -17,6 +17,15 @@ const updateBotSchema = z.object({
   routingLightModel:   z.enum(SUPPORTED_MODELS).nullable().optional(),
   routingStrongModel:  z.enum(SUPPORTED_MODELS).nullable().optional(),
   webhookUrl: z.string().url().max(500).or(z.literal('')).optional(),
+  slackWebhookUrl: z
+    .string()
+    .url()
+    .max(500)
+    .refine((v) => {
+      try { return new URL(v).hostname === 'hooks.slack.com' } catch { return false }
+    }, { message: 'Must be a Slack Incoming Webhook URL (hooks.slack.com)' })
+    .or(z.literal(''))
+    .optional(),
   // Per-bot resource controls (agency/pro only). null = remove the cap.
   monthlyConvLimit:    z.number().int().min(1).nullable().optional(),
   monthlyLeadLimit:    z.number().int().min(1).nullable().optional(),
@@ -95,6 +104,11 @@ export async function updateBot(
   if (parsed.data.webhookUrl !== undefined) {
     // Empty string → clear the webhook
     update.webhookUrl = parsed.data.webhookUrl === '' ? null : parsed.data.webhookUrl
+  }
+
+  if (parsed.data.slackWebhookUrl !== undefined) {
+    // Empty string → clear the Slack connector
+    update.slackWebhookUrl = parsed.data.slackWebhookUrl === '' ? null : parsed.data.slackWebhookUrl
   }
 
   // Per-bot resource controls — agency and pro plans only

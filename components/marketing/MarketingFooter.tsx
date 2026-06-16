@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { OctivelyMark } from '@/components/brand/OctivelyMark'
 import { FOOTER_TOOLS } from '@/lib/data/free-tools'
+import { APP_VERSION } from '@/lib/version'
 
 const COLS = [
   {
@@ -213,7 +214,7 @@ export default function MarketingFooter() {
           }}
         >
           <div style={{ fontFamily: 'var(--font-mono)' }}>
-            © {new Date().getFullYear()} Octively — v1.1.0
+            © {new Date().getFullYear()} Octively · {APP_VERSION}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span

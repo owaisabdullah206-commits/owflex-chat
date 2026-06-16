@@ -85,6 +85,7 @@ interface BotSettingsFormProps {
     language: string
     whatsappNumber: string
     webhookUrl: string
+    slackWebhookUrl: string
     monthlyConvLimit:    number | null
     monthlyLeadLimit:    number | null
     monthlyCreditBudget: number | null
@@ -128,6 +129,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [whatsappNumber, setWhatsappNumber]     = useState(initial.whatsappNumber)
   const [previewTheme, setPreviewTheme]         = useState<'dark' | 'light'>(initial.theme)
   const [webhookUrl, setWebhookUrl]             = useState(initial.webhookUrl)
+  const [slackWebhookUrl, setSlackWebhookUrl]   = useState(initial.slackWebhookUrl)
   const [convLimit, setConvLimit]               = useState<string>(initial.monthlyConvLimit?.toString() ?? '')
   const [leadLimit, setLeadLimit]               = useState<string>(initial.monthlyLeadLimit?.toString() ?? '')
   const [creditBudget, setCreditBudget]         = useState<string>(initial.monthlyCreditBudget?.toString() ?? '')
@@ -174,6 +176,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
     setWhatsappNumber(initial.whatsappNumber)
     setPreviewTheme(initial.theme)
     setWebhookUrl(initial.webhookUrl)
+    setSlackWebhookUrl(initial.slackWebhookUrl)
     setConvLimit(initial.monthlyConvLimit?.toString() ?? '')
     setLeadLimit(initial.monthlyLeadLimit?.toString() ?? '')
     setCreditBudget(initial.monthlyCreditBudget?.toString() ?? '')
@@ -224,6 +227,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           whatsappNumber: whatsappNumber.replace(/[^0-9]/g, ''),
         },
         webhookUrl: webhookUrl.trim() || '',
+        slackWebhookUrl: slackWebhookUrl.trim() || '',
         monthlyConvLimit:    convLimit    ? parseInt(convLimit,    10) : null,
         monthlyLeadLimit:    leadLimit    ? parseInt(leadLimit,    10) : null,
         monthlyCreditBudget: creditBudget ? parseInt(creditBudget, 10) : null,
@@ -937,6 +941,23 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             <p className="text-[11px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>
               Payload: <code className="bg-[var(--surface-2)] px-1">event · embedKey · sessionId · lead · capturedAt</code>
               {' '}— signed with <code className="bg-[var(--surface-2)] px-1">X-OwFlex-Signature: sha256=…</code>
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="slackWebhookUrl" className="text-xs text-[var(--ink-muted)]">Slack Webhook URL</Label>
+            <Input
+              id="slackWebhookUrl"
+              type="url"
+              value={slackWebhookUrl}
+              onChange={(e) => { setSlackWebhookUrl(e.target.value); markDirty() }}
+              placeholder="https://hooks.slack.com/services/…"
+              className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+              disabled={isPending}
+            />
+            <p className="text-[11px] text-[var(--ink-subtle)]">
+              Posts a formatted message to a Slack channel on every new lead. Create one at{' '}
+              <span style={{ fontFamily: 'var(--font-mono)' }}>Slack → Apps → Incoming Webhooks</span>. Leave blank to disable.
             </p>
           </div>
         </div>

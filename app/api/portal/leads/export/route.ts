@@ -35,6 +35,7 @@ export async function GET(_req: NextRequest) {
       email: schema.leads.email,
       phone: schema.leads.phone,
       notes: schema.leads.notes,
+      status: schema.leads.status,
       capturedAt: schema.leads.capturedAt,
     })
     .from(schema.leads)
@@ -42,7 +43,7 @@ export async function GET(_req: NextRequest) {
     .where(and(eq(schema.bots.clientUserId, user.id), eq(schema.leads.botId, bot.id), eq(schema.leads.hiddenByLimit, false)))
     .orderBy(desc(schema.leads.capturedAt))
 
-  const header = 'name,email,phone,notes,date\n'
+  const header = 'name,email,phone,notes,status,date\n'
   const rows = leads
     .map((lead) =>
       [
@@ -50,6 +51,7 @@ export async function GET(_req: NextRequest) {
         csvField(lead.email),
         csvField(lead.phone),
         csvField(lead.notes),
+        csvField(lead.status),
         csvField(new Date(lead.capturedAt).toISOString()),
       ].join(','),
     )

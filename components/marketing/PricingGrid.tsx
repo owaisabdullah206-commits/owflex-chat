@@ -218,6 +218,7 @@ const COMPARE_ROWS = [
 
   { section: 'Operations' },
   { feat: 'Lead capture on/off', values: [false, true, true, true, true] },
+  { feat: 'Lead pipeline (New / Contacted / Won / Lost)', values: [true, true, true, true, true] },
   { feat: 'Strict mode', values: [false, true, true, true, true] },
   { feat: 'Trigger tooltip', values: [true, true, true, true, true] },
   { feat: 'Human handoff / escalation', values: [false, false, true, true, true] },

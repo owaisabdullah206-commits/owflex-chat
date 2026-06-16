@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { and, desc, eq, sql } from 'drizzle-orm'
 import { Redis } from '@upstash/redis'
 import { db, schema } from '@/lib/db'
+import { embedKeyMatch } from '@/lib/bots/embed-key'
 import { chatCompletionStreamGen, FALLBACK_MODEL, type ChatMessage } from '@/lib/ai/litellm'
 import { handleCreditExhaustion } from '@/lib/credits/grace'
 import { getChatRatelimit } from '@/lib/ratelimit'
@@ -179,7 +180,7 @@ export async function POST(req: NextRequest) {
       .from(schema.bots)
       .innerJoin(schema.organizations, eq(schema.bots.orgId, schema.organizations.id))
       .innerJoin(schema.users, eq(schema.organizations.ownerId, schema.users.id))
-      .where(and(eq(schema.bots.embedKey, embedKey), eq(schema.bots.isActive, true)))
+      .where(and(embedKeyMatch(embedKey), eq(schema.bots.isActive, true)))
       .limit(1)
 
     if (!bot) {
