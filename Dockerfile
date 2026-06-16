@@ -9,6 +9,9 @@ ARG NODE_VERSION=22-slim
 # present for `npm ci` to resolve it.
 FROM node:${NODE_VERSION} AS deps
 WORKDIR /app
+# node:22-slim ships with npm 10; lock file is generated with npm 11.
+# Upgrade to match so npm ci resolves the lock file correctly.
+RUN npm install -g npm@11 --quiet
 COPY package.json package-lock.json* ./
 COPY embed/package.json ./embed/package.json
 RUN npm ci --no-audit --no-fund
