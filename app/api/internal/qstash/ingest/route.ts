@@ -135,7 +135,7 @@ async function ingestUrl(
   includePaths?: string[],
   excludePaths?: string[],
 ): Promise<void> {
-  const { scrapeUrl } = await import('@/lib/knowledge/firecrawl')
+  const { scrapeUrl } = await import('@/lib/knowledge/scraper')
   let pages = await scrapeUrl(url, { maxPages, includePaths, excludePaths })
   pages = removeBoilerplate(pages)
 
