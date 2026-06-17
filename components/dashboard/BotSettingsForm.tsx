@@ -12,26 +12,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { updateBot } from '@/lib/db/queries/bots'
-import { SUPPORTED_MODELS, getModelMeta, type SupportedModel } from '@/lib/ai/litellm'
+import { type SupportedModel } from '@/lib/ai/litellm'
+import { ModelSelect } from './ModelSelect'
 import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
 import { LiveIndicator } from '@/components/brand/LiveIndicator'
-
-// ─── Model badge pill ─────────────────────────────────────────────────────────
-function ModelBadge({ modelId, className = '' }: { modelId: string; className?: string }) {
-  const meta = getModelMeta(modelId)
-  if (!meta.badge) return null
-  return (
-    <div className={`flex items-center gap-2 mt-1 ${className}`}>
-      <span className={`text-[10px] font-medium ${meta.badgeColor}`}>{meta.badge}</span>
-      {meta.speed && (
-        <>
-          <span className="text-[var(--hairline-strong)] text-[10px]">·</span>
-          <span className="text-[10px] text-[var(--ink-subtle)]" style={{ fontFamily: 'var(--font-mono)' }}>{meta.speed}</span>
-        </>
-      )}
-    </div>
-  )
-}
 
 // ─── Trigger icon catalogue ───────────────────────────────────────────────────
 const TRIGGER_ICONS = [
@@ -374,20 +358,12 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                   <p className="text-[10px] text-[var(--ink-subtle)]">greetings · faq</p>
                 </div>
                 <div className="flex-1">
-                  <div className="relative">
-                    <select value={lightModel}
-                      onChange={(e) => { setLightModel(e.target.value); markDirty() }}
-                      disabled={isPending}
-                      className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:border-[var(--of-primary)] cursor-pointer"
-                      style={{ fontFamily: 'var(--font-mono)' }}>
-                      {SUPPORTED_MODELS.map((m) => {
-                        const meta = getModelMeta(m)
-                        return <option key={m} value={m}>{meta.badge}  {meta.label}  ·  {meta.speed}</option>
-                      })}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--ink-muted)]" />
-                  </div>
-                  <ModelBadge modelId={lightModel} />
+                  <ModelSelect
+                    value={lightModel}
+                    onChange={(v) => { setLightModel(v); markDirty() }}
+                    disabled={isPending}
+                    size="sm"
+                  />
                 </div>
               </div>
               {/* Default model (knowledge) */}
@@ -397,20 +373,12 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                   <p className="text-[10px] text-[var(--ink-subtle)]">knowledge queries</p>
                 </div>
                 <div className="flex-1">
-                  <div className="relative">
-                    <select value={model}
-                      onChange={(e) => { setModel(e.target.value); markDirty() }}
-                      disabled={isPending || isStarterOrFree}
-                      className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer"
-                      style={{ fontFamily: 'var(--font-mono)' }}>
-                      {SUPPORTED_MODELS.map((m) => {
-                        const meta = getModelMeta(m)
-                        return <option key={m} value={m}>{meta.badge}  {meta.label}  ·  {meta.speed}</option>
-                      })}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--ink-muted)]" />
-                  </div>
-                  <ModelBadge modelId={model} />
+                  <ModelSelect
+                    value={model}
+                    onChange={(v) => { setModel(v); markDirty() }}
+                    disabled={isPending || isStarterOrFree}
+                    size="sm"
+                  />
                 </div>
               </div>
               {/* Strong model */}
@@ -420,20 +388,12 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                   <p className="text-[10px] text-[var(--ink-subtle)]">complex reasoning</p>
                 </div>
                 <div className="flex-1">
-                  <div className="relative">
-                    <select value={strongModel}
-                      onChange={(e) => { setStrongModel(e.target.value); markDirty() }}
-                      disabled={isPending}
-                      className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-1.5 text-xs focus:outline-none focus:border-[var(--of-primary)] cursor-pointer"
-                      style={{ fontFamily: 'var(--font-mono)' }}>
-                      {SUPPORTED_MODELS.map((m) => {
-                        const meta = getModelMeta(m)
-                        return <option key={m} value={m}>{meta.badge}  {meta.label}  ·  {meta.speed}</option>
-                      })}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--ink-muted)]" />
-                  </div>
-                  <ModelBadge modelId={strongModel} />
+                  <ModelSelect
+                    value={strongModel}
+                    onChange={(v) => { setStrongModel(v); markDirty() }}
+                    disabled={isPending}
+                    size="sm"
+                  />
                 </div>
               </div>
             </div>
@@ -455,20 +415,13 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             </div>
           ) : (
             <div>
-              <div className="relative">
-                <select id="model" value={model}
-                  onChange={(e) => { setModel(e.target.value); markDirty() }}
-                  disabled={isPending}
-                  className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer"
-                  style={{ fontFamily: 'var(--font-mono)' }}>
-                  {SUPPORTED_MODELS.map((m) => {
-                    const meta = getModelMeta(m)
-                    return <option key={m} value={m}>{meta.badge}  {meta.label}  ·  {meta.speed}</option>
-                  })}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
-              </div>
-              <ModelBadge modelId={model} />
+              <ModelSelect
+                id="model"
+                value={model}
+                onChange={(v) => { setModel(v); markDirty() }}
+                disabled={isPending}
+                size="md"
+              />
             </div>
           )}
           <p className="text-[11px] text-[var(--ink-subtle)]">

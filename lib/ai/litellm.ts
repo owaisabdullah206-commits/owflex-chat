@@ -3,6 +3,32 @@ export const STRONG_MODEL = 'anthropic/claude-haiku-4-5-20251001'
 // Default for normal chat messages — fast 70B via Groq (0.66s E2E, 150 tps)
 export const FALLBACK_MODEL = 'meta-llama/llama-3.3-70b-instruct'
 
+// Maps paid model ID → its confirmed :free variant on OpenRouter.
+// Used by buildModelPayload to try the free variant first on every request.
+// OpenRouter silently falls through to the paid variant once the daily free
+// limit is hit (200 req/day without credits; 1 000/day after $10 deposit).
+// Never expose these :free IDs in the UI — purely internal routing.
+// Verified June 2026 at openrouter.ai/collections/free-models.
+const FREE_VARIANTS: Record<string, string> = {
+  // General-purpose chat (default model)
+  'meta-llama/llama-3.3-70b-instruct':          'meta-llama/llama-3.3-70b-instruct:free',
+  // Lightweight Meta models
+  'meta-llama/llama-3.2-3b-instruct':            'meta-llama/llama-3.2-3b-instruct:free',
+  // DeepSeek — best free coding + reasoning model
+  'deepseek/deepseek-v4-flash':                  'deepseek/deepseek-v4-flash:free',
+  // Google Gemma 4 family
+  'google/gemma-4-31b-it':                       'google/gemma-4-31b-it:free',
+  'google/gemma-4-26b-a4b-it':                   'google/gemma-4-26b-a4b-it:free',
+  // OpenAI open-source models
+  'openai/gpt-oss-120b':                         'openai/gpt-oss-120b:free',
+  'openai/gpt-oss-20b':                          'openai/gpt-oss-20b:free',
+  // Qwen3 family
+  'qwen/qwen3-coder':                            'qwen/qwen3-coder:free',
+  'qwen/qwen3-next-80b-a3b-instruct':            'qwen/qwen3-next-80b-a3b-instruct:free',
+  // NVIDIA Nemotron
+  'nvidia/nemotron-3-ultra-550b-a55b':           'nvidia/nemotron-3-ultra-550b-a55b:free',
+}
+
 // ── Per-model provider routing for OpenRouter ─────────────────────────────────
 // ⚠️  VALUES MUST BE PROVIDER SLUGS — not display names.
 //     Slugs verified at openrouter.ai/provider/<slug> (2026-05-26).
@@ -136,6 +162,24 @@ function getProviderRouting(model: string) {
   return PROVIDER_ROUTING[model] ?? undefined
 }
 
+/**
+ * Builds the model + provider fields for an OpenRouter request.
+ * If the requested model has a :free variant, sends the `models` array so
+ * OpenRouter tries the free variant first and silently falls through to
+ * the paid variant when the free daily limit is hit.
+ * For models with no free variant: single `model` + optional provider routing.
+ */
+function buildModelPayload(model: string): Record<string, unknown> {
+  const freeVariant = FREE_VARIANTS[model]
+  if (freeVariant) {
+    // No provider routing when using models array — OR picks the best free
+    // provider for the :free variant automatically.
+    return { models: [freeVariant, model] }
+  }
+  const routing = getProviderRouting(model)
+  return { model, ...(routing ? { provider: routing } : {}) }
+}
+
 // ── Per-model display metadata (labels, speed badges) ─────────────────────────
 export interface ModelMeta {
   /** Human-friendly display name shown in selects and pills */
@@ -233,6 +277,42 @@ export const MODEL_META: Record<string, ModelMeta> = {
     badgeColor: 'text-fuchsia-400',
     speed: 'Experimental',
   },
+  'nvidia/nemotron-3-ultra-550b-a55b': {
+    label: 'Nemotron 3 Ultra 550B',
+    badge: '🧠 Smart',
+    badgeColor: 'text-violet-400',
+    speed: '1M ctx · 55B active',
+  },
+  'openai/gpt-oss-20b': {
+    label: 'GPT OSS 20B',
+    badge: '⚡ Ultra Fast',
+    badgeColor: 'text-sky-400',
+    speed: 'Compact · 131K ctx',
+  },
+  'qwen/qwen3-coder': {
+    label: 'Qwen3 Coder 480B',
+    badge: '🧠 Smart',
+    badgeColor: 'text-violet-400',
+    speed: '480B MoE · 1M ctx',
+  },
+  'qwen/qwen3-next-80b-a3b-instruct': {
+    label: 'Qwen3 Next 80B',
+    badge: '⚖️ Balanced',
+    badgeColor: 'text-amber-400',
+    speed: '80B MoE · 262K ctx',
+  },
+  'google/gemma-4-26b-a4b-it': {
+    label: 'Gemma 4 26B',
+    badge: '⚡ Fast',
+    badgeColor: 'text-sky-400',
+    speed: '26B MoE · 262K ctx',
+  },
+  'meta-llama/llama-3.2-3b-instruct': {
+    label: 'Llama 3.2 3B',
+    badge: '⚡ Ultra Fast',
+    badgeColor: 'text-sky-400',
+    speed: 'Compact · 131K ctx',
+  },
 }
 
 /** Returns display metadata for a model ID, with a sensible fallback. */
@@ -250,15 +330,21 @@ export const SUPPORTED_MODELS = [
   'google/gemini-2.5-flash-lite',
   'openai/gpt-4o-mini',
   'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
   'anthropic/claude-haiku-4-5-20251001',
   'openrouter/owl-alpha',
   'google/gemma-4-31b-it',
+  'google/gemma-4-26b-a4b-it',
   'mistralai/mistral-nemo',
   'qwen/qwen3-235b-a22b-2507',
+  'qwen/qwen3-coder',
+  'qwen/qwen3-next-80b-a3b-instruct',
   'z-ai/glm-4.7-flash',
+  'nvidia/nemotron-3-ultra-550b-a55b',
   'meta-llama/llama-3.1-70b-instruct',
   'meta-llama/llama-3.3-70b-instruct',
   'meta-llama/llama-3.1-8b-instruct',
+  'meta-llama/llama-3.2-3b-instruct',
   'tencent/hy3-preview',
 ] as const
 
@@ -315,13 +401,12 @@ export async function chatCompletion({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model:    resolvedModel,
+      ...buildModelPayload(resolvedModel),
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages,
       ],
       ...(maxTokens ? { max_tokens: maxTokens } : {}),
-      ...(getProviderRouting(resolvedModel) ? { provider: getProviderRouting(resolvedModel) } : {}),
     }),
   })
 
@@ -374,7 +459,7 @@ export async function* chatCompletionStreamGen({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model:          resolvedModel,
+      ...buildModelPayload(resolvedModel),
       stream:         true,
       stream_options: { include_usage: true },
       messages: [
@@ -382,7 +467,6 @@ export async function* chatCompletionStreamGen({
         ...messages,
       ],
       ...(maxTokens ? { max_tokens: maxTokens } : {}),
-      ...(getProviderRouting(resolvedModel) ? { provider: getProviderRouting(resolvedModel) } : {}),
     }),
   })
 
