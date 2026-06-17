@@ -185,6 +185,12 @@ export function DocumentRow({ doc }: { doc: DocRow }) {
             <Clock className="h-3 w-3 shrink-0" />
             Embedding quota exceeded — retrying automatically tomorrow.
           </p>
+        ) : doc.errorCode === 'DIMENSION_MISMATCH' ? (
+          <p className="pl-7 text-xs text-amber-400 mt-0.5 flex items-center gap-1.5">
+            <AlertTriangle className="h-3 w-3 shrink-0" />
+            Model upgrade in progress — click Re-index once the deploy finishes.
+            <RetryButton docId={doc.id} />
+          </p>
         ) : doc.errorMsg ? (
           <p className="pl-7 text-xs text-[var(--error-text)] mt-0.5">{doc.errorMsg}</p>
         ) : null

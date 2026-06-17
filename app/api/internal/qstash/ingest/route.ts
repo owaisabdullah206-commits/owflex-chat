@@ -209,6 +209,15 @@ function classifyError(err: unknown): { errorCode: string; errorMsg: string } {
   const msg = err instanceof Error ? err.message : String(err)
   if (msg.includes('BLOCKED_BY_ROBOTS')) return { errorCode: 'BLOCKED_BY_ROBOTS', errorMsg: 'Site blocked scraping (robots.txt or 403).' }
   if (msg.includes('SCRAPE_FAILED')) return { errorCode: 'SCRAPE_FAILED', errorMsg: msg }
+  // Sanitize raw DB/ORM errors — never expose SQL queries to the UI
+  const cause = err instanceof Error && (err as Error & { cause?: unknown }).cause
+  const causeMsg = cause instanceof Error ? cause.message : ''
+  if (causeMsg.includes('expected') && causeMsg.includes('dimensions')) {
+    return { errorCode: 'DIMENSION_MISMATCH', errorMsg: 'Vector dimension mismatch. Re-index this document after the model upgrade completes.' }
+  }
+  if (msg.startsWith('Failed query:') || msg.includes('insert into') || msg.includes('NeonDbError')) {
+    return { errorCode: 'DB_ERROR', errorMsg: 'Database error while saving chunks. Try re-indexing.' }
+  }
   return { errorCode: 'INGEST_FAILED', errorMsg: msg }
 }
 
