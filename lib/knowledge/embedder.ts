@@ -11,6 +11,8 @@ import { Redis } from '@upstash/redis'
 const PROVIDER: 'jina' | 'onnx' = process.env.EMBEDDING_PROVIDER === 'onnx' ? 'onnx' : 'jina'
 const DIMENSIONS = 1024
 
+console.log(`[embedder] provider=${PROVIDER} dimensions=${DIMENSIONS}`)
+
 export class QuotaExhaustedError extends Error {
   constructor() {
     super('Jina embedding daily quota exhausted. Job will be retried tomorrow.')
@@ -33,19 +35,26 @@ type OnnxExtractor = (
 
 let onnxExtractor: Promise<OnnxExtractor> | null = null
 function getOnnxExtractor(): Promise<OnnxExtractor> {
-  onnxExtractor ??= import('@huggingface/transformers').then(
-    ({ pipeline }) => pipeline('feature-extraction', 'Xenova/bge-m3', { dtype: 'q8' }),
-  ) as unknown as Promise<OnnxExtractor>
+  if (!onnxExtractor) {
+    console.log('[embedder] loading Xenova/bge-m3 (q8) — first call, may take a moment if not cached')
+    onnxExtractor = import('@huggingface/transformers').then(({ pipeline }) => {
+      const p = pipeline('feature-extraction', 'Xenova/bge-m3', { dtype: 'q8' })
+      void p.then(() => console.log('[embedder] Xenova/bge-m3 loaded and ready'))
+      return p
+    }) as unknown as Promise<OnnxExtractor>
+  }
   return onnxExtractor
 }
 
 async function embedOnnx(texts: string[]): Promise<number[][]> {
   const extractor = await getOnnxExtractor()
+  const t0 = Date.now()
   const out = await extractor(texts, { pooling: 'cls', normalize: true })
   const vectors = out.tolist()
   for (const v of vectors) {
     if (v.length !== DIMENSIONS) throw new Error(`Unexpected embedding dimensions: ${v.length}`)
   }
+  console.log(`[embedder] onnx bge-m3 embedded ${texts.length} text(s) → ${DIMENSIONS}d in ${Date.now() - t0}ms`)
   return vectors
 }
 
@@ -86,6 +95,7 @@ async function getRemainingQuota(): Promise<number> {
 }
 
 async function callJina(texts: string[], task: 'retrieval.passage' | 'retrieval.query'): Promise<number[][]> {
+  const t0 = Date.now()
   const apiKey = process.env.JINA_API_KEY
   if (!apiKey) throw new Error('JINA_API_KEY is not set')
 
@@ -119,7 +129,9 @@ async function callJina(texts: string[], task: 'retrieval.passage' | 'retrieval.
     }
   }
 
-  return sorted.map((item) => item.embedding)
+  const result = sorted.map((item) => item.embedding)
+  console.log(`[embedder] jina ${MODEL_NAME} task=${task} embedded ${texts.length} text(s) → ${DIMENSIONS}d in ${Date.now() - t0}ms`)
+  return result
 }
 
 // ── Public interface (provider-agnostic) ──────────────────────────────────────
