@@ -1,4 +1,4 @@
-import { resend, RESEND_FROM } from './clients'
+import { brevo, BREVO_SENDER } from './clients'
 import { LOGO_LIGHT } from './shared'
 
 interface LeadNotificationParams {
@@ -34,11 +34,11 @@ export async function sendLeadNotification({
     leadNotes && `<tr><td style="font-size:12px;color:#94a3b8;padding:4px 0;width:80px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Notes</td><td style="font-size:14px;color:#1e293b;padding:4px 0">${leadNotes.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td></tr>`,
   ].filter(Boolean).join('')
 
-  await resend.emails.send({
-    from: RESEND_FROM,
-    to: ownerEmail,
+  await brevo.transactionalEmails.sendTransacEmail({
+    sender: BREVO_SENDER,
+    to: [{ email: ownerEmail }],
     subject: `New lead captured — ${botName}`,
-    html: `
+    htmlContent: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1e293b">
         ${LOGO_LIGHT}
         <h2 style="font-size:20px;font-weight:700;margin:0 0 8px">New lead captured</h2>

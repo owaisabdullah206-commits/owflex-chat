@@ -1,4 +1,4 @@
-import { resend, RESEND_FROM } from './clients'
+import { brevo, BREVO_SENDER } from './clients'
 import { LOGO_LIGHT } from './shared'
 
 export async function sendCreditGraceEmail({
@@ -12,11 +12,11 @@ export async function sendCreditGraceEmail({
   const billingUrl = `${appUrl}/dashboard/billing`
 
   try {
-    await resend.emails.send({
-      from: RESEND_FROM,
-      to,
+    await brevo.transactionalEmails.sendTransacEmail({
+      sender: BREVO_SENDER,
+      to: [{ email: to }],
       subject: `Your bot "${botName}" is running on the default model — 2 hours before service interruption`,
-      html: `
+      htmlContent: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#111;">
           ${LOGO_LIGHT}
           <h2 style="font-size:20px;margin-bottom:8px;">Credits depleted</h2>

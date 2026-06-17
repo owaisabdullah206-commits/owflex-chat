@@ -1,4 +1,4 @@
-import { resend, RESEND_FROM } from './clients'
+import { brevo, BREVO_SENDER } from './clients'
 import { LOGO_LIGHT } from './shared'
 
 interface HandoffNotificationParams {
@@ -21,11 +21,11 @@ export async function sendHandoffNotification({
   const convUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'}/dashboard/conversations/${conversationId}`
   const visitorLabel = visitorName ?? visitorEmail ?? 'Anonymous visitor'
 
-  await resend.emails.send({
-    from: RESEND_FROM,
-    to: ownerEmail,
+  await brevo.transactionalEmails.sendTransacEmail({
+    sender: BREVO_SENDER,
+    to: [{ email: ownerEmail }],
     subject: `Human handoff requested — ${botName}`,
-    html: `
+    htmlContent: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1e293b">
         ${LOGO_LIGHT}
         <h2 style="font-size:20px;font-weight:700;margin:0 0 8px">A visitor needs a human</h2>
