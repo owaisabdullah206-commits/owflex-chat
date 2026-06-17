@@ -217,13 +217,19 @@ export default function MarketingFooter() {
             © {new Date().getFullYear()} Octively · {APP_VERSION}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span
+            <a
+              href="https://octively.instatus.com/"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 fontFamily: 'var(--font-mono)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
+                color: 'var(--ink-muted)',
+                textDecoration: 'none',
               }}
+              className="mkt-footer-link"
             >
               <span
                 style={{
@@ -234,7 +240,7 @@ export default function MarketingFooter() {
                 }}
               />
               All systems operational
-            </span>
+            </a>
             <span style={{ color: 'var(--hairline-strong)' }}>·</span>
             <span style={{ fontFamily: 'var(--font-mono)' }}>PKR / USD</span>
           </div>
