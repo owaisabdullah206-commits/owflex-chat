@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
-import { publishJSON } from '@/lib/queue/qstash'
+import { publishJSON, getIngestUrl } from '@/lib/queue/qstash'
 import { createDoc } from '@/lib/db/queries/documents'
 import { checkDocumentLimit, checkCrawlLimit } from '@/lib/limits'
 import { createAuditLog } from '@/lib/db/queries/audit'
@@ -95,8 +95,7 @@ export async function POST(req: NextRequest) {
 
   // Enqueue ingestion job — non-blocking: doc is saved, reindex button covers failures
   try {
-    const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
-    await publishJSON(ingestUrl, { docId, sourceType: 'url', url, maxPages, includePaths, excludePaths })
+    await publishJSON(getIngestUrl(), { docId, sourceType: 'url', url, maxPages, includePaths, excludePaths })
   } catch (err) {
     console.error('[url-doc] QStash publishJSON failed (doc saved, ingestion not queued):', err)
   }

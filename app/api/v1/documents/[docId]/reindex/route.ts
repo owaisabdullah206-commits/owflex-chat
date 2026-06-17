@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireDeveloper } from '@/lib/auth/session'
 import { getDocById, bumpDocVersion } from '@/lib/db/queries/documents'
-import { publishJSON } from '@/lib/queue/qstash'
+import { publishJSON, getIngestUrl } from '@/lib/queue/qstash'
 import { createAuditLog } from '@/lib/db/queries/audit'
 
 export async function POST(
@@ -38,8 +38,7 @@ export async function POST(
 
   await bumpDocVersion(docId)
 
-  const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
-  await publishJSON(ingestUrl, { docId, sourceType: 'file' })
+  await publishJSON(getIngestUrl(), { docId, sourceType: 'file' })
 
   void createAuditLog({
     orgId:      doc.orgId,

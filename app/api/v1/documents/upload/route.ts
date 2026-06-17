@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 import { putObject } from '@/lib/storage/r2'
-import { publishJSON } from '@/lib/queue/qstash'
+import { publishJSON, getIngestUrl } from '@/lib/queue/qstash'
 import { createDoc, deleteDocWithCleanup } from '@/lib/db/queries/documents'
 import { checkDocumentLimit, checkStorageLimit } from '@/lib/limits'
 import { createAuditLog } from '@/lib/db/queries/audit'
@@ -145,8 +145,7 @@ export async function POST(req: NextRequest) {
   })
 
   try {
-    const ingestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/qstash/ingest`
-    await publishJSON(ingestUrl, { docId, sourceType: 'file' })
+    await publishJSON(getIngestUrl(), { docId, sourceType: 'file' })
   } catch (err) {
     console.error('[upload] QStash publishJSON failed (doc saved, ingestion not queued):', err)
   }

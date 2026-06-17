@@ -1,5 +1,12 @@
 import { Client, Receiver } from '@upstash/qstash'
 
+// INTERNAL_APP_URL is a server-side runtime var (not baked at build time like NEXT_PUBLIC_*).
+// Set this in Dokploy env panel to https://admin.octively.com
+export function getIngestUrl(): string {
+  const base = process.env.INTERNAL_APP_URL ?? process.env.NEXT_PUBLIC_APP_URL
+  return `${base}/api/internal/qstash/ingest`
+}
+
 function getClient(): Client {
   return new Client({ token: process.env.QSTASH_TOKEN! })
 }
