@@ -3,14 +3,13 @@ import { Redis } from '@upstash/redis'
 // Embeddings have two providers, selected by EMBEDDING_PROVIDER:
 //   - 'jina' (default): Jina Embeddings v5 text-small via api.jina.ai. Works on
 //     serverless (Vercel/Netlify) but the free tier is rate-limited.
-//   - 'onnx': local ONNX bge-base-en-v1.5 via @huggingface/transformers. Unlimited
-//     and free, but needs a long-running process (the VPS) — it cannot run on a
-//     serverless function. Set EMBEDDING_PROVIDER=onnx ONLY on the VPS/Docker host.
+//   - 'onnx': local ONNX BGE-M3 via @huggingface/transformers. Unlimited and free,
+//     multilingual (English + Urdu + Roman Urdu), 1024-dim. Needs a long-running
+//     process (the VPS). Set EMBEDDING_PROVIDER=onnx ONLY on the VPS/Docker host.
 //
-// Both output 768-dim vectors, so the document_chunks `vector(768)` schema is
-// unchanged regardless of provider.
+// Both providers output 1024-dim. document_chunks schema is `vector(1024)` — migration 0014.
 const PROVIDER: 'jina' | 'onnx' = process.env.EMBEDDING_PROVIDER === 'onnx' ? 'onnx' : 'jina'
-const DIMENSIONS = 768
+const DIMENSIONS = 1024
 
 export class QuotaExhaustedError extends Error {
   constructor() {
@@ -20,30 +19,29 @@ export class QuotaExhaustedError extends Error {
 }
 
 // ── ONNX provider (local, VPS only) ───────────────────────────────────────────
-// bge-base-en-v1.5: 768 dims, strong retrieval quality. Quantized (q8) so the
-// model is ~110MB and fast on CPU. BGE wants a query instruction prefix on the
-// QUERY side only; passages are embedded as-is.
-const BGE_QUERY_PREFIX = 'Represent this sentence for searching relevant passages: '
+// BGE-M3: 1024 dims, multilingual (English + Urdu + Roman Urdu). Uses CLS pooling.
+// Quantized (q8) ≈ 570 MB on disk; downloads once into the Docker volume.
+// No query-side prefix needed — BGE-M3 handles retrieval without instruction tuning.
 const ONNX_BATCH = 32
 
 // Dynamic import so serverless deployments (jina provider) never load the native
 // onnxruntime binaries. Singleton: the model loads once per process.
 type OnnxExtractor = (
   texts: string[],
-  opts: { pooling: 'mean'; normalize: boolean },
+  opts: { pooling: 'cls'; normalize: boolean },
 ) => Promise<{ tolist(): number[][] }>
 
 let onnxExtractor: Promise<OnnxExtractor> | null = null
 function getOnnxExtractor(): Promise<OnnxExtractor> {
   onnxExtractor ??= import('@huggingface/transformers').then(
-    ({ pipeline }) => pipeline('feature-extraction', 'Xenova/bge-base-en-v1.5', { dtype: 'q8' }),
+    ({ pipeline }) => pipeline('feature-extraction', 'Xenova/bge-m3', { dtype: 'q8' }),
   ) as unknown as Promise<OnnxExtractor>
   return onnxExtractor
 }
 
 async function embedOnnx(texts: string[]): Promise<number[][]> {
   const extractor = await getOnnxExtractor()
-  const out = await extractor(texts, { pooling: 'mean', normalize: true })
+  const out = await extractor(texts, { pooling: 'cls', normalize: true })
   const vectors = out.tolist()
   for (const v of vectors) {
     if (v.length !== DIMENSIONS) throw new Error(`Unexpected embedding dimensions: ${v.length}`)
@@ -52,7 +50,8 @@ async function embedOnnx(texts: string[]): Promise<number[][]> {
 }
 
 // ── Jina provider (API, serverless-friendly) ──────────────────────────────────
-const MODEL_NAME = 'jina-embeddings-v5-text-small'
+// jina-embeddings-v3 outputs 1024 dims natively — matches the BGE-M3 schema.
+const MODEL_NAME = 'jina-embeddings-v3'
 const DAILY_TOKEN_LIMIT = 1_000_000
 const BATCH_SIZE = 100
 const EMBED_URL = 'https://api.jina.ai/v1/embeddings'
@@ -156,7 +155,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
 // Used for user queries at chat time (query side).
 export async function embedQuery(text: string): Promise<number[]> {
   if (PROVIDER === 'onnx') {
-    const [embedding] = await embedOnnx([BGE_QUERY_PREFIX + text])
+    const [embedding] = await embedOnnx([text])
     return embedding
   }
   const [embedding] = await callJina([text], 'retrieval.query')

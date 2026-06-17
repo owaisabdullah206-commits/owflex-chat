@@ -269,7 +269,7 @@ export const documentChunks = pgTable('document_chunks', {
   version:    integer('version').notNull().default(1),
   text:       text('text').notNull(),
   tokenCount: integer('token_count').notNull(),
-  embedding:  vector('embedding', { dimensions: 768 }).notNull(),
+  embedding:  vector('embedding', { dimensions: 1024 }).notNull(),
   createdAt:  tsz('created_at').defaultNow().notNull(),
 }, (t) => [
   index('document_chunks_document_id_idx').on(t.documentId),
