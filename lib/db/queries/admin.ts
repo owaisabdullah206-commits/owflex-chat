@@ -55,7 +55,7 @@ export async function getAllDevelopers() {
   // not a running total (debits and plan upgrades only touch Redis).
   const redis = getRedis()
   const keys  = rows.map((r) => `credits:${r.orgId}`)
-  const rawValues = await redis.mget<number>(...keys)
+  const rawValues = await redis.mget<(number | null)[]>(...keys)
 
   return rows.map((row, i) => {
     const raw = rawValues[i]
