@@ -9,6 +9,7 @@ import {
   clearManualModelPrice,
   setModelPricePriority,
 } from '@/lib/db/queries/admin'
+import { FREE_VARIANTS } from '@/lib/ai/litellm'
 
 type PriceRow = {
   id: string
@@ -243,7 +244,19 @@ export function ModelPricesTable({ models, lastFetched }: { models: ModelEntry[]
                 <tr key={modelId} className="border-b border-[var(--hairline)] odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors">
                   {/* Model ID */}
                   <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-[var(--ink)]">{modelId}</span>
+                    <div className="space-y-1.5">
+                      <span className="font-mono text-xs text-[var(--ink)]">{modelId}</span>
+                      {FREE_VARIANTS[modelId] && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20">
+                            FREE
+                          </span>
+                          <span className="font-mono text-[10px] text-emerald-400/70">
+                            {FREE_VARIANTS[modelId]}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </td>
 
                   {/* Active price */}

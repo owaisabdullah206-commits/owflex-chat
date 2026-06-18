@@ -4,12 +4,14 @@ export const STRONG_MODEL = 'anthropic/claude-haiku-4-5-20251001'
 export const FALLBACK_MODEL = 'meta-llama/llama-3.3-70b-instruct'
 
 // Maps paid model ID → its confirmed :free variant on OpenRouter.
-// Used by buildModelPayload to try the free variant first on every request.
-// OpenRouter silently falls through to the paid variant once the daily free
-// limit is hit (200 req/day without credits; 1 000/day after $10 deposit).
-// Never expose these :free IDs in the UI — purely internal routing.
+// Used by buildModelPayload to try the free variant first when quota allows.
+// OpenRouter hard limits: 20 req/min (fixed), 50 req/day (no deposit) /
+// 1 000 req/day (after $10 deposit). Limits are per-account across ALL :free
+// models combined. Paid model fallback has NO rate limit from OpenRouter.
+// Never expose these :free IDs in the user-facing UI (ModelSelect, bot settings).
+// Admin models page (/admin/models) may show them for cost audit purposes.
 // Verified June 2026 at openrouter.ai/collections/free-models.
-const FREE_VARIANTS: Record<string, string> = {
+export const FREE_VARIANTS: Record<string, string> = {
   // General-purpose chat (default model)
   'meta-llama/llama-3.3-70b-instruct':          'meta-llama/llama-3.3-70b-instruct:free',
   // Lightweight Meta models
@@ -164,17 +166,28 @@ function getProviderRouting(model: string) {
 
 /**
  * Builds the model + provider fields for an OpenRouter request.
- * If the requested model has a :free variant, sends the `models` array so
- * OpenRouter tries the free variant first and silently falls through to
- * the paid variant when the free daily limit is hit.
+ *
+ * If the requested model has a :free variant AND the platform still has
+ * RPM/RPD headroom (checked via Redis), sends the `models` array so
+ * OpenRouter tries the free variant first. When the quota is full we skip
+ * the free attempt entirely — avoiding the 429 round-trip latency hit
+ * (~500ms) before OR would fall through to the paid model anyway.
+ *
  * For models with no free variant: single `model` + optional provider routing.
+ * Dynamic import keeps Redis out of the client-side bundle.
  */
-function buildModelPayload(model: string): Record<string, unknown> {
+async function buildModelPayload(model: string): Promise<Record<string, unknown>> {
   const freeVariant = FREE_VARIANTS[model]
   if (freeVariant) {
-    // No provider routing when using models array — OR picks the best free
-    // provider for the :free variant automatically.
-    return { models: [freeVariant, model] }
+    try {
+      const quota = await import('@/lib/ai/free-quota')
+      if (await quota.canUseFree()) {
+        void quota.trackFreeRequest()
+        return { models: [freeVariant, model] }
+      }
+    } catch {
+      // Redis unavailable — fall through to paid silently
+    }
   }
   const routing = getProviderRouting(model)
   return { model, ...(routing ? { provider: routing } : {}) }
@@ -401,7 +414,7 @@ export async function chatCompletion({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      ...buildModelPayload(resolvedModel),
+      ...await buildModelPayload(resolvedModel),
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages,
@@ -459,7 +472,7 @@ export async function* chatCompletionStreamGen({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      ...buildModelPayload(resolvedModel),
+      ...await buildModelPayload(resolvedModel),
       stream:         true,
       stream_options: { include_usage: true },
       messages: [
