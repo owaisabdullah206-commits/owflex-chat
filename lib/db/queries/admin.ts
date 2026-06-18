@@ -5,7 +5,15 @@ import { and, count, desc, eq, inArray, sql, sum } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { SUPPORTED_MODELS, getOrCanonicalIds } from '@/lib/ai/litellm'
-import { upgradePlanCredits, resetToPlantAllocation } from '@/lib/credits'
+import { Redis } from '@upstash/redis'
+import { upgradePlanCredits, resetToPlantAllocation, PLAN_CREDIT_ALLOCATIONS, FREE_TIER_CREDITS } from '@/lib/credits'
+
+function getRedis(): Redis {
+  return new Redis({
+    url:   process.env.UPSTASH_REDIS_REST_URL!,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  })
+}
 
 const PKR_PRICES: Record<string, number> = {
   free:       0,
@@ -20,7 +28,7 @@ const PKR_PRICES: Record<string, number> = {
 export async function getAllDevelopers() {
   await requirePlatformOwner()
 
-  return db
+  const rows = await db
     .select({
       userId:                 schema.users.id,
       name:                   schema.users.name,
@@ -34,14 +42,28 @@ export async function getAllDevelopers() {
       botCount: sql<number>`(
         SELECT COUNT(*)::int FROM bots WHERE org_id = ${schema.organizations.id}
       )`,
-      creditBalance: sql<number>`COALESCE(
-        (SELECT SUM(delta) FROM credit_transactions WHERE org_id = ${schema.organizations.id}), 0
-      )::int`,
     })
     .from(schema.users)
     .innerJoin(schema.organizations, eq(schema.organizations.ownerId, schema.users.id))
     .where(eq(schema.users.role, 'developer'))
     .orderBy(desc(schema.users.createdAt))
+
+  if (rows.length === 0) return []
+
+  // Batch-fetch all credit balances from Redis in one mget call.
+  // Redis is the authoritative balance source — credit_transactions is an audit log,
+  // not a running total (debits and plan upgrades only touch Redis).
+  const redis = getRedis()
+  const keys  = rows.map((r) => `credits:${r.orgId}`)
+  const rawValues = await redis.mget<number>(...keys)
+
+  return rows.map((row, i) => {
+    const raw = rawValues[i]
+    const creditBalance = raw !== null && raw !== undefined
+      ? Number(raw)
+      : (PLAN_CREDIT_ALLOCATIONS[row.plan] ?? FREE_TIER_CREDITS)
+    return { ...row, creditBalance }
+  })
 }
 
 export async function getPlatformStats() {
@@ -231,12 +253,18 @@ export async function giveCredits(
   await requirePlatformOwner()
   if (amount === 0) return { error: 'Amount cannot be zero' }
 
-  await db.insert(schema.creditTransactions).values({
-    orgId,
-    delta:  amount,
-    reason: 'admin_gift',
-    refId:  `admin_gift_${orgId}_${Date.now()}`,
-  })
+  const redis = getRedis()
+  await Promise.all([
+    // Update Redis (authoritative balance)
+    redis.incrby(`credits:${orgId}`, amount),
+    // Log the transaction for audit trail
+    db.insert(schema.creditTransactions).values({
+      orgId,
+      delta:  amount,
+      reason: 'admin_gift',
+      refId:  `admin_gift_${orgId}_${Date.now()}`,
+    }),
+  ])
 
   revalidatePath('/dashboard/admin/developers')
   return {}
