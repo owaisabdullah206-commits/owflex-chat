@@ -64,3 +64,16 @@ jobs:
             -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{"applicationId":"${{ secrets.DOKPLOY_APP_ID }}"}'
+
+      # Wait for Dokploy to pull the new image and start the container,
+      # then prune dangling images left over from the previous deploy.
+      # Uses docker image prune (not system prune) to leave volumes/networks untouched.
+      - name: Prune old Docker images on VPS
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            sleep 90
+            docker image prune -f
