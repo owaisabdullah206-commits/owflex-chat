@@ -9,6 +9,9 @@ var sid=(_ls&&_lx>Date.now())?_ls:("octively_"+Date.now()+"_"+Math.random().toSt
 localStorage.setItem("_of",sid);localStorage.setItem("_of_exp",Date.now()+EMS);
 var msgs=[];
 try{var _lm=JSON.parse(localStorage.getItem("_of_msgs")||"[]");if(Array.isArray(_lm)&&_lm.length&&_lx>Date.now())msgs=_lm;}catch(e){}
+// Live human handoff state: pollTimer drives polling for agent replies; lastAgentTs
+// is the cursor (latest agent message seen); agentLabeled gates the one-time label.
+var pollTimer=null,lastAgentTs=null,agentLabeled=0;
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
 var ti="message-circle",br=16,te=false,tms=[];
 var be=false,bt="Powered by Octively",burl="https://octively.com";
@@ -542,6 +545,54 @@ function showHandoffCard(){
   ms.scrollTop=ms.scrollHeight;
 }
 
+// One-time "connecting you to a person" note shown when live handoff fires.
+function showLiveConnecting(){
+  if(document.getElementById("oLC"))return;
+  var card=document.createElement("div");card.id="oLC";
+  card.style.cssText="margin:8px 0;padding:10px 14px;border-radius:10px;border:1px solid "+(dk?"#334155":"#e2e8f0")+";background:"+(dk?"#1e293b":"#f8fafc")+";display:flex;align-items:center;gap:9px;animation:ofIn .22s ease";
+  card.innerHTML=
+    '<span style="width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0;animation:ofBlink 1.6s infinite"></span>'+
+    '<p style="margin:0;font-size:12px;color:'+(dk?"#94a3b8":"#64748b")+';line-height:1.5">Connecting you to a team member. They\'ll reply right here.</p>';
+  ms.appendChild(card);ms.scrollTop=ms.scrollHeight;
+}
+
+// Render a human-agent reply (left-aligned, like the bot, with a one-time label).
+function addAgent(t){
+  if(!agentLabeled){
+    agentLabeled=1;
+    var lbl=document.createElement("div");
+    lbl.style.cssText="display:flex;align-items:center;gap:5px;align-self:flex-start;margin:2px 0 -2px;font-size:10px;font-weight:600;letter-spacing:.03em;color:#10b981";
+    lbl.innerHTML='<span style="width:6px;height:6px;border-radius:50%;background:#10b981"></span>Live agent';
+    ms.appendChild(lbl);
+  }
+  var d=document.createElement("div");d.className="b";d.innerHTML=renderMd(t);
+  ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+  msgs.push({r:0,t:t});
+}
+
+// Poll for human-agent replies while the conversation is in live handoff.
+function startLivePolling(){
+  if(pollTimer)return;
+  setStatus("Connecting…",1);
+  var poll=function(){
+    fetch(bu+"/api/v1/chat/poll?embedKey="+encodeURIComponent(k)+"&sessionId="+encodeURIComponent(sid)+(lastAgentTs?("&after="+encodeURIComponent(lastAgentTs)):""))
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){
+      if(!d)return;
+      if(d.messages&&d.messages.length){
+        for(var i=0;i<d.messages.length;i++){addAgent(d.messages[i].content);lastAgentTs=d.messages[i].createdAt;}
+        setStatus("Live agent",0);
+        saveHistory();
+      }
+      // Agent handed the conversation back to the bot — stop polling, resume normal mode.
+      if(d.live===false&&lastAgentTs){stopLivePolling();setStatus("Online",0);}
+    }).catch(function(){});
+  };
+  poll();
+  pollTimer=setInterval(poll,4000);
+}
+function stopLivePolling(){if(pollTimer){clearInterval(pollTimer);pollTimer=null;}}
+
 function saveHistory(){
   try{localStorage.setItem("_of_msgs",JSON.stringify(msgs.slice(-20)));}catch(e){}
 }
@@ -583,11 +634,20 @@ function showErr(){
 }
 
 function sendMsg(t){
-  lastMsg=t;lock(1);showTyping();
+  lastMsg=t;lock(1);if(!pollTimer)showTyping();
   fetch(bu+"/api/v1/chat",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({embedKey:k,sessionId:sid,message:t,pageUrl:location.href})})
   .then(function(r){
-    if(!r.ok||!r.body){showErr();return;}
+    if(!r.ok){showErr();return;}
+    // Live handoff: the bot is paused and a human is handling this conversation.
+    // The chat route returns JSON (not an SSE stream); keep polling for the reply.
+    var ct=r.headers.get("content-type")||"";
+    if(ct.indexOf("application/json")!==-1){
+      hideTyping();busy=0;sb.disabled=inp.disabled=0;inp.focus();
+      startLivePolling();
+      return;
+    }
+    if(!r.body){showErr();return;}
     var reader=r.body.getReader(),dec=new TextDecoder(),buf="",bubble=null,full="";
     // ── Render queue: decouples SSE delivery from visual streaming ──────────
     // Tokens arrive at 200-400 tok/s (Groq) and are batched by browser into
@@ -600,7 +660,10 @@ function sendMsg(t){
       if(bubble){bubble.innerHTML=renderMd(processed);}else{addBot(processed);}
       msgs.push({r:0,t:processed});
       if(doneEv.products&&doneEv.products.length)addProducts(doneEv.products);
-      if(doneEv.needsHuman)showHandoffCard();
+      if(doneEv.needsHuman){
+        if(doneEv.handoffMode==="live"){showLiveConnecting();startLivePolling();}
+        else{showHandoffCard();}
+      }
       if(doneEv.messageId)addRatingRow(bubble,doneEv.messageId);
       saveHistory();
       lock(0);inp.focus();

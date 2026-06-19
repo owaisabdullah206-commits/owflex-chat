@@ -28,8 +28,10 @@ export default async function ConversationDetailPage({
       messageCount: schema.conversations.messageCount,
       needsHuman:   sql<boolean>`COALESCE(${schema.conversations.needsHuman}, false)`,
       escalatedAt:  schema.conversations.escalatedAt,
+      agentActiveAt: schema.conversations.agentActiveAt,
       sessionId:    schema.conversations.sessionId,
       orgPlan:      schema.organizations.plan,
+      widgetConfig: schema.bots.widgetConfig,
     })
     .from(schema.conversations)
     .innerJoin(schema.bots, eq(schema.conversations.botId, schema.bots.id))
@@ -150,6 +152,8 @@ export default async function ConversationDetailPage({
                 conversationId={conv.id}
                 visitorEmail={visibleLead?.email ?? null}
                 visitorName={visibleLead?.name ?? null}
+                liveMode={(conv.widgetConfig as { handoffMode?: string } | null)?.handoffMode === 'live'}
+                agentActive={conv.agentActiveAt != null}
               />
             </div>
           )}

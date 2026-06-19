@@ -287,7 +287,7 @@ export async function POST(req: NextRequest) {
         .catch(() => {})
       return NextResponse.json(
         { live: true, conversationId: conversation.id },
-        { status: 200, headers: corsHeaders(requestOrigin) },
+        { status: 200, headers: corsHeaders(requestOrigin ?? '*') },
       )
     }
 
@@ -355,6 +355,9 @@ export async function POST(req: NextRequest) {
     const leadEnabled = wc.leadCaptureEnabled !== false && wc.collectLeadBefore !== true
     const handoffEnabled = wc.handoffEnabled === true
     const handoffNotifyTarget = wc.handoffNotifyTarget ?? 'developer'
+    // 'live' = real-time in-widget takeover (Agency+); the widget polls for agent
+    // replies. 'email' = notify + reply by email (the widget shows the contact card).
+    const handoffMode = (handoffEnabled && wc.handoffMode === 'live') ? 'live' : 'email'
     // Reply-language directive: 'auto' mirrors the visitor (default LANGUAGE_RULE);
     // a fixed choice forces every reply into that language regardless of input.
     const FORCED_LANGUAGE_RULES: Record<string, string> = {
@@ -655,7 +658,7 @@ export async function POST(req: NextRequest) {
           }
 
           // Final event: metadata the widget needs to render products / handoff card
-          enqueue({ type: 'done', conversationId: conversation.id, messageId: insertedMsg.id, needsHuman: unanswered, products })
+          enqueue({ type: 'done', conversationId: conversation.id, messageId: insertedMsg.id, needsHuman: unanswered, handoffMode, products })
           controller.close()
         } catch (streamErr) {
           // Full credit refund on failure
