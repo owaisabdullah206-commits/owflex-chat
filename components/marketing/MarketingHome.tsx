@@ -790,7 +790,7 @@ function OpportunityStrip() {
           <div style={{ marginTop: 24, display: 'flex', alignItems: 'flex-start', gap: 11, padding: '16px 20px', background: 'var(--surface-2)', border: '1px solid var(--hairline)', borderRadius: 12 }}>
             <span style={{ color: 'var(--of-primary)', marginTop: 1, flexShrink: 0, display: 'grid' }} aria-hidden><Sparkles size={16} /></span>
             <p style={{ color: 'var(--ink-muted)', fontSize: 15, lineHeight: 1.6, margin: 0 }}>
-              Octively costs you ₨2,500 to ₨7,500 a month. On a ₨10,000 retainer, that is a 50 to 75 percent margin.
+              Octively costs ₨2,500–7,500 a month. Stammer.ai starts at $197. ChatLab is $360. Both charge extra per message on top. The margin stays with you.
             </p>
           </div>
         </Reveal>
@@ -1172,6 +1172,37 @@ function BentoIsolation() {
   )
 }
 
+function BentoRagSources() {
+  const sources = [
+    'PDF / DOCX',
+    'Website URL',
+    'Shopify CSV',
+    'WooCommerce',
+    'Plain text',
+    'Excel catalog',
+  ]
+  return (
+    <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+      {sources.map((s, i) => (
+        <span
+          key={i}
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 12,
+            padding: '4px 8px',
+            borderRadius: 6,
+            background: 'var(--surface-2)',
+            border: '1px solid var(--hairline)',
+            color: 'var(--ink-subtle)',
+          }}
+        >
+          {s}
+        </span>
+      ))}
+    </div>
+  )
+}
+
 function BentoBotStack() {
   const stacks = ['WordPress', 'Shopify', 'Wix', 'Webflow', 'Squarespace', 'React / Vue', 'HTML', 'Static Sites']
   return (
@@ -1299,8 +1330,8 @@ function FeatureBento() {
             <BentoTile span={2} Icon={Cpu} title="Multi-provider AI" sub="OpenAI, Anthropic, Google, DeepSeek, Mistral & more. Switch per bot. Never locked in.">
               <BentoModels />
             </BentoTile>
-            <BentoTile span={2} Icon={Shield} title="Tenant isolation" sub="Every query scoped to bot_id. No cross-leaks. Audited by design.">
-              <BentoIsolation />
+            <BentoTile span={2} Icon={BookOpen} title="RAG knowledge base" sub="Upload PDFs, scrape URLs, import your Shopify or WooCommerce catalog. The bot answers from your client's own products and docs, not generic training data.">
+              <BentoRagSources />
             </BentoTile>
             <BentoTile span={2} Icon={Globe} title="Embeds anywhere" sub="One tiny script tag, zero dependencies, loads async. Drop it on WordPress, Shopify, or any HTML site, with no impact on your client's page speed or Core Web Vitals.">
               <BentoBotStack />
@@ -1537,6 +1568,21 @@ function PricingTeaser() {
             >
               Full pricing & comparison <ArrowUpRight size={14} />
             </Link>
+          </div>
+        </Reveal>
+        <Reveal style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {[
+              'No per-message fees',
+              'Permanent free plan',
+              'No per-seat charges',
+              'Flat monthly pricing',
+              'Pay in PKR or USD',
+            ].map((b) => (
+              <span key={b} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, padding: '4px 10px', borderRadius: 999, border: '1px solid var(--hairline)', background: 'var(--surface-2)', color: 'var(--ink-muted)' }}>
+                {b}
+              </span>
+            ))}
           </div>
         </Reveal>
         <div className="mkt-grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
@@ -2019,6 +2065,10 @@ function HeroLeadCopy() {
         </span>
         <span style={{ color: 'var(--hairline-strong)' }}>·</span>
         <span style={{ fontFamily: 'var(--font-mono)' }}>₨0 to start · No credit card</span>
+        <span style={{ color: 'var(--hairline-strong)' }}>·</span>
+        <span style={{ fontFamily: 'var(--font-mono)' }}>No per-message fees</span>
+        <span style={{ color: 'var(--hairline-strong)' }}>·</span>
+        <span style={{ fontFamily: 'var(--font-mono)' }}>80% cheaper than Stammer.ai</span>
       </div>
     </div>
   )

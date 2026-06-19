@@ -249,12 +249,19 @@ const COMPETITORS = [
 ] as const
 
 const COMPARE_VS_ROWS = [
-  { label: 'Starting paid plan', values: ['₨2,500 / $15 per mo', '$197/mo', '$220/mo', '$360/mo'] },
-  { label: 'Free plan (no trial limit)', values: [true, false, false, false] },
-  { label: 'Built-in client portal', values: [true, 'Add-on', true, true] },
+  { label: 'Lowest paid plan', values: ['₨2,500 / $15 per mo', '$49 / mo', '$49 / mo', '$15 / mo'] },
+  { label: 'Full white-label entry price', values: ['₨20,000 / $79 per mo', '$497 / mo', '$497 / mo', '$360 / mo'] },
+  { label: 'Free plan (permanent, no timer)', values: [true, false, false, false] },
+  { label: 'No per-message fees', values: [true, 'No (+$0.001–$0.03/msg)', 'No (usage billed extra)', 'No (+$7/1K credits)'] },
+  { label: 'No per-seat / per-bot charges', values: [true, false, false, 'No (+$7/seat)'] },
+  { label: 'Flat, predictable monthly price', values: [true, false, false, false] },
+  { label: 'Built-in client portal', values: [true, 'Paid add-on', true, true] },
   { label: 'White-label branding', values: [true, true, true, true] },
-  { label: 'No coding required', values: [true, true, true, true] },
-  { label: 'Built for freelancers too', values: [true, false, false, false] },
+  { label: 'RAG knowledge base (PDF/URL/CSV)', values: [true, 'Basic URL only', 'Basic', 'Limited'] },
+  { label: 'Urdu / Roman Urdu reply language', values: [true, false, false, false] },
+  { label: 'PKR pricing + PayFast payments', values: [true, false, false, false] },
+  { label: 'Lead pipeline (New/Contacted/Won/Lost)', values: [true, false, false, false] },
+  { label: 'Pricing under $20/mo available', values: [true, false, false, true] },
 ] as const
 
 // ─── Credit packs ─────────────────────────────────────────────────────────────
@@ -792,7 +799,7 @@ export default function PricingGrid() {
               The same job, at a fraction of the price.
             </h2>
             <p style={{ marginTop: 12, fontSize: 15, color: 'var(--ink-muted)', lineHeight: 1.6, maxWidth: 560 }}>
-              Most agency chatbot platforms start near $200 a month before you take on a single client. Here is how the entry plans line up.
+              Stammer.ai, ChatLab, and ConvoCore all start near $200 a month, then charge extra per message on top. Here is how the plans compare.
             </p>
           </Reveal>
           <Reveal>
