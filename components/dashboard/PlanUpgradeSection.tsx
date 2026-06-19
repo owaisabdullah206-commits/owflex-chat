@@ -112,7 +112,7 @@ function PlanCard({ plan, featured = false, userEmail }: { plan: 'starter' | 'pr
                 className="text-[38px] font-semibold leading-none text-[var(--ink)]"
                 style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
               >
-                <span className="text-[22px]">₨</span>{PLAN_PRICES_PKR[plan].toLocaleString()}
+                <span style={{ fontSize: '0.55em', fontWeight: 600, verticalAlign: 'middle' }}>₨</span>{PLAN_PRICES_PKR[plan].toLocaleString()}
                 <span className="text-[15px] text-[var(--ink-subtle)] ml-1">/mo</span>
               </p>
               <p className="text-[11px] text-[var(--ink-muted)] mt-1.5" style={{ fontFamily: 'var(--font-mono)' }}>
@@ -199,7 +199,7 @@ function PlanCard({ plan, featured = false, userEmail }: { plan: 'starter' | 'pr
           className="text-[32px] font-semibold leading-none text-[var(--ink)]"
           style={{ fontFamily: 'var(--font-mono)', letterSpacing: '-0.04em' }}
         >
-          <span className="text-[19px]">₨</span>{PLAN_PRICES_PKR[plan].toLocaleString()}
+          <span style={{ fontSize: '0.55em', fontWeight: 600, verticalAlign: 'middle' }}>₨</span>{PLAN_PRICES_PKR[plan].toLocaleString()}
           <span className="text-[14px] text-[var(--ink-subtle)] ml-1">/mo</span>
         </p>
         <p className="text-[11px] text-[var(--ink-muted)] mt-1" style={{ fontFamily: 'var(--font-mono)' }}>

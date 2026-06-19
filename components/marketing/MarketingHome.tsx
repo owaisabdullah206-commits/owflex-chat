@@ -2058,17 +2058,18 @@ function HeroLeadCopy() {
           <Play size={15} style={{ color: 'var(--of-primary)' }} /> Watch 60-sec demo
         </a>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 14, color: 'var(--ink-muted)', fontSize: 13, marginTop: 4 }}>
-        <span style={{ fontFamily: 'var(--font-mono)', display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)' }} />
-          200+ bots deployed
-        </span>
-        <span style={{ color: 'var(--hairline-strong)' }}>·</span>
-        <span style={{ fontFamily: 'var(--font-mono)' }}>₨0 to start · No credit card</span>
-        <span style={{ color: 'var(--hairline-strong)' }}>·</span>
-        <span style={{ fontFamily: 'var(--font-mono)' }}>No per-message fees</span>
-        <span style={{ color: 'var(--hairline-strong)' }}>·</span>
-        <span style={{ fontFamily: 'var(--font-mono)' }}>80% cheaper than Stammer.ai</span>
+      <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--ink-muted)', fontSize: 13 }}>
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--of-success)', flexShrink: 0 }} />
+          <span style={{ fontFamily: 'var(--font-mono)' }}>200+ bots deployed</span>
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {['Free forever', 'No per-message fees', '80% cheaper than Stammer.ai'].map((b) => (
+            <span key={b} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, padding: '3px 9px', borderRadius: 5, border: '1px solid var(--hairline)', background: 'var(--surface-2)', color: 'var(--ink-muted)', whiteSpace: 'nowrap' }}>
+              {b}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   )

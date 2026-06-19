@@ -36,9 +36,15 @@ function MetricLabel({ children }: { children: React.ReactNode }) {
 
 function MetricValue({ children, size = 'lg' }: { children: React.ReactNode; size?: 'sm' | 'lg' | 'xl' }) {
   const sz = { sm: 'text-xl', lg: 'text-3xl', xl: 'text-4xl' }[size]
+  const str = typeof children === 'string' ? children : null
   return (
     <p className={`${sz} font-bold text-[var(--ink)] leading-none`} style={{ fontFamily: 'var(--font-mono)' }}>
-      {children}
+      {str?.startsWith('₨') ? (
+        <>
+          <span style={{ fontSize: '0.55em', fontWeight: 600, verticalAlign: 'middle' }}>₨</span>
+          {str.slice(1)}
+        </>
+      ) : children}
     </p>
   )
 }
@@ -107,7 +113,7 @@ export default async function AdminAnalyticsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[var(--hairline)]">
               <BentoCard className="px-5 py-5">
                 <MetricLabel>Est. MRR</MetricLabel>
-                <MetricValue size="lg">₨{stats.estimatedMrrPkr.toLocaleString()}</MetricValue>
+                <MetricValue size="lg">{`₨${stats.estimatedMrrPkr.toLocaleString()}`}</MetricValue>
                 <MetricSub>Subscription-only · PKR</MetricSub>
               </BentoCard>
               <BentoCard className="px-5 py-5">
@@ -158,10 +164,10 @@ export default async function AdminAnalyticsPage() {
                       </td>
                       <td className="px-5 py-3 font-mono text-[var(--ink)]">{cnt}</td>
                       <td className="px-5 py-3 font-mono text-[var(--ink-muted)]">
-                        {price === 0 ? '—' : `₨${price.toLocaleString()}`}
+                        {price === 0 ? '—' : <><span style={{ fontSize: '0.75em', verticalAlign: '0.1em' }}>₨</span>{price.toLocaleString()}</>}
                       </td>
                       <td className="px-5 py-3 font-mono text-[var(--ink)]">
-                        {price === 0 ? '—' : `₨${(price * cnt).toLocaleString()}`}
+                        {price === 0 ? '—' : <><span style={{ fontSize: '0.75em', verticalAlign: '0.1em' }}>₨</span>{(price * cnt).toLocaleString()}</>}
                       </td>
                     </tr>
                   )
