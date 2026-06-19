@@ -9,9 +9,18 @@ import { APP_VERSION } from '@/lib/version'
 
 const RELEASES = [
   {
-    version: 'v1.3.0',
+    version: 'v1.4.0',
     date: 'June 2026',
     tag: 'Latest',
+    items: [
+      'Live chat handoff (Agency plan): when the bot escalates a conversation, your team can take over in real time. Type a reply in the dashboard and it appears instantly in the visitor’s chat widget, with the bot paused until you hand the chat back. Pro keeps the email handoff (you get notified and reply by email).',
+      'Fixed client invitation links: portal invite emails now always build a correct, absolute URL, so clicking the link opens the portal instead of a broken page.',
+    ],
+  },
+  {
+    version: 'v1.3.0',
+    date: 'June 2026',
+    tag: 'Lead pipeline',
     items: [
       'Lead pipeline: set every lead to New, Contacted, Won, or Lost straight from the dashboard or the client portal, with a live counts-per-stage summary so you can see what actually converted, not just how many leads came in',
       'Slack lead alerts: paste a Slack Incoming Webhook URL into bot settings and every new lead posts a formatted message to your channel the moment it lands',

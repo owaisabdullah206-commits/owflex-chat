@@ -45,6 +45,7 @@ const SHIPPED = [
   'Lead pipeline: tag every lead New, Contacted, Won, or Lost from the dashboard or client portal, with counts per stage',
   'Slack lead alerts: new leads posted to a Slack channel via Incoming Webhook',
   'Embed key rotation: rotate a compromised key with a 24-hour grace window so live widgets keep working',
+  'Live chat handoff (Agency): your team takes over a conversation in real time inside the widget. The bot pauses, your reply appears instantly to the visitor, and you hand the chat back when you are done',
 ]
 
 const IN_PROGRESS = [
