@@ -5,6 +5,7 @@ import { db, schema } from '@/lib/db'
 import { requireDeveloper } from '@/lib/auth/session'
 import { sendClientInvitation } from '@/lib/email/invitations'
 import { createAuditLog } from '@/lib/db/queries/audit'
+import { getPortalBaseUrl } from '@/lib/url'
 
 const bodySchema = z.object({
   botId: z.string().uuid(),
@@ -77,8 +78,7 @@ export async function POST(req: NextRequest) {
     expiresAt,
   })
 
-  const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? 'http://localhost:3000'
-  const inviteUrl = `${portalUrl}/portal/invite?token=${token}`
+  const inviteUrl = `${getPortalBaseUrl()}/portal/invite?token=${token}`
 
   let emailSent = false
   try {
