@@ -136,6 +136,9 @@ export const conversations = pgTable('conversations', {
   // Human handoff: set when bot signals uncertainty and escalation is triggered
   needsHuman:   boolean('needs_human').notNull().default(false),
   escalatedAt:  tsz('escalated_at'),
+  // Live handoff: set when a human agent takes over the conversation in real time.
+  // While non-null, the chat route pauses the bot and the widget polls for agent replies.
+  agentActiveAt: tsz('agent_active_at'),
 }, (t) => [
   index('conversations_bot_id_idx').on(t.botId),
   index('conversations_session_id_idx').on(t.sessionId),

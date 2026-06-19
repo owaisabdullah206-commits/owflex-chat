@@ -204,6 +204,7 @@ export async function POST(req: NextRequest) {
       strictMode?: boolean
       handoffEnabled?: boolean
       handoffNotifyTarget?: 'developer' | 'client'
+      handoffMode?: 'email' | 'live'
       storeUrl?: string
       storeCurrency?: string
       productRecommendationsEnabled?: boolean
@@ -249,7 +250,7 @@ export async function POST(req: NextRequest) {
 
     // Find or create conversation
     let [conversation] = await db
-      .select({ id: schema.conversations.id })
+      .select({ id: schema.conversations.id, agentActiveAt: schema.conversations.agentActiveAt })
       .from(schema.conversations)
       .where(
         and(
@@ -263,7 +264,7 @@ export async function POST(req: NextRequest) {
       const [newConv] = await db
         .insert(schema.conversations)
         .values({ botId: bot.id, sessionId, pageUrl })
-        .returning({ id: schema.conversations.id })
+        .returning({ id: schema.conversations.id, agentActiveAt: schema.conversations.agentActiveAt })
       conversation = newConv
     }
 
@@ -273,6 +274,22 @@ export async function POST(req: NextRequest) {
       role: 'user',
       content: message,
     })
+
+    // ── Live human handoff: a human agent is handling this conversation in real time ──
+    // Pause the bot entirely. The visitor's message is already persisted (above) so the
+    // agent sees it; we return a non-streaming "live" signal and the widget keeps polling
+    // for the agent's reply. No LLM call, no credits debited while a human is in control.
+    if (wc.handoffMode === 'live' && conversation.agentActiveAt) {
+      await db
+        .update(schema.conversations)
+        .set({ messageCount: sql`${schema.conversations.messageCount} + 1` })
+        .where(eq(schema.conversations.id, conversation.id))
+        .catch(() => {})
+      return NextResponse.json(
+        { live: true, conversationId: conversation.id },
+        { status: 200, headers: corsHeaders(requestOrigin) },
+      )
+    }
 
     // Get last 6 messages for context (3 turns).
     // Was 10 — the extra turns added ~600 input tokens with marginal coherence gain.

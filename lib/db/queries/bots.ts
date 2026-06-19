@@ -47,6 +47,8 @@ const updateBotSchema = z.object({
     brandingUrl:        z.string().url().max(255).optional(),
     handoffEnabled:        z.boolean().optional(),
     handoffNotifyTarget:   z.enum(['developer', 'client']).optional(),
+    // 'email' = notify + reply by email (Pro+). 'live' = real-time in-widget takeover (Agency+).
+    handoffMode:           z.enum(['email', 'live']).optional(),
     storeUrl:      z.string().url().max(255).or(z.literal('')).optional(),
     storeCurrency: z.enum(['', 'PKR', 'USD', 'AED', 'GBP', 'EUR', 'SAR', 'INR', 'BDT', 'LKR', 'NGN', 'KES', 'ZAR']).optional(),
     theme:                        z.enum(['light', 'dark']).optional(),
@@ -139,11 +141,18 @@ export async function updateBot(
       delete wc.strictMode
       delete wc.handoffEnabled
       delete wc.handoffNotifyTarget
+      delete wc.handoffMode
     }
     // Starter plan: strip handoff (Pro+ only)
     if (botRow.orgPlan === 'starter') {
       delete wc.handoffEnabled
       delete wc.handoffNotifyTarget
+      delete wc.handoffMode
+    }
+    // Live handoff mode is Agency+ only — downgrade Pro to email reply
+    const canLiveHandoff = botRow.orgPlan === 'agency' || botRow.orgPlan === 'enterprise'
+    if (!canLiveHandoff && wc.handoffMode === 'live') {
+      wc.handoffMode = 'email'
     }
     // Atomic JSONB merge — preserves existing keys not in the patch
     update.widgetConfig = sql`${schema.bots.widgetConfig} || ${JSON.stringify(wc)}::jsonb`

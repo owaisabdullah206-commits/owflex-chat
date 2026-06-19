@@ -60,6 +60,9 @@ export async function POST(req: NextRequest) {
   await run('conversations.escalated_at', sql`ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "escalated_at" timestamptz`)
   await run('conversations.needs_human_idx', sql`CREATE INDEX IF NOT EXISTS "conversations_needs_human_idx" ON "conversations"("needs_human")`)
 
+  // Live human handoff — set while a human agent is handling the conversation in real time
+  await run('conversations.agent_active_at', sql`ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "agent_active_at" timestamptz`)
+
   // Sub-tenant credit cap on organizations
   await run('organizations.credit_cap', sql`ALTER TABLE "organizations" ADD COLUMN IF NOT EXISTS "credit_cap" integer`)
 

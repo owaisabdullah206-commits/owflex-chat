@@ -389,6 +389,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         brandingUrl:        (wc.brandingUrl as string) ?? '',
                         handoffEnabled:        (wc.handoffEnabled as boolean) === true,
                         handoffNotifyTarget:   ((wc.handoffNotifyTarget as string) === 'client' ? 'client' : 'developer') as 'developer' | 'client',
+                        handoffMode:           ((wc.handoffMode as string) === 'live' ? 'live' : 'email') as 'email' | 'live',
                         storeUrl:           (wc.storeUrl as string) ?? '',
                         storeCurrency:      (wc.storeCurrency as string) ?? '',
                         theme:              ((wc.theme as string) === 'dark' ? 'dark' : 'light') as 'light' | 'dark',

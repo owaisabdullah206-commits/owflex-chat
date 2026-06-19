@@ -62,6 +62,7 @@ interface BotSettingsFormProps {
     brandingUrl: string
     handoffEnabled: boolean
     handoffNotifyTarget: 'developer' | 'client'
+    handoffMode?: 'email' | 'live'
     storeUrl: string
     storeCurrency: string
     theme: 'light' | 'dark'
@@ -106,6 +107,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [brandingUrl, setBrandingUrl]           = useState(initial.brandingUrl)
   const [handoffEnabled, setHandoffEnabled]     = useState(initial.handoffEnabled)
   const [handoffNotifyTarget, setHandoffNotifyTarget] = useState<'developer' | 'client'>(initial.handoffNotifyTarget)
+  const [handoffMode, setHandoffMode]           = useState<'email' | 'live'>(initial.handoffMode ?? 'email')
   const [storeUrl, setStoreUrl]                 = useState(initial.storeUrl)
   const [storeCurrency, setStoreCurrency]       = useState(initial.storeCurrency)
   const [productRecsEnabled, setProductRecs]    = useState(initial.productRecommendationsEnabled)
@@ -121,6 +123,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
 
   const isFreePlan      = orgPlan === 'free'
   const isStarterOrFree = orgPlan === 'free' || orgPlan === 'starter'
+  const canLiveHandoff  = orgPlan === 'agency' || orgPlan === 'enterprise'
 
   useEffect(() => {
     if (!isDirty) return
@@ -153,6 +156,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
     setBrandingUrl(initial.brandingUrl)
     setHandoffEnabled(initial.handoffEnabled)
     setHandoffNotifyTarget(initial.handoffNotifyTarget)
+    setHandoffMode(initial.handoffMode ?? 'email')
     setStoreUrl(initial.storeUrl)
     setStoreCurrency(initial.storeCurrency)
     setProductRecs(initial.productRecommendationsEnabled)
@@ -203,6 +207,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           brandingUrl:  brandingUrl.trim()  || undefined,
           handoffEnabled,
           handoffNotifyTarget,
+          handoffMode,
           storeUrl:      storeUrl.trim()      || undefined,
           storeCurrency: (storeCurrency || undefined) as '' | 'PKR' | 'USD' | 'AED' | 'GBP' | 'EUR' | 'SAR' | 'INR' | 'BDT' | 'LKR' | 'NGN' | 'KES' | 'ZAR' | undefined,
           theme: previewTheme,
@@ -682,30 +687,73 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             </div>
 
             {handoffEnabled && (
-              <div className="ml-0 space-y-1.5">
-                <Label className="text-xs text-[var(--ink-muted)]">Notify by email</Label>
-                <div className="flex gap-2">
-                  {(['developer', 'client'] as const).map((target) => (
-                    <button
-                      key={target}
-                      type="button"
-                      onClick={() => { setHandoffNotifyTarget(target); markDirty() }}
-                      disabled={isPending}
-                      className={`flex-1 py-2 text-xs border transition-colors cursor-pointer capitalize ${
-                        handoffNotifyTarget === target
-                          ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-medium'
-                          : 'border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink-muted)] hover:text-[var(--ink)]'
-                      }`}
-                    >
-                      {target === 'developer' ? 'Developer (you)' : 'Client'}
-                    </button>
-                  ))}
+              <div className="ml-0 space-y-3">
+                {/* Handoff mode — how a human picks up the conversation */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-[var(--ink-muted)]">When a human takes over</Label>
+                  <div className="flex gap-2">
+                    {([
+                      { mode: 'email' as const, title: 'Email reply', sub: 'Reply later by email', locked: false },
+                      { mode: 'live'  as const, title: 'Live chat',   sub: 'Reply in the widget now', locked: !canLiveHandoff },
+                    ]).map(({ mode, title, sub, locked }) => {
+                      const active = handoffMode === mode && !locked
+                      return (
+                        <button
+                          key={mode}
+                          type="button"
+                          onClick={() => { if (locked) return; setHandoffMode(mode); markDirty() }}
+                          disabled={isPending || locked}
+                          aria-pressed={active}
+                          className={`flex-1 px-3 py-2.5 text-left border transition-colors ${
+                            locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                          } ${
+                            active
+                              ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10'
+                              : 'border-[var(--hairline)] bg-[var(--surface)] hover:border-[var(--hairline-strong)]'
+                          }`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <span className={`text-xs font-medium ${active ? 'text-[var(--of-primary)]' : 'text-[var(--ink)]'}`}>{title}</span>
+                            {locked && <span className="text-[9px] px-1 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Agency+</span>}
+                          </span>
+                          <span className="block text-[10px] text-[var(--ink-subtle)] mt-0.5">{sub}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {handoffMode === 'live' && canLiveHandoff && (
+                    <p className="text-[10px] text-[var(--ink-subtle)]">
+                      The bot pauses and your team replies directly inside the chat widget in real time. Best for clients with staff online to respond.
+                    </p>
+                  )}
                 </div>
-                <p className="text-[10px] text-[var(--ink-subtle)]">
-                  {handoffNotifyTarget === 'client'
-                    ? 'Notification email goes to the client linked to this bot.'
-                    : 'Notification email goes to the developer account (you).'}
-                </p>
+
+                {/* Notify target — who gets the escalation email */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-[var(--ink-muted)]">Notify by email</Label>
+                  <div className="flex gap-2">
+                    {(['developer', 'client'] as const).map((target) => (
+                      <button
+                        key={target}
+                        type="button"
+                        onClick={() => { setHandoffNotifyTarget(target); markDirty() }}
+                        disabled={isPending}
+                        className={`flex-1 py-2 text-xs border transition-colors cursor-pointer capitalize ${
+                          handoffNotifyTarget === target
+                            ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-medium'
+                            : 'border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink-muted)] hover:text-[var(--ink)]'
+                        }`}
+                      >
+                        {target === 'developer' ? 'Developer (you)' : 'Client'}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-[var(--ink-subtle)]">
+                    {handoffNotifyTarget === 'client'
+                      ? 'Notification email goes to the client linked to this bot.'
+                      : 'Notification email goes to the developer account (you).'}
+                  </p>
+                </div>
               </div>
             )}
           </div>
