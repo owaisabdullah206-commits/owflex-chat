@@ -5,7 +5,9 @@ import { db, schema } from '@/lib/db'
 import { TopNav } from '@/components/portal/TopNav'
 import type { PortalConfig } from '@/components/portal/TopNav'
 import { ChatTranscript } from '@/components/portal/ChatTranscript'
+import { PortalLiveReply } from '@/components/portal/PortalLiveReply'
 import { ClientDate } from '@/components/shared/ClientDate'
+import { AutoRefresh } from '@/components/shared/AutoRefresh'
 
 interface ConversationDetailPageProps {
   params: Promise<{ id: string }>
@@ -18,11 +20,14 @@ export default async function ConversationDetailPage({ params }: ConversationDet
   // Tenant-isolated query: conversation must belong to a bot assigned to this client
   const [conversation] = await db
     .select({
-      id:           schema.conversations.id,
-      pageUrl:      schema.conversations.pageUrl,
-      startedAt:    schema.conversations.startedAt,
-      botName:      schema.bots.name,
-      portalConfig: schema.bots.portalConfig,
+      id:            schema.conversations.id,
+      pageUrl:       schema.conversations.pageUrl,
+      startedAt:     schema.conversations.startedAt,
+      botName:       schema.bots.name,
+      portalConfig:  schema.bots.portalConfig,
+      widgetConfig:  schema.bots.widgetConfig,
+      needsHuman:    schema.conversations.needsHuman,
+      agentActiveAt: schema.conversations.agentActiveAt,
     })
     .from(schema.conversations)
     .innerJoin(schema.bots, eq(schema.conversations.botId, schema.bots.id))
@@ -38,6 +43,13 @@ export default async function ConversationDetailPage({ params }: ConversationDet
 
   const portalConfig = (conversation.portalConfig ?? null) as PortalConfig | null
   if (portalConfig?.showConversations === false) redirect('/portal')
+
+  // Live takeover is available to the client only when the bot is in live handoff
+  // mode (Agency plan) and the conversation has been escalated or is already live.
+  const liveMode = (conversation.widgetConfig as { handoffMode?: string } | null)?.handoffMode === 'live'
+  const agentActive = conversation.agentActiveAt != null
+  // Agency can disable client-side live reply per bot via portalConfig.allowLiveReply
+  const showLiveReply = liveMode && (conversation.needsHuman || agentActive) && portalConfig?.allowLiveReply !== false
 
   const messages = await db
     .select({
@@ -72,6 +84,15 @@ export default async function ConversationDetailPage({ params }: ConversationDet
             )}
           </div>
         </div>
+
+        {showLiveReply && (
+          <>
+            <AutoRefresh intervalMs={5000} />
+            <div className="mb-6">
+              <PortalLiveReply conversationId={conversation.id} agentActive={agentActive} />
+            </div>
+          </>
+        )}
 
         <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm overflow-hidden">
           <div className="h-0.5 bg-[var(--of-primary)]" />

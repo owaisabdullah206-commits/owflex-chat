@@ -22,18 +22,22 @@ interface Lead {
 
 interface LeadsSearchProps {
   leads: Lead[]
+  /** When false, visitor email & phone are masked (agency privacy control). */
+  showContacts?: boolean
 }
 
-export function LeadsSearch({ leads }: LeadsSearchProps) {
+export function LeadsSearch({ leads, showContacts = true }: LeadsSearchProps) {
   const [q, setQ] = useState('')
 
   const filtered = q
     ? leads.filter((l) =>
-        [l.name, l.email, l.phone].some((v) =>
+        [l.name, showContacts ? l.email : null, showContacts ? l.phone : null].some((v) =>
           v?.toLowerCase().includes(q.toLowerCase()),
         ),
       )
     : leads
+
+  const hidden = <span className="italic text-[var(--ink-subtle)]">Hidden</span>
 
   return (
     <div>
@@ -77,8 +81,8 @@ export function LeadsSearch({ leads }: LeadsSearchProps) {
                 {filtered.map((lead) => (
                   <tr key={lead.id} className="hover:bg-[var(--bg)] transition-colors">
                     <td className="px-4 py-3 text-[var(--ink)] font-medium">{lead.name ?? '—'}</td>
-                    <td className="px-4 py-3 text-[var(--ink-muted)]">{lead.email ?? '—'}</td>
-                    <td className="px-4 py-3 text-[var(--ink-muted)]">{formatPhone(lead.phone)}</td>
+                    <td className="px-4 py-3 text-[var(--ink-muted)]">{showContacts ? (lead.email ?? '—') : hidden}</td>
+                    <td className="px-4 py-3 text-[var(--ink-muted)]">{showContacts ? formatPhone(lead.phone) : hidden}</td>
                     <td className="px-4 py-3">
                       <LeadStatusSelect leadId={lead.id} status={toLeadStatus(lead.status)} apiBase="/api/portal/leads" />
                     </td>
@@ -104,7 +108,7 @@ export function LeadsSearch({ leads }: LeadsSearchProps) {
           {/* Mobile card list */}
           <div className="sm:hidden grid gap-3">
             {filtered.map((lead) => (
-              <LeadCard key={lead.id} lead={lead} />
+              <LeadCard key={lead.id} lead={lead} showContacts={showContacts} />
             ))}
           </div>
         </>

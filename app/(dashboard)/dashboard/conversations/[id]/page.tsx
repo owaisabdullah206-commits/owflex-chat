@@ -8,6 +8,7 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 import { HandoffActions } from '@/components/dashboard/HandoffActions'
 import { MarkdownContent } from '@/components/shared/MarkdownContent'
+import { AutoRefresh } from '@/components/shared/AutoRefresh'
 
 export default async function ConversationDetailPage({
   params,
@@ -76,6 +77,8 @@ export default async function ConversationDetailPage({
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
+      {/* While a human is live in this conversation, poll so new visitor messages appear without a manual reload */}
+      {conv.agentActiveAt != null && <AutoRefresh intervalMs={5000} />}
       <Sidebar />
       <main className="flex-1 ml-56">
         {/* Header */}

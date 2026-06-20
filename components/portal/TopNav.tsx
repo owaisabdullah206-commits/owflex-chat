@@ -25,6 +25,8 @@ export interface PortalConfig {
   showConversations?: boolean
   showLeads?: boolean
   showSettings?: boolean
+  showLeadContacts?: boolean
+  allowLiveReply?: boolean
 }
 
 interface TopNavProps {

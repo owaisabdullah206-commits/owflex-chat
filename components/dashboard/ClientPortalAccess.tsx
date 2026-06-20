@@ -14,10 +14,27 @@ interface Toggle {
   description: string
 }
 
-const TOGGLES: Toggle[] = [
-  { key: 'showConversations', label: 'Conversations', description: 'Chat history tab' },
-  { key: 'showLeads',         label: 'Leads',         description: 'Lead capture tab' },
-  { key: 'showSettings',      label: 'Settings',      description: 'Account settings tab' },
+interface ToggleGroup {
+  heading: string
+  toggles: Toggle[]
+}
+
+const GROUPS: ToggleGroup[] = [
+  {
+    heading: 'Visible tabs',
+    toggles: [
+      { key: 'showConversations', label: 'Conversations', description: 'Chat history tab' },
+      { key: 'showLeads',         label: 'Leads',         description: 'Lead capture tab' },
+      { key: 'showSettings',      label: 'Settings',      description: 'Account settings tab' },
+    ],
+  },
+  {
+    heading: 'Data & capabilities',
+    toggles: [
+      { key: 'showLeadContacts', label: 'Lead contact details', description: 'Show visitor email & phone (off: names only)' },
+      { key: 'allowLiveReply',   label: 'Live chat reply',      description: 'Let the client reply to visitors in real time (Agency)' },
+    ],
+  },
 ]
 
 function resolved(val: boolean | undefined): boolean {
@@ -42,31 +59,36 @@ export function ClientPortalAccess({ botId, initial }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      {TOGGLES.map(({ key, label, description }) => {
-        const on = resolved(config[key])
-        return (
-          <button
-            key={key}
-            onClick={() => toggle(key)}
-            disabled={pending}
-            className="flex items-center justify-between gap-4 px-3 py-2 text-left hover:bg-[var(--surface-3)] transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            <div>
-              <p className="text-[12px] font-medium text-[var(--ink)] leading-none mb-0.5">{label}</p>
-              <p className="text-[10px] text-[var(--ink-subtle)] leading-none">{description}</p>
-            </div>
-            {/* pill toggle */}
-            <div
-              className={`relative shrink-0 w-9 h-5 transition-colors ${on ? 'bg-[var(--of-primary)]' : 'bg-[var(--surface-3)] border border-[var(--hairline)]'}`}
-            >
-              <span
-                className={`absolute top-0.5 w-4 h-4 bg-white transition-transform ${on ? 'translate-x-4' : 'translate-x-0.5'}`}
-              />
-            </div>
-          </button>
-        )
-      })}
+    <div className="flex flex-col gap-4">
+      {GROUPS.map(({ heading, toggles }) => (
+        <div key={heading} className="flex flex-col gap-1.5">
+          <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]">{heading}</p>
+          {toggles.map(({ key, label, description }) => {
+            const on = resolved(config[key])
+            return (
+              <button
+                key={key}
+                onClick={() => toggle(key)}
+                disabled={pending}
+                className="flex items-center justify-between gap-4 px-3 py-2 text-left hover:bg-[var(--surface-3)] transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                <div>
+                  <p className="text-[12px] font-medium text-[var(--ink)] leading-none mb-0.5">{label}</p>
+                  <p className="text-[10px] text-[var(--ink-subtle)] leading-none">{description}</p>
+                </div>
+                {/* pill toggle */}
+                <div
+                  className={`relative shrink-0 w-9 h-5 transition-colors ${on ? 'bg-[var(--of-primary)]' : 'bg-[var(--surface-3)] border border-[var(--hairline)]'}`}
+                >
+                  <span
+                    className={`absolute top-0.5 w-4 h-4 bg-white transition-transform ${on ? 'translate-x-4' : 'translate-x-0.5'}`}
+                  />
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      ))}
     </div>
   )
 }

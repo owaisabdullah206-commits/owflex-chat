@@ -24,6 +24,7 @@ export default async function PortalPage({
 
   const bot = (botParam ? bots.find((b) => b.id === botParam) : null) ?? bots[0] ?? null
   const portalConfig = (bot?.portalConfig ?? null) as import('@/components/portal/TopNav').PortalConfig | null
+  const showContacts = portalConfig?.showLeadContacts !== false
 
   if (!bot) {
     return (
@@ -104,7 +105,7 @@ export default async function PortalPage({
               <div className="h-0.5 bg-[var(--of-primary)]" />
               <div className="divide-y divide-[var(--hairline)]">
                 {recentLeads.map((lead) => {
-                  const initials = (lead.name ?? lead.email ?? '?').slice(0, 2).toUpperCase()
+                  const initials = (lead.name ?? (showContacts ? lead.email : null) ?? '?').slice(0, 2).toUpperCase()
                   return (
                     <div key={lead.id} className="px-4 py-3 flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-[var(--of-primary-soft)] flex items-center justify-center shrink-0">
@@ -112,9 +113,9 @@ export default async function PortalPage({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-[var(--ink)] truncate">
-                          {lead.name ?? lead.email ?? 'Unknown lead'}
+                          {lead.name ?? (showContacts ? lead.email : null) ?? 'Unknown lead'}
                         </p>
-                        {lead.email && lead.name && (
+                        {lead.email && lead.name && showContacts && (
                           <p className="text-xs text-[var(--ink-muted)] truncate">{lead.email}</p>
                         )}
                       </div>

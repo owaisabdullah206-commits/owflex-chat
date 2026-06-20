@@ -17,9 +17,10 @@ interface Lead {
 
 interface LeadCardProps {
   lead: Lead
+  showContacts?: boolean
 }
 
-export function LeadCard({ lead }: LeadCardProps) {
+export function LeadCard({ lead, showContacts = true }: LeadCardProps) {
   return (
     <div className="bg-[var(--surface)] rounded-xl border border-[var(--hairline)] shadow-sm px-4 py-3.5">
       <div className="flex items-start justify-between gap-2">
@@ -27,11 +28,17 @@ export function LeadCard({ lead }: LeadCardProps) {
           {lead.name && (
             <p className="font-semibold text-sm text-[var(--ink)] truncate">{lead.name}</p>
           )}
-          {lead.email && (
-            <p className="text-sm text-[var(--ink-muted)] truncate mt-0.5">{lead.email}</p>
-          )}
-          {lead.phone && (
-            <p className="text-sm text-[var(--ink-muted)] mt-0.5">{formatPhone(lead.phone)}</p>
+          {!showContacts ? (
+            <p className="text-sm italic text-[var(--ink-subtle)] mt-0.5">Contact details hidden</p>
+          ) : (
+            <>
+              {lead.email && (
+                <p className="text-sm text-[var(--ink-muted)] truncate mt-0.5">{lead.email}</p>
+              )}
+              {lead.phone && (
+                <p className="text-sm text-[var(--ink-muted)] mt-0.5">{formatPhone(lead.phone)}</p>
+              )}
+            </>
           )}
           {lead.notes && (
             <p className="text-xs text-[var(--ink-subtle)] mt-1 line-clamp-2">{lead.notes}</p>

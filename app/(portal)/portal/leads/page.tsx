@@ -28,6 +28,9 @@ export default async function LeadsPage({
 
   if (portalConfig?.showLeads === false) redirect('/portal')
 
+  // Agency privacy control: hide visitor email & phone from the client view
+  const showContacts = portalConfig?.showLeadContacts !== false
+
   // CSV export is a paid feature for the developer's org. The portal is the
   // CLIENT's view — never show plan or upgrade language here; the button is
   // simply absent on free-tier orgs.
@@ -75,7 +78,7 @@ export default async function LeadsPage({
           <h1 className="text-xl font-bold text-[var(--ink)]">Leads</h1>
           <div className="flex items-center gap-2">
             <RefreshButton />
-            {leads.length > 0 && canExport && (
+            {leads.length > 0 && canExport && showContacts && (
               <Button variant="secondary" size="sm" asChild>
                 <a href="/api/portal/leads/export" download>
                   <Download className="h-4 w-4 mr-1.5" />
@@ -86,7 +89,7 @@ export default async function LeadsPage({
           </div>
         </div>
 
-        <LeadsSearch leads={leads} />
+        <LeadsSearch leads={leads} showContacts={showContacts} />
       </div>
     </div>
   )
