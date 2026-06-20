@@ -9,6 +9,7 @@ import { and, desc, eq, sql } from 'drizzle-orm'
 import { Redis } from '@upstash/redis'
 import { db, schema } from '@/lib/db'
 import { embedKeyMatch } from '@/lib/bots/embed-key'
+import { getAppBaseUrl } from '@/lib/url'
 import { chatCompletionStreamGen, FALLBACK_MODEL, type ChatMessage } from '@/lib/ai/litellm'
 import { handleCreditExhaustion } from '@/lib/credits/grace'
 import { getChatRatelimit } from '@/lib/ratelimit'
@@ -217,9 +218,7 @@ export async function POST(req: NextRequest) {
     const requestOrigin = req.headers.get('origin')
     const allowedOrigin = storeUrl ? (() => { try { return new URL(storeUrl).origin } catch { return null } })() : null
     // Always allow requests from the app itself (dashboard preview / embed-test)
-    const appOrigin = process.env.NEXT_PUBLIC_APP_URL
-      ? (() => { try { return new URL(process.env.NEXT_PUBLIC_APP_URL!).origin } catch { return null } })()
-      : null
+    const appOrigin = (() => { try { return new URL(getAppBaseUrl()).origin } catch { return null } })()
     const fromAppItself = appOrigin && requestOrigin === appOrigin
     if (allowedOrigin) {
       // Store URL set: only that exact origin (plus the app's own preview) may embed.

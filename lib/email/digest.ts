@@ -1,6 +1,11 @@
 import type { WeeklyStats } from '@/lib/db/queries/digest'
 import { brevo, DIGEST_SENDER } from './clients'
-import { LOGO_DARK } from './shared'
+import { LOGO_LIGHT } from './shared'
+import { getAppBaseUrl } from '@/lib/url'
+
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
 
 function generateDigestHtml(params: {
   developerName: string
@@ -12,59 +17,76 @@ function generateDigestHtml(params: {
 }): string {
   const { developerName, conversationCount, leadCount, unansweredQuestions, dashboardUrl, weekRange } = params
 
+  // Metric card (table-based — CSS grid/flex are unreliable in email clients)
+  const metricCard = (label: string, value: number) => `
+    <td width="50%" valign="top" style="padding:0">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px">
+        <tr><td style="padding:18px 20px">
+          <p style="color:#64748b;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin:0 0 6px">${label}</p>
+          <p style="color:#0f172a;font-size:30px;font-weight:700;line-height:1;margin:0">${value.toLocaleString()}</p>
+        </td></tr>
+      </table>
+    </td>`
+
   const unansweredHtml = unansweredQuestions.length > 0
     ? `
-      <h3 style="color:#0EA5E9;font-size:13px;margin:20px 0 8px">Top Unanswered Questions</h3>
+      <h3 style="color:#0f172a;font-size:14px;font-weight:600;margin:28px 0 10px">Top unanswered questions</h3>
       ${unansweredQuestions.map((q) => `
-        <div style="background:#1a1a1a;border-left:3px solid #0EA5E9;padding:10px 14px;margin-bottom:8px;border-radius:3px">
-          <p style="color:#ccc;font-size:13px;margin:0">${q.content.slice(0, 200)}${q.content.length > 200 ? '…' : ''}</p>
-          <a href="${dashboardUrl}" style="color:#0EA5E9;font-size:11px;text-decoration:none">View conversation →</a>
-        </div>
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:8px">
+          <tr><td style="background:#f8fafc;border-left:3px solid #0EA5E9;padding:11px 14px;border-radius:4px">
+            <p style="color:#334155;font-size:13px;line-height:1.5;margin:0 0 4px">${esc(q.content.slice(0, 200))}${q.content.length > 200 ? '…' : ''}</p>
+            <a href="${dashboardUrl}" style="color:#0EA5E9;font-size:11px;text-decoration:none;font-weight:600">View conversation →</a>
+          </td></tr>
+        </table>
       `).join('')}
     `
-    : '<p style="color:#666;font-size:13px">No unanswered questions this week 🎉</p>'
+    : '<p style="color:#64748b;font-size:13px;margin:24px 0 0">No unanswered questions this week 🎉</p>'
 
   return `
     <!DOCTYPE html>
     <html>
-    <head><meta charset="utf-8"><title>Your Octively Week</title></head>
-    <body style="background:#0C0A09;color:#e5e5e5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:40px 20px;margin:0">
-      <div style="max-width:560px;margin:0 auto">
-        <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;width:100%;">
-          <tr>
-            <td>${LOGO_DARK}</td>
-            <td style="text-align:right;vertical-align:bottom;padding-bottom:4px;">
-              <span style="color:#555;font-size:12px;">${weekRange}</span>
-            </td>
-          </tr>
-        </table>
+    <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Octively Week</title></head>
+    <body style="background:#f1f5f9;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f1f5f9">
+        <tr><td align="center" style="padding:32px 16px">
+          <table cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px;width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:14px">
+            <tr><td style="padding:32px 32px 28px">
 
-        <h2 style="font-size:20px;font-weight:600;margin:0 0 6px">Hi ${developerName},</h2>
-        <p style="color:#999;font-size:14px;margin:0 0 28px">Here's your weekly summary.</p>
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:22px">
+                <tr>
+                  <td valign="middle">${LOGO_LIGHT}</td>
+                  <td valign="middle" align="right"><span style="color:#94a3b8;font-size:12px">${weekRange}</span></td>
+                </tr>
+              </table>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px">
-          <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:20px">
-            <p style="color:#666;font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 6px">Conversations</p>
-            <p style="color:#e5e5e5;font-size:28px;font-weight:700;margin:0;font-family:monospace">${conversationCount}</p>
-          </div>
-          <div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:20px">
-            <p style="color:#666;font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin:0 0 6px">Leads Captured</p>
-            <p style="color:#e5e5e5;font-size:28px;font-weight:700;margin:0;font-family:monospace">${leadCount}</p>
-          </div>
-        </div>
+              <h2 style="color:#0f172a;font-size:20px;font-weight:700;margin:0 0 4px">Hi ${esc(developerName)},</h2>
+              <p style="color:#64748b;font-size:14px;margin:0 0 24px">Here's your weekly summary.</p>
 
-        ${unansweredHtml}
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:8px">
+                <tr>
+                  ${metricCard('Conversations', conversationCount)}
+                  <td width="12" style="font-size:0;line-height:0">&nbsp;</td>
+                  ${metricCard('Leads Captured', leadCount)}
+                </tr>
+              </table>
 
-        <div style="margin-top:32px;padding-top:24px;border-top:1px solid #2a2a2a">
-          <a href="${dashboardUrl}" style="background:#0EA5E9;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:500">
-            Open Dashboard →
-          </a>
-        </div>
+              ${unansweredHtml}
 
-        <p style="color:#444;font-size:11px;margin-top:32px">
-          You're receiving this because you have a bot on Octively. Sent every Monday at 8am PKT.
-        </p>
-      </div>
+              <table cellpadding="0" cellspacing="0" border="0" style="margin:30px 0 6px">
+                <tr><td style="border-radius:8px;background:#0EA5E9">
+                  <a href="${dashboardUrl}" style="display:inline-block;padding:11px 22px;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:8px">Open Dashboard →</a>
+                </td></tr>
+              </table>
+
+              <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0 16px">
+              <p style="color:#94a3b8;font-size:11px;line-height:1.5;margin:0">
+                You're receiving this because you have a bot on Octively. Sent every Monday at 8am PKT.
+              </p>
+
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
     </body>
     </html>
   `
@@ -74,7 +96,7 @@ export async function sendDigestEmail(
   developer: { name: string; email: string },
   stats: WeeklyStats,
 ): Promise<void> {
-  const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
+  const dashboardUrl = getAppBaseUrl()
   const now = new Date()
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
   const weekRange = `${weekAgo.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`

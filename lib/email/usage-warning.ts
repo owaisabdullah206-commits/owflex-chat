@@ -1,5 +1,6 @@
 import { brevo, BREVO_SENDER } from './clients'
 import { LOGO_LIGHT } from './shared'
+import { getAppBaseUrl } from '@/lib/url'
 
 type Metric = 'conversations' | 'credits' | 'leads'
 
@@ -16,8 +17,7 @@ export async function sendUsageWarningEmail({
   remaining: number
   planName: string
 }): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
-  const billingUrl = `${appUrl}/dashboard/billing`
+  const billingUrl = `${getAppBaseUrl()}/dashboard/billing`
   const metricLabel = metric === 'credits' ? 'credits' : metric
 
   try {

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { generatePlanCheckoutUrl, getPlanVariantId, type PlanId } from '@/lib/billing/lemon-squeezy'
+import { getAppBaseUrl } from '@/lib/url'
 
 const querySchema = z.object({
   plan: z.enum(['starter', 'pro', 'agency']),
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const returnUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/dashboard/billing?upgraded=${parsed.data.plan}`
+  const returnUrl = `${getAppBaseUrl()}/dashboard/billing?upgraded=${parsed.data.plan}`
   const checkoutUrl = generatePlanCheckoutUrl(org.id, parsed.data.plan as PlanId, returnUrl)
   redirect(checkoutUrl)
 }

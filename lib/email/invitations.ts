@@ -22,7 +22,7 @@ export async function sendClientInvitation({
           ${LOGO_LIGHT}
           <h2 style="font-size:22px;font-weight:700;margin:0 0 12px">You're invited!</h2>
           <p style="font-size:15px;color:#475569;margin:0 0 24px;line-height:1.6">
-            You've been given access to view <strong>${botName}</strong>'s chatbot dashboard —
+            You've been given access to view <strong>${botName}</strong>'s chatbot dashboard:
             conversations, leads, and activity all in one place.
           </p>
           <a

@@ -1,5 +1,6 @@
 import { brevo, BREVO_SENDER } from './clients'
 import { LOGO_LIGHT } from './shared'
+import { getAppBaseUrl } from '@/lib/url'
 
 interface LeadNotificationParams {
   ownerEmail: string
@@ -20,9 +21,10 @@ export async function sendLeadNotification({
   leadNotes,
   conversationId,
 }: LeadNotificationParams): Promise<void> {
-  const leadsUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'}/dashboard/leads`
+  const appUrl = getAppBaseUrl()
+  const leadsUrl = `${appUrl}/dashboard/leads`
   const convUrl = conversationId
-    ? `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'}/dashboard/conversations/${conversationId}`
+    ? `${appUrl}/dashboard/conversations/${conversationId}`
     : null
 
   const displayName = leadName ?? leadEmail ?? leadPhone ?? 'Anonymous visitor'
@@ -37,7 +39,7 @@ export async function sendLeadNotification({
   await brevo.transactionalEmails.sendTransacEmail({
     sender: BREVO_SENDER,
     to: [{ email: ownerEmail }],
-    subject: `New lead captured — ${botName}`,
+    subject: `New lead captured on ${botName}`,
     htmlContent: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1e293b">
         ${LOGO_LIGHT}

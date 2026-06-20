@@ -1,5 +1,6 @@
 import { brevo, BREVO_SENDER } from './clients'
 import { LOGO_LIGHT } from './shared'
+import { getAppBaseUrl } from '@/lib/url'
 
 interface HandoffNotificationParams {
   ownerEmail: string
@@ -18,13 +19,13 @@ export async function sendHandoffNotification({
   visitorName,
   visitorEmail,
 }: HandoffNotificationParams): Promise<void> {
-  const convUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'}/dashboard/conversations/${conversationId}`
+  const convUrl = `${getAppBaseUrl()}/dashboard/conversations/${conversationId}`
   const visitorLabel = visitorName ?? visitorEmail ?? 'Anonymous visitor'
 
   await brevo.transactionalEmails.sendTransacEmail({
     sender: BREVO_SENDER,
     to: [{ email: ownerEmail }],
-    subject: `Human handoff requested — ${botName}`,
+    subject: `Human handoff requested for ${botName}`,
     htmlContent: `
       <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;color:#1e293b">
         ${LOGO_LIGHT}

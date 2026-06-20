@@ -3,6 +3,7 @@ import { Redis } from '@upstash/redis'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { getBalance } from '@/lib/credits'
+import { getAppBaseUrl } from '@/lib/url'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { CreditBalance } from '@/components/dashboard/CreditBalance'
@@ -72,7 +73,7 @@ export default async function BillingPage({
     redis.get(`credit_grace_used:${org.id}:${yyyyMM}`),
   ])
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl = getAppBaseUrl()
   const graceActive = (graceTtl ?? 0) > 0
   const graceDisabled = graceUsed !== null && !graceActive
 

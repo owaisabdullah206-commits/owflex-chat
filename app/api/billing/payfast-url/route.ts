@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { generatePaymentUrl, type PackId } from '@/lib/billing/payfast'
+import { getAppBaseUrl } from '@/lib/url'
 
 const querySchema = z.object({
   pack: z.enum(['starter', 'growth', 'pro']),
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
     )
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl = getAppBaseUrl()
   const returnUrl = `${appUrl}/dashboard/billing`
   const notifyUrl = `${appUrl}/api/webhooks/payfast`
 

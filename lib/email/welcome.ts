@@ -1,5 +1,6 @@
 import { resend, RESEND_FROM } from './clients'
 import { LOGO_LIGHT } from './shared'
+import { getAppBaseUrl } from '@/lib/url'
 
 export async function sendWelcomeEmail({
   name,
@@ -8,14 +9,13 @@ export async function sendWelcomeEmail({
   name: string
   email: string
 }): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
-  const dashboardUrl = `${appUrl}/dashboard`
+  const dashboardUrl = `${getAppBaseUrl()}/dashboard`
 
   try {
     await resend.emails.send({
       from: RESEND_FROM,
       to: email,
-      subject: 'Welcome to Octively — your first bot is one step away',
+      subject: 'Welcome to Octively. Your first bot is one step away',
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;color:#111;">
           ${LOGO_LIGHT}
@@ -41,9 +41,9 @@ export async function sendWelcomeEmail({
 
           <p style="font-weight:600;margin:0 0 12px;">Get started in 3 steps:</p>
           <ol style="padding-left:20px;margin:0 0 24px;color:#444;line-height:1.8;">
-            <li>Create your first bot — write a system prompt and configure lead capture</li>
-            <li>Copy the embed script — one &lt;script&gt; tag into your client's site</li>
-            <li>Invite your client — they log in to view conversations and leads</li>
+            <li>Create your first bot: write a system prompt and configure lead capture</li>
+            <li>Copy the embed script: one &lt;script&gt; tag into your client's site</li>
+            <li>Invite your client so they can log in to view conversations and leads</li>
           </ol>
 
           <a

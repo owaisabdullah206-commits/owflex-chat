@@ -3,8 +3,9 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { AdminLinksClient } from '@/components/dashboard/AdminLinksClient'
 import { listShortLinks } from '@/lib/db/queries/links'
+import { getAppBaseUrl } from '@/lib/url'
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
+const appUrl = getAppBaseUrl()
 const SITE = appUrl.includes('octively.com')
   ? 'https://octively.com'
   : appUrl.includes('octively.vercel.app')
