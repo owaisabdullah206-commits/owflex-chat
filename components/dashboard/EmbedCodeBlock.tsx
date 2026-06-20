@@ -14,6 +14,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { getAppBaseUrl } from '@/lib/url'
 
 interface EmbedCodeBlockProps {
   embedKey: string
@@ -26,7 +27,7 @@ export function EmbedCodeBlock({ embedKey, botId }: EmbedCodeBlockProps) {
   const [rotating, setRotating] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'
+  const appUrl = getAppBaseUrl()
   const snippet = `<script src="${appUrl}/api/embed" data-key="${embedKey}"></script>`
 
   async function handleCopy() {

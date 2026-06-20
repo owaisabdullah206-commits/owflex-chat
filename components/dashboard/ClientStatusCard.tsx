@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { Copy, Check, UserX } from 'lucide-react'
 import { RelativeTime } from '@/components/shared/RelativeTime'
 import { InviteClientDialog } from '@/components/dashboard/InviteClientDialog'
+import { getPortalBaseUrl } from '@/lib/url'
 
 interface ClientStatusCardProps {
   botId: string
@@ -53,7 +54,7 @@ export function ClientStatusCard({ botId, client, invite }: ClientStatusCardProp
   }
 
   function handleCopyPortalLink() {
-    const portalUrl = process.env.NEXT_PUBLIC_PORTAL_URL ?? window.location.origin
+    const portalUrl = getPortalBaseUrl()
     navigator.clipboard.writeText(`${portalUrl}/portal/login`)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)

@@ -7,6 +7,7 @@ import { authClient } from '@/lib/auth/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { getAppBaseUrl } from '@/lib/url'
 
 function LoginContent() {
   const searchParams = useSearchParams()
@@ -63,7 +64,7 @@ function LoginContent() {
         {notClient && (
           <div className="mb-4 rounded-lg bg-amber-500/10 border border-amber-500/20 px-4 py-3 text-sm text-amber-400">
             This portal is for clients only.{' '}
-            <a href={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://admin.octively.com'}/dashboard/login`} className="underline font-medium">
+            <a href={`${getAppBaseUrl()}/dashboard/login`} className="underline font-medium">
               Developer dashboard →
             </a>
           </div>
