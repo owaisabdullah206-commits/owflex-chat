@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { USD_PKR_RATE } from '@/lib/currency'
+import { Money } from '@/components/marketing/tools/Money'
 
 const USD_RATE = USD_PKR_RATE
 
@@ -111,7 +112,7 @@ export function ChatbotPricingCalculator() {
               fontFamily: 'var(--font-mono)',
               fontSize: 'clamp(22px, 2.6vw, 30px)', fontWeight: 700, letterSpacing: '-0.02em',
               color: t.accent ? 'var(--of-primary-deep)' : 'var(--ink)',
-            }}>{t.value}</div>
+            }}><Money>{t.value}</Money></div>
             <p style={{ margin: '6px 0 0', fontSize: 13, color: 'var(--ink-subtle)' }}>{t.label}</p>
           </div>
         ))}
