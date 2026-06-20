@@ -6,9 +6,12 @@ import { Sidebar } from '@/components/dashboard/Sidebar'
 import { MobileNav } from '@/components/dashboard/MobileNav'
 import { NewBotForm } from '@/components/dashboard/NewBotForm'
 import { BotPreview } from '@/components/dashboard/BotPreview'
+import { getMarketingBaseUrl } from '@/lib/url'
 
 export default async function NewBotPage() {
   const user = await requireDeveloper()
+  // Free /tools pages live on the marketing site, not admin.octively.com
+  const toolsBase = getMarketingBaseUrl()
 
   const [org] = await db
     .select({ id: schema.organizations.id, plan: schema.organizations.plan })
@@ -47,7 +50,7 @@ export default async function NewBotPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
               <div>
-                <NewBotForm />
+                <NewBotForm toolsBase={toolsBase} />
               </div>
               <div>
                 <BotPreview />

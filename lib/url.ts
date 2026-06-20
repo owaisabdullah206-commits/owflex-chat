@@ -31,6 +31,29 @@ export function getAppBaseUrl(): string {
   )
 }
 
+/** Marketing site base URL (octively.com) — used for cross-surface links from the
+ *  dashboard to public pages like the free /tools, which only exist on marketing. */
+export function getMarketingBaseUrl(): string {
+  const explicit = clean(process.env.NEXT_PUBLIC_MARKETING_URL) ?? clean(process.env.MARKETING_URL)
+  if (explicit) return explicit
+
+  const app = clean(process.env.NEXT_PUBLIC_APP_URL) ?? clean(process.env.APP_URL) ?? clean(process.env.BETTER_AUTH_URL)
+  if (app) {
+    try {
+      const u = new URL(app)
+      // Local dev: every surface shares one origin.
+      if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') return u.origin
+      // Production: strip the admin. / app. subdomain to reach the marketing apex.
+      u.hostname = u.hostname.replace(/^(admin|app)\./, '')
+      return u.origin
+    } catch {
+      /* fall through */
+    }
+  }
+
+  return 'https://octively.com'
+}
+
 /** Client portal base URL (app.octively.com) — used for invitation links. */
 export function getPortalBaseUrl(): string {
   const explicit = clean(process.env.NEXT_PUBLIC_PORTAL_URL) ?? clean(process.env.PORTAL_URL)
