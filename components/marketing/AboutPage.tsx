@@ -58,48 +58,62 @@ export default function AboutPage() {
           </div>
 
           {/* Founder card */}
-          <div style={{ border: '1px solid var(--hairline)', borderRadius: 16, background: 'var(--surface)', padding: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-              <div style={{
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                background: 'var(--of-primary)',
-                display: 'grid',
-                placeItems: 'center',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: 700,
-                fontSize: 20,
-                color: 'white',
-                flexShrink: 0,
-              }}>
-                O
+          <div style={{ border: '1px solid var(--hairline)', borderRadius: 16, background: 'var(--surface)', overflow: 'hidden' }}>
+            {/* Accent bar */}
+            <div style={{ height: 4, background: 'linear-gradient(90deg, var(--of-primary), var(--of-primary-hover))' }} />
+            <div style={{ padding: 32 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+                <div style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: '50%',
+                  background: 'var(--of-primary)',
+                  display: 'grid',
+                  placeItems: 'center',
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 700,
+                  fontSize: 20,
+                  color: 'white',
+                  flexShrink: 0,
+                  boxShadow: '0 0 0 3px var(--of-primary-soft)',
+                }}>
+                  O
+                </div>
+                <div>
+                  <p style={{ fontWeight: 600, fontSize: 16, margin: 0 }}>Owais Abdullah</p>
+                  <p style={{ fontSize: 13, color: 'var(--ink-muted)', margin: 0, fontFamily: 'var(--font-mono)' }}>Founder · Karachi, Pakistan</p>
+                </div>
               </div>
-              <div>
-                <p style={{ fontWeight: 600, fontSize: 16, margin: 0 }}>Owais Abdullah</p>
-                <p style={{ fontSize: 13, color: 'var(--ink-muted)', margin: 0, fontFamily: 'var(--font-mono)' }}>Founder · Karachi, Pakistan</p>
-              </div>
-            </div>
-            <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.7, margin: 0 }}>
-              Full-stack developer with a background in building client-facing tools. Started Octively after spending too many evenings responding to &ldquo;what did the chatbot say?&rdquo; emails for clients who just needed a portal.
-            </p>
-            <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--hairline)' }}>
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 10 }}>Contact</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
-                <Link href="/contact" style={{ fontSize: 13, color: 'var(--of-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  Talk to Owais <ArrowRight size={12} />
-                </Link>
-                <a
-                  href="https://www.linkedin.com/in/mrowaisabdullah"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: 13, color: 'var(--of-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 5 }}
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                  LinkedIn
-                </a>
+              <p style={{ fontSize: 14, color: 'var(--ink-muted)', lineHeight: 1.7, margin: 0 }}>
+                Full-stack developer with a background in building client-facing tools. Started Octively after spending too many evenings responding to &ldquo;what did the chatbot say?&rdquo; emails for clients who just needed a portal.
+              </p>
+              <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--hairline)' }}>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-subtle)', marginBottom: 10 }}>Connect</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+                  <Link href="/contact" style={{ fontSize: 13, color: 'var(--of-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    Talk to Owais <ArrowRight size={12} />
+                  </Link>
+                  <a
+                    href="https://owaisabdullah.dev"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: 13, color: 'var(--of-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 5 }}
+                  >
+                    <Globe size={13} aria-hidden="true" />
+                    Portfolio
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/mrowaisabdullah"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: 13, color: 'var(--of-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 5 }}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                    LinkedIn
+                  </a>
+                </div>
               </div>
             </div>
           </div>

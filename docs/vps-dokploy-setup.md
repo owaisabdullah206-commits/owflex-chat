@@ -316,6 +316,14 @@ right before the first `release` push.
 2. **Source type: Docker.** Image: `ghcr.io/<owner>/owflex-chat:latest`. Registry URL:
    `ghcr.io`. Username: your GitHub username. Password: a GitHub PAT (classic) with
    `read:packages` (the image can be private). Save.
+
+> **⚠️ CRITICAL — Do NOT use "Github", "Gitlab", "Bitbucket", or "Git" as the Provider.**
+> These providers make Dokploy **clone your repo and build its own Docker image from
+> source**, completely bypassing the GHCR image that GitHub Actions built. The result:
+> `NEXT_PUBLIC_*` build-args are never passed, Sanity Studio / blog / analytics break,
+> and you waste ~5 min per deploy on a redundant build. **Always select the "Docker"
+> provider** and point it at the GHCR image. If your app is already set to a Git provider,
+> switch to Docker → save → redeploy.
 3. **Domains** (Traefik): add all three as separate domains on the *same* application,
    container port **3000**, HTTPS on, Let's Encrypt:
    - `octively.com`
