@@ -243,16 +243,8 @@ export default function BlogPostView({
           </span>
         </nav>
 
-        {/* Layout: header + article in the left column, sticky sidebar (CTA + TOC + share)
-            on the right. Starting the grid at the header lets the sidebar fill the
-            space beside the title instead of beginning at the first paragraph. */}
-        <div className={hasSidebar ? 'grid lg:grid-cols-[1fr_260px] lg:gap-x-14' : undefined} style={{ alignItems: 'start' }}>
-
-          {/* Left column: header + cover + article body */}
-          <div style={{ minWidth: 0 }}>
-
-            {/* Post header */}
-            <header style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44 }}>
+        {/* Post header */}
+        <header style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44 }}>
           {/* Tags */}
           {post.tags && post.tags.length > 0 ? (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
@@ -326,8 +318,11 @@ export default function BlogPostView({
           </div>
         )}
 
-            {/* Article body */}
-            <div id="article-body">
+        {/* Two-column layout: article + sticky sidebar */}
+        <div className={hasSidebar ? 'grid lg:grid-cols-[1fr_260px] lg:gap-x-14' : undefined} style={{ alignItems: 'start' }}>
+
+          {/* Article body */}
+          <div id="article-body">
             {/* Source Serif 4 for prose; headings override back to --font-sans */}
             <div style={{ fontFamily: 'var(--font-prose)' }}>
               <ReactMarkdown
@@ -581,12 +576,11 @@ export default function BlogPostView({
               <OctivelyButton href="/dashboard/signup" size="md">Start free</OctivelyButton>
             </div>
           </div>
-          </div>{/* /left column */}
 
           {/* Sticky sidebar — CTA + TOC + share (desktop only) */}
           {hasSidebar && (
-            <aside className="hidden lg:block" style={{ position: 'sticky', top: 96, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
-              {/* Conversion CTA — fills the space beside the title and stays visible while reading */}
+            <aside className="hidden lg:block" style={{ position: 'sticky', top: 96 }}>
+              {/* Conversion CTA — sticky at the top of the sidebar, above the table of contents */}
               <div
                 style={{
                   background: 'var(--of-primary-soft)',

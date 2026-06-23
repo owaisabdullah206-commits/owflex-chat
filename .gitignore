@@ -38,7 +38,7 @@ embed/dist/embed.min.js
 
 # ── SDD tooling (all tracked in this repo) ───────────────
 # Uncomment lines below to stop tracking SDD artifacts:
-# CLAUDE.md
+CLAUDE.md
 .claude/    
 .specify/
 DESIGN.md
