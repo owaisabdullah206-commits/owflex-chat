@@ -243,8 +243,11 @@ export default function BlogPostView({
           </span>
         </nav>
 
-        {/* Header row: title block (left) + Start-free CTA card beside it (right, desktop) */}
+        {/* Header + cover row: content (title + cover) left, sticky Start-free card right */}
         <div className={hasSidebar ? 'grid lg:grid-cols-[1fr_260px] lg:gap-x-14' : undefined} style={{ alignItems: 'start' }}>
+
+          {/* Left column: title block + cover image */}
+          <div style={{ minWidth: 0 }}>
         {/* Post header */}
         <header style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44 }}>
           {/* Tags */}
@@ -307,7 +310,21 @@ export default function BlogPostView({
           </div>
         </header>
 
-          {/* Start-free CTA card — beside the title, separate from the TOC below */}
+            {/* Cover image */}
+            {post.coverImage && urlForImage(post.coverImage, 1400) && (
+              <div style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--hairline)' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={urlForImage(post.coverImage, 1400)!}
+                  alt={post.title}
+                  style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }}
+                  loading="eager"
+                />
+              </div>
+            )}
+          </div>{/* /left column */}
+
+          {/* Start-free CTA card — sticky through the header + cover image */}
           {hasSidebar && (
             <aside className="hidden lg:block" style={{ position: 'sticky', top: 96 }}>
               <div
@@ -365,19 +382,6 @@ export default function BlogPostView({
             </aside>
           )}
         </div>
-
-        {/* Cover image — full width, shown above the two-column body */}
-        {post.coverImage && urlForImage(post.coverImage, 1400) && (
-          <div style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--hairline)' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={urlForImage(post.coverImage, 1400)!}
-              alt={post.title}
-              style={{ width: '100%', display: 'block', aspectRatio: '16 / 9', objectFit: 'cover' }}
-              loading="eager"
-            />
-          </div>
-        )}
 
         {/* Two-column layout: article + sticky sidebar */}
         <div className={hasSidebar ? 'grid lg:grid-cols-[1fr_260px] lg:gap-x-14' : undefined} style={{ alignItems: 'start' }}>
