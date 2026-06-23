@@ -23,6 +23,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # TEMP DIAGNOSTIC: prints only the LENGTH of each public build secret, never
+      # the value (GitHub masks values anyway). length 0 = the secret is missing or
+      # misnamed for this workflow. Remove once the env config is confirmed.
+      - name: Verify build secrets present (lengths only)
+        run: |
+          echo "NEXT_PUBLIC_APP_URL len:            ${#APP_URL}"
+          echo "NEXT_PUBLIC_PORTAL_URL len:         ${#PORTAL_URL}"
+          echo "NEXT_PUBLIC_SANITY_PROJECT_ID len:  ${#SANITY_PROJECT_ID}"
+          echo "NEXT_PUBLIC_SANITY_DATASET len:     ${#SANITY_DATASET}"
+          echo "NEXT_PUBLIC_SANITY_API_VERSION len: ${#SANITY_API_VERSION}"
+          [ -z "$SANITY_PROJECT_ID" ] && echo "::warning::NEXT_PUBLIC_SANITY_PROJECT_ID is EMPTY — Studio/blog disabled" || true
+        env:
+          APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          PORTAL_URL: ${{ secrets.NEXT_PUBLIC_PORTAL_URL }}
+          SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+          SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
+          SANITY_API_VERSION: ${{ secrets.NEXT_PUBLIC_SANITY_API_VERSION }}
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Log in to GHCR
