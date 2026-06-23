@@ -326,7 +326,7 @@ export default function BlogPostView({
 
           {/* Start-free CTA card — sticky through the header + cover image */}
           {hasSidebar && (
-            <aside className="hidden lg:block" style={{ position: 'sticky', top: 96 }}>
+            <aside className="hidden lg:block" style={{ position: 'sticky', top: 96, marginBottom: 28 }}>
               <div
                 style={{
                   background: 'var(--of-primary-soft)',
