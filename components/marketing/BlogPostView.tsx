@@ -243,6 +243,8 @@ export default function BlogPostView({
           </span>
         </nav>
 
+        {/* Header row: title block (left) + Start-free CTA card beside it (right, desktop) */}
+        <div className={hasSidebar ? 'grid lg:grid-cols-[1fr_260px] lg:gap-x-14' : undefined} style={{ alignItems: 'start' }}>
         {/* Post header */}
         <header style={{ maxWidth: hasSidebar ? 760 : 720, marginBottom: 44 }}>
           {/* Tags */}
@@ -304,6 +306,65 @@ export default function BlogPostView({
             )}
           </div>
         </header>
+
+          {/* Start-free CTA card — beside the title, separate from the TOC below */}
+          {hasSidebar && (
+            <aside className="hidden lg:block" style={{ position: 'sticky', top: 96 }}>
+              <div
+                style={{
+                  background: 'var(--of-primary-soft)',
+                  border: '1px solid color-mix(in srgb, var(--of-primary) 22%, transparent)',
+                  borderRadius: 14,
+                  padding: '16px 16px 15px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      width: 24,
+                      height: 24,
+                      borderRadius: 7,
+                      background: 'var(--of-primary)',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Sparkles size={13} color="#fff" />
+                  </span>
+                  <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--of-primary)' }}>
+                    Free to try
+                  </span>
+                </div>
+                <p style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3, color: 'var(--ink)', margin: '0 0 6px' }}>
+                  Build your own AI chatbot
+                </p>
+                <p style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--ink-muted)', margin: '0 0 14px' }}>
+                  Free plan, no credit card, live on your site in minutes.
+                </p>
+                <a
+                  href="/dashboard/signup"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    background: 'var(--of-primary)',
+                    color: '#fff',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    padding: '9px 14px',
+                    borderRadius: 9,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Start free <ArrowRight size={14} />
+                </a>
+              </div>
+            </aside>
+          )}
+        </div>
 
         {/* Cover image — full width, shown above the two-column body */}
         {post.coverImage && urlForImage(post.coverImage, 1400) && (
@@ -580,61 +641,6 @@ export default function BlogPostView({
           {/* Sticky sidebar — CTA + TOC + share (desktop only) */}
           {hasSidebar && (
             <aside className="hidden lg:block" style={{ position: 'sticky', top: 96 }}>
-              {/* Conversion CTA — sticky at the top of the sidebar, above the table of contents */}
-              <div
-                style={{
-                  background: 'var(--of-primary-soft)',
-                  border: '1px solid color-mix(in srgb, var(--of-primary) 22%, transparent)',
-                  borderRadius: 14,
-                  padding: '16px 16px 15px',
-                  marginBottom: 28,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      width: 24,
-                      height: 24,
-                      borderRadius: 7,
-                      background: 'var(--of-primary)',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Sparkles size={13} color="#fff" />
-                  </span>
-                  <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--of-primary)' }}>
-                    Free to try
-                  </span>
-                </div>
-                <p style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3, color: 'var(--ink)', margin: '0 0 6px' }}>
-                  Build your own AI chatbot
-                </p>
-                <p style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--ink-muted)', margin: '0 0 14px' }}>
-                  Free plan, no credit card, live on your site in minutes.
-                </p>
-                <a
-                  href="/dashboard/signup"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 6,
-                    background: 'var(--of-primary)',
-                    color: '#fff',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    padding: '9px 14px',
-                    borderRadius: 9,
-                    textDecoration: 'none',
-                  }}
-                >
-                  Start free <ArrowRight size={14} />
-                </a>
-              </div>
-
               {/* Table of contents */}
               <div style={{ marginBottom: 28 }}>
                 <p
