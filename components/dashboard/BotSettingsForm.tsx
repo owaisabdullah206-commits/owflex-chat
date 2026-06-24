@@ -121,7 +121,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [convLimit, setConvLimit]               = useState<string>(initial.monthlyConvLimit?.toString() ?? '')
   const [leadLimit, setLeadLimit]               = useState<string>(initial.monthlyLeadLimit?.toString() ?? '')
   const [creditBudget, setCreditBudget]         = useState<string>(initial.monthlyCreditBudget?.toString() ?? '')
-  const usageLimitsEnabled = convLimit !== '' || leadLimit !== '' || creditBudget !== ''
+  const [usageLimitsToggle, setUsageLimitsToggle] = useState(convLimit !== '' || leadLimit !== '' || creditBudget !== '')
 
   const isFreePlan      = orgPlan === 'free'
   const isStarterOrFree = orgPlan === 'free' || orgPlan === 'starter'
@@ -170,6 +170,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
     setConvLimit(initial.monthlyConvLimit?.toString() ?? '')
     setLeadLimit(initial.monthlyLeadLimit?.toString() ?? '')
     setCreditBudget(initial.monthlyCreditBudget?.toString() ?? '')
+    setUsageLimitsToggle(!!initial.monthlyConvLimit || !!initial.monthlyLeadLimit || !!initial.monthlyCreditBudget)
     setIsDirty(false)
     setSaved(false)
     setError(null)
@@ -609,7 +610,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             value={borderRadius}
             onChange={(e) => { setBorderRadius(Number(e.target.value)); markDirty() }}
             disabled={isPending}
-            className="w-full accent-[var(--of-primary)]"
+            className="w-full range-dark"
           />
           <div className="flex justify-between text-[10px] text-[var(--ink-subtle)]">
             <span>Square</span>
@@ -624,7 +625,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             <select id="position" value={position}
               onChange={(e) => { setPosition(e.target.value as 'bottom-right' | 'bottom-left'); markDirty() }}
               disabled={isPending}
-              className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer">
+              className="w-full appearance-none border border-[var(--hairline)] bg-[var(--bg)] text-[var(--ink)] pl-3 pr-8 py-2 text-sm focus:outline-none focus:border-[var(--of-primary)] disabled:opacity-50 cursor-pointer rounded-[var(--r-sm)]">
               <option value="bottom-right">Bottom Right</option>
               <option value="bottom-left">Bottom Left</option>
             </select>
@@ -639,7 +640,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             onChange={(e) => { setBottomOffset(Math.min(200, Math.max(0, parseInt(e.target.value) || 0))); markDirty() }}
             disabled={isPending}
             placeholder="24"
-            className="text-sm" />
+            className="text-sm rounded-[var(--r-sm)]" />
           <p className="text-[10px] text-[var(--ink-subtle)]">Gap from the bottom edge of the screen. Default: 24px.</p>
         </div>
 
@@ -834,8 +835,9 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
               <p className="text-xs text-[var(--ink-muted)]">Set per-bot monthly caps for conversations, leads, and credits</p>
             </div>
             <Switch
-              checked={usageLimitsEnabled}
+              checked={usageLimitsToggle}
               onCheckedChange={(v) => {
+                setUsageLimitsToggle(v)
                 if (!v) { setConvLimit(''); setLeadLimit(''); setCreditBudget('') }
                 markDirty()
               }}
@@ -846,7 +848,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
         </div>
 
         {/* ── Usage & Limits inputs (pro / agency / enterprise) ── */}
-        {!isStarterOrFree && usageLimitsEnabled && (
+        {!isStarterOrFree && usageLimitsToggle && (
           <div>
             <p className="text-xs text-[var(--ink-muted)] mb-3">
               Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.

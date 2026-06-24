@@ -266,6 +266,52 @@ select option {
   color: var(--ink, #F5F0EB);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Range slider — dark theme track + thumb
+   ───────────────────────────────────────────────────────────────────────────── */
+input[type="range"].range-dark {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--surface-3, #2A2622);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+input[type="range"].range-dark::-webkit-slider-runnable-track {
+  height: 6px;
+  background: var(--surface-3, #2A2622);
+  border-radius: 3px;
+}
+
+input[type="range"].range-dark::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--of-primary, #0EA5E9);
+  border: 2px solid var(--surface, #171512);
+  margin-top: -5px;
+  cursor: pointer;
+}
+
+input[type="range"].range-dark::-moz-range-track {
+  height: 6px;
+  background: var(--surface-3, #2A2622);
+  border-radius: 3px;
+  border: none;
+}
+
+input[type="range"].range-dark::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--of-primary, #0EA5E9);
+  border: 2px solid var(--surface, #171512);
+  cursor: pointer;
+}
+
 /* hairline-strong is now defined in the main .marketing block above */
 
 /* ─────────────────────────────────────────────────────────────────────────────
