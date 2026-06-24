@@ -1003,39 +1003,6 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
 
       {/* ── Right: live preview (sticky) ── */}
       <div className="hidden lg:block sticky top-20 self-start">
-        {/* Top action bar: save + unsaved indicator */}
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">Live Preview</p>
-          <div className="flex items-center gap-2">
-            {isDirty && (
-              <span className="text-[11px] text-amber-400 flex items-center gap-1.5">
-                Unsaved changes
-                <button
-                  type="button"
-                  onClick={handleDiscard}
-                  className="text-[var(--ink-muted)] hover:text-[var(--ink)] underline underline-offset-2 transition-colors"
-                >
-                  Discard
-                </button>
-              </span>
-            )}
-            {saved && (
-              <span className="text-[11px] text-[var(--success-text)]">Saved</span>
-            )}
-            <Button
-              type="button"
-              disabled={isPending}
-              onClick={() => {
-                const form = document.querySelector('form')
-                if (form) form.requestSubmit()
-              }}
-              className="h-7 px-3 text-xs bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white inline-flex items-center gap-1.5"
-            >
-              {isPending && <OctivelySpinner size={12} color="white" duration={4} />}
-              {isPending ? 'Saving…' : 'Save'}
-            </Button>
-          </div>
-        </div>
         <LiveBotPreview
           embedKey={embedKey}
           botName={name}
@@ -1052,6 +1019,11 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           whatsappNumber={whatsappNumber.replace(/[^0-9]/g, '')}
           collectLeadBefore={collectLeadBefore}
           onToggleTheme={() => { setPreviewTheme((t) => t === 'dark' ? 'light' : 'dark'); markDirty() }}
+          isPending={isPending}
+          isDirty={isDirty}
+          saved={saved}
+          onSave={() => { const form = document.querySelector('form'); if (form) form.requestSubmit() }}
+          onDiscard={handleDiscard}
         />
       </div>
     </div>
@@ -1076,6 +1048,11 @@ function LiveBotPreview({
   whatsappNumber,
   collectLeadBefore,
   onToggleTheme,
+  isPending,
+  isDirty,
+  saved,
+  onSave,
+  onDiscard,
 }: {
   embedKey: string
   botName: string
@@ -1092,6 +1069,11 @@ function LiveBotPreview({
   whatsappNumber: string
   collectLeadBefore: boolean
   onToggleTheme: () => void
+  isPending: boolean
+  isDirty: boolean
+  saved: boolean
+  onSave: () => void
+  onDiscard: () => void
 }) {
   const isDark = theme === 'dark'
   const isLeft = position === 'bottom-left'
@@ -1106,6 +1088,10 @@ function LiveBotPreview({
   const innerBr     = `${Math.max(4, borderRadius - 4)}px`
   const [previewMode, setPreviewMode] = useState<'form' | 'chat'>(collectLeadBefore ? 'form' : 'chat')
   const showLeadForm = collectLeadBefore && previewMode === 'form'
+
+  useEffect(() => {
+    if (!collectLeadBefore) setPreviewMode('chat')
+  }, [collectLeadBefore])
 
   return (
     <div>
@@ -1157,6 +1143,30 @@ function LiveBotPreview({
           <ExternalLink className="h-3 w-3" />
           Test live
         </a>
+        {isDirty && (
+          <span className="text-[10px] text-amber-400 flex items-center gap-1 ml-1">
+            Unsaved
+            <button
+              type="button"
+              onClick={onDiscard}
+              className="text-[var(--ink-muted)] hover:text-[var(--ink)] underline underline-offset-2 transition-colors"
+            >
+              Discard
+            </button>
+          </span>
+        )}
+        {saved && (
+          <span className="text-[10px] text-[var(--success-text)]">Saved</span>
+        )}
+        <Button
+          type="button"
+          disabled={isPending}
+          onClick={onSave}
+          className="h-7 px-3 text-xs bg-[var(--of-primary)] hover:bg-[var(--of-primary-hover)] text-white inline-flex items-center gap-1.5"
+        >
+          {isPending && <OctivelySpinner size={12} color="white" duration={4} />}
+          {isPending ? 'Saving…' : 'Save'}
+        </Button>
         </div>
       </div>
 
