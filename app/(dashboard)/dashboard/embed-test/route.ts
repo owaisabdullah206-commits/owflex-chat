@@ -2,7 +2,9 @@ import { NextRequest } from 'next/server'
 
 export async function GET(req: NextRequest) {
   const key    = req.nextUrl.searchParams.get('key') ?? ''
-  const origin = new URL(req.url).origin
+  const host   = req.headers.get('host') ?? 'admin.octively.com'
+  const proto  = req.headers.get('x-forwarded-proto') || 'https'
+  const origin = `${proto}://${host}`
 
   const html = `<!DOCTYPE html>
 <html lang="en">

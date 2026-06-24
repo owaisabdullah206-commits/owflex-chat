@@ -63,18 +63,7 @@ export function proxy(request: NextRequest) {
   }
 
   // octively.com (non-dashboard/portal paths) → marketing site
-  const response = NextResponse.next()
-
-  // Strip CSP for embed-test page in dev — 0.0.0.0 doesn't match 'self' in some browsers.
-  // Production is fine since admin.octively.com/embed.js is same-origin.
-  if (
-    url.pathname === '/dashboard/embed-test' &&
-    (host === '0.0.0.0:3000' || host.startsWith('localhost') || host.includes('127.0.0.1'))
-  ) {
-    response.headers.delete('Content-Security-Policy')
-  }
-
-  return response
+  return NextResponse.next()
 }
 
 export const config = {
