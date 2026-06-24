@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
       whatsappNumber: typeof config.whatsappNumber === 'string' ? config.whatsappNumber : '',
     },
     {
-      headers: { 'Cache-Control': 'public, max-age=300' },
+      headers: { 'Cache-Control': 'no-cache, must-revalidate' },
     },
   )
 }
