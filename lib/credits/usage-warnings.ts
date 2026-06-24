@@ -25,7 +25,7 @@ export async function checkAndWarnUsage(
 
     const thresholdMet =
       metric === 'credits'
-        ? pct <= 10   // credits: warn when ≤ 10% remaining
+        ? pct >= 90   // credits: warn when ≥ 90% used (≤ 10% remaining)
         : pct >= 90   // conversations/leads: warn when ≥ 90% used
 
     if (!thresholdMet) return
