@@ -1001,8 +1001,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
         </div>
       </form>
 
-      {/* ── Right: live preview ── */}
-      <div className="hidden lg:block">
+      {/* ── Right: live preview (sticky) ── */}
+      <div className="hidden lg:block sticky top-20 self-start">
         {/* Top action bar: save + unsaved indicator */}
         <div className="flex items-center justify-between mb-3">
           <p className="text-xs font-medium text-[var(--ink-muted)] uppercase tracking-wide">Live Preview</p>
@@ -1108,7 +1108,7 @@ function LiveBotPreview({
   const showLeadForm = collectLeadBefore && previewMode === 'form'
 
   return (
-    <div className="sticky top-20">
+    <div>
       {/* Controls bar */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-1.5">
@@ -1160,6 +1160,8 @@ function LiveBotPreview({
         </div>
       </div>
 
+      {/* Chat container — relative for trigger positioning */}
+      <div style={{ width: '300px', position: 'relative' }}>
       {/* Chat window */}
       <div
         style={{ borderRadius: br, backgroundColor: c.bg, border: `1px solid ${c.hairline}`, width: '300px' }}
@@ -1327,19 +1329,17 @@ function LiveBotPreview({
         )}
       </div>
 
-      {/* Trigger area */}
+      {/* Trigger — floats over chat window */}
       <div
-        className="mt-3 flex items-center gap-2"
-        style={{ width: '300px', justifyContent: isLeft ? 'flex-start' : 'flex-end' }}
+        style={{
+          position: 'absolute',
+          bottom: -28,
+          [isLeft ? 'left' : 'right']: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+        }}
       >
-        {isLeft && (
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
-            style={{ backgroundColor: primaryColor }}
-          >
-            <TriggerIcon className="h-6 w-6 text-white" />
-          </div>
-        )}
         {tooltipEnabled && (
           <div
             className="text-xs px-3 py-1.5 shadow-sm"
@@ -1357,17 +1357,16 @@ function LiveBotPreview({
             {firstTip}
           </div>
         )}
-        {!isLeft && (
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
-            style={{ backgroundColor: primaryColor }}
-          >
-            <TriggerIcon className="h-6 w-6 text-white" />
-          </div>
-        )}
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
+          style={{ backgroundColor: primaryColor }}
+        >
+          <TriggerIcon className="h-6 w-6 text-white" />
+        </div>
+      </div>
       </div>
 
-      <p className="text-xs text-[var(--ink-subtle)] mt-2.5">Updates live as you change settings above.</p>
+      <p className="text-xs text-[var(--ink-subtle)] mt-8">Updates live as you change settings above.</p>
     </div>
   )
 }
