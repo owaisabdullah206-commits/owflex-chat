@@ -656,7 +656,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
               disabled={isPending} />
           </div>
 
-          {/* Collect Lead Before Chat */}
+          {/* Collect Lead Before Chat — only visible when Lead Capture is on */}
+          {leadCaptureEnabled && (
           <div className="flex items-center justify-between py-3">
             <div>
               <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
@@ -666,6 +667,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
               onCheckedChange={(v) => { setCollectLeadBefore(v); markDirty() }}
               disabled={isPending} />
           </div>
+          )}
 
           {/* Strict Mode */}
           <div className="flex items-center justify-between py-3">
