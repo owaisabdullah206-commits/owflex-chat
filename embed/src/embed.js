@@ -15,7 +15,7 @@ var pollTimer=null,lastAgentTs=null,agentLabeled=0;
 var bn="Chat",pc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
 var ti="message-circle",br=16,te=false,tms=[];
 var be=false,bt="Powered by Octively",burl="https://octively.com";
-var clb=false,dk=false,wa="";
+var clb=false,dk=false,wa="",bo=24;
 var op=0,busy=0,started=0,lastMsg="";
 
 /* ── Icon SVG paths (exact Lucide v1.16.0) ── */
@@ -40,6 +40,7 @@ fetch(bu+"/api/v1/widget-config?key="+k)
     bn=c.botName||bn;pc=c.primaryColor||pc;
     wm=c.welcomeMessage||wm;lc=c.leadCaptureEnabled!==false;clb=c.collectLeadBefore===true;
     pos=c.position||pos;
+    bo=typeof c.bottomOffset==="number"?c.bottomOffset:bo;
     ti=c.triggerIcon||ti;
     br=typeof c.borderRadius==="number"?c.borderRadius:br;
     te=c.tooltipEnabled===true;
@@ -63,10 +64,10 @@ var css=
 ":root{--ofp:"+pc+"}"+
 
 /* ── Glow ring ── */
-"#obg{position:fixed;bottom:14px;"+side+":14px;"+opp+":auto;width:74px;height:74px;border-radius:50%;background:var(--ofp);z-index:2147483644;opacity:.3;filter:blur(16px);pointer-events:none;animation:ofPulse 2.5s ease-in-out infinite}"+
+"#obg{position:fixed;bottom:"+(bo-10)+"px;"+side+":14px;"+opp+":auto;width:74px;height:74px;border-radius:50%;background:var(--ofp);z-index:2147483644;opacity:.3;filter:blur(16px);pointer-events:none;animation:ofPulse 2.5s ease-in-out infinite}"+
 
 /* ── Launch button ── */
-"#ob{position:fixed;bottom:24px;"+side+":24px;"+opp+":auto;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:var(--ofp);z-index:2147483646;box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ofFloat 3s ease-in-out infinite;transition:transform .15s,box-shadow .15s}"+
+"#ob{position:fixed;bottom:"+bo+"px;"+side+":24px;"+opp+":auto;width:54px;height:54px;border-radius:50%;border:0;cursor:pointer;background:var(--ofp);z-index:2147483646;box-shadow:0 4px 20px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;animation:ofFloat 3s ease-in-out infinite;transition:transform .15s,box-shadow .15s}"+
 "#ob:hover{animation:none;transform:scale(1.1);box-shadow:0 6px 28px rgba(0,0,0,.3)}"+
 
 /* ── Button icons ── */
@@ -74,7 +75,7 @@ var css=
 ".obX{opacity:0;transform:rotate(-90deg) scale(.5)}"+
 
 /* ── Chat panel ── */
-"#oP{position:fixed;bottom:90px;"+side+":20px;"+opp+":auto;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:"+br+"px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom "+side+";transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1)}"+
+"#oP{position:fixed;bottom:"+(bo+66)+"px;"+side+":20px;"+opp+":auto;width:360px;max-width:calc(100vw - 24px);height:520px;max-height:calc(100vh - 110px);background:#fff;border-radius:"+br+"px;box-shadow:0 12px 48px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.07);display:flex;flex-direction:column;z-index:2147483645;font-family:system-ui,-apple-system,sans-serif;overflow:hidden;transform-origin:bottom "+side+";transition:opacity .22s,transform .28s cubic-bezier(.34,1.56,.64,1)}"+
 "#oP.h{opacity:0;transform:scale(0.88) translateY(16px);pointer-events:none}"+
 
 /* ── Header ── */
@@ -119,7 +120,7 @@ var css=
 "#oB a{color:inherit!important;text-decoration:none!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important}"+
 
 /* ── Tooltip ── */
-(te?"#oTip{position:fixed;bottom:32px;"+side+":88px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
+(te?"#oTip{position:fixed;bottom:"+(bo+8)+"px;"+side+":88px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
 
 /* ── Keyframes ── */
 "@keyframes ofFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}"+

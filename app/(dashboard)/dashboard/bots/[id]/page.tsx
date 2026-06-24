@@ -373,6 +373,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                       return {
                         primaryColor:       (wc.primaryColor as string)  ?? '#0EA5E9',
                         position:           ((wc.position as string) === 'bottom-left' ? 'bottom-left' : 'bottom-right') as 'bottom-right' | 'bottom-left',
+                        bottomOffset:       typeof wc.bottomOffset === 'number' ? wc.bottomOffset : 24,
                         welcomeMessage:     (wc.welcomeMessage as string) ?? 'Hi! How can I help you today?',
                         leadCaptureEnabled: (wc.leadCaptureEnabled as boolean) !== false,
                         collectLeadBefore:  (wc.collectLeadBefore as boolean) === true,

@@ -11,6 +11,7 @@ const querySchema = z.object({
 type WidgetConfig = {
   primaryColor?: string
   position?: string
+  bottomOffset?: number
   welcomeMessage?: string
   leadCaptureEnabled?: boolean
   collectLeadBefore?: boolean
@@ -81,6 +82,7 @@ export async function GET(req: NextRequest) {
       primaryColor: config.primaryColor ?? '#0EA5E9',
       welcomeMessage: config.welcomeMessage ?? 'Hi! How can I help you today?',
       position: config.position ?? 'bottom-right',
+      bottomOffset: typeof config.bottomOffset === 'number' ? config.bottomOffset : 24,
       leadCaptureEnabled: config.leadCaptureEnabled !== false,
       collectLeadBefore: config.collectLeadBefore === true,
       triggerIcon: config.triggerIcon ?? 'message-circle',

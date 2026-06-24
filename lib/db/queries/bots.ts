@@ -34,6 +34,7 @@ const updateBotSchema = z.object({
   widgetConfig: z.object({
     primaryColor:       z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     position:           z.enum(['bottom-right', 'bottom-left']).optional(),
+    bottomOffset:       z.number().min(0).max(200).optional(),
     welcomeMessage:     z.string().max(200).optional(),
     leadCaptureEnabled:  z.boolean().optional(),
     collectLeadBefore:   z.boolean().optional(),

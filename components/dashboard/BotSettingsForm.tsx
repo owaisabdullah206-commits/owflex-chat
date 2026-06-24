@@ -49,6 +49,7 @@ interface BotSettingsFormProps {
     routingStrongModel: string | null
     primaryColor: string
     position: 'bottom-right' | 'bottom-left'
+    bottomOffset: number
     welcomeMessage: string
     leadCaptureEnabled: boolean
     collectLeadBefore: boolean
@@ -94,6 +95,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [strongModel, setStrongModel]           = useState<string>(initial.routingStrongModel ?? 'anthropic/claude-haiku-4-5-20251001')
   const [primaryColor, setPrimaryColor]         = useState(initial.primaryColor)
   const [position, setPosition]                 = useState(initial.position)
+  const [bottomOffset, setBottomOffset]         = useState(initial.bottomOffset)
   const [welcomeMessage, setWelcomeMessage]     = useState(initial.welcomeMessage)
   const [leadCaptureEnabled, setLeadCapture]    = useState(initial.leadCaptureEnabled)
   const [collectLeadBefore, setCollectLeadBefore] = useState(initial.collectLeadBefore)
@@ -194,6 +196,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
         widgetConfig: {
           primaryColor,
           position,
+          bottomOffset,
           welcomeMessage,
           leadCaptureEnabled,
           collectLeadBefore,
@@ -627,6 +630,17 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--ink-muted)]" />
           </div>
+        </div>
+
+        {/* Bottom Offset */}
+        <div className="space-y-1.5">
+          <Label htmlFor="bottomOffset" className="text-xs text-[var(--ink-muted)]">Bottom Offset (px)</Label>
+          <Input id="bottomOffset" type="number" min={0} max={200} value={bottomOffset}
+            onChange={(e) => { setBottomOffset(Math.min(200, Math.max(0, parseInt(e.target.value) || 0))); markDirty() }}
+            disabled={isPending}
+            placeholder="24"
+            className="text-sm" />
+          <p className="text-[10px] text-[var(--ink-subtle)]">Gap from the bottom edge of the screen. Default: 24px.</p>
         </div>
 
         {/* Toggles */}
