@@ -74,9 +74,10 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      // Security headers on all routes EXCEPT the Sanity Studio (which needs a looser CSP)
+      // Security headers on all routes EXCEPT Sanity Studio and embed-test
+      // (embed-test needs to load embed.js from any origin for testing)
       {
-        source: "/((?!content-studio).*)",
+        source: "/((?!content-studio|dashboard/embed-test).*)",
         headers: securityHeaders,
       },
       // Relaxed CSP for the embedded Sanity Studio

@@ -1170,8 +1170,8 @@ function LiveBotPreview({
         </div>
       </div>
 
-      {/* Chat container — relative for trigger positioning */}
-      <div style={{ width: '300px', position: 'relative' }}>
+      {/* Chat container — relative with paddingBottom for trigger spacing */}
+      <div style={{ width: '300px', position: 'relative', paddingBottom: 64 }}>
       {/* Chat window */}
       <div
         style={{ borderRadius: br, backgroundColor: c.bg, border: `1px solid ${c.hairline}`, width: '300px' }}
@@ -1343,7 +1343,7 @@ function LiveBotPreview({
       <div
         style={{
           position: 'absolute',
-          bottom: -28,
+          bottom: 8,
           [isLeft ? 'left' : 'right']: 0,
           display: 'flex',
           alignItems: 'center',
