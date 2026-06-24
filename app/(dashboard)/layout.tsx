@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { DashboardShell } from '@/components/dashboard/DashboardShell'
 import { UsageWarningBanner } from '@/components/dashboard/UsageWarningBanner'
+import { PLAN_CREDIT_ALLOCATIONS } from '@/lib/credits'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   // Best-effort: if session unavailable, render without banners (auth guard is on each page)
@@ -33,6 +34,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
         const graceUsedKey = `credit_grace_used:${org.id}:${yyyyMM}`
         const [graceTtl, graceUsed] = await Promise.all([redis.ttl(graceKey), redis.get(graceUsedKey)])
         const graceOrDisabled = (graceTtl ?? 0) > 0 || graceUsed !== null
+
+        // Recheck credit usage: stale flags from buggy threshold (≤10%) persist in Redis.
+        // Read actual balance and clear the flag if usage is below the 90% threshold.
+        const flagsIndex = metrics.indexOf('credits')
+        if (flags[flagsIndex] && !graceOrDisabled) {
+          const creditBalance = await redis.get<number>(`credits:${org.id}`)
+          const allocation = PLAN_CREDIT_ALLOCATIONS[org.plan] ?? 2_000_000
+          if (creditBalance !== null) {
+            const used = allocation - creditBalance
+            const pct = Math.floor((used / allocation) * 100)
+            if (pct < 90) {
+              await redis.del(`limit_warn:${org.id}:credits:${yyyyMM}`)
+              flags[flagsIndex] = null
+            }
+          }
+        }
 
         activeWarnings = metrics.filter((m, i) => {
           if (m === 'credits' && graceOrDisabled) return false

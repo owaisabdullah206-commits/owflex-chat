@@ -14,7 +14,7 @@ import type { NextConfig } from "next";
 // - form-action 'self': form submissions only to same origin
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com",
+  "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://*.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "connect-src 'self' https: https://*.google-analytics.com https://*.analytics.google.com",
