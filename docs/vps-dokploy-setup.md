@@ -645,8 +645,11 @@ sudo dpkg-reconfigure -plow unattended-upgrades # automatic security updates
 
 ### 13.4 Dokploy panel + API
 
-- **2FA on the admin account** (Dokploy ≥ v0.19 has it) — the panel can deploy/destroy
-  everything, so treat it like root. Strong unique password from the start.
+- **Enable 2FA on the admin account** — the panel can deploy/destroy everything, so treat it
+  like root. Go to `https://deploy.octively.com` → click your avatar (top-right) → **Profile**
+  → **Two Factor Authentication** → **Enable**. Scan the QR code with Google
+  Authenticator (or any TOTP app). No external key needed — Dokploy generates everything.
+  Strong unique password from the start.
 - Panel reachable **only via `https://deploy.octively.com`**, never the raw IP:3000 (§2f).
 - **Scope the CI API token**: create a dedicated key (Dokploy → API keys, per-org with rate
   limiting), give it the least privilege that still lets it deploy, set an **expiry** (~90d),
