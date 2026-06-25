@@ -79,7 +79,7 @@ var css=
 "#oP.h{opacity:0;transform:scale(0.88) translateY(16px);pointer-events:none}"+
 
 /* ── Header ── */
-"#oH{padding:14px 16px;background:"+(ge?"linear-gradient(135deg,"+pc+","+gc+")":pc)+";color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink;0}"+
+"#oH{padding:14px 16px;background:"+(ge?"linear-gradient(135deg,"+pc+","+gc+")":pc)+";color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}"+
 "#oAv{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;margin-right:10px;position:relative}"+
 "#oDot{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:#4ade80;border:2px solid var(--ofp);animation:ofBlink 2s ease-in-out infinite}"+
 "#oHn{font-weight:600;font-size:14px;line-height:1.2}"+
