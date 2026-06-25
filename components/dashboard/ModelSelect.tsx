@@ -5,7 +5,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, AlertTriangle } from 'lucide-react'
 import { SUPPORTED_MODELS, getModelMeta } from '@/lib/ai/litellm'
 
 // Tier order controls the display sequence in the dropdown
@@ -32,10 +32,17 @@ interface ModelSelectProps {
   id?: string
   /** sm = 1.5 py (smart-routing rows) · md = 2 py (standalone select) */
   size?: 'sm' | 'md'
+  /**
+   * Per-model pricing data from the DB (modelId → prompt/completion cost per 1M).
+   * When provided, selection to a more expensive model triggers a confirmation dialog.
+   * Pass an empty object to skip pricing-based confirmation.
+   */
+  modelPrices?: Record<string, { prompt: number; completion: number }>
 }
 
-export function ModelSelect({ value, onChange, disabled = false, id, size = 'md' }: ModelSelectProps) {
+export function ModelSelect({ value, onChange, disabled = false, id, size = 'md', modelPrices = {} }: ModelSelectProps) {
   const [open, setOpen] = useState(false)
+  const [pendingModel, setPendingModel] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const meta = getModelMeta(value)
 
@@ -135,7 +142,25 @@ export function ModelSelect({ value, onChange, disabled = false, id, size = 'md'
                   <button
                     key={m}
                     type="button"
-                    onClick={() => { onChange(m); setOpen(false) }}
+                    onClick={() => {
+                      if (m === value) {
+                        setOpen(false)
+                        return
+                      }
+                      // Price-based expensive check (if DB data available)
+                      const currentPrice = modelPrices[value]
+                      const selectedPrice = modelPrices[m]
+                      if (currentPrice && selectedPrice) {
+                        const curTotal = currentPrice.prompt + currentPrice.completion
+                        const selTotal = selectedPrice.prompt + selectedPrice.completion
+                        if (selTotal > curTotal) {
+                          setPendingModel(m)
+                          return
+                        }
+                      }
+                      onChange(m)
+                      setOpen(false)
+                    }}
                     className={[
                       'w-full flex items-center gap-2.5 px-3 py-2 text-left border-l-2 transition-colors duration-75',
                       isSelected
@@ -147,7 +172,6 @@ export function ModelSelect({ value, onChange, disabled = false, id, size = 'md'
                     <span className={`flex-1 min-w-0 truncate text-xs font-medium ${isSelected ? 'text-[var(--of-primary)]' : 'text-[var(--ink)]'}`}>
                       {mMeta.label}
                     </span>
-                    {/* Speed */}
                     {mMeta.speed && (
                       <span
                         className="shrink-0 text-[10px] text-[var(--ink-subtle)]"
@@ -167,6 +191,56 @@ export function ModelSelect({ value, onChange, disabled = false, id, size = 'md'
           ))}
         </div>
       )}
+
+      {/* Credit confirmation for more expensive models */}
+      {pendingModel && (() => {
+        const pendingMeta = getModelMeta(pendingModel)
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(2px)' }}
+            onClick={() => setPendingModel(null)}
+          >
+            <div
+              className="w-full max-w-sm mx-4 rounded-lg border border-[var(--hairline)] bg-[var(--surface)] p-5 space-y-4"
+              style={{ boxShadow: '0 16px 48px rgba(0,0,0,0.5)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-3">
+                <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-[var(--ink)]">
+                    Switch to <span className="text-[var(--ink)]">{pendingMeta.label}</span>?
+                  </p>
+                  <p className="text-xs text-[var(--ink-muted)] mt-1 leading-relaxed">
+                    This model consumes more credits per conversation than your current model.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setPendingModel(null)}
+                  className="h-8 px-4 text-xs font-medium rounded border border-[var(--hairline)] text-[var(--ink-muted)] hover:text-[var(--ink)] hover:border-[var(--hairline-strong)] transition-colors bg-transparent"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(pendingModel)
+                    setPendingModel(null)
+                    setOpen(false)
+                  }}
+                  className="h-8 px-4 text-xs font-medium rounded bg-[var(--of-primary)] text-white hover:opacity-90 transition-opacity"
+                >
+                  Switch model
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

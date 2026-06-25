@@ -40,6 +40,7 @@ interface BotSettingsFormProps {
   botId: string
   embedKey: string
   orgPlan: string
+  modelPrices: Record<string, { prompt: number; completion: number }>
   initial: {
     name: string
     systemPrompt: string
@@ -82,7 +83,7 @@ interface BotSettingsFormProps {
 }
 
 // ─── Main form ────────────────────────────────────────────────────────────────
-export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettingsFormProps) {
+export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, initial }: BotSettingsFormProps) {
   const [isPending, startTransition] = useTransition()
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -429,6 +430,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                       onChange={(v) => { setLightModel(v); markDirty() }}
                       disabled={isPending}
                       size="sm"
+                      modelPrices={modelPrices}
                     />
                   </div>
                 </div>
@@ -444,6 +446,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                       onChange={(v) => { setModel(v); markDirty() }}
                       disabled={isPending || isStarterOrFree}
                       size="sm"
+                      modelPrices={modelPrices}
                     />
                   </div>
                 </div>
@@ -459,6 +462,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                       onChange={(v) => { setStrongModel(v); markDirty() }}
                       disabled={isPending}
                       size="sm"
+                      modelPrices={modelPrices}
                     />
                   </div>
                 </div>
@@ -487,6 +491,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                   onChange={(v) => { setModel(v); markDirty() }}
                   disabled={isPending}
                   size="md"
+                  modelPrices={modelPrices}
                 />
               </div>
             )}

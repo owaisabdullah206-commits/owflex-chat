@@ -560,3 +560,34 @@ export async function getModelLatencyStats() {
 
   return rows.rows
 }
+
+/**
+ * Returns the latest active price for each supported model, grouped by modelId.
+ * Used by the bot settings page to warn about expensive model selections.
+ * Does NOT require platform owner auth (unlike getModelPrices).
+ */
+export async function getModelPriceSummary(): Promise<Record<string, { prompt: number; completion: number }>> {
+  const rows = await db
+    .select()
+    .from(schema.modelPrices)
+    .where(inArray(schema.modelPrices.modelId, [...SUPPORTED_MODELS]))
+
+  // Last write wins — rows from DB are in insertion order, so later entries
+  // (more recently refreshed) overwrite earlier ones.
+  const latest = new Map<string, typeof rows[0]>()
+  for (const row of rows) {
+    latest.set(row.modelId, row)
+  }
+
+  const result: Record<string, { prompt: number; completion: number }> = {}
+  for (const modelId of SUPPORTED_MODELS) {
+    const price = latest.get(modelId)
+    if (price) {
+      result[modelId] = {
+        prompt:     parseFloat(price.promptPricePer1M),
+        completion: parseFloat(price.completionPricePer1M),
+      }
+    }
+  }
+  return result
+}

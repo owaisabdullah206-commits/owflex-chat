@@ -18,6 +18,7 @@ import { LeadsTable } from '@/components/dashboard/LeadsTable'
 import { BotSettingsForm } from '@/components/dashboard/BotSettingsForm'
 import { BotToggle } from '@/components/dashboard/BotToggle'
 import { DeleteBotButton } from '@/components/dashboard/DeleteBotButton'
+import { getModelPriceSummary } from '@/lib/db/queries/admin'
 import { UnansweredList } from '@/components/dashboard/UnansweredList'
 import { DocumentsTab } from '@/components/dashboard/DocumentsTab'
 import { AutoRefresh } from '@/components/shared/AutoRefresh'
@@ -83,7 +84,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
     to: toStr ? new Date(toStr) : undefined,
   }
 
-  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, unansweredMessages, clientRows, inviteRows, analyticsData, pageBreakdown, ratingSummary, usageData] = await Promise.all([
+  const [conversations, leads, convMonthCount, leadsMonthCount, convWeekCount, unansweredMessages, clientRows, inviteRows, analyticsData, pageBreakdown, ratingSummary, usageData, modelPrices] = await Promise.all([
     searchConversations(bot.id, convFilters),
     db
       .select({
@@ -164,6 +165,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       conversations: 0, messages: 0, tokens: 0, avgLatencyMs: 0, creditsUsed: 0, leads: 0,
       modelBreakdown: [] as { model: string; messages: number; tokens: number; costUsd: number }[],
     })),
+    getModelPriceSummary().catch(() => ({})),
   ])
 
   const clientUser = clientRows[0] ?? null
@@ -360,6 +362,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                   botId={bot.id}
                   embedKey={bot.embedKey}
                   orgPlan={bot.orgPlan}
+                  modelPrices={modelPrices}
                   initial={{
                     name: bot.name,
                     systemPrompt: bot.systemPrompt,
