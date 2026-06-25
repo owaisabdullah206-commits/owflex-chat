@@ -15,7 +15,7 @@ import { updateBot } from '@/lib/db/queries/bots'
 import { type SupportedModel } from '@/lib/ai/litellm'
 import { ModelSelect } from './ModelSelect'
 import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
-import { LiveIndicator } from '@/components/brand/LiveIndicator'
+
 
 // ─── Trigger icon catalogue ───────────────────────────────────────────────────
 const TRIGGER_ICONS = [
@@ -1182,7 +1182,7 @@ function LiveBotPreview({
 
   const TriggerIcon = getIconComponent(triggerIcon)
   const displayMsg  = welcomeMessage.trim() || 'Hi! How can I help you today?'
-  const firstTip    = tooltipMessages[0] || 'Need help? Ask me!'
+  const firstTip    = tooltipMessages.filter(s => s.trim()).length ? tooltipMessages[0] : ''
   const br          = `${borderRadius}px`
   const innerBr     = `${Math.max(4, borderRadius - 4)}px`
   const [previewMode, setPreviewMode] = useState<'form' | 'chat'>(collectLeadBefore ? 'form' : 'chat')
@@ -1269,12 +1269,18 @@ function LiveBotPreview({
         className="overflow-hidden shadow-2xl"
       >
         {/* Header */}
-        <div className="px-4 py-3 flex items-center gap-2.5" style={{ background: gradientBg }}>
-          <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-            <TriggerIcon className="h-4 w-4 text-white" />
+        <div style={{ padding: '14px 16px', background: gradientBg, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', flex: 1, minWidth: 0 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,255,255,.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginRight: 10, position: 'relative' }}>
+              <TriggerIcon style={{ width: 18, height: 18 }} className="text-white" />
+              <span style={{ position: 'absolute', bottom: 0, right: 0, width: 10, height: 10, borderRadius: '50%', background: '#4ade80', border: '2px solid transparent', boxShadow: `0 0 0 2px ${primaryColor}` }} />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.2 }}>{botName || 'My Bot'}</div>
+              <div style={{ fontSize: 11, opacity: 0.8, marginTop: 1 }}>Online</div>
+            </div>
           </div>
-          <span className="text-white text-sm font-semibold truncate flex-1">{botName || 'My Bot'}</span>
-          <LiveIndicator label="Online" color="white" style={{ fontSize: 10, opacity: 0.85 }} />
+          <button type="button" aria-label="Close chat" style={{ background: 'none', border: 0, color: 'rgba(255,255,255,.7)', cursor: 'default', fontSize: 18, padding: 6, lineHeight: 1, borderRadius: 8, marginLeft: 6, flexShrink: 0 }}>&#x2715;</button>
         </div>
 
         {/* Messages or Lead Form */}
@@ -1305,23 +1311,24 @@ function LiveBotPreview({
             </button>
           </div>
         ) : (
-          <div className="p-3 space-y-3" style={{ minHeight: '340px', backgroundColor: c.bg }}>
+          <div style={{ padding: '14px', minHeight: '340px', backgroundColor: c.bg, display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {/* Bot bubble */}
-            <div className="flex gap-2 items-end">
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
               <div
-                className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
-                style={{ background: gradientBg }}
+                style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, marginBottom: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: gradientBg }}
               >
-                <TriggerIcon className="h-3 w-3 text-white" />
+                <TriggerIcon style={{ width: 14, height: 14 }} className="text-white" />
               </div>
               <div
-                className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
                 style={{
+                  fontSize: 13,
+                  padding: '9px 13px',
+                  maxWidth: '82%',
+                  lineHeight: 1.6,
                   backgroundColor: c.surface,
                   color: c.ink,
-                  border: `1px solid ${c.hairline}`,
                   borderRadius: innerBr,
-                  borderBottomLeftRadius: '4px',
+                  borderBottomLeftRadius: '3px',
                 }}
               >
                 {displayMsg}
@@ -1329,13 +1336,17 @@ function LiveBotPreview({
             </div>
 
             {/* User bubble */}
-            <div className="flex justify-end">
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <div
-                className="text-white text-xs px-3 py-2 max-w-[80%] leading-relaxed"
                 style={{
+                  fontSize: 13,
+                  padding: '9px 13px',
+                  maxWidth: '82%',
+                  lineHeight: 1.6,
+                  color: '#fff',
                   background: gradientBg,
                   borderRadius: innerBr,
-                  borderBottomRightRadius: '4px',
+                  borderBottomRightRadius: '3px',
                 }}
               >
                 Tell me about your services.
@@ -1343,21 +1354,22 @@ function LiveBotPreview({
             </div>
 
             {/* Second bot bubble */}
-            <div className="flex gap-2 items-end">
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
               <div
-                className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
-                style={{ background: gradientBg }}
+                style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0, marginBottom: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: gradientBg }}
               >
-                <TriggerIcon className="h-3 w-3 text-white" />
+                <TriggerIcon style={{ width: 14, height: 14 }} className="text-white" />
               </div>
               <div
-                className="text-xs px-3 py-2 max-w-[80%] leading-relaxed"
                 style={{
+                  fontSize: 13,
+                  padding: '9px 13px',
+                  maxWidth: '82%',
+                  lineHeight: 1.6,
                   backgroundColor: c.surface,
                   color: c.ink,
-                  border: `1px solid ${c.hairline}`,
                   borderRadius: innerBr,
-                  borderBottomLeftRadius: '4px',
+                  borderBottomLeftRadius: '3px',
                 }}
               >
                 Sure! We offer…
@@ -1372,21 +1384,19 @@ function LiveBotPreview({
         {/* Input bar — hidden when lead form is active */}
         {!showLeadForm && (
         <div
-          className="px-3 py-2.5 flex items-center gap-2"
-          style={{ borderTop: `1px solid ${c.hairline}`, backgroundColor: c.surface }}
+          style={{ padding: '10px 12px', borderTop: `1px solid ${c.hairline}`, backgroundColor: c.surface, display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}
         >
           <div
-            className="flex-1 h-8 px-3 flex items-center"
-            style={{ backgroundColor: c.bg, border: `1px solid ${c.hairline}`, borderRadius: `${Math.max(4, borderRadius)}px` }}
+            style={{ flex: 1, border: '1.5px solid ' + c.hairline, borderRadius: `${Math.max(4, borderRadius)}px`, height: 40, padding: '0 14px', fontSize: 13, display: 'flex', alignItems: 'center', backgroundColor: c.bg, color: c.inkMuted, boxSizing: 'border-box' }}
           >
-            <span className="text-xs" style={{ color: c.inkMuted }}>Type a message…</span>
+            Type a message…
           </div>
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: gradientBg }}
+            style={{ width: 40, height: 40, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: gradientBg, boxShadow: '0 2px 8px rgba(0,0,0,.15)' }}
           >
-            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
-              <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
             </svg>
           </div>
         </div>
@@ -1398,12 +1408,18 @@ function LiveBotPreview({
             href={`https://wa.me/${whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 py-2 text-xs font-semibold no-underline"
             style={{
               borderTop: `1px solid ${c.hairline}`,
               backgroundColor: isDark ? '#0f172a' : '#fafafa',
               color: isDark ? '#4ade80' : '#075E54',
               fontSize: '12.5px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '7px',
+              padding: '9px 12px',
+              textDecoration: 'none',
+              fontWeight: 600,
             }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
@@ -1416,13 +1432,16 @@ function LiveBotPreview({
         {/* Branding footer */}
         {brandingEnabled && (
           <div
-            className="text-center py-1"
             style={{
               borderTop: `1px solid ${c.hairline}`,
               backgroundColor: c.surface,
               fontSize: '10px',
-              opacity: 0.45,
+              opacity: 0.5,
               color: c.ink,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '4px 0',
             }}
           >
             {brandingText}
@@ -1430,6 +1449,22 @@ function LiveBotPreview({
         )}
       </div>
 
+      {/* Glow ring behind trigger */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 2,
+          left: isLeft ? -10 : 'auto',
+          right: isLeft ? 'auto' : -10,
+          width: 74,
+          height: 74,
+          borderRadius: '50%',
+          opacity: 0.3,
+          filter: 'blur(16px)',
+          pointerEvents: 'none',
+          background: gradientBg,
+        }}
+      />
       {/* Trigger — floats over chat window */}
       <div
         style={{
@@ -1441,28 +1476,30 @@ function LiveBotPreview({
           gap: 8,
         }}
       >
-        {tooltipEnabled && (
+        {tooltipEnabled && firstTip && (
           <div
-            className="text-xs px-3 py-1.5 shadow-sm"
             style={{
-              borderRadius: '999px',
+              fontSize: 12,
+              lineHeight: 1.4,
+              padding: '8px 13px',
+              borderRadius: '20px',
               backgroundColor: isDark ? '#171512' : '#FFFFFF',
-              color: isDark ? '#F5F0EB' : '#111111',
-              border: `1px solid ${isDark ? '#2A2622' : '#E4E4E7'}`,
-              maxWidth: '180px',
+              color: isDark ? '#F5F0EB' : '#1e293b',
+              border: `1px solid ${isDark ? '#2A2622' : '#e5e7eb'}`,
+              maxWidth: '220px',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
+              boxShadow: '0 2px 12px rgba(0,0,0,.12)',
             }}
           >
             {firstTip}
           </div>
         )}
         <div
-          className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
-          style={{ background: gradientBg }}
+          style={{ width: 54, height: 54, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: gradientBg, boxShadow: '0 4px 20px rgba(0,0,0,.25)' }}
         >
-          <TriggerIcon className="h-6 w-6 text-white" />
+          <TriggerIcon style={{ width: 22, height: 22 }} className="text-white" />
         </div>
       </div>
       </div>
