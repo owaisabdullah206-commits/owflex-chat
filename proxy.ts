@@ -44,7 +44,15 @@ export function proxy(request: NextRequest) {
   } else if (host === 'octively.com') {
     // Main production domain: redirect /dashboard/* and /portal/* to their canonical subdomains.
     // Preserves query strings. Skips /api/* (OAuth callbacks) and /_next/* (assets).
-    if (!url.pathname.startsWith('/api') && !url.pathname.startsWith('/_next')) {
+    // Skips RSC prefetches (_rsc query param) — redirecting them causes CORS errors because
+    // the browser follows the 302 cross-origin and admin.octively.com/app.octively.com don't
+    // set Access-Control-Allow-Origin: https://octively.com. RSC prefetches are non-blocking;
+    // a failed prefetch just means the user navigates without preloaded data.
+    if (
+      !url.pathname.startsWith('/api') &&
+      !url.pathname.startsWith('/_next') &&
+      !url.searchParams.has('_rsc')
+    ) {
       // Bare /signup and /login are aliases for the developer auth pages.
       // Send them to the canonical admin URLs so they never resolve to a stale
       // or missing marketing route.
