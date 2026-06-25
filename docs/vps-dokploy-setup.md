@@ -402,21 +402,84 @@ mode causes redirect loops with Traefik** (Traefik redirects HTTP→HTTPS, Cloud
 HTTP, loop). Some generic "VPS + Cloudflare" tutorials use Flexible, but those run plain
 Nginx with no origin redirect. For us: **SSL/TLS → Overview → Full (Strict)**.
 
-### The Let's Encrypt + Cloudflare-proxy gotcha (why we grey-cloud first)
+### The Let's Encrypt + Cloudflare-proxy gotcha
 
-Traefik gets its cert from Let's Encrypt via the **HTTP-01 challenge** on port 80. When a
-record is **orange-clouded**, Cloudflare intercepts that challenge request (and auto-redirects
-HTTP→HTTPS), so the ACME validation **fails** and no cert is issued. Two ways to handle it:
+Traefik gets its cert from Let's Encrypt via the **HTTP-01** or **DNS-01** challenge. When a
+record is **orange-clouded**, HTTP-01 is intercepted by Cloudflare and fails. Three solutions,
+in order of recommendation:
 
-- **Recommended (simple): grey-cloud during issuance, then orange-cloud.** Set each record to
-  "DNS only" (grey), add the domain in Dokploy so LE issues the cert against the bare origin,
-  confirm HTTPS works, then switch the record to "Proxied" (orange). This is what §2f and §6
-  reference. Order matters — Dokploy's own docs say "follow the steps in the same order."
-- **Durable renewals:** LE renews every ~60 days; with the proxy on, the renewal HTTP-01 will
-  hit the same wall. Add a Cloudflare **Configuration Rule** scoped to
-  `*/.well-known/acme-challenge/*` that **disables Automatic HTTPS Rewrites** and **bypasses
-  cache**, so future challenges pass through over HTTP. Without this you'd have to grey-cloud
-  again at each renewal.
+#### Solution A (recommended): DNS-01 challenge with Cloudflare API token
+
+Replace HTTP-01 with DNS-01 so LE validates via DNS record lookups instead of port 80. This
+works **behind Cloudflare proxy permanently** — certs renew automatically every ~60 days with
+zero intervention.
+
+**Step 1 — Create a Cloudflare API token:**
+Go to https://dash.cloudflare.com/profile/api-tokens → **Create Token** → use template
+"Edit zone DNS" → set Zone Resources to `Include` → `Specific zone` → `octively.com` →
+**Create Token**. Copy the token (shown once).
+
+**Step 2 — Update Traefik config (`/etc/dokploy/traefik/traefik.yml`):**
+
+Replace the `httpChallenge` block with:
+```yaml
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: m.owaismarksman@gmail.com
+      storage: /etc/dokploy/traefik/dynamic/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "1.1.1.1:53"
+          - "8.8.8.8:53"
+```
+
+**Step 3 — Recreate Traefik with the API token:**
+
+```bash
+docker stop dokploy-traefik && docker rm dokploy-traefik
+
+docker run -d \
+  --name dokploy-traefik \
+  --restart always \
+  -p 80:80 \
+  -p 443:443 \
+  -p 443:443/udp \
+  -v /etc/dokploy/traefik/traefik.yml:/etc/traefik/traefik.yml \
+  -v /etc/dokploy/traefik/dynamic:/etc/dokploy/traefik/dynamic \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  -e CF_DNS_API_TOKEN=<your-token> \
+  --network bridge \
+  traefik:v3.6.7
+
+docker network connect dokploy-network dokploy-traefik
+```
+
+Verify: `docker logs dokploy-traefik --tail 30` should show LE certificate issuance. The
+three subdomains can stay **orange-clouded** the entire time.
+
+#### Solution B (simple): grey-cloud during issuance, then orange-cloud
+
+Set each record to "DNS only" (grey), add the domain in Dokploy so LE issues the cert against
+the bare origin, confirm HTTPS works, then switch the record to "Proxied" (orange). This is
+what §2f and §6 reference. Order matters — Dokploy's own docs say "follow the steps in the
+same order."
+
+**Durable renewals (B only):** LE renews every ~60 days; with the proxy on, the renewal HTTP-01
+will hit the same wall. Add a Cloudflare **Configuration Rule** scoped to
+`*/.well-known/acme-challenge/*` that **disables Automatic HTTPS Rewrites** and **bypasses
+cache**, so future challenges pass through over HTTP. Without this you'd have to grey-cloud
+again at each renewal.
+
+#### Solution C: Cloudflare Origin CA cert (15-year)
+
+Bypass LE entirely — generate a free 15-year cert from Cloudflare dashboard and mount it onto
+Traefik as a static certificate. Full (Strict) mode still works. No renewals ever. Caveat:
+Origin CA certs are trusted **only by Cloudflare**, so any Next.js **server-side fetch to our
+own public HTTPS domain** would fail cert validation in Node. We mostly avoid that (server
+components hit Neon directly; auth is in-process), but LE keeps us safe without having to
+audit every SSR fetch.
 
 ### Alternatives (documented, not chosen)
 
