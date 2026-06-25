@@ -597,6 +597,29 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           </div>
         </div>
 
+        {/* Trigger Tooltip */}
+        <div className="space-y-2 pt-2">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Label className="text-xs text-[var(--ink-muted)]">Trigger Tooltip</Label>
+              <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Rotating messages above the trigger on first load</p>
+            </div>
+            <Switch checked={tooltipEnabled}
+              onCheckedChange={(v) => { setTooltipEnabled(v); markDirty() }}
+              disabled={isPending} />
+          </div>
+          {tooltipEnabled && (
+            <Textarea
+              value={tooltipMessages}
+              onChange={(e) => { setTooltipMessages(e.target.value); markDirty() }}
+              rows={3}
+              placeholder={`Need help? Ask me!\nHi there! How can I assist?\nGot questions? I'm here!`}
+              className="rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none text-xs"
+              disabled={isPending}
+            />
+          )}
+        </div>
+
         {/* Corner Radius */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -644,195 +667,204 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           <p className="text-[10px] text-[var(--ink-subtle)]">Gap from the bottom edge of the screen. Default: 24px.</p>
         </div>
 
-        {/* Toggles */}
-        <div className="border-t border-[var(--hairline)] divide-y divide-[var(--hairline)]">
-          {/* Lead Capture */}
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="text-sm text-[var(--ink)]">Lead Capture</p>
-              <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically during chat</p>
-            </div>
-            <Switch checked={leadCaptureEnabled}
-              onCheckedChange={(v) => { setLeadCapture(v); markDirty() }}
-              disabled={isPending} />
-          </div>
-
-          {/* Collect Lead Before Chat — only visible when Lead Capture is on */}
-          {leadCaptureEnabled && (
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
-              <p className="text-xs text-[var(--ink-muted)]">Show a name / email / phone form before the chat opens. Stored as a lead automatically.</p>
-            </div>
-            <Switch checked={collectLeadBefore}
-              onCheckedChange={(v) => { setCollectLeadBefore(v); markDirty() }}
-              disabled={isPending} />
-          </div>
-          )}
-
-          {/* Strict Mode */}
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="text-sm text-[var(--ink)]">Strict Mode</p>
-                {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Starter+</span>}
+        {/* ── Behavior ── */}
+        <div className="bg-[var(--surface-2)] border border-[var(--hairline)] p-4 space-y-4">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            Behavior
+          </p>
+          <div className="space-y-4">
+            {/* Lead Capture */}
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-[var(--ink)]">Lead Capture</p>
+                <p className="text-xs text-[var(--ink-muted)]">Collect visitor contact details automatically during chat</p>
               </div>
-              <p className="text-xs text-[var(--ink-muted)]">
-                Bot refuses questions outside its knowledge base and says &ldquo;I don&apos;t know&rdquo;
-              </p>
+              <Switch checked={leadCaptureEnabled}
+                onCheckedChange={(v) => { setLeadCapture(v); markDirty() }}
+                disabled={isPending} />
             </div>
-            <Switch checked={!isFreePlan && strictMode}
-              onCheckedChange={(v) => { setStrictMode(v); markDirty() }}
-              disabled={isPending || isFreePlan} />
-          </div>
 
-          {/* Human Handoff */}
-          <div className="py-3 space-y-3">
-            <div className="flex items-center justify-between">
+            {/* Collect Lead Before Chat — only visible when Lead Capture is on */}
+            {leadCaptureEnabled && (
+            <div className="flex items-center justify-between gap-4 pl-4 border-l-2 border-[var(--of-primary)]/30">
+              <div>
+                <p className="text-sm text-[var(--ink)]">Collect Info Before Chat</p>
+                <p className="text-xs text-[var(--ink-muted)]">Show a name / email / phone form before the chat opens</p>
+              </div>
+              <Switch checked={collectLeadBefore}
+                onCheckedChange={(v) => { setCollectLeadBefore(v); markDirty() }}
+                disabled={isPending} />
+            </div>
+            )}
+
+            {/* Strict Mode */}
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm text-[var(--ink)]">Human Handoff</p>
-                  {isStarterOrFree && <span className="text-[10px] px-1.5 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Pro+</span>}
+                  <p className="text-sm text-[var(--ink)]">Strict Mode</p>
+                  {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-[var(--hairline-strong)] text-[var(--ink-muted)] bg-[var(--surface)]">Starter+</span>}
                 </div>
                 <p className="text-xs text-[var(--ink-muted)]">
-                  When the bot can&apos;t answer, flag the conversation and send an email notification
+                  Bot refuses questions outside its knowledge base
                 </p>
               </div>
-              <Switch checked={!isStarterOrFree && handoffEnabled}
-                onCheckedChange={(v) => { setHandoffEnabled(v); markDirty() }}
-                disabled={isPending || isStarterOrFree} />
+              <Switch checked={!isFreePlan && strictMode}
+                onCheckedChange={(v) => { setStrictMode(v); markDirty() }}
+                disabled={isPending || isFreePlan} />
             </div>
 
-            {handoffEnabled && (
-              <div className="ml-0 space-y-3">
-                {/* Handoff mode — how a human picks up the conversation */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-[var(--ink-muted)]">When a human takes over</Label>
-                  <div className="flex gap-2">
-                    {([
-                      { mode: 'email' as const, title: 'Email reply', sub: 'Reply later by email', locked: false },
-                      { mode: 'live'  as const, title: 'Live chat',   sub: 'Reply in the widget now', locked: !canLiveHandoff },
-                    ]).map(({ mode, title, sub, locked }) => {
-                      const active = handoffMode === mode && !locked
-                      return (
-                        <button
-                          key={mode}
-                          type="button"
-                          onClick={() => { if (locked) return; setHandoffMode(mode); markDirty() }}
-                          disabled={isPending || locked}
-                          aria-pressed={active}
-                          className={`flex-1 px-3 py-2.5 text-left border transition-colors ${
-                            locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-                          } ${
-                            active
-                              ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10'
-                              : 'border-[var(--hairline)] bg-[var(--surface)] hover:border-[var(--hairline-strong)]'
-                          }`}
-                        >
-                          <span className="flex items-center gap-1.5">
-                            <span className={`text-xs font-medium ${active ? 'text-[var(--of-primary)]' : 'text-[var(--ink)]'}`}>{title}</span>
-                            {locked && <span className="text-[9px] px-1 py-0.5 border border-amber-500/40 text-amber-400 bg-amber-500/10">Agency+</span>}
-                          </span>
-                          <span className="block text-[10px] text-[var(--ink-subtle)] mt-0.5">{sub}</span>
-                        </button>
-                      )
-                    })}
+            {/* Human Handoff */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-[var(--ink)]">Human Handoff</p>
+                    {isStarterOrFree && <span className="text-[10px] px-1.5 py-0.5 border border-[var(--hairline-strong)] text-[var(--ink-muted)] bg-[var(--surface)]">Pro+</span>}
                   </div>
-                  {handoffMode === 'live' && canLiveHandoff && (
-                    <p className="text-[10px] text-[var(--ink-subtle)]">
-                      The bot pauses and your team replies directly inside the chat widget in real time. Best for clients with staff online to respond.
-                    </p>
-                  )}
-                </div>
-
-                {/* Notify target — who gets the escalation email */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs text-[var(--ink-muted)]">Notify by email</Label>
-                  <div className="flex gap-2">
-                    {(['developer', 'client'] as const).map((target) => (
-                      <button
-                        key={target}
-                        type="button"
-                        onClick={() => { setHandoffNotifyTarget(target); markDirty() }}
-                        disabled={isPending}
-                        className={`flex-1 py-2 text-xs border transition-colors cursor-pointer capitalize ${
-                          handoffNotifyTarget === target
-                            ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-medium'
-                            : 'border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink-muted)] hover:text-[var(--ink)]'
-                        }`}
-                      >
-                        {target === 'developer' ? 'Developer (you)' : 'Client'}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="text-[10px] text-[var(--ink-subtle)]">
-                    {handoffNotifyTarget === 'client'
-                      ? 'Notification email goes to the client linked to this bot.'
-                      : 'Notification email goes to the developer account (you).'}
+                  <p className="text-xs text-[var(--ink-muted)]">
+                    Flag unanswered conversations and send email notification
                   </p>
                 </div>
+                <Switch checked={!isStarterOrFree && handoffEnabled}
+                  onCheckedChange={(v) => { setHandoffEnabled(v); markDirty() }}
+                  disabled={isPending || isStarterOrFree} />
               </div>
-            )}
-          </div>
 
-          {/* Tooltip Messages */}
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="text-sm text-[var(--ink)]">Trigger Tooltip</p>
-              <p className="text-xs text-[var(--ink-muted)]">Rotating messages shown above the trigger on first load</p>
+              {handoffEnabled && (
+                <div className="space-y-3 pl-4 border-l-2 border-[var(--hairline-strong)]">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[var(--ink-muted)]">When a human takes over</Label>
+                    <div className="flex gap-2">
+                      {([
+                        { mode: 'email' as const, title: 'Email reply', sub: 'Reply later by email', locked: false },
+                        { mode: 'live'  as const, title: 'Live chat',   sub: 'Reply in the widget now', locked: !canLiveHandoff },
+                      ]).map(({ mode, title, sub, locked }) => {
+                        const active = handoffMode === mode && !locked
+                        return (
+                          <button
+                            key={mode}
+                            type="button"
+                            onClick={() => { if (locked) return; setHandoffMode(mode); markDirty() }}
+                            disabled={isPending || locked}
+                            aria-pressed={active}
+                            className={`flex-1 px-3 py-2.5 text-left border transition-colors ${
+                              locked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                            } ${
+                              active
+                                ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10'
+                                : 'border-[var(--hairline)] bg-[var(--surface)] hover:border-[var(--hairline-strong)]'
+                            }`}
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <span className={`text-xs font-medium ${active ? 'text-[var(--of-primary)]' : 'text-[var(--ink)]'}`}>{title}</span>
+                              {locked && <span className="text-[9px] px-1 py-0.5 border border-[var(--hairline-strong)] text-[var(--ink-muted)] bg-[var(--surface)]">Agency+</span>}
+                            </span>
+                            <span className="block text-[10px] text-[var(--ink-subtle)] mt-0.5">{sub}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {handoffMode === 'live' && canLiveHandoff && (
+                      <p className="text-[10px] text-[var(--ink-subtle)]">
+                        The bot pauses and your team replies directly inside the chat widget in real time. Best for clients with staff online to respond.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[var(--ink-muted)]">Notify by email</Label>
+                    <div className="flex gap-2">
+                      {(['developer', 'client'] as const).map((target) => (
+                        <button
+                          key={target}
+                          type="button"
+                          onClick={() => { setHandoffNotifyTarget(target); markDirty() }}
+                          disabled={isPending}
+                          className={`flex-1 py-2 text-xs border transition-colors cursor-pointer capitalize ${
+                            handoffNotifyTarget === target
+                              ? 'border-[var(--of-primary)] bg-[var(--of-primary)]/10 text-[var(--of-primary)] font-medium'
+                              : 'border-[var(--hairline)] bg-[var(--surface)] text-[var(--ink-muted)] hover:text-[var(--ink)]'
+                          }`}
+                        >
+                          {target === 'developer' ? 'Developer (you)' : 'Client'}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-[var(--ink-subtle)]">
+                      {handoffNotifyTarget === 'client'
+                        ? 'Notification email goes to the client linked to this bot.'
+                        : 'Notification email goes to the developer account (you).'}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-            <Switch checked={tooltipEnabled}
-              onCheckedChange={(v) => { setTooltipEnabled(v); markDirty() }}
-              disabled={isPending} />
           </div>
+        </div>
 
-          {/* Branding footer — hidden for free (forced on), toggle for all paid, customize for agency+ */}
-          {!isFreePlan && (
-          <div className="py-3 space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[var(--ink)]">Branding footer</p>
-                <p className="text-xs text-[var(--ink-muted)]">
-                  {(orgPlan === 'agency' || orgPlan === 'enterprise')
-                    ? 'Customizable link at the bottom of the widget. Disable to remove it entirely.'
-                    : 'Show a small "Powered by Octively" link at the bottom of the widget. Disable to hide it.'}
-                </p>
-              </div>
-              <Switch
-                checked={brandingEnabled}
-                onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
+        {/* ── Branding ── */}
+        {!isFreePlan && (
+        <div className="bg-[var(--surface-2)] border border-[var(--hairline)] p-4 space-y-4">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            Branding
+          </p>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-[var(--ink)]">Powered by footer</p>
+              <p className="text-xs text-[var(--ink-muted)]">
+                {(orgPlan === 'agency' || orgPlan === 'enterprise')
+                  ? 'Customize the link text and URL. Disable to remove it.'
+                  : 'Shows a small "Powered by Octively" link. Disable to hide it.'}
+              </p>
+            </div>
+            <Switch
+              checked={brandingEnabled}
+              onCheckedChange={(v) => { setBrandingEnabled(v); markDirty() }}
+              disabled={isPending}
+            />
+          </div>
+          {brandingEnabled && (orgPlan === 'agency' || orgPlan === 'enterprise') && (
+            <div className="space-y-2">
+              <Input
+                value={brandingText}
+                onChange={(e) => { setBrandingText(e.target.value); markDirty() }}
+                maxLength={60}
+                placeholder="Powered by Octively"
+                className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                disabled={isPending}
+              />
+              <Input
+                value={brandingUrl}
+                onChange={(e) => { setBrandingUrl(e.target.value); markDirty() }}
+                type="url"
+                placeholder="https://octively.com"
+                className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
                 disabled={isPending}
               />
             </div>
-            {brandingEnabled && (orgPlan === 'agency' || orgPlan === 'enterprise') && (
-              <div className="space-y-2">
-                <Input
-                  value={brandingText}
-                  onChange={(e) => { setBrandingText(e.target.value); markDirty() }}
-                  maxLength={60}
-                  placeholder="Powered by Octively"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-                <Input
-                  value={brandingUrl}
-                  onChange={(e) => { setBrandingUrl(e.target.value); markDirty() }}
-                  type="url"
-                  placeholder="https://octively.com"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-            )}
-          </div>
           )}
+        </div>
+        )}
 
-          {/* Usage & Limits toggle — pro / agency / enterprise only */}
-          {!isStarterOrFree && (
-          <div className="flex items-center justify-between py-3">
+        {/* ── Limits ── */}
+        {!isStarterOrFree && (
+        <div className="bg-[var(--surface-2)] border border-[var(--hairline)] p-4 space-y-4">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            Limits
+          </p>
+          <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm text-[var(--ink)]">Usage & Limits</p>
-              <p className="text-xs text-[var(--ink-muted)]">Set per-bot monthly caps for conversations, leads, and credits</p>
+              <p className="text-xs text-[var(--ink-muted)]">Per-bot monthly caps for conversations, leads, and credits</p>
             </div>
             <Switch
               checked={usageLimitsToggle}
@@ -844,75 +876,49 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
               disabled={isPending}
             />
           </div>
-          )}
-        </div>
-
-        {/* ── Usage & Limits inputs (pro / agency / enterprise) ── */}
-        {!isStarterOrFree && usageLimitsToggle && (
-          <div>
-            <p className="text-xs text-[var(--ink-muted)] mb-3">
-              Per-bot monthly caps. Leave blank to use the full org pool with no bot-level cap.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="convLimit" className="text-xs text-[var(--ink-muted)]">Max conversations / month</Label>
-                <Input
-                  id="convLimit"
-                  type="number"
-                  min={1}
-                  value={convLimit}
-                  onChange={(e) => { setConvLimit(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="leadLimit" className="text-xs text-[var(--ink-muted)]">Max leads / month</Label>
-                <Input
-                  id="leadLimit"
-                  type="number"
-                  min={1}
-                  value={leadLimit}
-                  onChange={(e) => { setLeadLimit(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="creditBudget" className="text-xs text-[var(--ink-muted)]">Credit budget / month</Label>
-                <Input
-                  id="creditBudget"
-                  type="number"
-                  min={1}
-                  value={creditBudget}
-                  onChange={(e) => { setCreditBudget(e.target.value); markDirty() }}
-                  placeholder="No limit"
-                  className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
-                  disabled={isPending}
-                />
+          {usageLimitsToggle && (
+            <div className="space-y-3">
+              <p className="text-xs text-[var(--ink-subtle)]">
+                Leave blank to use the full org pool with no bot-level cap.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="convLimit" className="text-xs text-[var(--ink-muted)]">Conversations / month</Label>
+                  <Input
+                    id="convLimit" type="number" min={1}
+                    value={convLimit}
+                    onChange={(e) => { setConvLimit(e.target.value); markDirty() }}
+                    placeholder="No limit"
+                    className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                    disabled={isPending}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="leadLimit" className="text-xs text-[var(--ink-muted)]">Leads / month</Label>
+                  <Input
+                    id="leadLimit" type="number" min={1}
+                    value={leadLimit}
+                    onChange={(e) => { setLeadLimit(e.target.value); markDirty() }}
+                    placeholder="No limit"
+                    className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                    disabled={isPending}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="creditBudget" className="text-xs text-[var(--ink-muted)]">Credit budget / month</Label>
+                  <Input
+                    id="creditBudget" type="number" min={1}
+                    value={creditBudget}
+                    onChange={(e) => { setCreditBudget(e.target.value); markDirty() }}
+                    placeholder="No limit"
+                    className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none text-xs h-8"
+                    disabled={isPending}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-
-
-        {tooltipEnabled && (
-          <div className="space-y-1.5">
-            <Label className="text-xs text-[var(--ink-muted)]">
-              Tooltip Messages
-              <span className="ml-2 text-[var(--ink-subtle)]">(one per line, max 5)</span>
-            </Label>
-            <Textarea
-              value={tooltipMessages}
-              onChange={(e) => { setTooltipMessages(e.target.value); markDirty() }}
-              rows={4}
-              placeholder={`Need help? Ask me!\nHi there! How can I assist?\nGot questions? I'm here!`}
-              className="rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none text-xs"
-              disabled={isPending}
-            />
-          </div>
+          )}
+        </div>
         )}
 
         {/* ── Integrations / Webhook ── */}
