@@ -165,7 +165,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
       conversations: 0, messages: 0, tokens: 0, avgLatencyMs: 0, creditsUsed: 0, leads: 0,
       modelBreakdown: [] as { model: string; messages: number; tokens: number; costUsd: number }[],
     })),
-    getModelPriceSummary().catch(() => ({})),
+    getModelPriceSummary().catch(() => ({ prices: {}, expensiveThreshold: Infinity })),
   ])
 
   const clientUser = clientRows[0] ?? null
@@ -362,7 +362,8 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                   botId={bot.id}
                   embedKey={bot.embedKey}
                   orgPlan={bot.orgPlan}
-                  modelPrices={modelPrices}
+                  modelPrices={modelPrices.prices}
+                  expensiveThreshold={modelPrices.expensiveThreshold}
                   initial={{
                     name: bot.name,
                     systemPrompt: bot.systemPrompt,

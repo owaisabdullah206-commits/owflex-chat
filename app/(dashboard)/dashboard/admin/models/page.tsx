@@ -1,15 +1,16 @@
 import { requirePlatformOwner } from '@/lib/auth/session'
-import { getModelPrices } from '@/lib/db/queries/admin'
+import { getModelPrices, getExpensiveModelThreshold } from '@/lib/db/queries/admin'
 import { db, schema } from '@/lib/db'
 import { desc, eq } from 'drizzle-orm'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { ModelPricesTable } from '@/components/dashboard/ModelPricesTable'
+import { ExpensiveThresholdForm } from '@/components/dashboard/ExpensiveThresholdForm'
 import { getFreeQuotaUsage, FREE_RPM_LIMIT, FREE_RPD_LIMIT } from '@/lib/ai/free-quota'
 
 export default async function AdminModelsPage() {
   await requirePlatformOwner()
 
-  const [models, lastFetchedRow, quota] = await Promise.all([
+  const [models, lastFetchedRow, quota, configuredThreshold] = await Promise.all([
     getModelPrices(),
     db
       .select({ effectiveFrom: schema.modelPrices.effectiveFrom })
@@ -18,9 +19,18 @@ export default async function AdminModelsPage() {
       .orderBy(desc(schema.modelPrices.effectiveFrom))
       .limit(1),
     getFreeQuotaUsage(),
+    getExpensiveModelThreshold(),
   ])
 
   const lastFetched = lastFetchedRow[0]?.effectiveFrom ?? null
+
+  // Compute default threshold: average combined (prompt + completion) price
+  const totals = models
+    .filter(m => m.active?.promptPricePer1M && m.active?.completionPricePer1M)
+    .map(m => parseFloat(m.active!.promptPricePer1M) + parseFloat(m.active!.completionPricePer1M))
+  const defaultThreshold = totals.length > 0
+    ? totals.reduce((a, b) => a + b, 0) / totals.length
+    : 0
   const rpmPct  = Math.min(100, Math.round((quota.rpm / FREE_RPM_LIMIT) * 100))
   const rpdPct  = Math.min(100, Math.round((quota.rpd / FREE_RPD_LIMIT) * 100))
   const rpmNear = rpmPct >= 80
@@ -90,6 +100,14 @@ export default async function AdminModelsPage() {
                 today · resets midnight UTC
               </span>
             </div>
+          </div>
+
+          {/* Expensive model threshold */}
+          <div className="mt-6 pt-5 border-t border-[var(--hairline)]">
+            <ExpensiveThresholdForm
+              currentThreshold={configuredThreshold}
+              defaultThreshold={defaultThreshold}
+            />
           </div>
         </div>
         <div className="px-8 py-6">

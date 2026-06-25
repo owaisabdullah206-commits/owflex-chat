@@ -562,32 +562,87 @@ export async function getModelLatencyStats() {
 }
 
 /**
- * Returns the latest active price for each supported model, grouped by modelId.
+ * Returns the latest active price for each supported model plus the
+ * expensive-model threshold (admin-configured or average default).
  * Used by the bot settings page to warn about expensive model selections.
  * Does NOT require platform owner auth (unlike getModelPrices).
  */
-export async function getModelPriceSummary(): Promise<Record<string, { prompt: number; completion: number }>> {
+export async function getModelPriceSummary(): Promise<{
+  prices: Record<string, { prompt: number; completion: number }>
+  /** Combined (prompt + completion) price per 1M tokens above which a
+   *  model is considered expensive. Defaults to the average across all
+   *  priced models; can be overridden by the admin on the Models page. */
+  expensiveThreshold: number
+}> {
   const rows = await db
     .select()
     .from(schema.modelPrices)
     .where(inArray(schema.modelPrices.modelId, [...SUPPORTED_MODELS]))
 
-  // Last write wins — rows from DB are in insertion order, so later entries
-  // (more recently refreshed) overwrite earlier ones.
+  // Last write wins — later entries overwrite earlier ones.
   const latest = new Map<string, typeof rows[0]>()
   for (const row of rows) {
     latest.set(row.modelId, row)
   }
 
-  const result: Record<string, { prompt: number; completion: number }> = {}
+  const prices: Record<string, { prompt: number; completion: number }> = {}
   for (const modelId of SUPPORTED_MODELS) {
     const price = latest.get(modelId)
     if (price) {
-      result[modelId] = {
+      prices[modelId] = {
         prompt:     parseFloat(price.promptPricePer1M),
         completion: parseFloat(price.completionPricePer1M),
       }
     }
   }
-  return result
+
+  // Default threshold: mean of all models' combined (prompt + completion) price
+  const totals = Object.values(prices).map(p => p.prompt + p.completion)
+  const avgThreshold = totals.length > 0
+    ? totals.reduce((a, b) => a + b, 0) / totals.length
+    : Infinity
+
+  // Check for admin-configured override in Redis
+  let expensiveThreshold = avgThreshold
+  try {
+    const raw = await getRedis().get<string>('config:expensive_model:threshold')
+    if (raw !== null) {
+      const val = Number(raw)
+      if (Number.isFinite(val) && val > 0) expensiveThreshold = val
+    }
+  } catch { /* Redis unavailable — use default */ }
+
+  return { prices, expensiveThreshold }
+}
+
+/**
+ * Returns the admin-configured expensive model threshold from Redis, or null.
+ * Used by the admin models page to show the current setting.
+ * Does NOT require platform owner auth.
+ */
+export async function getExpensiveModelThreshold(): Promise<number | null> {
+  try {
+    const raw = await getRedis().get<string>('config:expensive_model:threshold')
+    if (raw === null) return null
+    const val = Number(raw)
+    return Number.isFinite(val) && val > 0 ? val : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Sets the admin-configured expensive model threshold in Redis.
+ * Requires platform owner auth. Models whose combined (prompt+completion)
+ * price per 1M tokens exceeds this value trigger a confirmation dialog.
+ * Pass `null` to clear the custom threshold (reverts to average-based default).
+ */
+export async function setExpensiveModelThreshold(value: number | null): Promise<void> {
+  await requirePlatformOwner()
+  const redis = getRedis()
+  if (value === null) {
+    await redis.del('config:expensive_model:threshold')
+  } else {
+    await redis.set('config:expensive_model:threshold', String(value))
+  }
 }

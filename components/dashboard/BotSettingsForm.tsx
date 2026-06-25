@@ -41,6 +41,7 @@ interface BotSettingsFormProps {
   embedKey: string
   orgPlan: string
   modelPrices: Record<string, { prompt: number; completion: number }>
+  expensiveThreshold: number
   initial: {
     name: string
     systemPrompt: string
@@ -83,7 +84,7 @@ interface BotSettingsFormProps {
 }
 
 // ─── Main form ────────────────────────────────────────────────────────────────
-export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, initial }: BotSettingsFormProps) {
+export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensiveThreshold, initial }: BotSettingsFormProps) {
   const [isPending, startTransition] = useTransition()
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -431,6 +432,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, initial
                       disabled={isPending}
                       size="sm"
                       modelPrices={modelPrices}
+                      expensiveThreshold={expensiveThreshold}
                     />
                   </div>
                 </div>
@@ -447,6 +449,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, initial
                       disabled={isPending || isStarterOrFree}
                       size="sm"
                       modelPrices={modelPrices}
+                      expensiveThreshold={expensiveThreshold}
                     />
                   </div>
                 </div>
@@ -463,6 +466,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, initial
                       disabled={isPending}
                       size="sm"
                       modelPrices={modelPrices}
+                      expensiveThreshold={expensiveThreshold}
                     />
                   </div>
                 </div>
@@ -492,7 +496,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, initial
                   disabled={isPending}
                   size="md"
                   modelPrices={modelPrices}
-                />
+                  expensiveThreshold={expensiveThreshold}
+                    />
               </div>
             )}
             <p className="text-[11px] text-[var(--ink-subtle)]">

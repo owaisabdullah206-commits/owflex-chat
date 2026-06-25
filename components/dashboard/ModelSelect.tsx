@@ -38,9 +38,15 @@ interface ModelSelectProps {
    * Pass an empty object to skip pricing-based confirmation.
    */
   modelPrices?: Record<string, { prompt: number; completion: number }>
+  /**
+   * Combined (prompt + completion) price per 1M tokens threshold.
+   * Models whose combined price exceeds this trigger a confirmation dialog.
+   * Set by the admin on the Models page; defaults to the average across all models.
+   */
+  expensiveThreshold?: number
 }
 
-export function ModelSelect({ value, onChange, disabled = false, id, size = 'md', modelPrices = {} }: ModelSelectProps) {
+export function ModelSelect({ value, onChange, disabled = false, id, size = 'md', modelPrices = {}, expensiveThreshold }: ModelSelectProps) {
   const [open, setOpen] = useState(false)
   const [pendingModel, setPendingModel] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -147,13 +153,11 @@ export function ModelSelect({ value, onChange, disabled = false, id, size = 'md'
                         setOpen(false)
                         return
                       }
-                      // Price-based expensive check (if DB data available)
-                      const currentPrice = modelPrices[value]
+                      // Expensive check: combined price above threshold
                       const selectedPrice = modelPrices[m]
-                      if (currentPrice && selectedPrice) {
-                        const curTotal = currentPrice.prompt + currentPrice.completion
+                      if (selectedPrice && expensiveThreshold !== undefined) {
                         const selTotal = selectedPrice.prompt + selectedPrice.completion
-                        if (selTotal > curTotal) {
+                        if (selTotal > expensiveThreshold) {
                           setPendingModel(m)
                           return
                         }
@@ -172,14 +176,6 @@ export function ModelSelect({ value, onChange, disabled = false, id, size = 'md'
                     <span className={`flex-1 min-w-0 truncate text-xs font-medium ${isSelected ? 'text-[var(--of-primary)]' : 'text-[var(--ink)]'}`}>
                       {mMeta.label}
                     </span>
-                    {mMeta.speed && (
-                      <span
-                        className="shrink-0 text-[10px] text-[var(--ink-subtle)]"
-                        style={{ fontFamily: 'var(--font-mono)' }}
-                      >
-                        {mMeta.speed}
-                      </span>
-                    )}
                     {/* Checkmark column — always takes the space so alignment is stable */}
                     <span className={`shrink-0 w-3.5 flex items-center justify-center ${isSelected ? 'text-[var(--of-primary)]' : 'opacity-0 pointer-events-none'}`}>
                       <Check className="h-3 w-3" />
