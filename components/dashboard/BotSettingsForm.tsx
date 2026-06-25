@@ -639,29 +639,6 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
             </div>
           </div>
 
-          {/* Trigger Tooltip */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <Label className="text-xs text-[var(--ink-muted)]">Trigger Tooltip</Label>
-                <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Rotating messages above the trigger on first load</p>
-              </div>
-              <Switch checked={tooltipEnabled}
-                onCheckedChange={(v) => { setTooltipEnabled(v); markDirty() }}
-                disabled={isPending} />
-            </div>
-            {tooltipEnabled && (
-              <Textarea
-                value={tooltipMessages}
-                onChange={(e) => { setTooltipMessages(e.target.value); markDirty() }}
-                rows={3}
-                placeholder={`Need help? Ask me!\nHi there! How can I assist?\nGot questions? I'm here!`}
-                className="rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none text-xs"
-                disabled={isPending}
-              />
-            )}
-          </div>
-
           {/* Corner Radius */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -707,6 +684,29 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
               placeholder="24"
               className="text-sm rounded-none" />
             <p className="text-[10px] text-[var(--ink-subtle)]">Gap from the bottom edge of the screen. Default: 24px.</p>
+          </div>
+
+          {/* Trigger Tooltip */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label className="text-xs text-[var(--ink-muted)]">Trigger Tooltip</Label>
+                <p className="text-[10px] text-[var(--ink-subtle)] mt-0.5">Rotating messages above the trigger on first load</p>
+              </div>
+              <Switch checked={tooltipEnabled}
+                onCheckedChange={(v) => { setTooltipEnabled(v); markDirty() }}
+                disabled={isPending} />
+            </div>
+            {tooltipEnabled && (
+              <Textarea
+                value={tooltipMessages}
+                onChange={(e) => { setTooltipMessages(e.target.value); markDirty() }}
+                rows={3}
+                placeholder={`Need help? Ask me!\nHi there! How can I assist?\nGot questions? I'm here!`}
+                className="rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none text-xs"
+                disabled={isPending}
+              />
+            )}
           </div>
         </div>
 
@@ -1213,7 +1213,7 @@ function LiveBotPreview({
       </div>
 
       {/* Chat container — relative with paddingBottom for trigger spacing */}
-      <div style={{ width: '300px', position: 'relative', paddingBottom: 64 }}>
+      <div style={{ width: '300px', minHeight: 500, position: 'relative', paddingBottom: 64 }}>
       {/* Chat window */}
       <div
         style={{ borderRadius: br, backgroundColor: c.bg, border: `1px solid ${c.hairline}`, width: '300px' }}
