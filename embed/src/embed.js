@@ -120,7 +120,7 @@ var css=
 "#oB a{color:inherit!important;text-decoration:none!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important}"+
 
 /* ── Tooltip ── */
-(te?"#oTip{position:fixed;bottom:"+(bo+8)+"px;"+side+":88px;"+opp+":auto;background:#fff;color:#1e293b;border:1px solid #e5e7eb;padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
+(te?"#oTip{position:fixed;bottom:"+(bo+8)+"px;"+side+":88px;"+opp+":auto;background:"+(dk?"#171512":"#fff")+";color:"+(dk?"#F5F0EB":"#1e293b")+";border:1px solid "+(dk?"#2A2622":"#e5e7eb")+";padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
 
 /* ── Keyframes ── */
 "@keyframes ofFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}"+
