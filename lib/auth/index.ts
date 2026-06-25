@@ -150,6 +150,10 @@ export const auth = betterAuth({
       '/forget-password':  { window: 60, max: 3 },
       // Signup: 3 per minute (limits account-creation abuse)
       '/sign-up/email':    { window: 60, max: 3 },
+      // get-session is called on every page navigation from multiple components
+      // (auth middleware checks, useSession hooks across layouts/children). 30/min
+      // handles bursty page loads without hitting 429.
+      '/get-session':      { window: 60, max: 30 },
     },
   },
 

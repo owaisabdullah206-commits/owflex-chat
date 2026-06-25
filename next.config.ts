@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 // - default-src 'self': only our own origin by default
 // - script-src 'self' 'unsafe-inline': Next.js inline hydration scripts require unsafe-inline
 //   + *.googletagmanager.com: GTM container (gtm.js) + GA4 gtag.js loaded by @next/third-parties
+//   + *.google-analytics.com: GA4 gtag.js may load secondary scripts from this origin at runtime
+//   + *.cloudflareinsights.com: Cloudflare Web Analytics beacon
 // - style-src 'self' 'unsafe-inline': Tailwind/shadcn inject inline styles
 // - img-src 'self' data: blob: https:: allow CDN images in product cards + OG images
 // - connect-src 'self' https:: allow API calls + Upstash/Resend/LiteLLM in browser
@@ -14,7 +16,7 @@ import type { NextConfig } from "next";
 // - form-action 'self': form submissions only to same origin
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://*.cloudflareinsights.com",
+  "script-src 'self' 'unsafe-inline' https://*.googletagmanager.com https://*.google-analytics.com https://*.cloudflareinsights.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "connect-src 'self' https: https://*.google-analytics.com https://*.analytics.google.com",
