@@ -33,6 +33,8 @@ const updateBotSchema = z.object({
   allowedModels:       z.array(z.enum(SUPPORTED_MODELS)).nullable().optional(),
   widgetConfig: z.object({
     primaryColor:       z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+    gradientEnabled:    z.boolean().optional(),
+    gradientColor:      z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     position:           z.enum(['bottom-right', 'bottom-left']).optional(),
     bottomOffset:       z.number().min(0).max(200).optional(),
     welcomeMessage:     z.string().max(200).optional(),

@@ -48,6 +48,8 @@ interface BotSettingsFormProps {
     routingLightModel: string | null
     routingStrongModel: string | null
     primaryColor: string
+    gradientEnabled: boolean
+    gradientColor: string
     position: 'bottom-right' | 'bottom-left'
     bottomOffset: number
     welcomeMessage: string
@@ -94,7 +96,9 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
   const [lightModel, setLightModel]             = useState<string>(initial.routingLightModel ?? initial.model)
   const [strongModel, setStrongModel]           = useState<string>(initial.routingStrongModel ?? 'anthropic/claude-haiku-4-5-20251001')
   const [primaryColor, setPrimaryColor]         = useState(initial.primaryColor)
-  const [position, setPosition]                 = useState(initial.position)
+  const [gradientEnabled, setGradientEnabled]     = useState(initial.gradientEnabled)
+  const [gradientColor, setGradientColor]         = useState(initial.gradientColor)
+  const [position, setPosition]                   = useState(initial.position)
   const [bottomOffset, setBottomOffset]         = useState(initial.bottomOffset)
   const [welcomeMessage, setWelcomeMessage]     = useState(initial.welcomeMessage)
   const [leadCaptureEnabled, setLeadCapture]    = useState(initial.leadCaptureEnabled)
@@ -144,6 +148,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
     setLightModel(initial.routingLightModel ?? initial.model)
     setStrongModel(initial.routingStrongModel ?? 'anthropic/claude-haiku-4-5-20251001')
     setPrimaryColor(initial.primaryColor)
+    setGradientEnabled(initial.gradientEnabled)
+    setGradientColor(initial.gradientColor)
     setPosition(initial.position)
     setWelcomeMessage(initial.welcomeMessage)
     setLeadCapture(initial.leadCaptureEnabled)
@@ -196,6 +202,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
         routingStrongModel: smartRouting ? strongModel as SupportedModel : null,
         widgetConfig: {
           primaryColor,
+          gradientEnabled,
+          gradientColor,
           position,
           bottomOffset,
           welcomeMessage,
@@ -614,6 +622,40 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
                 style={{ fontFamily: 'var(--font-mono)' }}
                 disabled={isPending} />
             </div>
+          </div>
+
+          {/* Gradient Header */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-[var(--ink)]">Gradient Header</p>
+                <p className="text-xs text-[var(--ink-muted)]">Blend two colours across the chat header</p>
+              </div>
+              <Switch
+                checked={gradientEnabled}
+                onCheckedChange={(v) => { setGradientEnabled(v); markDirty() }}
+                disabled={isPending}
+              />
+            </div>
+            {gradientEnabled && (
+              <div className="flex items-center gap-3 pl-1">
+                <input type="color" value={primaryColor}
+                  onChange={(e) => { setPrimaryColor(e.target.value); markDirty() }}
+                  disabled={isPending}
+                  className="h-7 w-10 border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50" />
+                <span className="text-xs text-[var(--ink-subtle)]">→</span>
+                <input type="color" value={gradientColor}
+                  onChange={(e) => { setGradientColor(e.target.value); markDirty() }}
+                  disabled={isPending}
+                  className="h-7 w-10 border border-[var(--hairline)] cursor-pointer bg-transparent disabled:opacity-50" />
+                <Input value={gradientColor}
+                  onChange={(e) => { setGradientColor(e.target.value); markDirty() }}
+                  pattern="^#[0-9a-fA-F]{6}$" maxLength={7}
+                  className="w-28 rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)]"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                  disabled={isPending} />
+              </div>
+            )}
           </div>
 
           {/* Trigger Icon */}
@@ -1060,6 +1102,8 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, initial }: BotSettin
           embedKey={embedKey}
           botName={name}
           primaryColor={primaryColor}
+          gradientEnabled={gradientEnabled}
+          gradientColor={gradientColor}
           welcomeMessage={welcomeMessage}
           triggerIcon={triggerIcon}
           borderRadius={borderRadius}
@@ -1088,6 +1132,8 @@ function LiveBotPreview({
   embedKey,
   botName,
   primaryColor,
+  gradientEnabled,
+  gradientColor,
   welcomeMessage,
   triggerIcon,
   borderRadius,
@@ -1108,6 +1154,8 @@ function LiveBotPreview({
   embedKey: string
   botName: string
   primaryColor: string
+  gradientEnabled: boolean
+  gradientColor: string
   welcomeMessage: string
   triggerIcon: string
   borderRadius: number
@@ -1130,6 +1178,7 @@ function LiveBotPreview({
   const c = isDark
     ? { bg: '#0C0A09', surface: '#171512', hairline: '#2A2622', ink: '#F5F0EB', inkMuted: '#A09890' }
     : { bg: '#FFFFFF', surface: '#F4F4F5', hairline: '#E4E4E7', ink: '#111111', inkMuted: '#6B7280' }
+  const gradientBg = gradientEnabled ? `linear-gradient(135deg, ${primaryColor}, ${gradientColor})` : primaryColor
 
   const TriggerIcon = getIconComponent(triggerIcon)
   const displayMsg  = welcomeMessage.trim() || 'Hi! How can I help you today?'
@@ -1220,7 +1269,7 @@ function LiveBotPreview({
         className="overflow-hidden shadow-2xl"
       >
         {/* Header */}
-        <div className="px-4 py-3 flex items-center gap-2.5" style={{ backgroundColor: primaryColor }}>
+        <div className="px-4 py-3 flex items-center gap-2.5" style={{ background: gradientBg }}>
           <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
             <TriggerIcon className="h-4 w-4 text-white" />
           </div>
@@ -1250,7 +1299,7 @@ function LiveBotPreview({
             <button
               type="button"
               className="w-full h-9 text-white text-xs font-semibold rounded-lg cursor-default"
-              style={{ backgroundColor: primaryColor }}
+              style={{ background: gradientBg }}
             >
               Start chatting →
             </button>
@@ -1261,7 +1310,7 @@ function LiveBotPreview({
             <div className="flex gap-2 items-end">
               <div
                 className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
-                style={{ backgroundColor: primaryColor }}
+                style={{ background: gradientBg }}
               >
                 <TriggerIcon className="h-3 w-3 text-white" />
               </div>
@@ -1284,7 +1333,7 @@ function LiveBotPreview({
               <div
                 className="text-white text-xs px-3 py-2 max-w-[80%] leading-relaxed"
                 style={{
-                  backgroundColor: primaryColor,
+                  background: gradientBg,
                   borderRadius: innerBr,
                   borderBottomRightRadius: '4px',
                 }}
@@ -1297,7 +1346,7 @@ function LiveBotPreview({
             <div className="flex gap-2 items-end">
               <div
                 className="w-6 h-6 rounded-full shrink-0 mb-0.5 flex items-center justify-center"
-                style={{ backgroundColor: primaryColor }}
+                style={{ background: gradientBg }}
               >
                 <TriggerIcon className="h-3 w-3 text-white" />
               </div>
@@ -1334,7 +1383,7 @@ function LiveBotPreview({
           </div>
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-            style={{ backgroundColor: primaryColor }}
+            style={{ background: gradientBg }}
           >
             <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white">
               <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" />
@@ -1411,7 +1460,7 @@ function LiveBotPreview({
         )}
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shrink-0"
-          style={{ backgroundColor: primaryColor }}
+          style={{ background: gradientBg }}
         >
           <TriggerIcon className="h-6 w-6 text-white" />
         </div>

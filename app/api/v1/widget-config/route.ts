@@ -10,6 +10,8 @@ const querySchema = z.object({
 
 type WidgetConfig = {
   primaryColor?: string
+  gradientEnabled?: boolean
+  gradientColor?: string
   position?: string
   bottomOffset?: number
   welcomeMessage?: string
@@ -80,6 +82,8 @@ export async function GET(req: NextRequest) {
     {
       botName: bot.name,
       primaryColor: config.primaryColor ?? '#0EA5E9',
+      gradientEnabled: config.gradientEnabled === true,
+      gradientColor: config.gradientColor ?? '#0EA5E9',
       welcomeMessage: config.welcomeMessage ?? 'Hi! How can I help you today?',
       position: config.position ?? 'bottom-right',
       bottomOffset: typeof config.bottomOffset === 'number' ? config.bottomOffset : 24,
