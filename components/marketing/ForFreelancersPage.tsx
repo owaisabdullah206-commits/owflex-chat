@@ -226,7 +226,7 @@ export default function ForFreelancersPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--of-primary)', display: 'grid', placeItems: 'center', color: 'white', fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: 13 }}>OA</div>
             <div style={{ textAlign: 'left' }}>
-              <p style={{ fontWeight: 600, fontSize: 14, margin: 0 }}>Owais A.</p>
+              <p style={{ fontWeight: 600, fontSize: 14, margin: 0 }}>Ahmed R.</p>
               <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0 }}>Freelance developer · Karachi</p>
             </div>
           </div>

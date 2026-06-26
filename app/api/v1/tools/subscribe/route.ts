@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
         <p><strong>What to tell the client:</strong> "I will add an AI chatbot to your site that captures leads and answers customer questions. You get your own dashboard to track it. No extra work on your end."</p>
         <p><strong>What you need:</strong> Sign up free at <a href="https://admin.octively.com/dashboard/signup">admin.octively.com</a>, create the bot, paste one script tag on their site, and invite them to their portal. Setup takes under an hour.</p>
         <p>Reply to this email if you have questions. We are happy to help.</p>
-        <p>Owais<br>Octively</p>
+        <p>Octively Team</p>
       `,
     })
   } catch (err) {

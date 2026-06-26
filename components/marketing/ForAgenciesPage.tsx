@@ -235,7 +235,7 @@ export default function ForAgenciesPage() {
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--of-primary)', display: 'grid', placeItems: 'center', color: 'white', fontWeight: 700, fontFamily: 'var(--font-mono)', fontSize: 13 }}>FZ</div>
             <div style={{ textAlign: 'left' }}>
               <p style={{ fontWeight: 600, fontSize: 14, margin: 0 }}>Fatima Z.</p>
-              <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0 }}>Co-founder · Stackbot Agency</p>
+              <p style={{ fontSize: 12, color: 'var(--ink-muted)', margin: 0 }}>Stackbot Agency</p>
             </div>
           </div>
         </div>

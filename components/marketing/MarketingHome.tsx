@@ -1696,15 +1696,15 @@ function PricingTeaser() {
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Friday used to be report day. Screenshots, Excel, emailing PDFs to three different clients. Now I just tell them to log into their portal. One of them pays me ₨15k a month basically for that dashboard.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'Friday used to be report day. Screenshots, Excel, emailing PDFs to three different clients. Now I just tell them to log into their portal. One of them pays me ₨15k a month basically for that dashboard.', name: 'Ahmed R.', role: 'Solo dev · Karachi', initials: 'AR' },
   { q: 'We were on Stammer\'s $197 agency plan and using maybe a third of it. Moved 7 client bots over in a week. My clients never noticed anything changed, which honestly is the whole point of white label.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
-  { q: 'I keep small clients on the default model and put the two who pay more on a smarter one. Took me a while to realize I could price my own plans around that. The per-bot credit budget does the policing for me.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
+  { q: 'I keep small clients on the default model and put the two who pay more on a smarter one. Took me a while to realize I could price my own plans around that. The per-bot credit budget does the policing for me.', name: 'Bilal Q.', role: 'TalkBox.pk', initials: 'BQ' },
   { q: 'My tea exporter client types in Urdu and the bot replies in Urdu. I did nothing special to set that up. Their accounts guy downloads the leads CSV himself now instead of calling me every Monday.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
 ]
 const QUOTES_ROW_2 = [
   { q: 'My client sees my logo on the widget and their own portal login, nothing else. One of them genuinely thinks my team built the whole thing. I\'m not correcting him.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
   { q: 'Moved four client bots off Botpress in a weekend. Re-uploaded the training docs, swapped the embed script. Nobody noticed, which I\'m taking as a compliment.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
-  { q: 'Our retainer client refused anything where their data sits in a shared dashboard. Separate logins, each client seeing only their own bot, that\'s what closed it. The "any updates?" emails have stopped.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
+  { q: 'Our retainer client refused anything where their data sits in a shared dashboard. Separate logins, each client seeing only their own bot, that\'s what closed it. The "any updates?" emails have stopped.', name: 'Fatima Z.', role: 'Stackbot', initials: 'FZ' },
   { q: 'Half my clients are in Karachi, the rest are in the UK. Rupee pricing is why I signed up, I was done paying card fees on dollar subscriptions. The UK clients just see their own branded portal and never ask what\'s underneath.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
 ]
 
@@ -1932,10 +1932,8 @@ function CTABanner() {
               >
                 Create your first bot portal <ArrowRight size={16} />
               </Link>
-              <a
-                href="https://www.linkedin.com/in/mrowaisabdullah"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/contact"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -1951,11 +1949,8 @@ function CTABanner() {
                   transition: 'border-color .15s',
                 }}
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-                Talk to Owais
-              </a>
+                Talk to us
+              </Link>
             </div>
             <div
               style={{

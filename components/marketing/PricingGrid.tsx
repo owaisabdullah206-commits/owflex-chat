@@ -289,15 +289,15 @@ const FAQS = [
 // ─── Testimonials ─────────────────────────────────────────────────────────────
 
 const QUOTES_ROW_1 = [
-  { q: 'Friday used to be report day. Screenshots, Excel, emailing PDFs to three different clients. Now I just tell them to log into their portal. One of them pays me ₨15k a month basically for that dashboard.', name: 'Owais A.', role: 'Solo dev · Karachi', initials: 'OA' },
+  { q: 'Friday used to be report day. Screenshots, Excel, emailing PDFs to three different clients. Now I just tell them to log into their portal. One of them pays me ₨15k a month basically for that dashboard.', name: 'Ahmed R.', role: 'Solo dev · Karachi', initials: 'AR' },
   { q: 'We were on Stammer\'s $197 agency plan and using maybe a third of it. Moved 7 client bots over in a week. My clients never noticed anything changed, which honestly is the whole point of white label.', name: 'Hira K.', role: 'Agency owner · Lahore', initials: 'HK' },
-  { q: 'I keep small clients on the default model and put the two who pay more on a smarter one. Took me a while to realize I could price my own plans around that. The per-bot credit budget does the policing for me.', name: 'Bilal Q.', role: 'Founder · TalkBox.pk', initials: 'BQ' },
+  { q: 'I keep small clients on the default model and put the two who pay more on a smarter one. Took me a while to realize I could price my own plans around that. The per-bot credit budget does the policing for me.', name: 'Bilal Q.', role: 'TalkBox.pk', initials: 'BQ' },
   { q: 'My tea exporter client types in Urdu and the bot replies in Urdu. I did nothing special to set that up. Their accounts guy downloads the leads CSV himself now instead of calling me every Monday.', name: 'Maryam S.', role: 'Freelancer · Islamabad', initials: 'MS' },
 ]
 const QUOTES_ROW_2 = [
   { q: 'My client sees my logo on the widget and their own portal login, nothing else. One of them genuinely thinks my team built the whole thing. I\'m not correcting him.', name: 'Daniyal R.', role: 'Bolt Agency · Lahore', initials: 'DR' },
   { q: 'Moved four client bots off Botpress in a weekend. Re-uploaded the training docs, swapped the embed script. Nobody noticed, which I\'m taking as a compliment.', name: 'Saad M.', role: 'Indie dev · Faisalabad', initials: 'SM' },
-  { q: 'Our retainer client refused anything where their data sits in a shared dashboard. Separate logins, each client seeing only their own bot, that\'s what closed it. The "any updates?" emails have stopped.', name: 'Fatima Z.', role: 'Co-founder · Stackbot', initials: 'FZ' },
+  { q: 'Our retainer client refused anything where their data sits in a shared dashboard. Separate logins, each client seeing only their own bot, that\'s what closed it. The "any updates?" emails have stopped.', name: 'Fatima Z.', role: 'Stackbot', initials: 'FZ' },
   { q: 'Half my clients are in Karachi, the rest are in the UK. Rupee pricing is why I signed up, I was done paying card fees on dollar subscriptions. The UK clients just see their own branded portal and never ask what\'s underneath.', name: 'Aamir T.', role: 'Agency · Karachi → London', initials: 'AT' },
 ]
 
@@ -876,7 +876,7 @@ export default function PricingGrid() {
               Common pricing questions.
             </h2>
             <p style={{ marginTop: 14, marginBottom: 18, color: 'var(--ink-subtle)', fontSize: 15, lineHeight: 1.6 }}>
-              Don&apos;t see yours? Talk to Owais directly, DMs open in the freelancer/agency communities Octively was built for.
+              Don&apos;t see yours? DMs open in the freelancer/agency communities Octively was built for.
             </p>
             <a
               href={waHref('Hi, I have a question about Octively pricing.')}
@@ -961,12 +961,12 @@ export default function PricingGrid() {
                   Create your first bot portal <ArrowRight size={16} />
                 </Link>
                 <a
-                  href={waHref('Hi Owais, I\'d like to learn more about Octively.')}
+                  href={waHref('Hi, I\'d like to learn more about Octively.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '13px 22px', borderRadius: 10, fontSize: 15, fontWeight: 500, color: 'var(--ink)', border: '1px solid var(--hairline-strong)', textDecoration: 'none' }}
                 >
-                  Talk to Owais
+                  Talk to us
                 </a>
               </div>
               <div style={{ fontFamily: 'var(--font-mono)', position: 'relative', fontSize: 12, color: 'var(--ink-muted)', marginTop: 4 }}>

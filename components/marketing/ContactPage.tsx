@@ -125,7 +125,7 @@ export default function ContactPage() {
               >
                 <h3 style={{ fontWeight: 600, fontSize: 17, marginBottom: 4 }}>Send a message</h3>
                 <div className="mkt-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <Field label="Name" name="name" placeholder="Owais" required />
+                  <Field label="Name" name="name" placeholder="Your name" required />
                   <Field label="Email" name="email" type="email" placeholder="you@agency.com" required />
                 </div>
                 <Field label="Subject" name="subject" placeholder="Question about the Agency plan" />
