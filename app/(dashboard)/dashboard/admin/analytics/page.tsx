@@ -1,9 +1,13 @@
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { getPlatformStats } from '@/lib/db/queries/admin'
 import { Sidebar } from '@/components/dashboard/Sidebar'
+import { PLAN_PRICES_PKR } from '@/lib/billing/payfast'
 
+// Single source of truth for plan prices (same values the MRR card uses), so the
+// breakdown table can never drift from the canonical billing prices again.
 const PKR_PRICES: Record<string, number> = {
-  free: 0, starter: 2000, pro: 6000, agency: 15000,
+  free: 0,
+  ...PLAN_PRICES_PKR, // starter 2500, pro 7500, agency 20000
 }
 
 function BentoCard({
