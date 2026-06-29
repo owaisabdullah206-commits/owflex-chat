@@ -378,12 +378,19 @@ export async function POST(req: NextRequest) {
 
     // If a lead already has this visitor's details (pre-chat form, or captured
     // earlier in this chat), tell the bot so it does not ask for them again.
-    const [knownLead] = await db
-      .select({ name: schema.leads.name, email: schema.leads.email, phone: schema.leads.phone })
-      .from(schema.leads)
-      .where(and(eq(schema.leads.botId, bot.id), eq(schema.leads.sessionId, sessionId)))
-      .orderBy(desc(schema.leads.capturedAt))
-      .limit(1)
+    // Wrapped: if the leads.session_id column hasn't been migrated yet, degrade
+    // gracefully (skip the note) instead of breaking chat.
+    let knownLead: { name: string | null; email: string | null; phone: string | null } | undefined
+    try {
+      ;[knownLead] = await db
+        .select({ name: schema.leads.name, email: schema.leads.email, phone: schema.leads.phone })
+        .from(schema.leads)
+        .where(and(eq(schema.leads.botId, bot.id), eq(schema.leads.sessionId, sessionId)))
+        .orderBy(desc(schema.leads.capturedAt))
+        .limit(1)
+    } catch (err) {
+      console.error('[chat] known-lead lookup failed (session_id column missing?):', err instanceof Error ? err.message : String(err))
+    }
     const onFileParts: string[] = []
     if (knownLead?.name)  onFileParts.push(`name: ${knownLead.name}`)
     if (knownLead?.email) onFileParts.push(`email: ${knownLead.email}`)
