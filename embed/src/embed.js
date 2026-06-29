@@ -504,28 +504,24 @@ function captureLead(text){
   var cleaned=text.replace(/\n?\[LEAD:[\s\S]*?\]/,"").trim();
   try{
     var d=JSON.parse(m[1]);
-    if(d.name||d.email||d.phone){
-      var lp={embedKey:k,sessionId:sid};
-      if(d.name)lp.name=d.name;if(d.email)lp.email=d.email;
-      if(d.phone)lp.phone=d.phone;if(d.notes)lp.notes=d.notes;
-      fetch(bu+"/api/v1/leads",{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(lp)})
-      .then(function(r){
-        var el=document.createElement("div");el.className="ok";
-        if(r.ok){el.textContent="✓ Details saved";}
-        else{
-          r.json().then(function(j){console.error("[octively:leads]",r.status,j);}).catch(function(){});
-          el.textContent="⚠ Could not save your details ("+r.status+")";el.style.color="#ef4444";
-        }
-        ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
-      })
-      .catch(function(e){
-        console.error("[octively:leads] fetch failed:",e);
-        var el=document.createElement("div");el.className="ok";el.style.color="#ef4444";
-        el.textContent="⚠ Could not save your details (network error)";
-        ms.appendChild(el);ms.scrollTop=ms.scrollHeight;
-      });
-    }
+    // Build a clean payload: trim blanks, validate the email, and ignore the
+    // placeholder text the model sometimes emits ("their name"/"their email").
+    // Skip the request entirely if nothing real remains — never POST an empty or
+    // invalid lead (that returned a 400 and showed a scary error to the visitor).
+    var PH=/^(their |the |your |<|none$|n\/?a$|unknown$|customer$|visitor$|name$|email$|phone$)/i;
+    var clean=function(v){return (typeof v==="string"&&v.trim()&&!PH.test(v.trim()))?v.trim():"";};
+    var name=clean(d.name),phone=clean(d.phone),email="";
+    if(d.email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(d.email).trim()))email=String(d.email).trim();
+    if(!(name||email||phone))return cleaned; // nothing real to save — skip silently
+    var lp={embedKey:k,sessionId:sid};
+    if(name)lp.name=name;if(email)lp.email=email;if(phone)lp.phone=phone;
+    var notes=clean(d.notes);if(notes)lp.notes=notes;
+    fetch(bu+"/api/v1/leads",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(lp)})
+    .then(function(r){
+      if(r.ok){var el=document.createElement("div");el.className="ok";el.textContent="✓ Details saved";ms.appendChild(el);ms.scrollTop=ms.scrollHeight;}
+      else{r.json().then(function(j){console.error("[octively:leads]",r.status,j);}).catch(function(){});} // log only; never alarm the visitor
+    })
+    .catch(function(e){console.error("[octively:leads] fetch failed:",e);}); // silent on failure
   }catch(e){}
   return cleaned;
 }

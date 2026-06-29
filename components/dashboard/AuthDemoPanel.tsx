@@ -19,16 +19,16 @@ import { MessageSquare, UserPlus, Globe, BarChart2, Code2, Copy, Check } from 'l
 //   row-1 centre: 85+30        = 115 px → 45 %
 
 const STEPS = [
-  { title: 'Build your AI chatbot',        desc: 'Visual dashboard, no code required' },
+  { title: 'Build your AI agent',          desc: 'Visual dashboard, no code required' },
   { title: 'Deploy with one script tag',   desc: 'Paste into any client website in 30 seconds' },
   { title: 'Leads captured automatically', desc: 'Every conversation turns into a lead record' },
   { title: 'Clients get their own portal', desc: 'They log in and see their data. You keep control.' },
   { title: 'Track performance at a glance', desc: 'Conversations, leads, and response rates in one view' },
-  { title: 'All your bots, one place',     desc: 'Switch between clients without losing context' },
+  { title: 'All your agents, one place',   desc: 'Switch between clients without losing context' },
 ]
 
 const NAV_ITEMS = [
-  { label: 'Bots',      Icon: MessageSquare },
+  { label: 'Agents',     Icon: MessageSquare },
   { label: 'Leads',     Icon: UserPlus },
   { label: 'Clients',   Icon: Globe },
   { label: 'Analytics', Icon: BarChart2 },
@@ -65,11 +65,11 @@ function BotsScreen({
     <div style={{ padding: '14px 16px 0', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>My Bots</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink)', letterSpacing: '-0.01em' }}>My Agents</span>
         <span style={{
           fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
           color: 'var(--of-primary)', background: 'var(--of-primary-soft)', padding: '2px 7px', borderRadius: 4,
-        }}>+ New bot</span>
+        }}>+ New agent</span>
       </div>
 
       {/* Bot rows */}

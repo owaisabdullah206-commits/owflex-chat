@@ -17,7 +17,7 @@ export function UnansweredList({ messages }: UnansweredListProps) {
       <div className="border border-dashed border-[var(--hairline)] bg-[var(--surface)] px-6 py-10 text-center">
         <p className="text-sm text-[var(--ink-muted)]">No unanswered questions yet — great job!</p>
         <p className="text-xs text-[var(--ink-muted)] mt-1">
-          Questions will appear here when the bot expresses uncertainty in its responses.
+          Questions will appear here when the agent expresses uncertainty in its responses.
         </p>
       </div>
     )
@@ -38,7 +38,7 @@ export function UnansweredList({ messages }: UnansweredListProps) {
               )}
               {/* Bot's uncertain reply */}
               <div className="flex gap-2">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] pt-0.5 shrink-0">Bot</span>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] pt-0.5 shrink-0">Agent</span>
                 <p className="text-sm text-[var(--ink-muted)] line-clamp-3">{msg.content}</p>
               </div>
             </div>

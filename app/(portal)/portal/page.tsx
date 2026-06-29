@@ -34,9 +34,9 @@ export default async function PortalPage({
           <div className="w-12 h-12 rounded-full bg-[var(--surface)] border border-[var(--hairline)] flex items-center justify-center mx-auto mb-4">
             <BotOff className="h-6 w-6 text-[var(--ink-subtle)]" />
           </div>
-          <h2 className="text-base font-semibold text-[var(--ink)] mb-2">Waiting for bot access</h2>
+          <h2 className="text-base font-semibold text-[var(--ink)] mb-2">Waiting for agent access</h2>
           <p className="text-sm text-[var(--ink-muted)] max-w-xs mx-auto">
-            Your developer hasn&apos;t linked a chatbot to your account yet. Reach out to them to get started.
+            Your developer hasn&apos;t linked an agent to your account yet. Reach out to them to get started.
           </p>
         </div>
       </div>
@@ -70,7 +70,7 @@ export default async function PortalPage({
               <h1 className="text-xl font-bold text-[var(--ink)]">{bot.name}</h1>
               <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Active" />
             </div>
-            <p className="text-sm text-[var(--ink-muted)] mt-0.5">Your chatbot overview</p>
+            <p className="text-sm text-[var(--ink-muted)] mt-0.5">Your agent overview</p>
           </div>
           <RefreshButton />
         </div>

@@ -1790,6 +1790,27 @@ function MarqueeRow({ items, direction, speed, dark }: { items: typeof QUOTES_RO
   )
 }
 
+function SecurityStrip() {
+  return (
+    <section style={{ paddingBlock: 56, background: 'var(--surface-2)', borderTop: '1px solid var(--hairline)', borderBottom: '1px solid var(--hairline)' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--of-primary-soft)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+            <Shield size={20} style={{ color: 'var(--of-primary)' }} />
+          </div>
+          <div>
+            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 2 }}>Your clients&apos; data is protected</p>
+            <p style={{ fontSize: 13, color: 'var(--ink-muted)', lineHeight: 1.5 }}>Rate limiting on every endpoint. Encryption at rest. Tenant isolation. Signed webhooks.</p>
+          </div>
+        </div>
+        <Link href="/security" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 500, color: 'var(--of-primary)', textDecoration: 'none' }}>
+          Read our security practices <ArrowRight size={14} />
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 function Testimonials({ dark = true }: { dark?: boolean }) {
   return (
     <section
@@ -2228,6 +2249,7 @@ export default function MarketingHome({ posts = [] }: { posts?: SanityPost[] }) 
       <FeatureBento />
       <UpcomingStrip />
       <PricingTeaser />
+      <SecurityStrip />
       <Testimonials dark={true} />
       <MarketingFAQ items={HOME_FAQS} />
       <BlogTeaser posts={posts} />

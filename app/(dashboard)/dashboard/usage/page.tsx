@@ -82,7 +82,7 @@ export default async function UsagePage() {
             </div>
             <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Usage</h1>
             <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
-              bots · conversations · leads · storage · credits
+              agents · conversations · leads · storage · credits
             </p>
           </div>
           <div className="mt-1"><RefreshButton /></div>

@@ -29,7 +29,7 @@ export function BotTable({ bots }: BotTableProps) {
       <table className="w-full text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
         <thead>
           <tr>
-            <th className={thClass}>bot_name</th>
+            <th className={thClass}>agent_name</th>
             <th className={thClass}>client</th>
             <th className={thClass}>created_at</th>
             <th className={thClass}>status</th>
@@ -40,7 +40,7 @@ export function BotTable({ bots }: BotTableProps) {
           {bots.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-4 py-10 text-center text-[var(--ink-muted)] text-xs">
-                no bots yet
+                no agents yet
               </td>
             </tr>
           ) : (

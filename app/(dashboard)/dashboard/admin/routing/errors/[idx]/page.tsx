@@ -187,7 +187,7 @@ export default async function ErrorDetailPage({ params }: { params: Promise<{ id
               <>
                 <Field label="embed key" value={error.embedKey || '—'} mono highlight="warning" />
                 <p className="text-[11px] text-[var(--ink-subtle)] pt-2">
-                  No bot found for this embed key. The bot may have been deleted.
+                  No agent found for this embed key. The agent may have been deleted.
                 </p>
               </>
             )}
@@ -210,7 +210,7 @@ export default async function ErrorDetailPage({ params }: { params: Promise<{ id
               </>
             ) : (
               <p className="text-[11px] text-[var(--ink-subtle)]">
-                Could not resolve developer — embed key not matched to any bot.
+                Could not resolve developer — embed key not matched to any agent.
               </p>
             )}
           </Section>
@@ -220,7 +220,7 @@ export default async function ErrorDetailPage({ params }: { params: Promise<{ id
             <Section title="actions">
               <div className="flex flex-wrap gap-3">
                 <a
-                  href={`mailto:${owner.email}?subject=Issue with your Octively bot "${bot?.name ?? ''}"&body=Hi ${owner.name ?? ''},%0A%0AWe noticed an error with your chatbot.%0A%0AError: ${encodeURIComponent(error.err.slice(0, 200))}%0A%0APlease check your bot settings or contact us if you need help.`}
+                  href={`mailto:${owner.email}?subject=Issue with your Octively agent "${bot?.name ?? ''}"&body=Hi ${owner.name ?? ''},%0A%0AWe noticed an error with your agent.%0A%0AError: ${encodeURIComponent(error.err.slice(0, 200))}%0A%0APlease check your agent settings or contact us if you need help.`}
                   className="inline-flex items-center gap-2 px-4 py-2 text-[12px] font-medium text-white rounded"
                   style={{ background: 'var(--of-primary)', fontFamily: 'var(--font-mono)' }}
                 >
@@ -232,7 +232,7 @@ export default async function ErrorDetailPage({ params }: { params: Promise<{ id
                     className="inline-flex items-center gap-2 px-4 py-2 text-[12px] font-medium border border-[var(--hairline)] text-[var(--ink)] rounded hover:bg-[var(--surface-2)] transition-colors"
                     style={{ fontFamily: 'var(--font-mono)' }}
                   >
-                    Open bot settings
+                    Open agent settings
                   </Link>
                 )}
                 <Link

@@ -63,6 +63,10 @@ export async function POST(req: NextRequest) {
   // Live human handoff — set while a human agent is handling the conversation in real time
   await run('conversations.agent_active_at', sql`ALTER TABLE "conversations" ADD COLUMN IF NOT EXISTS "agent_active_at" timestamptz`)
 
+  // Lead session id — links a pre-chat-form lead to its widget session (conversationId is null then)
+  await run('leads.session_id', sql`ALTER TABLE "leads" ADD COLUMN IF NOT EXISTS "session_id" varchar(100)`)
+  await run('leads.session_id_idx', sql`CREATE INDEX IF NOT EXISTS "leads_session_id_idx" ON "leads"("session_id")`)
+
   // Sub-tenant credit cap on organizations
   await run('organizations.credit_cap', sql`ALTER TABLE "organizations" ADD COLUMN IF NOT EXISTS "credit_cap" integer`)
 

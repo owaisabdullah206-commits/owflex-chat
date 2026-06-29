@@ -193,7 +193,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               className="flex items-center gap-1 mb-0.5 text-[10px] text-[var(--ink-subtle)] uppercase tracking-[0.1em]"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
-              <a href="/dashboard/bots" className="hover:text-[var(--ink-muted)] transition-colors">bots</a>
+              <a href="/dashboard/bots" className="hover:text-[var(--ink-muted)] transition-colors">agents</a>
               <span className="opacity-40">/</span>
               <span className="text-[var(--ink-muted)] truncate">{bot.name}</span>
             </div>
@@ -357,7 +357,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
           {activeTab === 'settings' && (
             <div className="space-y-8">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-5" style={{ fontFamily: 'var(--font-mono)' }}>bot_settings</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-5" style={{ fontFamily: 'var(--font-mono)' }}>agent_settings</p>
                 <BotSettingsForm
                   botId={bot.id}
                   embedKey={bot.embedKey}
@@ -421,7 +421,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>knowledge_base</p>
               <p className="text-xs text-[var(--ink-muted)] mb-5">
-                Upload files, PDFs, or add a URL. The bot retrieves relevant context from these at chat time.
+                Upload files, PDFs, or add a URL. The agent retrieves relevant context from these at chat time.
               </p>
               <DocumentsTab
                 botId={bot.id}
@@ -440,7 +440,7 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
               <div className="lg:col-span-2">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1" style={{ fontFamily: 'var(--font-mono)' }}>unanswered_questions</p>
                 <p className="text-xs text-[var(--ink-muted)] mb-5">
-                  Responses where the bot expressed uncertainty. Upload relevant documents to fill these gaps.
+                  Responses where the agent expressed uncertainty. Upload relevant documents to fill these gaps.
                 </p>
                 <UnansweredList messages={unansweredMessages} />
               </div>

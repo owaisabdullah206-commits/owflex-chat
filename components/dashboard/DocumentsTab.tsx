@@ -67,7 +67,7 @@ export async function DocumentsTab({ botId, orgId, plan, storeUrl }: Props) {
           <FileText className="h-10 w-10 text-[var(--ink-subtle)]" />
           <p className="text-sm font-medium text-[var(--ink-muted)]">No documents yet</p>
           <p className="text-xs text-[var(--ink-muted)] max-w-xs">
-            Upload a PDF, DOCX, TXT, or Markdown file — or paste a URL — to give your bot a knowledge base.
+            Upload a PDF, DOCX, TXT, or Markdown file — or paste a URL — to give your agent a knowledge base.
           </p>
         </div>
       ) : (

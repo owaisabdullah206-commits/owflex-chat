@@ -43,7 +43,7 @@ export function SmartRoutingToggle({ botId, initialEnabled }: Props) {
         <p className="text-xs text-[var(--ink-muted)] mt-0.5">
           {optimisticEnabled
             ? 'Classifying each message — greetings use your default model, complex questions use a stronger model.'
-            : 'All messages use your bot\'s single configured model. Enable to save credits on simple messages.'}
+            : 'All messages use your agent\'s single configured model. Enable to save credits on simple messages.'}
         </p>
       </div>
     </div>

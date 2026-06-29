@@ -39,7 +39,7 @@ export function DeleteBotButton({ botId, botName }: DeleteBotButtonProps) {
         toast.error(result.error)
         return
       }
-      toast.success(`Bot "${botName}" deleted`)
+      toast.success(`Agent "${botName}" deleted`)
       setOpen(false)
       router.push('/dashboard/bots')
     })
@@ -52,14 +52,14 @@ export function DeleteBotButton({ botId, botName }: DeleteBotButtonProps) {
           variant="ghost"
           size="sm"
           className="text-[var(--ink-muted)] hover:text-red-500 hover:bg-red-500/5"
-          title="Delete bot"
+          title="Delete agent"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-red-500">Delete this bot?</DialogTitle>
+          <DialogTitle className="text-red-500">Delete this agent?</DialogTitle>
           <DialogDescription className="text-[var(--ink-muted)]">
             This permanently deletes <strong className="text-[var(--ink)]">{botName}</strong> and
             all of its conversations, messages, leads, and pending invites. This cannot be undone.
@@ -68,7 +68,7 @@ export function DeleteBotButton({ botId, botName }: DeleteBotButtonProps) {
 
         <div className="space-y-2">
           <Label htmlFor="confirm-bot-name" className="text-sm font-medium text-[var(--ink)]">
-            Type the bot name to confirm
+            Type the agent name to confirm
           </Label>
           <Input
             id="confirm-bot-name"
@@ -95,7 +95,7 @@ export function DeleteBotButton({ botId, botName }: DeleteBotButtonProps) {
             disabled={!canDelete || isPending}
             className="bg-red-500 hover:bg-red-600 text-white"
           >
-            {isPending ? 'Deleting…' : 'Delete bot'}
+            {isPending ? 'Deleting…' : 'Delete agent'}
           </Button>
         </DialogFooter>
       </DialogContent>

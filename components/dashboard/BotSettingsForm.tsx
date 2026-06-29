@@ -20,7 +20,7 @@ import { OctivelySpinner } from '@/components/brand/OctivelySpinner'
 // ─── Trigger icon catalogue ───────────────────────────────────────────────────
 const TRIGGER_ICONS = [
   { id: 'message-circle', label: 'Chat',     Icon: MessageCircle },
-  { id: 'bot',            label: 'Bot',      Icon: Bot           },
+  { id: 'bot',            label: 'Agent',     Icon: Bot           },
   { id: 'help-circle',    label: 'Help',     Icon: HelpCircle    },
   { id: 'headphones',     label: 'Support',  Icon: Headphones    },
   { id: 'sparkles',       label: 'AI',       Icon: Sparkles      },
@@ -191,7 +191,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
     // Store URL is required — without it the bot is locked to preview only and
     // cannot serve any external website (see chat route domain-lock).
     if (!storeUrl.trim()) {
-      setError('Store / Website URL is required before this bot can go live.')
+      setError('Store / Website URL is required before this agent can go live.')
       return
     }
     startTransition(async () => {
@@ -308,7 +308,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
 
           {/* Bot Name */}
           <div className="space-y-1.5">
-            <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Bot Name</Label>
+            <Label htmlFor="name" className="text-xs text-[var(--ink-muted)]">Agent Name</Label>
             <Input id="name" value={name}
               onChange={(e) => { setName(e.target.value); markDirty() }}
               className="bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] rounded-none"
@@ -349,7 +349,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
               style={{ fontFamily: 'var(--font-mono)' }}
               disabled={isPending} />
             <p className="text-[11px] text-[var(--ink-subtle)]">
-              Defines this bot&apos;s persona, scope, and tone. Bot-specific instructions only — global safety rules are handled separately.
+              Defines this agent&apos;s persona, scope, and tone. Agent-specific instructions only — global safety rules are handled separately.
             </p>
           </div>
 
@@ -537,11 +537,11 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
             />
             {!storeUrl.trim() && (
               <p className="text-[11px] text-amber-400">
-                ⚠ Required to go live. Until this is set, the bot only works in preview — it will not respond on any external website. Setting it also locks the bot to your domain and enables absolute product links.
+                ⚠ Required to go live. Until this is set, the agent only works in preview — it will not respond on any external website. Setting it also locks the agent to your domain and enables absolute product links.
               </p>
             )}
             <p className="text-[11px] text-[var(--ink-subtle)]">
-              Used to build product links from your catalog and restrict which domain can embed this bot.
+              Used to build product links from your catalog and restrict which domain can embed this agent.
             </p>
           </div>
 
@@ -803,7 +803,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
                   {isFreePlan && <span className="text-[10px] px-1.5 py-0.5 border border-[var(--hairline-strong)] text-[var(--ink-muted)] bg-[var(--surface)]">Starter+</span>}
                 </div>
                 <p className="text-xs text-[var(--ink-muted)]">
-                  Bot refuses questions outside its knowledge base
+                  Agent refuses questions outside its knowledge base
                 </p>
               </div>
               <Switch checked={!isFreePlan && strictMode}
@@ -864,7 +864,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
                     </div>
                     {handoffMode === 'live' && canLiveHandoff && (
                       <p className="text-[10px] text-[var(--ink-subtle)]">
-                        The bot pauses and your team replies directly inside the chat widget in real time. Best for clients with staff online to respond.
+                        The agent pauses and your team replies directly inside the chat widget in real time. Best for clients with staff online to respond.
                       </p>
                     )}
                   </div>
@@ -890,7 +890,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
                     </div>
                     <p className="text-[10px] text-[var(--ink-subtle)]">
                       {handoffNotifyTarget === 'client'
-                        ? 'Notification email goes to the client linked to this bot.'
+                        ? 'Notification email goes to the client linked to this agent.'
                         : 'Notification email goes to the developer account (you).'}
                     </p>
                   </div>
@@ -959,7 +959,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm text-[var(--ink)]">Usage & Limits</p>
-              <p className="text-xs text-[var(--ink-muted)]">Per-bot monthly caps for conversations, leads, and credits</p>
+              <p className="text-xs text-[var(--ink-muted)]">Per-agent monthly caps for conversations, leads, and credits</p>
             </div>
             <Switch
               checked={usageLimitsToggle}
@@ -974,7 +974,7 @@ export function BotSettingsForm({ botId, embedKey, orgPlan, modelPrices, expensi
           {usageLimitsToggle && (
             <div className="space-y-3">
               <p className="text-xs text-[var(--ink-subtle)]">
-                Leave blank to use the full org pool with no bot-level cap.
+                Leave blank to use the full org pool with no agent-level cap.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
@@ -1286,7 +1286,7 @@ function LiveBotPreview({
               <span style={{ position: 'absolute', bottom: 0, right: 0, width: 10, height: 10, borderRadius: '50%', background: '#4ade80', border: '2px solid transparent', boxShadow: `0 0 0 2px ${primaryColor}` }} />
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.2 }}>{botName || 'My Bot'}</div>
+              <div style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.2 }}>              {botName || 'My Agent'}</div>
               <div style={{ fontSize: 11, opacity: 0.8, marginTop: 1 }}>Online</div>
             </div>
           </div>

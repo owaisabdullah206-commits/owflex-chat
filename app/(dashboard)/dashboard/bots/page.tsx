@@ -51,26 +51,26 @@ export default async function BotsPage() {
             >
               <span>dashboard</span>
               <span className="opacity-40">/</span>
-              <span className="text-[var(--ink-muted)]">bots</span>
+              <span className="text-[var(--ink-muted)]">agents</span>
             </div>
-            <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Bots</h1>
+            <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Agents</h1>
             <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
               <span className="text-[var(--of-primary)]">{userBots.length}</span>
               <span className="text-[var(--ink-subtle)]">/{botLimit === Infinity ? '∞' : botLimit}</span>
-              {' '}bots · {org?.plan ?? 'free'} plan
+              {' '}agents · {org?.plan ?? 'free'} plan
             </p>
           </div>
           <div className="flex items-center gap-2 mt-1">
             {atLimit ? (
-              <Button disabled title="Upgrade your plan to add more bots" size="sm">
+              <Button disabled title="Upgrade your plan to add more agents" size="sm">
                 <Plus className="h-3.5 w-3.5 mr-1" />
-                New bot
+                New agent
               </Button>
             ) : (
               <Button asChild size="sm">
                 <a href="/dashboard/bots/new">
                   <Plus className="h-3.5 w-3.5 mr-1" />
-                  New bot
+                  New agent
                 </a>
               </Button>
             )}
@@ -82,7 +82,7 @@ export default async function BotsPage() {
           <div className="mx-4 sm:mx-8 mt-4 flex items-center justify-between gap-3 border border-[var(--of-primary)]/20 bg-[var(--of-primary)]/5 px-4 py-2.5">
             <p className="text-[12px] text-[var(--ink-muted)]" style={{ fontFamily: 'var(--font-mono)' }}>
               <span className="text-[var(--ink)]">free plan</span>
-              {' — '}1 bot · 200 convos/mo · 15 leads/mo.
+              {' — '}1 agent · 200 convos/mo · 15 leads/mo.
               {' '}Upgrade to remove limits.
             </p>
             <a
@@ -108,15 +108,15 @@ export default async function BotsPage() {
               className="text-[11px] uppercase tracking-[0.1em] text-[var(--ink-subtle)] mb-1"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
-              bots.total
+              agents.total
             </p>
             <p className="text-sm text-[var(--ink-muted)] text-center max-w-xs mb-6 mt-3">
-              Create your first bot and get an embed script to drop on any website.
+              Create your first agent and get an embed script to drop on any website.
             </p>
             <Button asChild>
               <a href="/dashboard/bots/new">
                 <Plus className="h-3.5 w-3.5 mr-1" />
-                Create your first bot
+                Create your first agent
               </a>
             </Button>
           </div>

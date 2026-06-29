@@ -35,7 +35,7 @@ export function PlatformPromptForm({ currentPrompt, onSave }: PlatformPromptForm
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={12}
-          placeholder="Leave empty to disable. This prompt prepends every bot's system prompt."
+          placeholder="Leave empty to disable. This prompt prepends every agent's system prompt."
           className="rounded-none bg-[var(--surface)] border-[var(--hairline)] text-[var(--ink)] resize-none"
           disabled={isPending}
         />

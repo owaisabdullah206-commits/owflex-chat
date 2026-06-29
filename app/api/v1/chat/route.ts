@@ -75,20 +75,21 @@ This marker is stripped automatically — users see interactive product cards, n
 const LEAD_INSTRUCTIONS = `
 
 ---
-LEAD CAPTURE (system — invisible to users):
-Your goal is to naturally collect the user's name and contact information during the conversation. Follow these rules:
+LEAD CAPTURE (system rules, invisible to users):
+You may collect the visitor's name and contact details, but only naturally and without pressure.
 
-1. After you have answered the user's first or second question and the conversation feels natural, ask for their name first, then their preferred contact method (email or phone). Frame it as a way to follow up or send them more information — never as a requirement.
-   Example: "By the way, may I know your name? And if you'd like me to follow up, feel free to share your email or phone as well."
+1. Answer the visitor's actual question first and in full. That is always the priority. Most replies should contain no contact request at all.
 
-2. Never demand contact info. If they decline or ignore the request, do not ask again.
+2. Ask for contact details AT MOST ONCE in the entire conversation, and only when it genuinely fits, for example when the visitor asks for a quote, wants someone to follow up, or you could not fully answer and a human should help. Ask for their name, then optionally email or phone, framed as a way to follow up. Do NOT add a contact request to every reply.
 
-3. When the user shares their name, email, or phone — at any point — append this marker on a new line at the very end of your response:
-   [LEAD:{"name":"their name","email":"their email","phone":"their phone"}]
-   - Always capture the name when provided — it is the most important field.
-   - Only include fields the user actually provided; omit the rest entirely.
-   - Never tell the user you are saving their information.
-   - This marker is automatically stripped before the user sees your message.`
+3. If you have already asked once, or the visitor ignored or declined, do NOT ask again. Just keep helping.
+
+4. Output the lead marker ONLY when the visitor has actually typed a real name, email, or phone number in their own message. Use the exact values they gave. Then append, on a new line at the very end of your reply:
+   [LEAD:{"name":"<real name>","email":"<real email>","phone":"<real phone>"}]
+   - Include ONLY the fields the visitor actually provided; omit any field they did not give.
+   - NEVER invent, guess, or use placeholder or example text (no "their email", no made-up values).
+   - If the visitor has not shared any real contact detail in their latest message, do NOT output the marker at all.
+   - Never tell the visitor you are saving their information. The marker is stripped before they see your reply.`
 
 function corsHeaders(origin: string): Record<string, string> {
   return {
@@ -375,6 +376,22 @@ export async function POST(req: NextRequest) {
         : 'STRICT MODE: Only answer questions directly related to your purpose, system prompt, and knowledge base above. For anything outside your knowledge base, respond: "I\'m sorry, I don\'t have information about that. Please contact us directly for assistance."'
       : ''
 
+    // If a lead already has this visitor's details (pre-chat form, or captured
+    // earlier in this chat), tell the bot so it does not ask for them again.
+    const [knownLead] = await db
+      .select({ name: schema.leads.name, email: schema.leads.email, phone: schema.leads.phone })
+      .from(schema.leads)
+      .where(and(eq(schema.leads.botId, bot.id), eq(schema.leads.sessionId, sessionId)))
+      .orderBy(desc(schema.leads.capturedAt))
+      .limit(1)
+    const onFileParts: string[] = []
+    if (knownLead?.name)  onFileParts.push(`name: ${knownLead.name}`)
+    if (knownLead?.email) onFileParts.push(`email: ${knownLead.email}`)
+    if (knownLead?.phone) onFileParts.push(`phone: ${knownLead.phone}`)
+    const contactOnFile = onFileParts.length
+      ? `CONTACT ALREADY ON FILE (system note, do not repeat back verbatim): this visitor has already shared their contact details (${onFileParts.join(', ')}). Do NOT ask for their name or contact information again. Use their first name naturally when it fits, and reassure them the team will follow up using these details.`
+      : ''
+
     const finalSystemPrompt = composeSystemPrompt({
       // language rule + CONCISENESS_RULE go FIRST — LLMs weight earlier instructions more heavily
       platform: [languageRule, CONCISENESS_RULE, platformPrompt].filter(Boolean).join('\n\n'),
@@ -382,6 +399,7 @@ export async function POST(req: NextRequest) {
       docs: docContextBlock || undefined,
       faqs: strictInstructions || undefined,
       lead: [
+        contactOnFile,
         leadEnabled ? LEAD_INSTRUCTIONS : '',
         productRecsEnabled ? PRODUCT_RECOMMENDATION_INSTRUCTIONS : '',
       ].filter(Boolean).join('\n') || undefined,

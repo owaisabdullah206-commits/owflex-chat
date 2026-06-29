@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { Bot, Users, UserCheck, CreditCard, Settings } from 'lucide-react'
 
 const items = [
-  { href: '/dashboard/bots',     label: 'Bots',     icon: Bot },
+  { href: '/dashboard/bots',     label: 'Agents',    icon: Bot },
   { href: '/dashboard/leads',    label: 'Leads',    icon: Users },
   { href: '/dashboard/clients',  label: 'Clients',  icon: UserCheck },
   { href: '/dashboard/billing',  label: 'Billing',  icon: CreditCard },

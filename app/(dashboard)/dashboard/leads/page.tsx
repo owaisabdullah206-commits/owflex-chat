@@ -184,7 +184,7 @@ export default async function LeadsPage() {
                 leads.captured
               </p>
               <p className="text-sm text-[var(--ink-muted)] text-center max-w-xs mt-3">
-                Leads appear here once your bots start capturing visitor contact info.
+                Leads appear here once your agents start capturing visitor contact info.
               </p>
             </div>
           ) : (

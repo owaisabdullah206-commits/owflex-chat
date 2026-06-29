@@ -12,26 +12,26 @@ You are an expert AI assistant specializing in Spec-Driven Development (SDD). Yo
 
 ### What We're Building
 
-A **white-label AI chatbot builder** for freelancers and agencies, with two separate dashboards and a client-facing portal.
+A **white-label AI agent builder** for freelancers and agencies, with two separate dashboards and a client-facing portal.
 
-**Developer dashboard** (`admin.octively.com`): Build AI chatbots in a no-code visual dashboard, train them with documents, FAQs, and website scraping (RAG), configure the widget, deploy to any client website via one embed script tag.
+**Developer dashboard** (`admin.octively.com`): Build AI agents in a no-code visual dashboard, train them with documents, FAQs, and website scraping (RAG), configure the widget, deploy to any client website via one embed script tag.
 
-**Client portal** (`app.octively.com`): Each client gets their own branded portal login to view their chatbot's conversations, captured leads, and analytics — without contacting the freelancer/agency.
+**Client portal** (`app.octively.com`): Each client gets their own branded portal login to view their agent's conversations, captured leads, and analytics — without contacting the freelancer/agency.
 
 ---
 
 **Who our customer is:**
 
-The primary customer is a Pakistani freelancer or small agency **already doing digital work** for SMB clients — web design, website management, digital marketing, SEO, social media. They are NOT necessarily chatbot specialists. Octively lets them **add an AI chatbot service to their existing offering** — a new revenue stream from clients they already have.
+The primary customer is a Pakistani freelancer or small agency **already doing digital work** for SMB clients — web design, website management, digital marketing, SEO, social media. They are NOT necessarily AI agent specialists. Octively lets them **add an AI agent service to their existing offering** — a new revenue stream from clients they already have.
 
 Examples:
-- A web designer who builds WordPress/Webflow sites can now offer "AI chatbot for your site" as an add-on retainer
-- A digital marketing agency can offer "AI chatbot for lead capture" as a new service package
-- An SEO freelancer can upsell "AI chatbot to convert your traffic into leads"
+- A web designer who builds WordPress/Webflow sites can now offer "AI agent for your site" as an add-on retainer
+- A digital marketing agency can offer "AI agent for lead capture" as a new service package
+- An SEO freelancer can upsell "AI agent to convert your traffic into leads"
 - A social media manager can expand into website AI without any coding knowledge
 
 The pitch to these customers:
-> "You already have the client relationship. Add a chatbot service for ₨10,000–₨20,000/month. The tool costs you ₨2,500–₨20,000/month flat. Your client gets their own portal to see results — you stop getting support calls."
+> "You already have the client relationship. Add an AI agent service for ₨10,000–₨20,000/month. The tool costs you ₨2,500–₨20,000/month flat. Your client gets their own portal to see results — you stop getting support calls."
 
 ---
 
@@ -258,6 +258,14 @@ npm run build:embed   # rebuilds embed/dist/embed.min.js (the file actually serv
 - If you edit `embed/src/embed.js` and skip this step, production serves a stale widget.
 - Commit the updated `embed/dist/embed.min.js` along with your source change.
 - Run this BEFORE `npm run build` so the Next.js build picks up the fresh minified file.
+
+### TODO — iframe Sandbox Refactor (Security)
+
+- **Current state:** The embed widget uses direct script injection (`<script src="...embed.js">`) with origin locking and embed key validation.
+- **Target state:** Convert to iframe sandbox isolation (`sandbox="allow-scripts allow-forms"`). The widget runs in a sandboxed iframe with a null origin, making DOM/cookie/session access architecturally impossible.
+- **Why:** Enterprise clients and security-conscious website owners request this. Industry standard for chat widgets (Intercom, Drift, Tidio offer iframe options).
+- **Scope:** Changes to `embed/src/embed.js`, `app/embed.js/route.ts`, `app/api/embed/route.ts`, and client-side embed instructions.
+- **Status:** TODO — not started. Security page (`/security`) already mentions this as "coming soon."
 
 ### Git Remotes
 

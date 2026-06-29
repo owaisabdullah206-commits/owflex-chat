@@ -18,7 +18,7 @@ export function BotPreviewPanel({ embedKey, botName }: BotPreviewPanelProps) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bot Preview</title>
+    <title>Agent Preview</title>
     <style>
       *{box-sizing:border-box}
       body{margin:0;background:#f1f5f9;font-family:system-ui,-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
@@ -54,7 +54,7 @@ export function BotPreviewPanel({ embedKey, botName }: BotPreviewPanelProps) {
             className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
             style={{ fontFamily: 'var(--font-mono)' }}
           >
-            preview · {botName}
+            agent · {botName}
           </p>
           <p className="text-xs text-[var(--ink-muted)] mt-0.5">
             Live widget running with your actual embed key. Conversations are real.

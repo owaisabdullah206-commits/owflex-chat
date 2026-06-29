@@ -88,7 +88,7 @@ export default function DashboardLoginPage() {
             <h1 className="text-xl font-semibold text-[var(--ink)] tracking-tight">
               Sign in to your dashboard
             </h1>
-            <p className="text-sm text-[var(--ink-muted)] mt-1">Manage your bots and clients</p>
+            <p className="text-sm text-[var(--ink-muted)] mt-1">Manage your agents and clients</p>
           </div>
 
           {/* Form card */}

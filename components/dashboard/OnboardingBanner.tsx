@@ -26,7 +26,7 @@ export function OnboardingBanner({ botId: _botId }: OnboardingBannerProps) {
             className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[var(--of-primary)] mb-2"
             style={{ fontFamily: 'var(--font-mono)' }}
           >
-            bot.created · next_steps
+            agent.created · next_steps
           </p>
           <ol className="space-y-1 text-xs text-[var(--ink-muted)]">
             <li className="flex items-center gap-2" style={{ fontFamily: 'var(--font-mono)' }}>

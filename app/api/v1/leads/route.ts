@@ -112,9 +112,11 @@ export async function POST(req: NextRequest) {
       .limit(1)
 
     // Always save the lead — never block capture. Flag hidden ones for filtering.
+    // sessionId lets the chat route find a pre-chat-form lead (conversationId is null then).
     await db.insert(schema.leads).values({
       botId: bot.id,
       conversationId: conversation?.id ?? null,
+      sessionId,
       name: name ?? null,
       email: email ?? null,
       phone: phone ?? null,

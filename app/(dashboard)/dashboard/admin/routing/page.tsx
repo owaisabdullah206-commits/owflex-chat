@@ -328,7 +328,7 @@ export default async function AdminRoutingPage() {
           {byBot.length > 0 && (
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-subtle)] mb-3" style={{ fontFamily: 'var(--font-mono)' }}>
-                per-bot breakdown
+                per-agent breakdown
               </p>
               <div className="border border-[var(--hairline)] bg-[var(--surface)] overflow-hidden">
                 <div className="h-[2px] bg-[var(--of-primary)] w-full" />
@@ -336,7 +336,7 @@ export default async function AdminRoutingPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr>
-                        <th className={thCls}>Bot</th>
+                        <th className={thCls}>Agent</th>
                         <th className={thCls}>Org</th>
                         <th className={`${thCls} text-right`}>Total</th>
                         <th className={`${thCls} text-right`}>Complex%</th>
@@ -387,7 +387,7 @@ export default async function AdminRoutingPage() {
                     <thead>
                       <tr>
                         <th className={thCls}>Time</th>
-                        <th className={thCls}>Bot</th>
+                        <th className={thCls}>Agent</th>
                         <th className={thCls}>Class</th>
                         <th className={thCls}>Chosen Model</th>
                         <th className={thCls}>Fallback</th>
@@ -443,7 +443,7 @@ export default async function AdminRoutingPage() {
                 no_routing_data
               </p>
               <p className="text-sm text-[var(--ink-muted)]">
-                Routing decisions are recorded when a bot has smart routing enabled and receives messages.
+                Routing decisions are recorded when an agent has smart routing enabled and receives messages.
               </p>
             </div>
           )}

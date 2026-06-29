@@ -127,7 +127,7 @@ export function PlanUsage({
           suffix="tokens"
           wide
         />
-        <MetricCard label="bots" value={botCount} limitValue={limits.bots} />
+        <MetricCard label="agents" value={botCount} limitValue={limits.bots} />
         <MetricCard label="clients" value={clientCount} limitValue={Infinity} />
         <MetricCard label="docs" value={docCount} limitValue={limits.docs} />
         <MetricCard label="conversations" value={conversationsThisMonth} limitValue={limits.conversations} note="this month" />

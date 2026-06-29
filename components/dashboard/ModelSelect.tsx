@@ -104,15 +104,6 @@ export function ModelSelect({ value, onChange, disabled = false, id, size = 'md'
         <span className={`flex-1 min-w-0 truncate font-medium ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
           {meta.label}
         </span>
-        {/* Speed stat */}
-        {meta.speed && (
-          <span
-            className="shrink-0 text-[10px] text-[var(--ink-subtle)] hidden sm:block"
-            style={{ fontFamily: 'var(--font-mono)' }}
-          >
-            {meta.speed}
-          </span>
-        )}
         <ChevronDown
           className={[
             'shrink-0 text-[var(--ink-muted)] transition-transform duration-150',

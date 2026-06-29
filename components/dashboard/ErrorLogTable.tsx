@@ -20,7 +20,7 @@ export function ErrorLogTable({ rows }: { rows: ErrorRow[] }) {
       <thead>
         <tr>
           <th className={`${thCls} whitespace-nowrap`}>Time</th>
-          <th className={thCls}>Bot / Org</th>
+          <th className={thCls}>Agent / Org</th>
           <th className={thCls}>Error</th>
           <th className={`${thCls} w-16`}></th>
         </tr>

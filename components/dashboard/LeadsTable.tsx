@@ -50,7 +50,7 @@ export function LeadsTable({ leads, showBot = false }: LeadsTableProps) {
             <th className={thClass}>name</th>
             <th className={thClass}>email</th>
             <th className={thClass}>phone</th>
-            {showBot && <th className={thClass}>bot</th>}
+            {showBot && <th className={thClass}>agent</th>}
             <th className={thClass}>status</th>
             <th className={thClass}>
               <button

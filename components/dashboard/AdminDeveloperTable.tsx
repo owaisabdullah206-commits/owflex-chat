@@ -127,7 +127,7 @@ function BanModal({ orgId, onClose }: { orgId: string; onClose: () => void }) {
         <div className="h-[2px] bg-[var(--of-error)]" />
         <div className="p-6 space-y-4">
           <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--error-text)]">Suspend Account</h3>
-          <p className="text-xs text-[var(--ink-muted)]">Their bots will return 403. They can still log in.</p>
+          <p className="text-xs text-[var(--ink-muted)]">Their agents will return 403. They can still log in.</p>
           <input
             type="text"
             placeholder="Reason (optional)"
@@ -215,7 +215,7 @@ export function AdminDeveloperTable({ developers }: { developers: Developer[] })
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[var(--hairline)] bg-[var(--surface-3)]">
-              {['Developer', 'Plan', 'Bots', 'Msgs / Mo', 'Credits', 'Joined', 'Status', 'Actions'].map((h) => (
+              {['Developer', 'Plan', 'Agents', 'Msgs / Mo', 'Credits', 'Joined', 'Status', 'Actions'].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"

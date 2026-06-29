@@ -101,7 +101,7 @@ export function AdminPlatformEditor({ initialValue }: Props) {
             <ul className="space-y-1 text-[var(--ink-muted)]">
               <li>Identity protection rules</li>
               <li>Tone &amp; language guidelines</li>
-              <li>Topics the bot must avoid</li>
+              <li>Topics the agent must avoid</li>
               <li>Safety guardrails</li>
               <li>Branding / fallback response</li>
             </ul>
@@ -109,7 +109,7 @@ export function AdminPlatformEditor({ initialValue }: Props) {
           <div>
             <p className="font-medium text-[var(--error-text)] mb-1.5">✗ Do not include</p>
             <ul className="space-y-1 text-[var(--ink-muted)]">
-              <li>Bot-specific personas or tone</li>
+              <li>Agent-specific personas or tone</li>
               <li>Business-specific product info</li>
               <li>Pricing or return policy details</li>
               <li>Lead capture instructions</li>
@@ -118,7 +118,7 @@ export function AdminPlatformEditor({ initialValue }: Props) {
           </div>
         </div>
         <p className="text-[11px] text-[var(--ink-subtle)] pt-1 border-t border-[var(--hairline)]">
-          This prompt is prepended to <strong className="text-[var(--ink-muted)]">every</strong> bot on the platform before their individual system prompt. Keep it short and universal — bot-specific instructions belong in the bot&apos;s own settings.
+          This prompt is prepended to <strong className="text-[var(--ink-muted)]">every</strong> agent on the platform before their individual system prompt. Keep it short and universal — agent-specific instructions belong in the agent&apos;s own settings.
         </p>
       </div>
 
@@ -167,7 +167,7 @@ export function AdminPlatformEditor({ initialValue }: Props) {
 
         <div className="flex items-center justify-between">
           <p className="text-xs text-[var(--ink-muted)]">
-            Changes take effect immediately for all bots. Leave empty to disable.
+            Changes take effect immediately for all agents. Leave empty to disable.
           </p>
           <span className={`text-[11px] tabular-nums ${counterColor}`} style={{ fontFamily: 'var(--font-mono)' }}>
             {len} / {MAX_CHARS}

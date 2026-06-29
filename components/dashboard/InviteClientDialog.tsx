@@ -147,7 +147,7 @@ export function InviteClientDialog({ botId }: InviteClientDialogProps) {
                 Client email
               </Label>
               <p className="text-xs text-[var(--ink-muted)]">
-                They&apos;ll receive an email with a link to set up their account and view this bot&apos;s dashboard.
+                They&apos;ll receive an email with a link to set up their account and view this agent&apos;s dashboard.
               </p>
               <Input
                 id="clientEmail"

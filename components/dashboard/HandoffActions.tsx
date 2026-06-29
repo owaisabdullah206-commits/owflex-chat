@@ -117,11 +117,11 @@ export function HandoffActions({ conversationId, visitorEmail, visitorName, live
                 className="h-8 text-xs border-[var(--hairline)] text-[var(--ink-muted)] gap-1.5"
               >
                 <Undo2 className="h-3.5 w-3.5" />
-                {returning ? 'Returning…' : 'Return to bot'}
+                {returning ? 'Returning…' : 'Return to agent'}
               </Button>
             )}
           </div>
-          <p className="text-[10px] text-[var(--ink-subtle)]">⌘/Ctrl + Enter to send. The bot stays paused until you return the chat to it.</p>
+          <p className="text-[10px] text-[var(--ink-subtle)]">⌘/Ctrl + Enter to send. The agent stays paused until you return the chat to it.</p>
         </div>
       )}
 

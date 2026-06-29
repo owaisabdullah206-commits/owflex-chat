@@ -115,7 +115,7 @@ export default function DashboardSignupPage() {
               Create your free account
             </h1>
             <p className="text-sm text-[var(--ink-muted)] mt-1">
-              Start managing AI chatbots for your clients
+              Start managing AI agents for your clients
             </p>
           </div>
 
@@ -158,7 +158,7 @@ export default function DashboardSignupPage() {
                   <option value="" disabled>Select one</option>
                   <option value="freelancer">Freelancer working with clients</option>
                   <option value="agency">Agency or team</option>
-                  <option value="business">Business owner (bot for my own site)</option>
+                  <option value="business">Business owner (agent for my own site)</option>
                 </select>
               </div>
               <div className="space-y-1.5">

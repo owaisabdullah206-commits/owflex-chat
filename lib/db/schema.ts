@@ -169,6 +169,9 @@ export const leads = pgTable('leads', {
   id:             text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
   botId:          text('bot_id').notNull().references(() => bots.id, { onDelete: 'cascade' }),
   conversationId: text('conversation_id').references(() => conversations.id, { onDelete: 'set null' }),
+  // Widget session that captured this lead. Lets the chat route know a pre-chat
+  // form already collected contact details (conversationId is null at that point).
+  sessionId:      varchar('session_id', { length: 100 }),
   name:           varchar('name', { length: 255 }),
   email:          varchar('email', { length: 255 }),
   phone:          varchar('phone', { length: 50 }),

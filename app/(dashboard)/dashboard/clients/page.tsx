@@ -60,7 +60,7 @@ export default async function ClientsPage() {
             </div>
             <h1 className="text-xl font-bold text-[var(--ink)] leading-tight">Clients</h1>
             <p className="text-[13px] text-[var(--ink-muted)] mt-0.5" style={{ fontFamily: 'var(--font-mono)' }}>
-              <span className="text-[var(--of-primary)]">{rows.length}</span> active {rows.length === 1 ? 'client' : 'clients'} across all bots
+              <span className="text-[var(--of-primary)]">{rows.length}</span> active {rows.length === 1 ? 'client' : 'clients'} across all agents
             </p>
           </div>
         </div>
@@ -80,14 +80,14 @@ export default async function ClientsPage() {
               clients.active
             </p>
             <p className="text-sm text-[var(--ink-muted)] text-center max-w-xs mb-6 mt-3">
-              Invite a client from any bot&apos;s detail page to get started.
+              Invite a client from any agent&apos;s detail page to get started.
             </p>
             <a
               href="/dashboard/bots"
               className="flex items-center h-8 px-4 text-[13px] font-medium bg-[var(--of-primary)] text-white hover:bg-[var(--of-primary-hover)] transition-colors"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
-              Go to Bots →
+              Go to Agents →
             </a>
           </div>
         ) : (
@@ -98,7 +98,7 @@ export default async function ClientsPage() {
                   <tr>
                     <th className={thClass}>email</th>
                     <th className={thClass}>name</th>
-                    <th className={thClass}>bot</th>
+                    <th className={thClass}>agent</th>
                     <th className={thClass}>joined_at</th>
                     <th className={thClass}>portal_access</th>
                     <th className={thClass}>actions</th>
@@ -135,7 +135,7 @@ export default async function ClientsPage() {
                           href={`/dashboard/bots/${row.botId}?tab=overview`}
                           className="text-[11px] text-[var(--ink-muted)] hover:text-[var(--ink)] underline underline-offset-2 transition-colors"
                         >
-                          View bot
+                          View agent
                         </a>
                       </td>
                     </tr>

@@ -184,7 +184,7 @@ The credits system enforces a specific order that MUST NOT be violated.
 - NEVER debit after the API call. NEVER skip the rollback on failure.
 - Redis is the source of truth for current balance. Postgres is the audit ledger.
 - When credits are exhausted: fall back to plan's default model silently.
-  NEVER show an error to the end-user of the chatbot.
+  NEVER show an error to the end-user of the AI agent.
 - Credit operations MUST be atomic (Redis DECRBY / INCRBY — not two separate commands).
 
 ---

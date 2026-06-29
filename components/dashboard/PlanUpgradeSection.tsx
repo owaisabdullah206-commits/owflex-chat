@@ -21,7 +21,7 @@ const PLAN_META: Record<string, {
   starter: {
     icon:    <Zap className="h-4 w-4" />,
     accent:  'var(--of-primary)',
-    blurb:   '2 bots · 3K convos · 30M credits/mo',
+    blurb:   '2 agents · 3K convos · 30M credits/mo',
     features: [
       'Unlimited leads',
       '25 MB storage · 30-day history',
@@ -33,7 +33,7 @@ const PLAN_META: Record<string, {
   pro: {
     icon:    <BarChart2 className="h-4 w-4" />,
     accent:  '#8B5CF6',
-    blurb:   '8 bots · 15K convos · 150M credits/mo',
+    blurb:   '8 agents · 15K convos · 150M credits/mo',
     features: [
       'Unlimited leads · 100 MB storage',
       'Unlimited history · advanced analytics',
@@ -45,7 +45,7 @@ const PLAN_META: Record<string, {
   agency: {
     icon:    <Globe className="h-4 w-4" />,
     accent:  '#F59E0B',
-    blurb:   'Unlimited bots · 75K convos · 750M credits/mo',
+    blurb:   'Unlimited agents · 75K convos · 750M credits/mo',
     features: [
       'White-label branding · custom "Powered by"',
       '500 MB storage · 500 docs · 1K crawl pages',
@@ -329,7 +329,7 @@ export function PlanUpgradeSection({ currentPlan, userEmail }: Props) {
             {/* Right */}
             <div className="flex flex-col gap-3 sm:min-w-[260px]">
               <ul className="space-y-1.5">
-                {['Unlimited bots · conversations · storage', 'Dedicated support + SLA', 'BYOK — bring your own LLM key'].map((f) => (
+                {['Unlimited agents · conversations · storage', 'Dedicated support + SLA', 'BYOK — bring your own LLM key'].map((f) => (
                   <li key={f} className="flex items-start gap-2 text-[11px] text-[var(--ink-muted)]">
                     <span className="text-[var(--ink-subtle)] mt-0.5 shrink-0">✓</span>
                     {f}

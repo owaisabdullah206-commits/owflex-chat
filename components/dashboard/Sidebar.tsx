@@ -9,7 +9,7 @@ import { OctivelyMark } from '@/components/brand/OctivelyMark'
 import { FeedbackModal } from '@/components/dashboard/FeedbackModal'
 
 const navItems = [
-  { href: '/dashboard/bots',     label: 'Bots',     icon: Bot },
+  { href: '/dashboard/bots',     label: 'Agents',    icon: Bot },
   { href: '/dashboard/leads',    label: 'Leads',    icon: Users },
   { href: '/dashboard/clients',  label: 'Clients',  icon: UserCheck },
   { href: '/dashboard/billing',  label: 'Billing',  icon: CreditCard },
