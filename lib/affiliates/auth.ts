@@ -47,7 +47,7 @@ export async function sendMagicLink(email: string): Promise<{ error?: string; su
   })
 
   // Send email
-  const appUrl = process.env.BETTER_AUTH_URL ?? 'https://affiliates.octively.com'
+  const appUrl = process.env.AFFILIATE_PORTAL_URL ?? 'https://affiliates.octively.com'
   const loginUrl = `${appUrl}/login?token=${token}`
 
   try {
