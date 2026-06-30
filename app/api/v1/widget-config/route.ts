@@ -91,8 +91,10 @@ export async function GET(req: NextRequest) {
       collectLeadBefore: config.collectLeadBefore === true,
       triggerIcon: config.triggerIcon ?? 'message-circle',
       borderRadius: typeof config.borderRadius === 'number' ? config.borderRadius : 16,
-      tooltipEnabled: config.tooltipEnabled === true,
-      tooltipMessages: Array.isArray(config.tooltipMessages) ? config.tooltipMessages : [],
+      tooltipEnabled: config.tooltipEnabled !== false,
+      tooltipMessages: Array.isArray(config.tooltipMessages) && config.tooltipMessages.length
+        ? config.tooltipMessages
+        : ['👋 Hi! Need any help?', 'Have a question? Ask me', 'Looking for something?'],
       brandingEnabled,
       brandingText,
       brandingUrl,

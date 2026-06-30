@@ -408,6 +408,7 @@ function closePanel(){
 }
 
 btn.onclick=function(){op?closePanel():openPanel();};
+btn.addEventListener("mouseenter",function(){if(!op&&te&&tms.length)showTip();});
 document.getElementById("oC").onclick=closePanel;
 
 function renderMd(raw){

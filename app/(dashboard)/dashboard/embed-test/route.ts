@@ -22,11 +22,18 @@ export async function GET(req: NextRequest) {
 <body>
   <p class="hint">Click the chat bubble to test your bot</p>
   <span class="key">${key ? key.slice(0, 16) + '…' : 'No embed key provided'}</span>
+  <script>
+    // Preview page: always start a clean conversation on every load (new bot, refresh, revisit).
+    ['_of','_of_exp','_of_msgs','_ofl'].forEach(function(k){try{localStorage.removeItem(k)}catch(e){}});
+  </script>
   ${key ? `<script src="${origin}/embed.js" data-key="${key}"></script>` : ''}
 </body>
 </html>`
 
   return new Response(html, {
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+    },
   })
 }

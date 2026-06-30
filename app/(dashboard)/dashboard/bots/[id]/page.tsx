@@ -390,8 +390,11 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         tooltipMessages:    Array.isArray(wc.tooltipMessages) && (wc.tooltipMessages as string[]).length
                           ? (wc.tooltipMessages as string[])
                           : ['👋 Hi! Need any help?', 'Have a question? Ask me', 'Looking for something?'],
-                        // Footer branding on by default for every plan (agency/enterprise can toggle it off)
-                        brandingEnabled:    (wc.brandingEnabled as boolean) !== false,
+                        // Footer branding default must match the widget-config API's plan enforcement:
+                        // free/starter/pro default ON; agency/enterprise default OFF (white-label).
+                        brandingEnabled:    (bot.orgPlan === 'agency' || bot.orgPlan === 'enterprise')
+                          ? (wc.brandingEnabled as boolean) === true
+                          : (wc.brandingEnabled as boolean) !== false,
                         brandingText:       (wc.brandingText as string) ?? '',
                         brandingUrl:        (wc.brandingUrl as string) ?? '',
                         handoffEnabled:        (wc.handoffEnabled as boolean) === true,
