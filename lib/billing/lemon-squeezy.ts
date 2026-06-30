@@ -34,6 +34,7 @@ export interface LsOrderPayload {
   meta?: {
     custom_data?: {
       org_id?: string
+      coupon_id?: string
     }
   }
 }
@@ -44,19 +45,25 @@ export function extractOrderInfo(payload: LsOrderPayload): {
   orgId: string
   packId: PackId | null
   tokens: number
+  couponId: string | null
 } {
   const orderId = payload.data.id
   const status  = payload.data.attributes.status
   const orgId   = payload.meta?.custom_data?.org_id ?? ''
+  const couponId = payload.meta?.custom_data?.coupon_id ?? null
   const variantId = String(payload.data.attributes.first_order_item?.variant_id ?? '')
   const packId = VARIANT_TO_PACK[variantId] ?? null
   const tokens = packId ? CREDIT_PACKS[packId].tokens : 0
-  return { orderId, status, orgId, packId, tokens }
+  return { orderId, status, orgId, packId, tokens, couponId }
 }
 
-export function generateCheckoutUrl(orgId: string, variantId: string): string {
+export function generateCheckoutUrl(orgId: string, variantId: string, couponId?: string): string {
   const storeId = process.env.LEMON_SQUEEZY_STORE_ID ?? ''
-  return `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+  let url = `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+  if (couponId) {
+    url += `&checkout[custom][coupon_id]=${encodeURIComponent(couponId)}`
+  }
+  return url
 }
 
 // Plan subscription helpers
@@ -81,16 +88,20 @@ export interface LsSubscriptionPayload {
       variant_id: number
       custom_data?: {
         org_id?: string
+        coupon_id?: string
       }
     }
   }
 }
 
-export function generatePlanCheckoutUrl(orgId: string, planId: PlanId, returnUrl?: string): string {
+export function generatePlanCheckoutUrl(orgId: string, planId: PlanId, returnUrl?: string, couponId?: string): string {
   const variantId = getPlanVariantId(planId)
   if (!variantId) throw new Error(`LS_VARIANT_PLAN_${planId.toUpperCase()} env var not set`)
   const storeId = process.env.LEMON_SQUEEZY_STORE_ID ?? ''
-  const base = `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+  let base = `https://store.lemonsqueezy.com/checkout/buy/${variantId}?checkout[custom][org_id]=${encodeURIComponent(orgId)}&store=${storeId}`
+  if (couponId) {
+    base += `&checkout[custom][coupon_id]=${encodeURIComponent(couponId)}`
+  }
   return returnUrl ? `${base}&checkout[redirect_url]=${encodeURIComponent(returnUrl)}` : base
 }
 
@@ -99,11 +110,13 @@ export function extractSubscriptionInfo(payload: LsSubscriptionPayload): {
   status: string
   orgId: string
   planId: PlanId | null
+  couponId: string | null
 } {
   const subscriptionId = payload.data.id
   const status = payload.data.attributes.status
   const orgId = payload.data.attributes.custom_data?.org_id ?? ''
+  const couponId = payload.data.attributes.custom_data?.coupon_id ?? null
   const variantId = String(payload.data.attributes.variant_id)
   const planId = PLAN_VARIANT_MAP[variantId] ?? null
-  return { subscriptionId, status, orgId, planId }
+  return { subscriptionId, status, orgId, planId, couponId }
 }

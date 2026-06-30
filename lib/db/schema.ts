@@ -10,6 +10,7 @@ import {
   index,
   uniqueIndex,
   smallint,
+  primaryKey,
 } from 'drizzle-orm/pg-core'
 import { vector } from 'drizzle-orm/pg-core'
 
@@ -381,4 +382,87 @@ export const feedback = pgTable('feedback', {
 }, (t) => [
   index('feedback_org_id_idx').on(t.orgId),
   index('feedback_created_at_idx').on(t.createdAt),
+])
+
+// ── AFFILIATES ─────────────────────────────────────────────────────────────────
+export const affiliates = pgTable('affiliates', {
+  id:             text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  code:           varchar('code', { length: 32 }).notNull().unique(),
+  name:           varchar('name', { length: 255 }).notNull(),
+  email:          varchar('email', { length: 255 }).notNull().unique(),
+  userId:         text('user_id').references(() => users.id, { onDelete: 'set null' }),
+  commissionRate: numeric('commission_rate', { precision: 5, scale: 4 }).notNull().default('0.20'),
+  isActive:       boolean('is_active').notNull().default(true),
+  payoutInfo:     jsonb('payout_info').notNull().default({}),
+  notes:          text('notes'),
+  totalEarned:    numeric('total_earned', { precision: 14, scale: 2 }).notNull().default('0'),
+  totalPaid:      numeric('total_paid', { precision: 14, scale: 2 }).notNull().default('0'),
+  createdAt:      tsz('created_at').defaultNow().notNull(),
+  updatedAt:      tsz('updated_at').defaultNow().notNull(),
+}, (t) => [
+  index('affiliates_user_id_idx').on(t.userId),
+])
+
+export const affiliateCoupons = pgTable('affiliate_coupons', {
+  id:            text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  affiliateId:   text('affiliate_id').notNull().references(() => affiliates.id, { onDelete: 'cascade' }),
+  code:          varchar('code', { length: 32 }).notNull().unique(),
+  discountType:  varchar('discount_type', { length: 20 }).notNull(), // 'percentage' | 'fixed'
+  discountValue: numeric('discount_value', { precision: 10, scale: 2 }).notNull(),
+  appliesTo:     varchar('applies_to', { length: 20 }).notNull().default('both'), // 'plan' | 'credits' | 'both'
+  maxUses:       integer('max_uses'),
+  usedCount:     integer('used_count').notNull().default(0),
+  isActive:      boolean('is_active').notNull().default(true),
+  expiresAt:     tsz('expires_at'),
+  createdAt:     tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('affiliate_coupons_affiliate_id_idx').on(t.affiliateId),
+])
+
+export const affiliateReferrals = pgTable('affiliate_referrals', {
+  id:               text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  affiliateId:      text('affiliate_id').notNull().references(() => affiliates.id, { onDelete: 'cascade' }),
+  couponId:         text('coupon_id').notNull().references(() => affiliateCoupons.id, { onDelete: 'restrict' }),
+  orgId:            text('org_id').notNull().references(() => organizations.id, { onDelete: 'cascade' }),
+  referredUserId:   text('referred_user_id').references(() => users.id, { onDelete: 'set null' }),
+  paymentType:      varchar('payment_type', { length: 20 }).notNull(), // 'plan' | 'credits'
+  originalAmount:   numeric('original_amount', { precision: 14, scale: 2 }).notNull(),
+  discountAmount:   numeric('discount_amount', { precision: 14, scale: 2 }).notNull(),
+  finalAmount:      numeric('final_amount', { precision: 14, scale: 2 }).notNull(),
+  commissionRate:   numeric('commission_rate', { precision: 5, scale: 4 }).notNull(),
+  commissionAmount: numeric('commission_amount', { precision: 14, scale: 2 }).notNull(),
+  paymentRefId:     varchar('payment_ref_id', { length: 255 }).notNull().unique(),
+  currency:         varchar('currency', { length: 10 }).notNull().default('PKR'),
+  createdAt:        tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('affiliate_referrals_affiliate_id_idx').on(t.affiliateId),
+  index('affiliate_referrals_org_id_idx').on(t.orgId),
+  uniqueIndex('affiliate_referrals_payment_ref_id_idx').on(t.paymentRefId),
+])
+
+export const affiliatePayouts = pgTable('affiliate_payouts', {
+  id:           text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  affiliateId:  text('affiliate_id').notNull().references(() => affiliates.id, { onDelete: 'cascade' }),
+  amount:       numeric('amount', { precision: 14, scale: 2 }).notNull(),
+  currency:     varchar('currency', { length: 10 }).notNull().default('PKR'),
+  method:       varchar('method', { length: 50 }).notNull(),
+  reference:    text('reference'),
+  notes:        text('notes'),
+  referralIds:  text('referral_ids').array(),
+  paidBy:       text('paid_by').references(() => users.id, { onDelete: 'set null' }),
+  paidAt:       tsz('paid_at').defaultNow().notNull(),
+}, (t) => [
+  index('affiliate_payouts_affiliate_id_idx').on(t.affiliateId),
+])
+
+// ── AFFILIATE SESSIONS (Magic Link Auth) ──────────────────────────────────────
+export const affiliateSessions = pgTable('affiliate_sessions', {
+  id:         text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  affiliateId: text('affiliate_id').notNull().references(() => affiliates.id, { onDelete: 'cascade' }),
+  token:      varchar('token', { length: 64 }).notNull().unique(),
+  expiresAt:  tsz('expires_at').notNull(),
+  createdAt:  tsz('created_at').defaultNow().notNull(),
+}, (t) => [
+  index('affiliate_sessions_affiliate_id_idx').on(t.affiliateId),
+  index('affiliate_sessions_token_idx').on(t.token),
 ])

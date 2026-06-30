@@ -6,21 +6,36 @@ import { requireDeveloper } from '@/lib/auth/session'
 import { db, schema } from '@/lib/db'
 import { generatePaymentUrl, type PackId } from '@/lib/billing/payfast'
 import { getAppBaseUrl } from '@/lib/url'
+import { validateCoupon } from '@/lib/affiliates'
 
 const querySchema = z.object({
   pack: z.enum(['starter', 'growth', 'pro']),
+  coupon: z.string().optional(),
 })
 
 export async function GET(req: NextRequest) {
   const user = await requireDeveloper()
 
   const { searchParams } = new URL(req.url)
-  const parsed = querySchema.safeParse({ pack: searchParams.get('pack') })
+  const parsed = querySchema.safeParse({ pack: searchParams.get('pack'), coupon: searchParams.get('coupon') })
   if (!parsed.success) {
     return NextResponse.json(
       { error: 'Invalid pack parameter', code: 'VALIDATION_ERROR', status: 400 },
       { status: 400 },
     )
+  }
+
+  // Validate coupon if provided
+  let couponId: string | undefined
+  if (parsed.data.coupon) {
+    const result = await validateCoupon(parsed.data.coupon, 'credits')
+    if (!result.valid) {
+      return NextResponse.json(
+        { error: result.error, code: 'INVALID_COUPON', status: 400 },
+        { status: 400 },
+      )
+    }
+    couponId = result.couponId
   }
 
   const [org] = await db
@@ -47,6 +62,6 @@ export async function GET(req: NextRequest) {
   const returnUrl = `${appUrl}/dashboard/billing`
   const notifyUrl = `${appUrl}/api/webhooks/payfast`
 
-  const paymentUrl = generatePaymentUrl(org.id, parsed.data.pack as PackId, returnUrl, notifyUrl)
+  const paymentUrl = generatePaymentUrl(org.id, parsed.data.pack as PackId, returnUrl, notifyUrl, couponId)
   redirect(paymentUrl)
 }

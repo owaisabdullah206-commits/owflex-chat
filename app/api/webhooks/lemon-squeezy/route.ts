@@ -9,11 +9,12 @@ import {
   type LsSubscriptionPayload,
 } from '@/lib/billing/lemon-squeezy'
 import * as creditLib from '@/lib/credits'
+import { validateCoupon, calculateDiscount, calculateCommission, recordReferral } from '@/lib/affiliates'
+import { CREDIT_PACKS, PLAN_PRICES_PKR } from '@/lib/billing/payfast'
 
 const SUBSCRIPTION_EVENTS = new Set(['subscription_created', 'subscription_payment_success'])
 
 export async function POST(req: NextRequest) {
-  // Must read raw body BEFORE parsing JSON for HMAC verification
   const rawBody = Buffer.from(await req.arrayBuffer())
   const signature = req.headers.get('x-signature') ?? ''
   const eventName = req.headers.get('x-event-name') ?? ''
@@ -32,13 +33,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
-    const { subscriptionId, status, orgId, planId } = extractSubscriptionInfo(payload)
+    const { subscriptionId, status, orgId, planId, couponId } = extractSubscriptionInfo(payload)
 
     if (status !== 'active' || !orgId || !planId) {
       return NextResponse.json({ received: true })
     }
 
-    // Idempotency check
     const [existing] = await db
       .select({ id: schema.creditTransactions.id })
       .from(schema.creditTransactions)
@@ -46,7 +46,6 @@ export async function POST(req: NextRequest) {
       .limit(1)
 
     if (!existing) {
-      // Read the current plan BEFORE updating so we can compute the credit delta
       const [org] = await db
         .select({ plan: schema.organizations.plan })
         .from(schema.organizations)
@@ -59,15 +58,43 @@ export async function POST(req: NextRequest) {
         .set({ plan: planId })
         .where(eq(schema.organizations.id, orgId))
 
-      // Top up Redis balance by the difference between the two plan allocations
       await creditLib.upgradePlanCredits(orgId, fromPlan, planId)
       await creditLib.logTransaction(orgId, 0, 'plan_upgrade', subscriptionId)
+
+      // Record affiliate referral if coupon was used
+      if (couponId) {
+        const couponResult = await validateCoupon(couponId, 'plan')
+        if (couponResult.valid && couponResult.couponId && couponResult.affiliateId) {
+          const originalAmount = PLAN_PRICES_PKR[planId] ?? 0
+          const { discountAmount, finalAmount } = calculateDiscount(
+            originalAmount,
+            couponResult.discountType!,
+            couponResult.discountValue!,
+            'PKR',
+          )
+          const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
+
+          await recordReferral({
+            affiliateId: couponResult.affiliateId,
+            couponId: couponResult.couponId,
+            orgId,
+            paymentType: 'plan',
+            originalAmount,
+            discountAmount,
+            finalAmount,
+            commissionRate: couponResult.commissionRate!,
+            commissionAmount,
+            paymentRefId: subscriptionId,
+            currency: 'PKR',
+          })
+        }
+      }
     }
 
     return NextResponse.json({ received: true })
   }
 
-  // Credit pack order_created event (existing logic)
+  // Credit pack order_created event
   if (eventName !== 'order_created') {
     return NextResponse.json({ received: true })
   }
@@ -79,13 +106,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { orderId, status, orgId, packId, tokens } = extractOrderInfo(payload)
+  const { orderId, status, orgId, packId, tokens, couponId } = extractOrderInfo(payload)
 
   if (status !== 'paid' || !orgId || !packId || tokens === 0) {
     return NextResponse.json({ received: true })
   }
 
-  // Idempotency: check if this order was already credited
   const [existing] = await db
     .select({ id: schema.creditTransactions.id })
     .from(schema.creditTransactions)
@@ -95,6 +121,35 @@ export async function POST(req: NextRequest) {
   if (!existing) {
     await creditLib.refund(orgId, tokens)
     await creditLib.logTransaction(orgId, tokens, 'purchase', orderId)
+
+    // Record affiliate referral if coupon was used
+    if (couponId) {
+      const couponResult = await validateCoupon(couponId, 'credits')
+      if (couponResult.valid && couponResult.couponId && couponResult.affiliateId) {
+        const originalAmount = CREDIT_PACKS[packId].pkr
+        const { discountAmount, finalAmount } = calculateDiscount(
+          originalAmount,
+          couponResult.discountType!,
+          couponResult.discountValue!,
+          'PKR',
+        )
+        const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
+
+        await recordReferral({
+          affiliateId: couponResult.affiliateId,
+          couponId: couponResult.couponId,
+          orgId,
+          paymentType: 'credits',
+          originalAmount,
+          discountAmount,
+          finalAmount,
+          commissionRate: couponResult.commissionRate!,
+          commissionAmount,
+          paymentRefId: orderId,
+          currency: 'PKR',
+        })
+      }
+    }
   }
 
   return NextResponse.json({ received: true })

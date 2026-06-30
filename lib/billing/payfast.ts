@@ -21,6 +21,7 @@ export function generatePaymentUrl(
   packId: PackId,
   returnUrl: string,
   notifyUrl: string,
+  couponId?: string,
 ): string {
   const pack = CREDIT_PACKS[packId]
   const mPaymentId = `${orgId}:${packId}:${Date.now()}`
@@ -34,6 +35,10 @@ export function generatePaymentUrl(
     amount:        pack.pkr.toFixed(2),
     item_name:     `Octively ${packId.charAt(0).toUpperCase() + packId.slice(1)} Pack`,
     item_description: `${(pack.tokens / 1000).toFixed(0)}k tokens`,
+  }
+
+  if (couponId) {
+    params.custom_str1 = couponId
   }
 
   const qs = Object.entries(params)
@@ -56,6 +61,7 @@ export function generatePlanPaymentUrl(
   planId: PlanId,
   returnUrl: string,
   notifyUrl: string,
+  couponId?: string,
 ): string {
   const amount = PLAN_PRICES_PKR[planId]
   const mPaymentId = `plan:${orgId}:${planId}:${Date.now()}`
@@ -69,6 +75,10 @@ export function generatePlanPaymentUrl(
     amount:           amount.toFixed(2),
     item_name:        `Octively ${planId.charAt(0).toUpperCase() + planId.slice(1)} Plan`,
     item_description: `Monthly subscription — ${planId} tier`,
+  }
+
+  if (couponId) {
+    params.custom_str1 = couponId
   }
 
   const qs = Object.entries(params)
@@ -92,6 +102,8 @@ export interface ItnVerifyResult {
   amountGross: number
   /** True only when amountGross matches the expected price for the pack/plan. */
   amountValid: boolean
+  /** Affiliate coupon ID passed via custom_str1 at checkout. */
+  couponId: string | null
 }
 
 export function verifyItn(
@@ -136,7 +148,7 @@ export function verifyItn(
   const passphrase = process.env.PAYFAST_PASSPHRASE
   if (!passphrase) {
     console.error('[payfast] PAYFAST_PASSPHRASE not configured — rejecting ITN as unverifiable')
-    return { valid: false, paymentId, status, orgId, packId, planId, amountGross, amountValid }
+    return { valid: false, paymentId, status, orgId, packId, planId, amountGross, amountValid, couponId: null }
   }
 
   // PayFast spec: concatenate the posted variables in the ORDER RECEIVED
@@ -152,6 +164,7 @@ export function verifyItn(
   const hash = createHash('md5').update(queryString).digest('hex')
   const signature = formData.signature ?? ''
   const valid = safeEqual(hash, signature) && status === 'COMPLETE'
+  const couponId = formData.custom_str1 || null
 
-  return { valid, paymentId, status, orgId, packId, planId, amountGross, amountValid }
+  return { valid, paymentId, status, orgId, packId, planId, amountGross, amountValid, couponId }
 }

@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const ADMIN_ORIGIN = 'https://admin.octively.com'
 const PORTAL_ORIGIN = 'https://app.octively.com'
+const AFFILIATE_ORIGIN = 'https://affiliates.octively.com'
 
 export function proxy(request: NextRequest) {
   const host = request.headers.get('host') ?? ''
@@ -41,6 +42,17 @@ export function proxy(request: NextRequest) {
       url.pathname = `/portal${url.pathname === '/' ? '' : url.pathname}`
       return NextResponse.rewrite(url)
     }
+  } else if (host.startsWith('affiliates.')) {
+    // affiliates.octively.com → /affiliate/*
+    if (
+      !url.pathname.startsWith('/affiliate') &&
+      !url.pathname.startsWith('/api') &&
+      !url.pathname.startsWith('/_next') &&
+      !isStaticAsset
+    ) {
+      url.pathname = `/affiliate${url.pathname === '/' ? '' : url.pathname}`
+      return NextResponse.rewrite(url)
+    }
   } else if (host === 'octively.com') {
     // Main production domain: redirect /dashboard/* and /portal/* to their canonical subdomains.
     // Preserves query strings. Skips /api/* (OAuth callbacks) and /_next/* (assets).
@@ -66,6 +78,10 @@ export function proxy(request: NextRequest) {
       if (url.pathname.startsWith('/portal')) {
         const cleanPath = url.pathname.slice('/portal'.length) || '/'
         return NextResponse.redirect(new URL(cleanPath + url.search, PORTAL_ORIGIN))
+      }
+      if (url.pathname.startsWith('/affiliate')) {
+        const cleanPath = url.pathname.slice('/affiliate'.length) || '/'
+        return NextResponse.redirect(new URL(cleanPath + url.search, AFFILIATE_ORIGIN))
       }
     }
   }
