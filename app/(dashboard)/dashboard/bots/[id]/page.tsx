@@ -373,7 +373,6 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                     routingStrongModel: bot.routingStrongModel ?? null,
                     ...(() => {
                       const wc = (bot.widgetConfig ?? {}) as Record<string, unknown>
-                      const isAgencyPlus = bot.orgPlan === 'agency' || bot.orgPlan === 'enterprise'
                       return {
                         primaryColor:       (wc.primaryColor as string)  ?? '#0EA5E9',
                         gradientEnabled:    (wc.gradientEnabled as boolean) === true,
@@ -386,12 +385,13 @@ export default async function BotDetailPage({ params, searchParams }: BotDetailP
                         strictMode:         (wc.strictMode as boolean)    === true,
                         triggerIcon:        (wc.triggerIcon as string)    ?? 'message-circle',
                         borderRadius:       typeof wc.borderRadius === 'number' ? wc.borderRadius : 16,
-                        tooltipEnabled:     (wc.tooltipEnabled as boolean) === true,
-                        tooltipMessages:    Array.isArray(wc.tooltipMessages) ? (wc.tooltipMessages as string[]) : [],
-                        // Branding: starter/pro default ON; agency/enterprise default OFF
-                        brandingEnabled:    isAgencyPlus
-                          ? (wc.brandingEnabled as boolean) === true
-                          : (wc.brandingEnabled as boolean) !== false,
+                        // Tooltip on by default (matches the widget); pre-fill sample messages when none set
+                        tooltipEnabled:     (wc.tooltipEnabled as boolean) !== false,
+                        tooltipMessages:    Array.isArray(wc.tooltipMessages) && (wc.tooltipMessages as string[]).length
+                          ? (wc.tooltipMessages as string[])
+                          : ['👋 Hi! Need any help?', 'Have a question? Ask me', 'Looking for something?'],
+                        // Footer branding on by default for every plan (agency/enterprise can toggle it off)
+                        brandingEnabled:    (wc.brandingEnabled as boolean) !== false,
                         brandingText:       (wc.brandingText as string) ?? '',
                         brandingUrl:        (wc.brandingUrl as string) ?? '',
                         handoffEnabled:        (wc.handoffEnabled as boolean) === true,

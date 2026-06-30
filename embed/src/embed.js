@@ -13,8 +13,8 @@ try{var _lm=JSON.parse(localStorage.getItem("_of_msgs")||"[]");if(Array.isArray(
 // is the cursor (latest agent message seen); agentLabeled gates the one-time label.
 var pollTimer=null,lastAgentTs=null,agentLabeled=0;
 var bn="Chat",pc="#0EA5E9",ge=false,gc="#0EA5E9",wm="Hi! How can I help you today?",lc=true,pos="bottom-right";
-var ti="message-circle",br=16,te=false,tms=[];
-var be=false,bt="Powered by Octively",burl="https://octively.com";
+var ti="message-circle",br=16,te=true,tms=["👋 Hi! Need any help?","Have a question? Ask me","Looking for something?"];
+var be=true,bt="Powered by Octively",burl="https://octively.com";
 var clb=false,dk=false,wa="",bo=24;
 var op=0,busy=0,started=0,lastMsg="";
 
@@ -43,9 +43,9 @@ fetch(bu+"/api/v1/widget-config?key="+k)
     bo=typeof c.bottomOffset==="number"?c.bottomOffset:bo;
     ti=c.triggerIcon||ti;
     br=typeof c.borderRadius==="number"?c.borderRadius:br;
-    te=c.tooltipEnabled===true;
+    te=c.tooltipEnabled!==false;
     tms=Array.isArray(c.tooltipMessages)&&c.tooltipMessages.length?c.tooltipMessages:tms;
-    be=c.brandingEnabled===true;
+    be=c.brandingEnabled!==false;
     if(c.brandingText)bt=c.brandingText;
     if(c.brandingUrl&&safeUrl(c.brandingUrl))burl=safeUrl(c.brandingUrl);
     dk=c.theme==="dark";
@@ -120,13 +120,15 @@ var css=
 "#oB a{color:inherit!important;text-decoration:none!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important}"+
 
 /* ── Tooltip ── */
-(te?"#oTip{position:fixed;bottom:"+(bo+8)+"px;"+side+":88px;"+opp+":auto;background:"+(dk?"#171512":"#fff")+";color:"+(dk?"#F5F0EB":"#1e293b")+";border:1px solid "+(dk?"#2A2622":"#e5e7eb")+";padding:8px 13px;border-radius:20px;font-size:12px;line-height:1.4;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:220px;white-space:nowrap;z-index:2147483645;animation:ofIn .3s ease;pointer-events:none}":"")+
+(te?"#oTip{position:fixed;bottom:"+(bo+8)+"px;"+side+":88px;"+opp+":auto;background:"+(dk?"#171512":"#fff")+";color:"+(dk?"#F5F0EB":"#1e293b")+";border:1px solid "+(dk?"#2A2622":"#e5e7eb")+";padding:8px 13px;border-radius:16px;font-size:12px;line-height:1.45;box-shadow:0 4px 16px rgba(0,0,0,.14);max-width:230px;white-space:normal;z-index:2147483645;pointer-events:none;will-change:opacity,transform}":"")+
 
 /* ── Keyframes ── */
 "@keyframes ofFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}"+
 "@keyframes ofPulse{0%,100%{transform:scale(1);opacity:.28}50%{transform:scale(1.75);opacity:.1}}"+
 "@keyframes ofBlink{0%,100%{opacity:1}50%{opacity:.4}}"+
 "@keyframes ofIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}"+
+"@keyframes ofTipIn{from{opacity:0;transform:translateY(8px) scale(.94)}to{opacity:1;transform:none}}"+
+"@keyframes ofTipOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(8px) scale(.96)}}"+
 "@keyframes ofDot{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}"+
 ".od{display:inline-block;width:7px;height:7px;border-radius:50%;background:#94a3b8;animation:ofDot 1.3s infinite ease-in-out}";
 
@@ -156,18 +158,30 @@ btn.innerHTML=
   '</span>';
 document.body.appendChild(btn);
 
-/* Tooltip */
-var tipEl=null,tipIdx=0;
+/* Tooltip — rotates through the messages, animating in for a few seconds then out,
+   reappearing after a random short gap. Hidden while the chat panel is open. */
+var tipEl=null,tipIdx=0,tipTimer=null,showTip=function(){},hideTip=function(){};
 if(te&&tms.length){
-  tipEl=document.createElement("div");tipEl.id="oTip";
-  tipEl.textContent=tms[0];
+  tipEl=document.createElement("div");tipEl.id="oTip";tipEl.style.display="none";
   document.body.appendChild(tipEl);
-  if(tms.length>1){
-    setInterval(function(){
-      tipIdx=(tipIdx+1)%tms.length;
-      tipEl.textContent=tms[tipIdx];
-    },4000);
-  }
+  hideTip=function(){
+    if(!tipEl||tipEl.style.display==="none")return;
+    tipEl.style.animation="ofTipOut .25s ease forwards";
+    setTimeout(function(){if(tipEl)tipEl.style.display="none";},250);
+  };
+  showTip=function(){
+    if(!tipEl||op)return;
+    tipEl.textContent=tms[tipIdx];
+    tipIdx=(tipIdx+1)%tms.length;
+    tipEl.style.display="block";
+    tipEl.style.animation="ofTipIn .35s cubic-bezier(.34,1.4,.64,1)";
+    if(tipTimer)clearTimeout(tipTimer);
+    tipTimer=setTimeout(function(){
+      hideTip();
+      tipTimer=setTimeout(showTip,7000+Math.random()*9000); // next appearance after a random 7-16s gap
+    },4500);
+  };
+  tipTimer=setTimeout(showTip,2500); // first peek shortly after load
 }
 
 /* Chat panel */
@@ -367,7 +381,7 @@ function openPanel(){
   icX.style.cssText="opacity:1;transform:none";
   btn.style.animation="none";
   glow.style.animationPlayState="paused";glow.style.opacity="0";
-  if(tipEl)tipEl.style.display="none";
+  if(tipTimer)clearTimeout(tipTimer);if(tipEl)tipEl.style.display="none";
   if(clb&&!localStorage.getItem("_ofl")){
     showLeadForm();
   }else{
@@ -390,7 +404,7 @@ function closePanel(){
   icX.style.cssText="opacity:0;transform:rotate(-90deg) scale(.5)";
   btn.style.animation="ofFloat 3s ease-in-out infinite";
   glow.style.animationPlayState="";glow.style.opacity="";
-  if(tipEl)tipEl.style.display="";
+  if(tipEl&&te&&tms.length){if(tipTimer)clearTimeout(tipTimer);tipTimer=setTimeout(showTip,4000);}
 }
 
 btn.onclick=function(){op?closePanel():openPanel();};
