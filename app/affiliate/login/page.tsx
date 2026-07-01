@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Handshake, Mail, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
+import { Mail, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
 
 export default function AffiliateLoginPage() {
   const searchParams = useSearchParams()
@@ -88,8 +89,7 @@ export default function AffiliateLoginPage() {
           marginBottom: 32,
         }}
       >
-        <Handshake size={24} style={{ color: 'var(--of-primary)' }} />
-        <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink)' }}>Octively Affiliates</span>
+        <OctivelyLogo size={22} showWordmark />
       </Link>
 
       <div

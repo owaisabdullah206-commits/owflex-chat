@@ -1,10 +1,11 @@
-import { eq, and, sql, gte, lt, lte, isNull } from 'drizzle-orm'
+import { eq, and, sql } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 
 export interface CouponValidation {
   valid: boolean
   error?: string
   couponId?: string
+  couponType?: 'affiliate' | 'platform'
   affiliateId?: string
   commissionRate?: number
   discountType?: 'percentage' | 'fixed'
@@ -13,6 +14,7 @@ export interface CouponValidation {
 
 /**
  * Validate a coupon code and return its details.
+ * Supports both affiliate and platform coupons.
  * Called from checkout URL routes when a coupon code is provided.
  */
 export async function validateCoupon(
@@ -24,6 +26,7 @@ export async function validateCoupon(
   const [coupon] = await db
     .select({
       id:            schema.affiliateCoupons.id,
+      type:          schema.affiliateCoupons.type,
       affiliateId:   schema.affiliateCoupons.affiliateId,
       discountType:  schema.affiliateCoupons.discountType,
       discountValue: schema.affiliateCoupons.discountValue,
@@ -61,7 +64,24 @@ export async function validateCoupon(
     return { valid: false, error: `This coupon is not valid for ${paymentType} purchases` }
   }
 
-  // Fetch the affiliate's commission rate
+  const couponType = (coupon.type as 'affiliate' | 'platform') ?? 'affiliate'
+
+  // Platform coupon — no affiliate lookup needed
+  if (couponType === 'platform') {
+    return {
+      valid: true,
+      couponId: coupon.id,
+      couponType: 'platform',
+      discountType: coupon.discountType as 'percentage' | 'fixed',
+      discountValue: Number(coupon.discountValue),
+    }
+  }
+
+  // Affiliate coupon — fetch affiliate commission rate
+  if (!coupon.affiliateId) {
+    return { valid: false, error: 'This coupon has no associated affiliate' }
+  }
+
   const [affiliate] = await db
     .select({ commissionRate: schema.affiliates.commissionRate, isActive: schema.affiliates.isActive })
     .from(schema.affiliates)
@@ -75,6 +95,7 @@ export async function validateCoupon(
   return {
     valid: true,
     couponId: coupon.id,
+    couponType: 'affiliate',
     affiliateId: coupon.affiliateId,
     commissionRate: Number(affiliate.commissionRate),
     discountType: coupon.discountType as 'percentage' | 'fixed',
@@ -89,15 +110,12 @@ export function calculateDiscount(
   originalAmount: number,
   discountType: 'percentage' | 'fixed',
   discountValue: number,
-  currency: string,
 ): { discountAmount: number; finalAmount: number } {
   let discountAmount: number
 
   if (discountType === 'percentage') {
-    // discountValue is e.g. 20 for 20%
     discountAmount = Math.round((originalAmount * discountValue) / 100 * 100) / 100
   } else {
-    // Fixed discount — convert from USD cents to actual amount if needed
     discountAmount = Math.min(discountValue, originalAmount)
   }
 
@@ -119,7 +137,7 @@ export function calculateCommission(
 
 /**
  * Record a successful referral after payment is confirmed.
- * Called from webhook handlers after verifying payment.
+ * Called from webhook handlers after verifying payment (affiliate coupons only).
  */
 export async function recordReferral(data: {
   affiliateId: string
@@ -182,4 +200,17 @@ export async function recordReferral(data: {
     .where(eq(schema.affiliates.id, data.affiliateId))
 
   return { referralId: referral.id }
+}
+
+/**
+ * Record a platform coupon usage after payment is confirmed.
+ * Just increments used_count — no referral or commission.
+ */
+export async function recordPlatformCouponUsage(couponId: string): Promise<void> {
+  await db
+    .update(schema.affiliateCoupons)
+    .set({
+      usedCount: sql`${schema.affiliateCoupons.usedCount} + 1`,
+    })
+    .where(eq(schema.affiliateCoupons.id, couponId))
 }

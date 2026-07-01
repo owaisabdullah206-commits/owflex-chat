@@ -405,8 +405,10 @@ export const affiliates = pgTable('affiliates', {
 
 export const affiliateCoupons = pgTable('affiliate_coupons', {
   id:            text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  affiliateId:   text('affiliate_id').notNull().references(() => affiliates.id, { onDelete: 'cascade' }),
+  type:          varchar('type', { length: 20 }).notNull().default('affiliate'), // 'affiliate' | 'platform'
+  affiliateId:   text('affiliate_id').references(() => affiliates.id, { onDelete: 'cascade' }),
   code:          varchar('code', { length: 32 }).notNull().unique(),
+  name:          varchar('name', { length: 100 }), // admin label for platform coupons
   discountType:  varchar('discount_type', { length: 20 }).notNull(), // 'percentage' | 'fixed'
   discountValue: numeric('discount_value', { precision: 10, scale: 2 }).notNull(),
   appliesTo:     varchar('applies_to', { length: 20 }).notNull().default('both'), // 'plan' | 'credits' | 'both'
@@ -417,6 +419,7 @@ export const affiliateCoupons = pgTable('affiliate_coupons', {
   createdAt:     tsz('created_at').defaultNow().notNull(),
 }, (t) => [
   index('affiliate_coupons_affiliate_id_idx').on(t.affiliateId),
+  index('affiliate_coupons_type_idx').on(t.type),
 ])
 
 export const affiliateReferrals = pgTable('affiliate_referrals', {

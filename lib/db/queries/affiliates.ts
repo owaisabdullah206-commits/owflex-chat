@@ -155,6 +155,94 @@ export async function createCoupon(data: {
   return row
 }
 
+// ── Platform Coupon CRUD ─────────────────────────────────────────────────────
+
+export async function listPlatformCoupons() {
+  await requirePlatformOwner()
+
+  return await db
+    .select()
+    .from(schema.affiliateCoupons)
+    .where(eq(schema.affiliateCoupons.type, 'platform'))
+    .orderBy(desc(schema.affiliateCoupons.createdAt))
+}
+
+export async function createPlatformCoupon(data: {
+  code: string
+  name?: string
+  discountType: 'percentage' | 'fixed'
+  discountValue: number
+  appliesTo?: 'plan' | 'credits' | 'both'
+  maxUses?: number | null
+  expiresAt?: Date | null
+}) {
+  await requirePlatformOwner()
+
+  const [row] = await db
+    .insert(schema.affiliateCoupons)
+    .values({
+      type:          'platform',
+      code:           data.code.toUpperCase(),
+      name:           data.name ?? null,
+      discountType:   data.discountType,
+      discountValue:  String(data.discountValue),
+      appliesTo:      data.appliesTo ?? 'both',
+      maxUses:        data.maxUses ?? null,
+      expiresAt:      data.expiresAt ?? null,
+    })
+    .returning()
+
+  revalidatePath('/dashboard/admin/affiliates')
+  return row
+}
+
+export async function updatePlatformCoupon(
+  id: string,
+  data: Partial<{
+    name: string
+    code: string
+    discountType: 'percentage' | 'fixed'
+    discountValue: number
+    appliesTo: 'plan' | 'credits' | 'both'
+    maxUses: number | null
+    isActive: boolean
+    expiresAt: Date | null
+  }>,
+) {
+  await requirePlatformOwner()
+
+  const values: Record<string, unknown> = {}
+  if (data.name !== undefined) values.name = data.name
+  if (data.code !== undefined) values.code = data.code.toUpperCase()
+  if (data.discountType !== undefined) values.discountType = data.discountType
+  if (data.discountValue !== undefined) values.discountValue = String(data.discountValue)
+  if (data.appliesTo !== undefined) values.appliesTo = data.appliesTo
+  if (data.maxUses !== undefined) values.maxUses = data.maxUses
+  if (data.isActive !== undefined) values.isActive = data.isActive
+  if (data.expiresAt !== undefined) values.expiresAt = data.expiresAt
+
+  if (Object.keys(values).length === 0) return null
+
+  const [row] = await db
+    .update(schema.affiliateCoupons)
+    .set(values)
+    .where(eq(schema.affiliateCoupons.id, id))
+    .returning()
+
+  revalidatePath('/dashboard/admin/affiliates')
+  return row
+}
+
+export async function deletePlatformCoupon(id: string) {
+  await requirePlatformOwner()
+
+  await db
+    .delete(schema.affiliateCoupons)
+    .where(eq(schema.affiliateCoupons.id, id))
+
+  revalidatePath('/dashboard/admin/affiliates')
+}
+
 // ── Referral tracking ────────────────────────────────────────────────────────
 
 export async function getAffiliateReferrals(

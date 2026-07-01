@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm'
 import { db, schema } from '@/lib/db'
 import { verifyItn, CREDIT_PACKS, PLAN_PRICES_PKR } from '@/lib/billing/payfast'
 import * as creditLib from '@/lib/credits'
-import { validateCoupon, calculateDiscount, calculateCommission, recordReferral } from '@/lib/affiliates'
+import { validateCoupon, calculateDiscount, calculateCommission, recordReferral, recordPlatformCouponUsage } from '@/lib/affiliates'
 
 export async function POST(req: NextRequest) {
   const rawText = await req.text()
@@ -54,32 +54,35 @@ export async function POST(req: NextRequest) {
       await creditLib.logTransaction(result.orgId, 0, 'plan_upgrade', result.paymentId)
     }
 
-    // Record affiliate referral if coupon was used
+    // Record affiliate referral or platform coupon usage if coupon was used
     if (result.couponId) {
       const couponResult = await validateCoupon(result.couponId, 'plan')
-      if (couponResult.valid && couponResult.couponId && couponResult.affiliateId) {
-        const originalAmount = PLAN_PRICES_PKR[planId] ?? 0
-        const { discountAmount, finalAmount } = calculateDiscount(
-          originalAmount,
-          couponResult.discountType!,
-          couponResult.discountValue!,
-          'PKR',
-        )
-        const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
+      if (couponResult.valid && couponResult.couponId) {
+        if (couponResult.couponType === 'platform') {
+          await recordPlatformCouponUsage(couponResult.couponId)
+        } else if (couponResult.affiliateId) {
+          const originalAmount = PLAN_PRICES_PKR[planId] ?? 0
+          const { discountAmount, finalAmount } = calculateDiscount(
+            originalAmount,
+            couponResult.discountType!,
+            couponResult.discountValue!,
+          )
+          const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
 
-        await recordReferral({
-          affiliateId: couponResult.affiliateId,
-          couponId: couponResult.couponId,
-          orgId: result.orgId,
-          paymentType: 'plan',
-          originalAmount,
-          discountAmount,
-          finalAmount,
-          commissionRate: couponResult.commissionRate!,
-          commissionAmount,
-          paymentRefId: result.paymentId,
-          currency: 'PKR',
-        })
+          await recordReferral({
+            affiliateId: couponResult.affiliateId,
+            couponId: couponResult.couponId,
+            orgId: result.orgId,
+            paymentType: 'plan',
+            originalAmount,
+            discountAmount,
+            finalAmount,
+            commissionRate: couponResult.commissionRate!,
+            commissionAmount,
+            paymentRefId: result.paymentId,
+            currency: 'PKR',
+          })
+        }
       }
     }
 
@@ -106,32 +109,35 @@ export async function POST(req: NextRequest) {
   await creditLib.refund(result.orgId, tokens)
   await creditLib.logTransaction(result.orgId, tokens, 'purchase', result.paymentId)
 
-  // Record affiliate referral if coupon was used
+  // Record affiliate referral or platform coupon usage if coupon was used
   if (result.couponId) {
     const couponResult = await validateCoupon(result.couponId, 'credits')
-    if (couponResult.valid && couponResult.couponId && couponResult.affiliateId) {
-      const originalAmount = CREDIT_PACKS[result.packId].pkr
-      const { discountAmount, finalAmount } = calculateDiscount(
-        originalAmount,
-        couponResult.discountType!,
-        couponResult.discountValue!,
-        'PKR',
-      )
-      const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
+    if (couponResult.valid && couponResult.couponId) {
+      if (couponResult.couponType === 'platform') {
+        await recordPlatformCouponUsage(couponResult.couponId)
+      } else if (couponResult.affiliateId) {
+        const originalAmount = CREDIT_PACKS[result.packId].pkr
+        const { discountAmount, finalAmount } = calculateDiscount(
+          originalAmount,
+          couponResult.discountType!,
+          couponResult.discountValue!,
+        )
+        const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
 
-      await recordReferral({
-        affiliateId: couponResult.affiliateId,
-        couponId: couponResult.couponId,
-        orgId: result.orgId,
-        paymentType: 'credits',
-        originalAmount,
-        discountAmount,
-        finalAmount,
-        commissionRate: couponResult.commissionRate!,
-        commissionAmount,
-        paymentRefId: result.paymentId,
-        currency: 'PKR',
-      })
+        await recordReferral({
+          affiliateId: couponResult.affiliateId,
+          couponId: couponResult.couponId,
+          orgId: result.orgId,
+          paymentType: 'credits',
+          originalAmount,
+          discountAmount,
+          finalAmount,
+          commissionRate: couponResult.commissionRate!,
+          commissionAmount,
+          paymentRefId: result.paymentId,
+          currency: 'PKR',
+        })
+      }
     }
   }
 

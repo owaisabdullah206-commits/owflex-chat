@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { APP_VERSION } from '@/lib/version'
 import {
@@ -696,8 +696,8 @@ function OpportunityStrip() {
             const labelColor  = win ? '#fff' : accent ? '#0C0A09' : 'var(--ink)'
             const subColor    = win ? 'rgba(255,255,255,.72)' : accent ? '#57534E' : 'var(--ink-subtle)'
             return (
-            <>
-              <Reveal key={i} delay={i * 80}>
+            <Fragment key={i}>
+              <Reveal delay={i * 80}>
                 <div
                   className={`mkt-opp-tile${win ? ' mkt-opp-win' : ''}`}
                   style={{
@@ -782,7 +782,7 @@ function OpportunityStrip() {
                   </div>
                 </>
               )}
-            </>
+            </Fragment>
             )
           })}
         </div>
@@ -878,8 +878,8 @@ function HowItWorks() {
         {/* 1fr auto 1fr auto 1fr — arrows are real grid cells, no absolute positioning */}
         <div className="mkt-steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', gap: 0, alignItems: 'stretch' }}>
           {steps.map(({ Icon, n, h, p }, i) => (
-            <>
-              <Reveal key={i} delay={i * 100}>
+            <Fragment key={i}>
+              <Reveal delay={i * 100}>
                 <div
                   className="mkt-step-card"
                   style={{
@@ -953,7 +953,7 @@ function HowItWorks() {
                   </div>
                 </>
               )}
-            </>
+            </Fragment>
           ))}
         </div>
       </div>

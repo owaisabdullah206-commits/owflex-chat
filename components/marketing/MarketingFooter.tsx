@@ -80,7 +80,8 @@ const SOCIALS = [
   },
 ]
 
-export default function MarketingFooter() {
+export default function MarketingFooter({ isAffiliate = false }: { isAffiliate?: boolean }) {
+  const href = (path: string) => isAffiliate ? `https://octively.com${path}` : path
   return (
     <footer
       style={{
@@ -181,7 +182,7 @@ export default function MarketingFooter() {
                 {col.items.map((item) => (
                   <li key={item.label}>
                     <Link
-                      href={item.href}
+                      href={href(item.href)}
                       style={{
                         fontSize: 13.5,
                         color: 'var(--ink-muted)',

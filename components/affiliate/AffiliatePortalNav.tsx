@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Handshake, LayoutDashboard, Users, Wallet, Settings, LogOut } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { LayoutDashboard, Users, Wallet, Settings, LogOut } from 'lucide-react'
+import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -44,9 +44,8 @@ export default function AffiliatePortalNav({ affiliateName }: { affiliateName: s
           gap: 32,
         }}
       >
-        <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
-          <Handshake size={18} style={{ color: 'var(--of-primary)' }} />
-          <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>Affiliates</span>
+        <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <OctivelyLogo size={20} showWordmark />
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, flex: 1 }}>
@@ -94,6 +93,7 @@ export default function AffiliatePortalNav({ affiliateName }: { affiliateName: s
               borderRadius: 'var(--r-md)',
               transition: 'background 0.15s',
             }}
+            aria-label="Sign out"
           >
             <LogOut size={14} />
           </button>
