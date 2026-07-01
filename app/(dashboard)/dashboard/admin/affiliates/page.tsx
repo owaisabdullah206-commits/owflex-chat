@@ -1,16 +1,21 @@
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { Sidebar } from '@/components/dashboard/Sidebar'
-import { getAffiliateStats, listAffiliates, listCoupons } from '@/lib/db/queries/affiliates'
+import { getAffiliateStats, listAffiliates, listCoupons, listPlatformCoupons } from '@/lib/db/queries/affiliates'
 import { Handshake, Users, DollarSign, TrendingUp, Ticket } from 'lucide-react'
+import { CreateAffiliateButton } from '@/components/dashboard/CreateAffiliateButton'
+import { CouponManager } from '@/components/dashboard/CouponManager'
 
 export default async function AdminAffiliatesPage() {
   await requirePlatformOwner()
 
-  const [stats, affiliates, allCoupons] = await Promise.all([
+  const [stats, affiliates, allCoupons, platformCoupons] = await Promise.all([
     getAffiliateStats(),
     listAffiliates(),
     listCoupons(),
+    listPlatformCoupons(),
   ])
+
+  const affiliateList = affiliates.map((a) => ({ id: a.id, name: a.name, code: a.code }))
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -26,6 +31,9 @@ export default async function AdminAffiliatesPage() {
           <p className="text-xs text-[var(--ink-muted)] mt-0.5">
             Manage affiliate accounts, coupons, and payouts
           </p>
+          <div className="mt-3">
+            <CreateAffiliateButton />
+          </div>
         </div>
 
         <div className="px-8 py-6 space-y-6">
@@ -131,6 +139,9 @@ export default async function AdminAffiliatesPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Coupon management */}
+          <CouponManager coupons={allCoupons as any} affiliates={affiliateList} />
 
           {/* Top affiliates */}
           {stats.topAffiliates.length > 0 && (
