@@ -386,3 +386,287 @@ export async function getAffiliateStats() {
     })),
   }
 }
+
+// ── Admin: Affiliate Detail ─────────────────────────────────────────────────
+
+export async function getAffiliateDetail(id: string) {
+  await requirePlatformOwner()
+
+  const [aff] = await db
+    .select()
+    .from(schema.affiliates)
+    .where(eq(schema.affiliates.id, id))
+    .limit(1)
+
+  if (!aff) return null
+
+  const [referralStats, recentReferrals, payouts] = await Promise.all([
+    db
+      .select({
+        count: count(),
+        totalCommission: sql<string>`COALESCE(SUM(${schema.affiliateReferrals.commissionAmount}::numeric), 0)`,
+        totalFinalAmount: sql<string>`COALESCE(SUM(${schema.affiliateReferrals.finalAmount}::numeric), 0)`,
+      })
+      .from(schema.affiliateReferrals)
+      .where(eq(schema.affiliateReferrals.affiliateId, id)),
+    db
+      .select({
+        id: schema.affiliateReferrals.id,
+        orgId: schema.affiliateReferrals.orgId,
+        paymentType: schema.affiliateReferrals.paymentType,
+        originalAmount: schema.affiliateReferrals.originalAmount,
+        discountAmount: schema.affiliateReferrals.discountAmount,
+        finalAmount: schema.affiliateReferrals.finalAmount,
+        commissionRate: schema.affiliateReferrals.commissionRate,
+        commissionAmount: schema.affiliateReferrals.commissionAmount,
+        paymentRefId: schema.affiliateReferrals.paymentRefId,
+        currency: schema.affiliateReferrals.currency,
+        createdAt: schema.affiliateReferrals.createdAt,
+        couponCode: schema.affiliateCoupons.code,
+      })
+      .from(schema.affiliateReferrals)
+      .innerJoin(schema.affiliateCoupons, eq(schema.affiliateReferrals.couponId, schema.affiliateCoupons.id))
+      .where(eq(schema.affiliateReferrals.affiliateId, id))
+      .orderBy(desc(schema.affiliateReferrals.createdAt))
+      .limit(100),
+    db
+      .select()
+      .from(schema.affiliatePayouts)
+      .where(eq(schema.affiliatePayouts.affiliateId, id))
+      .orderBy(desc(schema.affiliatePayouts.paidAt)),
+  ])
+
+  const stats = referralStats[0]
+  const totalEarned = Number(aff.totalEarned)
+  const totalPaid = Number(aff.totalPaid)
+  const pendingPayout = totalEarned - totalPaid
+
+  return {
+    ...aff,
+    payoutInfo: (aff.payoutInfo ?? {}) as Record<string, unknown>,
+    totalEarned,
+    totalPaid,
+    pendingPayout,
+    referralCount: stats?.count ?? 0,
+    totalCommission: Number(stats?.totalCommission ?? 0),
+    totalRevenue: Number(stats?.totalFinalAmount ?? 0),
+    recentReferrals: recentReferrals.map((r) => ({
+      ...r,
+      originalAmount: Number(r.originalAmount),
+      discountAmount: Number(r.discountAmount),
+      finalAmount: Number(r.finalAmount),
+      commissionRate: Number(r.commissionRate),
+      commissionAmount: Number(r.commissionAmount),
+    })),
+    payouts: payouts.map((p) => ({
+      ...p,
+      amount: Number(p.amount),
+    })),
+  }
+}
+
+// ── Admin: Ban / Unban ──────────────────────────────────────────────────────
+
+export async function updateAffiliateStatus(
+  id: string,
+  isActive: boolean,
+  reason?: string | null,
+) {
+  await requirePlatformOwner()
+
+  const [row] = await db
+    .update(schema.affiliates)
+    .set({
+      isActive,
+      bannedReason: isActive ? null : (reason ?? null),
+      bannedAt: isActive ? null : new Date(),
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.affiliates.id, id))
+    .returning()
+
+  revalidatePath('/dashboard/admin/affiliates')
+  revalidatePath(`/dashboard/admin/affiliates/${id}`)
+  return row
+}
+
+// ── Admin: Delete Affiliate ─────────────────────────────────────────────────
+
+export async function removeAffiliate(id: string) {
+  await requirePlatformOwner()
+
+  // Check for existing referrals — can't delete if referrals exist
+  const [ref] = await db
+    .select({ cnt: count() })
+    .from(schema.affiliateReferrals)
+    .where(eq(schema.affiliateReferrals.affiliateId, id))
+
+  if (ref && ref.cnt > 0) {
+    return { error: `Cannot delete: ${ref.cnt} referral(s) exist. Ban instead.` }
+  }
+
+  // Delete coupons first (cascade would handle it, but be explicit)
+  await db.delete(schema.affiliateCoupons).where(eq(schema.affiliateCoupons.affiliateId, id))
+  await db.delete(schema.affiliates).where(eq(schema.affiliates.id, id))
+
+  revalidatePath('/dashboard/admin/affiliates')
+  return { ok: true }
+}
+
+// ── Admin: Payout Summary (who to pay) ─────────────────────────────────────
+
+export async function getPayoutSummary() {
+  await requirePlatformOwner()
+
+  const rows = await db
+    .select({
+      id: schema.affiliates.id,
+      name: schema.affiliates.name,
+      email: schema.affiliates.email,
+      code: schema.affiliates.code,
+      totalEarned: schema.affiliates.totalEarned,
+      totalPaid: schema.affiliates.totalPaid,
+      isActive: schema.affiliates.isActive,
+      payoutInfo: schema.affiliates.payoutInfo,
+      referralCount: sql<number>`(SELECT COUNT(*)::int FROM ${schema.affiliateReferrals} WHERE affiliate_id = ${schema.affiliates.id})`,
+    })
+    .from(schema.affiliates)
+    .where(eq(schema.affiliates.isActive, true))
+    .orderBy(desc(sql`(${schema.affiliates.totalEarned}::numeric - ${schema.affiliates.totalPaid}::numeric)`))
+
+  return rows.map((r) => ({
+    ...r,
+    totalEarned: Number(r.totalEarned),
+    totalPaid: Number(r.totalPaid),
+    pendingPayout: Number(r.totalEarned) - Number(r.totalPaid),
+  }))
+}
+
+// ── Admin: Record Manual Payout ─────────────────────────────────────────────
+
+export async function recordAdminPayout(data: {
+  affiliateId: string
+  amount: number
+  method: string
+  reference?: string | null
+  notes?: string | null
+  referralIds?: string[]
+}) {
+  await requirePlatformOwner()
+
+  const owner = await requirePlatformOwner()
+
+  const [row] = await db
+    .insert(schema.affiliatePayouts)
+    .values({
+      affiliateId: data.affiliateId,
+      amount: String(data.amount),
+      method: data.method,
+      reference: data.reference ?? null,
+      notes: data.notes ?? null,
+      referralIds: data.referralIds ?? [],
+      paidBy: owner.id,
+    })
+    .returning()
+
+  await db
+    .update(schema.affiliates)
+    .set({
+      totalPaid: sql`${schema.affiliates.totalPaid} + ${String(data.amount)}`,
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.affiliates.id, data.affiliateId))
+
+  revalidatePath('/dashboard/admin/affiliates')
+  revalidatePath(`/dashboard/admin/affiliates/${data.affiliateId}`)
+  return row
+}
+
+// ── Admin: Fraud Detection ──────────────────────────────────────────────────
+
+export async function getFraudFlags(affiliateId: string) {
+  await requirePlatformOwner()
+
+  const [aff] = await db
+    .select()
+    .from(schema.affiliates)
+    .where(eq(schema.affiliates.id, affiliateId))
+    .limit(1)
+
+  if (!aff) return []
+
+  const flags: { type: string; severity: 'low' | 'medium' | 'high'; message: string }[] = []
+
+  // Check 1: Self-referral (same email domain or exact match)
+  const selfReferrals = await db
+    .select({ cnt: count() })
+    .from(schema.affiliateReferrals)
+    .innerJoin(schema.users, eq(schema.affiliateReferrals.referredUserId, schema.users.id))
+    .where(
+      and(
+        eq(schema.affiliateReferrals.affiliateId, affiliateId),
+        eq(schema.users.email, aff.email),
+      ),
+    )
+
+  if (selfReferrals[0]?.cnt ?? 0 > 0) {
+    flags.push({
+      type: 'self_referral',
+      severity: 'high',
+      message: `${selfReferrals[0].cnt} referral(s) use the same email as the affiliate`,
+    })
+  }
+
+  // Check 2: Rapid signups (5+ referrals in 24 hours)
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+  const rapidSignups = await db
+    .select({ cnt: count() })
+    .from(schema.affiliateReferrals)
+    .where(
+      and(
+        eq(schema.affiliateReferrals.affiliateId, affiliateId),
+        gte(schema.affiliateReferrals.createdAt, oneDayAgo),
+      ),
+    )
+
+  if ((rapidSignups[0]?.cnt ?? 0) >= 5) {
+    flags.push({
+      type: 'rapid_signups',
+      severity: 'medium',
+      message: `${rapidSignups[0].cnt} referrals in the last 24 hours`,
+    })
+  }
+
+  // Check 3: High commission rate (> 30%)
+  const rate = Number(aff.commissionRate) * 100
+  if (rate > 30) {
+    flags.push({
+      type: 'high_commission',
+      severity: 'low',
+      message: `Commission rate is ${rate}% (above 30% threshold)`,
+    })
+  }
+
+  // Check 4: All referrals are same payment type (potential gaming)
+  const paymentTypes = await db
+    .select({
+      paymentType: schema.affiliateReferrals.paymentType,
+      cnt: count(),
+    })
+    .from(schema.affiliateReferrals)
+    .where(eq(schema.affiliateReferrals.affiliateId, affiliateId))
+    .groupBy(schema.affiliateReferrals.paymentType)
+
+  if (paymentTypes.length === 1 && (paymentTypes[0]?.cnt ?? 0) >= 3) {
+    flags.push({
+      type: 'single_payment_type',
+      severity: 'low',
+      message: `All ${paymentTypes[0].cnt} referrals are ${paymentTypes[0].paymentType} purchases`,
+    })
+  }
+
+  // Check 5: Low conversion (many clicks/signups but no payments)
+  // This would need click tracking which we don't have yet — skip for now
+
+  return flags
+}

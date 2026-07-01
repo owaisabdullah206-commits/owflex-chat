@@ -395,6 +395,8 @@ export const affiliates = pgTable('affiliates', {
   isActive:       boolean('is_active').notNull().default(true),
   payoutInfo:     jsonb('payout_info').notNull().default({}),
   notes:          text('notes'),
+  bannedReason:   text('banned_reason'),
+  bannedAt:       tsz('banned_at'),
   totalEarned:    numeric('total_earned', { precision: 14, scale: 2 }).notNull().default('0'),
   totalPaid:      numeric('total_paid', { precision: 14, scale: 2 }).notNull().default('0'),
   createdAt:      tsz('created_at').defaultNow().notNull(),

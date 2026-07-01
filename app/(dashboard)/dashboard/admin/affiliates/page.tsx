@@ -1,21 +1,24 @@
 import { requirePlatformOwner } from '@/lib/auth/session'
 import { Sidebar } from '@/components/dashboard/Sidebar'
-import { getAffiliateStats, listAffiliates, listCoupons, listPlatformCoupons } from '@/lib/db/queries/affiliates'
-import { Handshake, Users, DollarSign, TrendingUp, Ticket } from 'lucide-react'
+import { getAffiliateStats, listAffiliates, listCoupons, listPlatformCoupons, getPayoutSummary } from '@/lib/db/queries/affiliates'
+import { Handshake, Users, DollarSign, TrendingUp, Ticket, Banknote, AlertTriangle } from 'lucide-react'
 import { CreateAffiliateButton } from '@/components/dashboard/CreateAffiliateButton'
 import { CouponManager } from '@/components/dashboard/CouponManager'
+import Link from 'next/link'
 
 export default async function AdminAffiliatesPage() {
   await requirePlatformOwner()
 
-  const [stats, affiliates, allCoupons, platformCoupons] = await Promise.all([
+  const [stats, affiliates, allCoupons, platformCoupons, payoutSummary] = await Promise.all([
     getAffiliateStats(),
     listAffiliates(),
     listCoupons(),
     listPlatformCoupons(),
+    getPayoutSummary(),
   ])
 
   const affiliateList = affiliates.map((a) => ({ id: a.id, name: a.name, code: a.code }))
+  const totalOwed = payoutSummary.reduce((sum, a) => sum + a.pendingPayout, 0)
 
   return (
     <div className="flex min-h-screen bg-[var(--bg)]">
@@ -65,13 +68,38 @@ export default async function AdminAffiliatesPage() {
             />
           </div>
 
+          {/* Payouts owed summary */}
+          {totalOwed > 0 && (
+            <div className="border border-amber-500/20 bg-amber-500/5 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Banknote className="h-4 w-4 text-amber-400" />
+                <span className="text-sm font-semibold text-amber-400">Payouts Owed</span>
+                <span className="ml-auto text-lg font-bold text-amber-400" style={{ fontFamily: 'var(--font-mono)' }}>
+                  ₨{totalOwed.toLocaleString()}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {payoutSummary.filter((a) => a.pendingPayout > 0).map((a) => (
+                  <Link
+                    key={a.id}
+                    href={`/dashboard/admin/affiliates/${a.id}`}
+                    className="flex items-center justify-between py-1.5 px-3 text-[12px] hover:bg-amber-500/10 rounded transition-colors"
+                  >
+                    <span className="text-[var(--ink)]">{a.name}</span>
+                    <span className="font-mono text-amber-400 font-medium">₨{a.pendingPayout.toLocaleString()}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Affiliates table */}
           <div className="border border-[var(--hairline)] overflow-hidden">
             <div className="h-[2px] bg-[var(--of-primary)]" />
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--hairline)] bg-[var(--surface-3)]">
-                  {['Affiliate', 'Code', 'Commission', 'Referrals', 'Earned', 'Paid', 'Status'].map((h) => (
+                  {['Affiliate', 'Code', 'Commission', 'Referrals', 'Earned', 'Paid', 'Pending', 'Status'].map((h) => (
                     <th
                       key={h}
                       className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-subtle)]"
@@ -82,50 +110,58 @@ export default async function AdminAffiliatesPage() {
                 </tr>
               </thead>
               <tbody>
-                {affiliates.map((aff) => (
-                  <tr
-                    key={aff.id}
-                    className="border-b border-[var(--hairline)] odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors"
-                  >
-                    <td className="px-4 py-3">
-                      <div>
-                        <p className="text-[13px] font-medium text-[var(--ink)]">{aff.name}</p>
-                        <p className="text-[11px] text-[var(--ink-muted)]">{aff.email}</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <code className="text-[12px] bg-[var(--surface-3)] px-1.5 py-0.5 rounded font-mono text-[var(--ink)]">
-                        {aff.code}
-                      </code>
-                    </td>
-                    <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
-                      {(aff.commissionRate * 100).toFixed(0)}%
-                    </td>
-                    <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
-                      {aff.referralCount}
-                    </td>
-                    <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
-                      ₨{aff.totalEarned.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
-                      ₨{aff.totalPaid.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                          aff.isActive
-                            ? 'bg-emerald-500/10 text-emerald-400'
-                            : 'bg-zinc-500/10 text-zinc-400'
-                        }`}
-                      >
-                        {aff.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {affiliates.map((aff) => {
+                  const earned = Number(aff.totalEarned)
+                  const paid = Number(aff.totalPaid)
+                  const pending = earned - paid
+                  return (
+                    <tr
+                      key={aff.id}
+                      className="border-b border-[var(--hairline)] odd:bg-[var(--surface)] even:bg-[var(--surface-2)] hover:bg-[var(--surface-3)] transition-colors cursor-pointer"
+                    >
+                      <td className="px-4 py-3">
+                        <Link href={`/dashboard/admin/affiliates/${aff.id}`} className="block">
+                          <p className="text-[13px] font-medium text-[var(--ink)]">{aff.name}</p>
+                          <p className="text-[11px] text-[var(--ink-muted)]">{aff.email}</p>
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3">
+                        <code className="text-[12px] bg-[var(--surface-3)] px-1.5 py-0.5 rounded font-mono text-[var(--ink)]">
+                          {aff.code}
+                        </code>
+                      </td>
+                      <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
+                        {(aff.commissionRate * 100).toFixed(0)}%
+                      </td>
+                      <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
+                        {aff.referralCount}
+                      </td>
+                      <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
+                        ₨{earned.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-[13px] text-[var(--ink)]">
+                        ₨{paid.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-[13px] font-mono" style={{ color: pending > 0 ? 'var(--of-primary)' : 'var(--ink-muted)' }}>
+                        ₨{pending.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                            aff.isActive
+                              ? 'bg-emerald-500/10 text-emerald-400'
+                              : 'bg-red-500/10 text-red-400'
+                          }`}
+                        >
+                          {aff.isActive ? 'Active' : 'Banned'}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
                 {affiliates.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center">
+                    <td colSpan={8} className="px-4 py-12 text-center">
                       <Handshake className="h-8 w-8 mx-auto mb-3 text-[var(--ink-subtle)] opacity-30" />
                       <p className="text-xs text-[var(--ink-subtle)] uppercase tracking-wide">
                         No affiliates yet
