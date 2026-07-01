@@ -7,15 +7,25 @@ export interface CouponValidation {
   couponId?: string
   couponType?: 'affiliate' | 'platform'
   affiliateId?: string
-  commissionRate?: number
-  discountType?: 'percentage' | 'fixed'
-  discountValue?: number
+  commissionRate?: number   // affiliate's total commission pool (e.g. 0.30)
+  discountPercent?: number  // discount given to customer (e.g. 0.10)
 }
 
 /**
  * Validate a coupon code and return its details.
- * Supports both affiliate and platform coupons.
- * Called from checkout URL routes when a coupon code is provided.
+ *
+ * Affiliate coupon model:
+ *   - Affiliate has a commissionRate (e.g. 30%)
+ *   - They set a discountPercent on their coupon (0 to commissionRate)
+ *   - Customer gets discountPercent off the original price
+ *   - Affiliate earns commissionRate on the final (discounted) price
+ *
+ *   Example: commissionRate=30%, discountPercent=10%
+ *     Original = ₨1000
+ *     Customer pays = ₨900 (10% off)
+ *     Affiliate earns = 30% × ₨900 = ₨270
+ *
+ * Platform coupon: simple % or fixed discount, no affiliate commission.
  */
 export async function validateCoupon(
   code: string,
@@ -25,16 +35,15 @@ export async function validateCoupon(
 
   const [coupon] = await db
     .select({
-      id:            schema.affiliateCoupons.id,
-      type:          schema.affiliateCoupons.type,
-      affiliateId:   schema.affiliateCoupons.affiliateId,
-      discountType:  schema.affiliateCoupons.discountType,
-      discountValue: schema.affiliateCoupons.discountValue,
-      appliesTo:     schema.affiliateCoupons.appliesTo,
-      maxUses:       schema.affiliateCoupons.maxUses,
-      usedCount:     schema.affiliateCoupons.usedCount,
-      isActive:      schema.affiliateCoupons.isActive,
-      expiresAt:     schema.affiliateCoupons.expiresAt,
+      id:              schema.affiliateCoupons.id,
+      type:            schema.affiliateCoupons.type,
+      affiliateId:     schema.affiliateCoupons.affiliateId,
+      discountPercent: schema.affiliateCoupons.discountPercent,
+      appliesTo:       schema.affiliateCoupons.appliesTo,
+      maxUses:         schema.affiliateCoupons.maxUses,
+      usedCount:       schema.affiliateCoupons.usedCount,
+      isActive:        schema.affiliateCoupons.isActive,
+      expiresAt:       schema.affiliateCoupons.expiresAt,
     })
     .from(schema.affiliateCoupons)
     .where(
@@ -49,31 +58,27 @@ export async function validateCoupon(
     return { valid: false, error: 'Invalid or inactive coupon code' }
   }
 
-  // Expiry check
   if (coupon.expiresAt && coupon.expiresAt < new Date()) {
     return { valid: false, error: 'This coupon has expired' }
   }
 
-  // Max uses check
   if (coupon.maxUses !== null && coupon.usedCount >= coupon.maxUses) {
     return { valid: false, error: 'This coupon has reached its usage limit' }
   }
 
-  // Payment type applicability
   if (coupon.appliesTo !== 'both' && coupon.appliesTo !== paymentType) {
     return { valid: false, error: `This coupon is not valid for ${paymentType} purchases` }
   }
 
   const couponType = (coupon.type as 'affiliate' | 'platform') ?? 'affiliate'
 
-  // Platform coupon — no affiliate lookup needed
+  // Platform coupon — simple discount, no affiliate
   if (couponType === 'platform') {
     return {
       valid: true,
       couponId: coupon.id,
       couponType: 'platform',
-      discountType: coupon.discountType as 'percentage' | 'fixed',
-      discountValue: Number(coupon.discountValue),
+      discountPercent: Number(coupon.discountPercent),
     }
   }
 
@@ -89,7 +94,7 @@ export async function validateCoupon(
     .limit(1)
 
   if (!affiliate?.isActive) {
-    return { valid: false, error: 'This coupon is no longer active' }
+    return { valid: false, error: 'This affiliate account is no longer active' }
   }
 
   return {
@@ -98,27 +103,18 @@ export async function validateCoupon(
     couponType: 'affiliate',
     affiliateId: coupon.affiliateId,
     commissionRate: Number(affiliate.commissionRate),
-    discountType: coupon.discountType as 'percentage' | 'fixed',
-    discountValue: Number(coupon.discountValue),
+    discountPercent: Number(coupon.discountPercent),
   }
 }
 
 /**
- * Calculate the discount amount for a given coupon and original price.
+ * Calculate discount and final amount from a discount percentage.
  */
 export function calculateDiscount(
   originalAmount: number,
-  discountType: 'percentage' | 'fixed',
-  discountValue: number,
+  discountPercent: number,
 ): { discountAmount: number; finalAmount: number } {
-  let discountAmount: number
-
-  if (discountType === 'percentage') {
-    discountAmount = Math.round((originalAmount * discountValue) / 100 * 100) / 100
-  } else {
-    discountAmount = Math.min(discountValue, originalAmount)
-  }
-
+  const discountAmount = Math.round((originalAmount * discountPercent) / 100 * 100) / 100
   return {
     discountAmount,
     finalAmount: Math.round((originalAmount - discountAmount) * 100) / 100,
@@ -126,7 +122,8 @@ export function calculateDiscount(
 }
 
 /**
- * Calculate the affiliate commission on the final (discounted) amount.
+ * Calculate affiliate commission on the final (discounted) amount.
+ * commission = commissionRate × finalAmount
  */
 export function calculateCommission(
   finalAmount: number,
@@ -153,7 +150,6 @@ export async function recordReferral(data: {
   paymentRefId: string
   currency?: string
 }): Promise<{ referralId?: string; error?: string }> {
-  // Idempotency check — prevent duplicate referrals for the same payment
   const [existing] = await db
     .select({ id: schema.affiliateReferrals.id })
     .from(schema.affiliateReferrals)
@@ -182,15 +178,11 @@ export async function recordReferral(data: {
     })
     .returning()
 
-  // Increment coupon used_count
   await db
     .update(schema.affiliateCoupons)
-    .set({
-      usedCount: sql`${schema.affiliateCoupons.usedCount} + 1`,
-    })
+    .set({ usedCount: sql`${schema.affiliateCoupons.usedCount} + 1` })
     .where(eq(schema.affiliateCoupons.id, data.couponId))
 
-  // Increment affiliate total_earned
   await db
     .update(schema.affiliates)
     .set({
@@ -203,14 +195,11 @@ export async function recordReferral(data: {
 }
 
 /**
- * Record a platform coupon usage after payment is confirmed.
- * Just increments used_count — no referral or commission.
+ * Record a platform coupon usage — increments used_count only.
  */
 export async function recordPlatformCouponUsage(couponId: string): Promise<void> {
   await db
     .update(schema.affiliateCoupons)
-    .set({
-      usedCount: sql`${schema.affiliateCoupons.usedCount} + 1`,
-    })
+    .set({ usedCount: sql`${schema.affiliateCoupons.usedCount} + 1` })
     .where(eq(schema.affiliateCoupons.id, couponId))
 }

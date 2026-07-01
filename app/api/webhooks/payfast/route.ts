@@ -64,8 +64,7 @@ export async function POST(req: NextRequest) {
           const originalAmount = PLAN_PRICES_PKR[planId] ?? 0
           const { discountAmount, finalAmount } = calculateDiscount(
             originalAmount,
-            couponResult.discountType!,
-            couponResult.discountValue!,
+            couponResult.discountPercent!,
           )
           const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
 
@@ -119,8 +118,7 @@ export async function POST(req: NextRequest) {
         const originalAmount = CREDIT_PACKS[result.packId].pkr
         const { discountAmount, finalAmount } = calculateDiscount(
           originalAmount,
-          couponResult.discountType!,
-          couponResult.discountValue!,
+          couponResult.discountPercent!,
         )
         const commissionAmount = calculateCommission(finalAmount, couponResult.commissionRate!)
 

@@ -10,8 +10,7 @@ type Coupon = {
   code: string
   name: string | null
   affiliateId: string | null
-  discountType: string
-  discountValue: string
+  discountPercent: string
   appliesTo: string
   maxUses: number | null
   usedCount: number
@@ -63,8 +62,8 @@ export function CouponManager({ coupons, affiliates }: { coupons: Coupon[]; affi
                     {c.type}
                   </span>
                 </td>
-                <td className="px-4 py-2.5 text-[13px] text-[var(--ink)]">
-                  {c.discountType === 'percentage' ? `${c.discountValue}%` : `₨${Number(c.discountValue).toLocaleString()}`}
+                <td className="px-4 py-2.5 text-[13px] text-[var(--ink)] font-mono">
+                  {c.discountPercent}%
                 </td>
                 <td className="px-4 py-2.5 text-[13px] text-[var(--ink-muted)]">{c.appliesTo}</td>
                 <td className="px-4 py-2.5 text-[13px] text-[var(--ink)]">
@@ -177,8 +176,7 @@ function CouponForm({
   const [form, setForm] = useState({
     code: coupon?.code ?? '',
     name: coupon?.name ?? '',
-    discountType: coupon?.discountType ?? 'percentage',
-    discountValue: coupon?.discountValue ?? '10',
+    discountPercent: coupon?.discountPercent ?? '10',
     appliesTo: coupon?.appliesTo ?? 'both',
     type: coupon?.type ?? 'platform',
     affiliateId: coupon?.affiliateId ?? '',
@@ -189,17 +187,15 @@ function CouponForm({
     e.preventDefault()
     setLoading(true)
     try {
-      const url = coupon ? '/api/affiliates/admin/coupons' : '/api/affiliates/admin/coupons'
       const method = coupon ? 'PATCH' : 'POST'
-      await fetch(url, {
+      await fetch('/api/affiliates/admin/coupons', {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...(coupon ? { id: coupon.id } : {}),
           code: form.code.toUpperCase(),
           name: form.name || null,
-          discountType: form.discountType,
-          discountValue: Number(form.discountValue),
+          discountPercent: Number(form.discountPercent),
           appliesTo: form.appliesTo,
           type: form.type,
           affiliateId: form.type === 'affiliate' ? form.affiliateId : null,
@@ -257,18 +253,18 @@ function CouponForm({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] mb-1">Discount</label>
-              <select value={form.discountType} onChange={(e) => setForm({ ...form, discountType: e.target.value })} className="w-full px-3 py-2 text-[13px] bg-[var(--surface-2)] border border-[var(--hairline)] rounded text-[var(--ink)]">
-                <option value="percentage">Percentage</option>
-                <option value="fixed">Fixed (PKR)</option>
-              </select>
+              <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] mb-1">Customer Discount %</label>
+              <input
+                type="number"
+                value={form.discountPercent}
+                onChange={(e) => setForm({ ...form, discountPercent: e.target.value })}
+                min="0"
+                max="100"
+                required
+                className="w-full px-3 py-2 text-[13px] bg-[var(--surface-2)] border border-[var(--hairline)] rounded text-[var(--ink)] font-mono"
+              />
+              <p className="text-[10px] text-[var(--ink-subtle)] mt-1">0 = no discount for customer</p>
             </div>
-            <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] mb-1">Value</label>
-              <input type="number" value={form.discountValue} onChange={(e) => setForm({ ...form, discountValue: e.target.value })} min="1" required className="w-full px-3 py-2 text-[13px] bg-[var(--surface-2)] border border-[var(--hairline)] rounded text-[var(--ink)]" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] mb-1">Applies To</label>
               <select value={form.appliesTo} onChange={(e) => setForm({ ...form, appliesTo: e.target.value })} className="w-full px-3 py-2 text-[13px] bg-[var(--surface-2)] border border-[var(--hairline)] rounded text-[var(--ink)]">
@@ -277,10 +273,10 @@ function CouponForm({
                 <option value="credits">Credits only</option>
               </select>
             </div>
-            <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] mb-1">Max Uses</label>
-              <input type="number" value={form.maxUses} onChange={(e) => setForm({ ...form, maxUses: e.target.value })} placeholder="Unlimited" min="1" className="w-full px-3 py-2 text-[13px] bg-[var(--surface-2)] border border-[var(--hairline)] rounded text-[var(--ink)]" />
-            </div>
+          </div>
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--ink-subtle)] mb-1">Max Uses</label>
+            <input type="number" value={form.maxUses} onChange={(e) => setForm({ ...form, maxUses: e.target.value })} placeholder="Unlimited" min="1" className="w-full px-3 py-2 text-[13px] bg-[var(--surface-2)] border border-[var(--hairline)] rounded text-[var(--ink)]" />
           </div>
           <button type="submit" disabled={loading} className="w-full py-2 text-[13px] font-semibold text-white bg-[var(--of-primary)] rounded hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2">
             {loading && <Loader2 size={14} className="animate-spin" />}

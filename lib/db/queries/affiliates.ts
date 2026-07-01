@@ -130,8 +130,7 @@ export async function listCoupons(affiliateId?: string) {
 export async function createCoupon(data: {
   affiliateId: string
   code: string
-  discountType: 'percentage' | 'fixed'
-  discountValue: number
+  discountPercent: number
   appliesTo?: 'plan' | 'credits' | 'both'
   maxUses?: number | null
   expiresAt?: Date | null
@@ -141,13 +140,12 @@ export async function createCoupon(data: {
   const [row] = await db
     .insert(schema.affiliateCoupons)
     .values({
-      affiliateId:   data.affiliateId,
-      code:           data.code,
-      discountType:   data.discountType,
-      discountValue:  String(data.discountValue),
-      appliesTo:      data.appliesTo ?? 'both',
-      maxUses:        data.maxUses ?? null,
-      expiresAt:      data.expiresAt ?? null,
+      affiliateId:     data.affiliateId,
+      code:            data.code,
+      discountPercent: String(data.discountPercent),
+      appliesTo:       data.appliesTo ?? 'both',
+      maxUses:         data.maxUses ?? null,
+      expiresAt:       data.expiresAt ?? null,
     })
     .returning()
 
@@ -170,8 +168,7 @@ export async function listPlatformCoupons() {
 export async function createPlatformCoupon(data: {
   code: string
   name?: string
-  discountType: 'percentage' | 'fixed'
-  discountValue: number
+  discountPercent: number
   appliesTo?: 'plan' | 'credits' | 'both'
   maxUses?: number | null
   expiresAt?: Date | null
@@ -181,14 +178,13 @@ export async function createPlatformCoupon(data: {
   const [row] = await db
     .insert(schema.affiliateCoupons)
     .values({
-      type:          'platform',
-      code:           data.code.toUpperCase(),
-      name:           data.name ?? null,
-      discountType:   data.discountType,
-      discountValue:  String(data.discountValue),
-      appliesTo:      data.appliesTo ?? 'both',
-      maxUses:        data.maxUses ?? null,
-      expiresAt:      data.expiresAt ?? null,
+      type:            'platform',
+      code:            data.code.toUpperCase(),
+      name:            data.name ?? null,
+      discountPercent: String(data.discountPercent),
+      appliesTo:       data.appliesTo ?? 'both',
+      maxUses:         data.maxUses ?? null,
+      expiresAt:       data.expiresAt ?? null,
     })
     .returning()
 
@@ -201,8 +197,7 @@ export async function updatePlatformCoupon(
   data: Partial<{
     name: string
     code: string
-    discountType: 'percentage' | 'fixed'
-    discountValue: number
+    discountPercent: number
     appliesTo: 'plan' | 'credits' | 'both'
     maxUses: number | null
     isActive: boolean
@@ -214,8 +209,7 @@ export async function updatePlatformCoupon(
   const values: Record<string, unknown> = {}
   if (data.name !== undefined) values.name = data.name
   if (data.code !== undefined) values.code = data.code.toUpperCase()
-  if (data.discountType !== undefined) values.discountType = data.discountType
-  if (data.discountValue !== undefined) values.discountValue = String(data.discountValue)
+  if (data.discountPercent !== undefined) values.discountPercent = String(data.discountPercent)
   if (data.appliesTo !== undefined) values.appliesTo = data.appliesTo
   if (data.maxUses !== undefined) values.maxUses = data.maxUses
   if (data.isActive !== undefined) values.isActive = data.isActive

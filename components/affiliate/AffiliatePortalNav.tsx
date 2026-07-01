@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Users, Wallet, Settings, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, Wallet, Ticket, Settings, LogOut } from 'lucide-react'
 import { OctivelyLogo } from '@/components/brand/OctivelyLogo'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard/coupon', label: 'My Coupon', icon: Ticket },
   { href: '/dashboard/referrals', label: 'Referrals', icon: Users },
   { href: '/dashboard/payouts', label: 'Payouts', icon: Wallet },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },

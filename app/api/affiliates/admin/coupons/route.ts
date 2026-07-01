@@ -9,8 +9,7 @@ import { revalidatePath } from 'next/cache'
 const createSchema = z.object({
   code: z.string().min(3).max(32),
   name: z.string().max(100).nullable().optional(),
-  discountType: z.enum(['percentage', 'fixed']),
-  discountValue: z.number().min(1),
+  discountPercent: z.number().min(0).max(100),
   appliesTo: z.enum(['plan', 'credits', 'both']).default('both'),
   type: z.enum(['affiliate', 'platform']).default('platform'),
   affiliateId: z.string().nullable().optional(),
@@ -27,10 +26,15 @@ export async function POST(req: NextRequest) {
 
   const data = parsed.data
 
-  // Verify affiliate exists if type is affiliate
   if (data.type === 'affiliate' && data.affiliateId) {
     const [aff] = await db.select().from(affiliates).where(eq(affiliates.id, data.affiliateId)).limit(1)
     if (!aff) return NextResponse.json({ error: 'Affiliate not found' }, { status: 404 })
+
+    // Validate discount doesn't exceed commission rate
+    const maxDiscount = Number(aff.commissionRate) * 100
+    if (data.discountPercent > maxDiscount) {
+      return NextResponse.json({ error: `Discount cannot exceed ${maxDiscount}% (affiliate commission rate)` }, { status: 400 })
+    }
   }
 
   const [row] = await db.insert(affiliateCoupons).values({
@@ -38,8 +42,7 @@ export async function POST(req: NextRequest) {
     affiliateId: data.type === 'affiliate' ? data.affiliateId : null,
     code: data.code.toUpperCase(),
     name: data.name ?? null,
-    discountType: data.discountType,
-    discountValue: String(data.discountValue),
+    discountPercent: String(data.discountPercent),
     appliesTo: data.appliesTo,
     maxUses: data.maxUses ?? null,
   }).returning()
@@ -52,8 +55,7 @@ const patchSchema = z.object({
   id: z.string(),
   code: z.string().min(3).max(32).optional(),
   name: z.string().max(100).nullable().optional(),
-  discountType: z.enum(['percentage', 'fixed']).optional(),
-  discountValue: z.number().min(1).optional(),
+  discountPercent: z.number().min(0).max(100).optional(),
   appliesTo: z.enum(['plan', 'credits', 'both']).optional(),
   type: z.enum(['affiliate', 'platform']).optional(),
   affiliateId: z.string().nullable().optional(),
@@ -73,8 +75,7 @@ export async function PATCH(req: NextRequest) {
   const values: Record<string, unknown> = {}
   if (updates.code !== undefined) values.code = updates.code.toUpperCase()
   if (updates.name !== undefined) values.name = updates.name
-  if (updates.discountType !== undefined) values.discountType = updates.discountType
-  if (updates.discountValue !== undefined) values.discountValue = String(updates.discountValue)
+  if (updates.discountPercent !== undefined) values.discountPercent = String(updates.discountPercent)
   if (updates.appliesTo !== undefined) values.appliesTo = updates.appliesTo
   if (updates.type !== undefined) values.type = updates.type
   if (updates.affiliateId !== undefined) values.affiliateId = updates.affiliateId

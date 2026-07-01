@@ -411,8 +411,7 @@ export const affiliateCoupons = pgTable('affiliate_coupons', {
   affiliateId:   text('affiliate_id').references(() => affiliates.id, { onDelete: 'cascade' }),
   code:          varchar('code', { length: 32 }).notNull().unique(),
   name:          varchar('name', { length: 100 }), // admin label for platform coupons
-  discountType:  varchar('discount_type', { length: 20 }).notNull(), // 'percentage' | 'fixed'
-  discountValue: numeric('discount_value', { precision: 10, scale: 2 }).notNull(),
+  discountPercent: numeric('discount_percent', { precision: 5, scale: 2 }).notNull().default('0'), // 0-100 for platform, 0-commissionRate for affiliate
   appliesTo:     varchar('applies_to', { length: 20 }).notNull().default('both'), // 'plan' | 'credits' | 'both'
   maxUses:       integer('max_uses'),
   usedCount:     integer('used_count').notNull().default(0),
